@@ -30,11 +30,12 @@
   document.querySelectorAll('[data-repeat]').forEach(function(row){
     var n=parseInt(row.dataset.repeat,10);
     var ratio=row.dataset.ratio||'r-16x9', prefix=row.dataset.prefix||'IMG-SLOT-';
-    var titles=(row.dataset.titles||'').split('|'), subs=(row.dataset.subs||'').split('|'), metas=(row.dataset.metas||'').split('|');
+    var titles=(row.dataset.titles||'').split('|'), subs=(row.dataset.subs||'').split('|'), metas=(row.dataset.metas||'').split('|'), cats=(row.dataset.cats||'').split('|');
     for(var i=1;i<=n;i++){
       var id=prefix+String(i).padStart(2,'0');
       var a=document.createElement('a');
       a.className='mediacard';a.href=row.dataset.href||'#';
+      if(cats[i-1]&&cats[i-1].trim()) a.setAttribute('data-cat',cats[i-1].trim());
       a.innerHTML='<div class="slot '+ratio+'" data-slot="'+id+'"></div>'+
         (titles[i-1]?'<div class="name">'+titles[i-1]+'</div>':'')+
         (subs[i-1]?'<div class="sub">'+subs[i-1]+'</div>':'')+
@@ -42,6 +43,57 @@
       row.appendChild(a);
     }
   });
+
+  // Category filtering. Only acts on chiprows explicitly marked data-filter="<targetSelector>".
+  // data-select="single" -> one active chip (used with an "All" chip). "multi" -> OR across selected.
+  // Chips whose category matches no card are hidden; a label row with no live chips hides too.
+  (function(){
+    var groups={};
+    document.querySelectorAll('.chiprow[data-filter]').forEach(function(row){
+      var sel=row.getAttribute('data-filter');(groups[sel]=groups[sel]||[]).push(row);
+    });
+    Object.keys(groups).forEach(function(sel){
+      var target=document.querySelector(sel); if(!target) return;
+      var rows=groups[sel];
+      var cards=[].slice.call(target.querySelectorAll('.mediacard'));
+      var mode=rows[0].getAttribute('data-select')||'multi';
+      function catsOf(c){return (c.getAttribute('data-cat')||'').split(/\s+/).filter(Boolean);}
+      function allChips(){var o=[];rows.forEach(function(rw){[].slice.call(rw.querySelectorAll('.chip')).forEach(function(c){o.push(c);});});return o;}
+      // hide dead chips (no matching card), and hide a label row left with nothing
+      rows.forEach(function(row){
+        var live=0;
+        [].slice.call(row.querySelectorAll('.chip')).forEach(function(chip){
+          if(chip.hasAttribute('data-all')){live++;return;}
+          var cat=chip.getAttribute('data-cat')||'';
+          if(cards.some(function(c){return catsOf(c).indexOf(cat)>-1;})){live++;}
+          else{chip.style.display='none';}
+        });
+        if(live===0&&row.parentElement) row.parentElement.style.display='none';
+      });
+      function apply(cats){ // cats: array of active category keys; empty => show all
+        cards.forEach(function(c){
+          var show=cats.length===0||catsOf(c).some(function(k){return cats.indexOf(k)>-1;});
+          c.style.display=show?'':'none';
+        });
+      }
+      function selected(){return allChips().filter(function(c){return c.classList.contains('selected')&&!c.hasAttribute('data-all');}).map(function(c){return c.getAttribute('data-cat')||'';});}
+      function onClick(chip){
+        if(mode==='single'){
+          var isAll=chip.hasAttribute('data-all'), wasSel=chip.classList.contains('selected');
+          allChips().forEach(function(c){c.classList.remove('selected');});
+          if(!isAll&&wasSel){var a=null;allChips().forEach(function(c){if(c.hasAttribute('data-all'))a=c;});if(a)a.classList.add('selected');apply([]);}
+          else{chip.classList.add('selected');apply(isAll?[]:[chip.getAttribute('data-cat')||'']);}
+        } else {
+          chip.classList.toggle('selected');
+          apply(selected());
+        }
+      }
+      allChips().forEach(function(chip){chip.addEventListener('click',function(e){e.preventDefault();onClick(chip);});});
+      // reflect any pre-selected state on load
+      if(mode==='single'){var pre=null;allChips().forEach(function(c){if(c.classList.contains('selected'))pre=c;});if(pre)apply(pre.hasAttribute('data-all')?[]:[pre.getAttribute('data-cat')||'']);}
+      else apply(selected());
+    });
+  })();
 
   // Toast
   window.toast=function(msg){

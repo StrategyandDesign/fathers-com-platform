@@ -2,6 +2,37 @@
 """Generates the role dashboards. Each is a real Supabase-backed page.
    Permissions are enforced by RLS; these pages shape the UI and call the API."""
 import os
+import re
+
+# Keep in sync with build_pages.py. CHANGE THIS if the site moves to a custom domain.
+SITE_URL = "https://fathers-com-platform.vercel.app"
+OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
+
+
+def _esc(s):
+    s = re.sub(r'&(?!#?\w+;)', '&amp;', s)
+    return s.replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
+
+
+def social_meta(page, title):
+    """Dashboards are private, so every one is noindex. Full card + icon still emitted for consistency."""
+    url = SITE_URL + "/" + page + ".html"
+    ttl = _esc(title + " | Fathers.com")
+    return (
+        '<meta name="robots" content="noindex,follow">\n'
+        + f'<link rel="canonical" href="{url}">\n'
+        + '<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">\n'
+        + '<meta name="theme-color" content="#000000">\n'
+        + '<meta property="og:type" content="website">\n'
+        + '<meta property="og:site_name" content="Fathers.com">\n'
+        + f'<meta property="og:title" content="{ttl}">\n'
+        + f'<meta property="og:url" content="{url}">\n'
+        + f'<meta property="og:image" content="{OG_IMAGE}">\n'
+        + '<meta property="og:image:width" content="1200">\n'
+        + '<meta property="og:image:height" content="630">\n'
+        + '<meta name="twitter:card" content="summary_large_image">\n'
+        + f'<meta name="twitter:image" content="{OG_IMAGE}">'
+    )
 
 HEAD = '''<!DOCTYPE html>
 <html lang="en">
@@ -14,6 +45,7 @@ HEAD = '''<!DOCTYPE html>
 <script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
 <link rel="stylesheet" href="assets/css/forge.css">
 <link rel="stylesheet" href="assets/css/dash.css">
+{meta}
 </head>
 <body data-auth="required">
 <nav class="nav"><div class="container nav-inner">
@@ -160,7 +192,7 @@ PAGES = {
 if __name__ == '__main__':
     out = os.path.dirname(os.path.abspath(__file__))
     for page, (title, body) in PAGES.items():
-        html = HEAD.format(title=title) + body + FOOT.format(page=page)
+        html = HEAD.format(title=title, meta=social_meta(page, title)) + body + FOOT.format(page=page)
         with open(os.path.join(out, page + '.html'), 'w') as f:
             f.write(html)
         print('wrote', page + '.html')

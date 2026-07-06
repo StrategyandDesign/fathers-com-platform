@@ -2,7 +2,7 @@
    FORGE v1.1 : the Fathers.com design system
    Dual palette: black (default) and light, switchable, persisted.
    All sans serif. High contrast throughout.
-   Display: Barlow Condensed. UI: Inter. Data: IBM Plex Mono.
+   Display & UI: Poppins. Data: IBM Plex Mono.
    ============================================================ */
 
 :root, html[data-theme="dark"]{

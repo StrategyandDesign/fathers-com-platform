@@ -1,6 +1,48 @@
 #!/usr/bin/env python3
 """Page generator for the Fathers.com static platform. Shared chrome, per-page bodies."""
 import os
+import re
+
+# Absolute base URL for share cards and canonical links.
+# CHANGE THIS ONE LINE if the site moves to a custom domain (e.g. https://www.fathers.com).
+SITE_URL = "https://fathers-com-platform.vercel.app"
+OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
+
+# Private / transactional pages: keep them out of Google's index. Everything else is indexable.
+NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'login.html'}
+
+
+def _esc(s):
+    """Escape for an HTML attribute without breaking entities that are already there (e.g. &middot;)."""
+    s = re.sub(r'&(?!#?\w+;)', '&amp;', s)
+    return s.replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
+
+
+def social_meta(fname, title, desc):
+    """Open Graph + Twitter card + canonical + app icon + robots, per page."""
+    url = SITE_URL + "/" + fname
+    ttl = _esc(title + " | Fathers.com")
+    ds = _esc(desc)
+    robots = '<meta name="robots" content="noindex,follow">\n' if fname in NOINDEX else ''
+    return (
+        robots
+        + f'<link rel="canonical" href="{url}">\n'
+        + '<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">\n'
+        + '<meta name="theme-color" content="#000000">\n'
+        + '<meta property="og:type" content="website">\n'
+        + '<meta property="og:site_name" content="Fathers.com">\n'
+        + f'<meta property="og:title" content="{ttl}">\n'
+        + f'<meta property="og:description" content="{ds}">\n'
+        + f'<meta property="og:url" content="{url}">\n'
+        + f'<meta property="og:image" content="{OG_IMAGE}">\n'
+        + '<meta property="og:image:width" content="1200">\n'
+        + '<meta property="og:image:height" content="630">\n'
+        + '<meta property="og:image:alt" content="Fathers.com, learn fatherhood from men who lived it">\n'
+        + '<meta name="twitter:card" content="summary_large_image">\n'
+        + f'<meta name="twitter:title" content="{ttl}">\n'
+        + f'<meta name="twitter:description" content="{ds}">\n'
+        + f'<meta name="twitter:image" content="{OG_IMAGE}">'
+    )
 
 HEAD = '''<!DOCTYPE html>
 <html lang="en">
@@ -15,6 +57,7 @@ HEAD = '''<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
 <link rel="stylesheet" href="assets/css/forge.css">
+{meta}
 </head>
 <body>
 '''
@@ -41,7 +84,7 @@ FOOT = '''<footer><div class="container">
     <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
   <div><h4>Train</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="profile.html">The Keystone Profile</a></li><li><a href="certificates.html">Certificates</a></li></ul></div>
   <div><h4>Programs</h4><ul><li><a href="groups.html">For Groups</a></li><li><a href="veterans.html">For Veterans</a></li><li><a href="employers.html">For Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
-  <div><h4>Company</h4><ul><li><a href="#">About NCF</a></li><li><a href="#">Research</a></li><li><a href="gift.html">Gifts</a></li><li><a href="#">Contact</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="#">About NCF</a></li><li><a href="#">Research</a></li><li><a href="gift.html">Gifts</a></li><li><a href="mailto:Team@Fathers.com">Contact</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="security.html">Security</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
 </div>
 <div style="margin-top:48px;max-width:420px"><h4 style="font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:12px">One useful thing for fathers, weekly</h4>
@@ -137,13 +180,14 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
 
 <section class="tight"><div class="container">
   <h2 class="d-28" style="margin-bottom:20px">Classes for the father you are right now.</h2>
-  <div class="chiprow" style="margin-bottom:28px">
-    <a class="chip selected" data-toggle="single" href="#">All</a><a class="chip" data-toggle="single" href="#">New Dads</a><a class="chip" data-toggle="single" href="#">Fathering Daughters</a><a class="chip" data-toggle="single" href="#">Fathering Sons</a><a class="chip" data-toggle="single" href="#">Teens</a><a class="chip" data-toggle="single" href="#">After Divorce</a><a class="chip" data-toggle="single" href="#">Stepfathers</a><a class="chip" data-toggle="single" href="#">Back From Combat</a><a class="chip" data-toggle="single" href="#">After the Sentence</a><a class="chip" data-toggle="single" href="#">Grandfathers</a>
+  <div class="chiprow" data-filter="#homeclasses" data-select="single" style="margin-bottom:28px">
+    <a class="chip selected" data-all href="#">All</a><a class="chip" data-cat="new-dads" href="#">New Dads</a><a class="chip" data-cat="fathering-daughters" href="#">Fathering Daughters</a><a class="chip" data-cat="fathering-sons" href="#">Fathering Sons</a><a class="chip" data-cat="teens" href="#">Teens</a><a class="chip" data-cat="after-divorce" href="#">After Divorce</a><a class="chip" data-cat="stepfathers" href="#">Stepfathers</a><a class="chip" data-cat="back-from-combat" href="#">Back From Combat</a><a class="chip" data-cat="after-the-sentence" href="#">After the Sentence</a><a class="chip" data-cat="grandfathers" href="#">Grandfathers</a>
   </div>
-  <div class="rowscroll" data-repeat="5" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html"
+  <div class="rowscroll" id="homeclasses" data-repeat="5" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html"
     data-titles="Dr. Ken Canfield|Coming Home Present|Fathering Daughters|Fathering After Divorce|Raising Teens"
     data-subs="The Fundamentals of Fathering|Presence after deployment|For the dad she needs|Presence across two homes|Keeping the line open"
-    data-metas="12 lessons &middot; 2h 10m|10 lessons &middot; 1h 44m|12 lessons &middot; 1h 58m|11 lessons &middot; 1h 51m|13 lessons &middot; 2h 06m"></div>
+    data-metas="12 lessons &middot; 2h 10m|10 lessons &middot; 1h 44m|12 lessons &middot; 1h 58m|11 lessons &middot; 1h 51m|13 lessons &middot; 2h 06m"
+    data-cats="new-dads|back-from-combat|fathering-daughters|after-divorce|teens"></div>
   <p style="margin-top:20px"><a class="link" href="classes.html">See all classes</a></p>
 </div></section>
 
@@ -315,20 +359,21 @@ PAGES['classes.html'] = dict(title='All Classes', desc='Nine classes for the fat
   </div>
   <div class="stack-16" style="margin-bottom:40px">
     <div class="row wrap"><span class="tag" style="width:92px">LIFE STAGE</span>
-      <div class="chiprow"><a class="chip" data-toggle href="#">Expecting</a><a class="chip" data-toggle href="#">0-5</a><a class="chip" data-toggle href="#">6-12</a><a class="chip" data-toggle href="#">Teens</a><a class="chip" data-toggle href="#">Grown</a></div></div>
+      <div class="chiprow" data-filter="#classgrid" data-select="multi"><a class="chip" data-cat="expecting" href="#">Expecting</a><a class="chip" data-cat="0-5" href="#">0-5</a><a class="chip" data-cat="6-12" href="#">6-12</a><a class="chip" data-cat="teens" href="#">Teens</a><a class="chip" data-cat="grown" href="#">Grown</a></div></div>
     <div class="row wrap"><span class="tag" style="width:92px">SITUATION</span>
-      <div class="chiprow"><a class="chip" data-toggle href="#">After Divorce</a><a class="chip" data-toggle href="#">Stepfathers</a><a class="chip" data-toggle href="#">Back From Combat</a><a class="chip" data-toggle href="#">After the Sentence</a><a class="chip" data-toggle href="#">Grandfathers</a><a class="chip" data-toggle href="#">Faith</a></div></div>
+      <div class="chiprow" data-filter="#classgrid" data-select="multi"><a class="chip" data-cat="after-divorce" href="#">After Divorce</a><a class="chip" data-cat="stepfathers" href="#">Stepfathers</a><a class="chip" data-cat="back-from-combat" href="#">Back From Combat</a><a class="chip" data-cat="after-the-sentence" href="#">After the Sentence</a><a class="chip" data-cat="grandfathers" href="#">Grandfathers</a><a class="chip" data-cat="faith" href="#">Faith</a></div></div>
   </div>
+  <!-- Category tags live on each card below via data-cat. Chips auto-hide when no class matches. -->
   <div class="grid-3" id="classgrid">
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-01"></div><div class="row" style="margin:12px 0 0"><span class="pill pill-new">New</span></div><div class="name">Dr. Ken Canfield</div><div class="sub">The Fundamentals of Fathering</div><div class="meta">12 lessons &middot; 2h 10m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-02"></div><div class="name" style="margin-top:12px">Fathering Daughters</div><div class="sub">For the dad she needs</div><div class="meta">12 lessons &middot; 1h 58m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-03"></div><div class="name" style="margin-top:12px">Fathering Sons</div><div class="sub">Raising the man he becomes</div><div class="meta">11 lessons &middot; 1h 49m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-04"></div><div class="name" style="margin-top:12px">Raising Teens</div><div class="sub">Keeping the line open</div><div class="meta">13 lessons &middot; 2h 06m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-05"></div><div class="name" style="margin-top:12px">The First Five Years</div><div class="sub">Presence from day one</div><div class="meta">10 lessons &middot; 1h 38m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-06"></div><div class="name" style="margin-top:12px">Fathering After Divorce</div><div class="sub">Presence across two homes</div><div class="meta">11 lessons &middot; 1h 51m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-07"></div><div class="name" style="margin-top:12px">Stepfathers and Blended Families</div><div class="sub">Earning the seat</div><div class="meta">10 lessons &middot; 1h 42m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-08"></div><div class="name" style="margin-top:12px">Coming Home Present</div><div class="sub">Presence after deployment</div><div class="meta">10 lessons &middot; 1h 44m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-09"></div><div class="name" style="margin-top:12px">Dr. Ken Canfield</div><div class="sub">Grandfathering</div><div class="meta">9 lessons &middot; 1h 22m</div></a>
+    <a class="mediacard" data-cat="0-5 6-12 teens" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-01"></div><div class="row" style="margin:12px 0 0"><span class="pill pill-new">New</span></div><div class="name">Dr. Ken Canfield</div><div class="sub">The Fundamentals of Fathering</div><div class="meta">12 lessons &middot; 2h 10m</div></a>
+    <a class="mediacard" data-cat="0-5 6-12 teens" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-02"></div><div class="name" style="margin-top:12px">Fathering Daughters</div><div class="sub">For the dad she needs</div><div class="meta">12 lessons &middot; 1h 58m</div></a>
+    <a class="mediacard" data-cat="0-5 6-12 teens" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-03"></div><div class="name" style="margin-top:12px">Fathering Sons</div><div class="sub">Raising the man he becomes</div><div class="meta">11 lessons &middot; 1h 49m</div></a>
+    <a class="mediacard" data-cat="teens" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-04"></div><div class="name" style="margin-top:12px">Raising Teens</div><div class="sub">Keeping the line open</div><div class="meta">13 lessons &middot; 2h 06m</div></a>
+    <a class="mediacard" data-cat="expecting 0-5" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-05"></div><div class="name" style="margin-top:12px">The First Five Years</div><div class="sub">Presence from day one</div><div class="meta">10 lessons &middot; 1h 38m</div></a>
+    <a class="mediacard" data-cat="6-12 teens after-divorce" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-06"></div><div class="name" style="margin-top:12px">Fathering After Divorce</div><div class="sub">Presence across two homes</div><div class="meta">11 lessons &middot; 1h 51m</div></a>
+    <a class="mediacard" data-cat="6-12 teens stepfathers" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-07"></div><div class="name" style="margin-top:12px">Stepfathers and Blended Families</div><div class="sub">Earning the seat</div><div class="meta">10 lessons &middot; 1h 42m</div></a>
+    <a class="mediacard" data-cat="0-5 6-12 teens back-from-combat" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-08"></div><div class="name" style="margin-top:12px">Coming Home Present</div><div class="sub">Presence after deployment</div><div class="meta">10 lessons &middot; 1h 44m</div></a>
+    <a class="mediacard" data-cat="grown grandfathers" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-09"></div><div class="name" style="margin-top:12px">Dr. Ken Canfield</div><div class="sub">Grandfathering</div><div class="meta">9 lessons &middot; 1h 22m</div></a>
   </div>
 </div></section>
 
@@ -1380,7 +1425,7 @@ PAGES['login.html'] = dict(title='Log in', desc='Sign in to Fathers.com with an 
 if __name__ == '__main__':
     out = os.path.dirname(os.path.abspath(__file__))
     for fname, p in PAGES.items():
-        html = HEAD.format(title=p['title'], desc=p['desc'])
+        html = HEAD.format(title=p['title'], desc=p['desc'], meta=social_meta(fname, p['title'], p['desc']))
         if p.get('nochrome'):
             html += p['body']
             html += '\n<script src="assets/js/config.js"></script>\n<script src="assets/js/supabase-client.js"></script>\n<script src="assets/js/app.js"></script>\n'
