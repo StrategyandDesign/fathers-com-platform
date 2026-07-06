@@ -14,6 +14,8 @@
   --ember:#C2502D;            /* primary action */
   --ember-hi:#DA5F36;
   --ember-btn:#F0834F;
+  --yellow:#E8E84A;
+  --yellow-hi:#EEEE68;
   --ember-btn-hover:#F79663;
   --brass:#C9973B;            /* proof layer */
   --pine:#3E5C4B;
@@ -36,6 +38,8 @@ html[data-theme="light"]{
   --ember:#B24422;
   --ember-hi:#9C3A1C;
   --ember-btn:#E86A3C;
+  --yellow:#DDDF3E;
+  --yellow-hi:#E6E85A;
   --ember-btn-hover:#EF7A4E;
   --brass:#7A5A17;
   --pine:#3E5C4B;
@@ -145,6 +149,8 @@ html[data-theme="light"] .themeswitch .tsw-dot{left:4px}
 .btn-primary:hover{background:var(--ember-btn-hover)}
 .btn-primary:active{transform:translateY(1px)}
 .btn-primary:disabled{background:#4A4A4A;color:#9E9E9E;cursor:not-allowed}
+.btn-yellow{background:var(--yellow);color:#0A0A0A}
+.btn-yellow:hover{background:var(--yellow-hi)}
 html[data-theme="light"] .btn-primary:disabled{background:#DADADA;color:#8A8A8A}
 .btn-secondary{background:transparent;color:var(--bone);border-color:var(--bone)}
 .btn-secondary:hover{background:var(--coal-2)}

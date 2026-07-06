@@ -24,7 +24,7 @@ def nav(active='', mode='public'):
     if mode=='app':
         links = [('My Plan','plan.html')] + links[:2] + [('Circles','circles.html'),('Certificates','certificates.html')]
     lis = ''.join(f'<li><a href="{h}" {"class=\"active\"" if t==active else ""}>{t}</a></li>' for t,h in links)
-    right = ('<a href="gift.html" class="hide-m">Gifts</a><a href="login.html" class="hide-m">Log in</a><a class="btn btn-primary btn-sm" href="profile.html">Get your baseline</a>'
+    right = ('<a href="gift.html" class="hide-m">Gifts</a><a href="login.html" class="hide-m">Log in</a><a class="btn btn-yellow btn-sm" href="profile.html">Get your baseline</a>'
              if mode=='public' else
              '<a href="#" data-open-search class="hide-m">Search</a><a href="gift.html" class="hide-m">Gifts</a><a href="account.html" class="avatarchip" title="Account" style="text-decoration:none">M</a>')
     return f'''<nav class="nav"><div class="container nav-inner">
@@ -343,7 +343,7 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
 </div>
 <div class="nav" style="top:72px;z-index:50"><div class="container nav-inner" style="height:60px">
   <b style="font-size:15px">The Fundamentals of Fathering</b>
-  <div class="nav-right"><a class="btn btn-primary btn-sm" href="profile.html">Get your baseline</a></div>
+  <div class="nav-right"><a class="btn btn-yellow btn-sm" href="profile.html">Get your baseline</a></div>
 </div></div>
 
 <section class="tight"><div class="container" style="display:grid;grid-template-columns:1.45fr .85fr;gap:56px;align-items:start">
