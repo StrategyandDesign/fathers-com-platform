@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Record for your kids | Fathers.com</title>
+<meta name="description" content="Record your voice for your children, a story or a message they can replay.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
+<link rel="stylesheet" href="assets/css/forge.css">
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://fathers-com-platform.vercel.app/voice.html">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<meta name="theme-color" content="#000000">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Fathers.com">
+<meta property="og:title" content="Record for your kids | Fathers.com">
+<meta property="og:description" content="Record your voice for your children, a story or a message they can replay.">
+<meta property="og:url" content="https://fathers-com-platform.vercel.app/voice.html">
+<meta property="og:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Fathers.com, learn fatherhood from men who lived it">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Record for your kids | Fathers.com">
+<meta name="twitter:description" content="Record your voice for your children, a story or a message they can replay.">
+<meta name="twitter:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
+</head>
+<body>
+<nav class="nav"><div class="container nav-inner">
+<a class="brand" href="index.html"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark"><b>Fathers.com</b></a>
+<ul class="nav-links"><li><a href="plan.html" >My Plan</a></li><li><a href="classes.html" >Classes</a></li><li><a href="stories.html" >Stories</a></li><li><a href="circles.html" >Circles</a></li><li><a href="certificates.html" >Certificates</a></li></ul>
+<div class="nav-right"><a href="#" data-open-search class="hide-m">Search</a><a href="gift.html" class="hide-m">Gifts</a><a href="account.html" class="avatarchip" title="Account" style="text-decoration:none">M</a><button class="themeswitch" data-themeswitch aria-label="Switch palette" title="Switch palette"><span class="tsw-dot"></span></button><button class="nav-toggle">MENU</button></div>
+</div></nav>
+<link rel="stylesheet" href="assets/css/veterans.css">
+<div class="container" style="padding-top:20px"><div class="vet-crisis" role="region" aria-label="Crisis support">
+<span class="vet-crisis-txt">In crisis or thinking about suicide?</span>
+<a href="tel:988">Call 988, then press 1</a>
+<a class="vet-crisis-alt" href="sms:838255">or text 838255</a>
+</div></div>
+
+<section class="tight"><div class="container" style="max-width:760px">
+  <div class="eyebrow brass" style="margin-bottom:12px">FOR YOUR KIDS</div>
+  <h1 class="d-36" style="margin-bottom:8px">Record your voice</h1>
+  <p class="lead" style="margin-bottom:28px">A bedtime story or a short message your child can replay any time. Repetition rebuilds your voice and your face in their day, on their schedule.</p>
+  <div id="voiceApp">
+    <div class="voice-types" data-voice-types>
+      <button class="chip is-on" data-kind="bedtime_story" aria-pressed="true">Bedtime story</button>
+      <button class="chip" data-kind="message" aria-pressed="false">A message</button>
+      <button class="chip" data-kind="thinking" aria-pressed="false">Thinking of you</button>
+    </div>
+    <div class="voice-stage">
+      <div id="voiceTimer" class="voice-timer">0:00</div>
+      <div class="voice-controls">
+        <button class="btn btn-primary" id="voiceRec">Start recording</button>
+        <button class="btn btn-secondary" id="voiceStop" hidden>Stop</button>
+      </div>
+      <audio id="voicePreview" controls hidden style="width:100%;margin-top:18px"></audio>
+      <div class="row" id="voiceAfter" hidden style="gap:12px;justify-content:center;margin-top:18px">
+        <button class="btn btn-secondary btn-sm" id="voiceRedo">Record again</button>
+        <button class="btn btn-primary btn-sm" id="voiceSave">Save it</button>
+      </div>
+      <p class="fine" id="voiceMsg" style="margin-top:14px;min-height:16px"></p>
+    </div>
+    <div id="voiceList"></div>
+  </div>
+  <p class="fine" style="margin-top:24px">Your recordings are private to your account. Saving requires a free sign-in.</p>
+</div></section>
+<script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/voice.js"></script>
+<footer><div class="container">
+<div class="footgrid">
+  <div><a class="brand" href="index.html" style="margin-bottom:16px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="" style="height:34px"><b>Fathers.com</b></a>
+    <p class="small" style="margin-top:14px;max-width:32ch">Presence is a skill. Train it.</p>
+    <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
+  <div><h4>Train</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="profile.html">The Keystone Profile</a></li><li><a href="certificates.html">Certificates</a></li></ul></div>
+  <div><h4>Programs</h4><ul><li><a href="groups.html">For Groups</a></li><li><a href="veterans.html">For Veterans</a></li><li><a href="employers.html">For Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="#">About NCF</a></li><li><a href="#">Research</a></li><li><a href="gift.html">Gifts</a></li><li><a href="mailto:Team@Fathers.com">Contact</a></li></ul></div>
+  <div><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="security.html">Security</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
+</div>
+<div style="margin-top:48px;max-width:420px"><h4 style="font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:12px">One useful thing for fathers, weekly</h4>
+<form class="row" data-lead="newsletter" data-done="You are on the list. One useful thing, weekly."><input class="input" name="email" type="email" required placeholder="Email address"><button class="btn btn-secondary btn-sm">Send it</button></form></div>
+<div class="footbottom"><span class="fine">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit.</span><span class="fine">© <span data-year></span> National Center for Fathering</span></div>
+</div></footer>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/roles.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

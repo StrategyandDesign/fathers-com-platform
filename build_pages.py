@@ -9,7 +9,7 @@ SITE_URL = "https://fathers-com-platform.vercel.app"
 OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 
 # Private / transactional pages: keep them out of Google's index. Everything else is indexable.
-NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html'}
+NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-checkin.html', 'voice.html'}
 
 
 def _esc(s):
@@ -1276,85 +1276,7 @@ PAGES['verify.html'] = dict(title='Verify a certificate', desc='Enter a serial. 
 ''')
 
 # ================================================== veterans.html (P11)
-PAGES['veterans.html'] = dict(title='Present at Home', desc='Eight weeks for fathers back from combat. Costs you nothing.', active='For Veterans', mode='public', body='''
-<div class="billboard">
-  <div class="slot r-21x9 flush" data-slot="IMG-P11-HER-01" style="max-height:66vh"></div>
-  <div class="overlay container" style="left:50%;transform:translateX(-50%);max-width:var(--max)">
-    <div class="eyebrow" style="margin-bottom:12px">FOR FATHERS BACK FROM COMBAT</div>
-    <h1 class="d-56">Present at home.</h1>
-    <p class="small" style="margin:14px 0 22px;max-width:56ch">Eight weeks. Films from men who made the same walk. A baseline, a plan, a cohort. Costs you nothing. Sponsored by people who owe you.</p>
-    <div class="row wrap"><a class="btn btn-primary play" href="story.html">Start with Ray's story</a><a class="btn btn-secondary" href="#how">How it works</a></div>
-  </div>
-</div>
 
-<section class="tight" id="how"><div class="container">
-  <div class="steps3" style="margin-bottom:40px">
-    <div class="s"><div class="n">01</div><p class="small" style="margin-top:8px">Watch a story &middot; 24 min</p></div>
-    <div class="s"><div class="n">02</div><p class="small" style="margin-top:8px">Take your baseline &middot; 12 min</p></div>
-    <div class="s"><div class="n">03</div><p class="small" style="margin-top:8px">Join an 8-week cohort</p></div>
-  </div>
-  <div class="row wrap" style="gap:18px;padding:18px 22px;border:1px solid var(--hairline);border-radius:8px">
-    <span class="pill pill-clinical">Clinically overseen</span>
-    <span class="small">Built and reviewed under clinical oversight with our VA partnership.</span>
-    <div class="slot" data-slot="IMG-P11-TRS-01" style="width:120px;height:36px;margin-left:auto"></div>
-  </div>
-</div></section>
-
-<section class="tight" style="padding-top:0"><div class="container">
-  <h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:18px">Men who made the walk</h2>
-  <div class="grid-3" data-repeat="3" data-prefix="IMG-P11-STR-" data-ratio="r-16x9" data-href="story.html"
-    data-titles="From Combat to the Kitchen Table|The Longest Deployment|Reveille at Home" data-metas="24 min|18 min|17 min"></div>
-  <p class="small" style="margin-top:22px">No diagnosis. No records shared. Your answers are yours.</p>
-</div></section>
-
-<section class="band tight"><div class="container split" style="align-items:start">
-  <div><h2 class="d-36">Count me in.</h2>
-    <p class="small" style="margin-top:14px;max-width:44ch">Three fields. That's the whole door.</p></div>
-  <form class="card" style="padding:32px" data-lead="veterans" data-done="You are in Cohort 15. Starts Monday.">
-    <div class="field"><label>First name</label><input class="input" name="first_name" required></div>
-    <div class="field"><label>Email or phone</label><input class="input" name="contact" required></div>
-    <div class="field"><label>Nearest base or town <span class="fine">(optional)</span></label><input class="input" name="base"></div>
-    <button class="btn btn-primary" style="width:100%">Count me in</button>
-  </form>
-</div></section>
-
-<section><div class="container">
-  <div class="eyebrow" style="margin-bottom:16px">ENROLLED VIEW</div>
-  <h2 class="d-28" style="margin-bottom:26px">Cohort 14. Week 3 of 8. Twelve men.</h2>
-  <div class="split" style="align-items:start">
-    <div class="card" style="padding:28px">
-      <div class="eyebrow" style="margin-bottom:14px">THIS WEEK</div>
-      <div class="row" style="gap:18px;align-items:flex-start;margin-bottom:18px">
-        <div class="slot r-16x9 play-overlay" data-slot="IMG-P11-CH-01" style="flex:0 0 180px"><span class="tri"></span></div>
-        <b style="font-size:15px">Watch: The Turn &middot; 18 min</b></div>
-      <div class="actionrow" style="margin-bottom:14px"><span class="checkmark">&rarr;</span><div class="txt">Tell your kid one true story from before they were born.</div></div>
-      <div class="row between" style="padding:14px 16px;border:1px solid var(--hairline);border-radius:8px">
-        <span class="small">Thursday call &middot; 2000 CT &middot; Cameras optional. First names only.</span>
-        <div class="row"><a class="link" href="#" style="font-size:13px" onclick="event.preventDefault();toast('Call link arrives by text Thursday at 1900.')">Join link</a><input type="checkbox" class="toggle" checked title="Remind me"></div></div>
-      <div style="margin-top:26px"><div class="weeks" style="grid-template-columns:repeat(8,1fr)">
-        <span class="done"></span><span class="done"></span><span class="now"></span><span></span><span></span><span></span><span></span><span></span></div>
-        <div class="phaselabels"><span>WEEK 1</span><span>WEEK 8</span></div></div>
-    </div>
-    <div class="stack-24">
-      <div class="card"><div class="row" style="gap:16px"><div class="slot r-1x1" data-slot="IMG-P11-CH-02" style="flex:0 0 64px;border-radius:50%"></div>
-        <div><b style="font-size:15px">Your mentor: Dave</b><p class="fine" style="margin-top:4px">Army, father of four</p></div></div>
-        <button class="btn btn-secondary btn-sm" style="margin-top:16px" onclick="toast('Messaging wires to Supabase.')">Message Dave</button></div>
-      <div class="card"><div class="eyebrow" style="margin-bottom:16px">WEEK 8 FINISH</div>
-        <div class="row" style="gap:32px;align-items:baseline;margin-bottom:18px">
-          <div><div class="bigscore ash" style="font-size:44px">43</div><p class="fine">Day 0</p></div>
-          <div><div class="bigscore" style="font-size:44px">71</div><p class="fine">Day 56</p></div>
-        </div>
-        <div class="badge-earned" style="margin-bottom:18px"><span class="seal">8W</span><span class="t">Eight Week Standard</span></div>
-        <div class="stack-8">
-          <a class="link" href="#" style="font-size:14px">Keep your membership, sponsored for the year</a>
-          <a class="link" href="#" style="font-size:14px">Lead the next cohort</a>
-          <a class="link" href="story.html" style="font-size:14px">Tell your story</a>
-        </div></div>
-    </div>
-  </div>
-  <p class="fine" style="margin-top:36px">Need more than this program? Talk to someone today. Veterans Crisis Line: dial 988, then press 1.</p>
-</div></section>
-''')
 
 # ================================================== employers.html (P12)
 PAGES['employers.html'] = dict(title='For Employers', desc='Your parental benefits were built around mothers. Cover the fathers too.', active='', mode='public', body='''
@@ -1504,6 +1426,193 @@ PAGES['enroll.html'] = dict(title='Enroll', desc='Enroll in a Fathers.com verifi
   </div>
 </div></section>
 <script src="assets/js/enroll.js"></script>
+''')
+
+# --- shared top for every veteran page: styles + always-present crisis strip ---
+VET_TOP = '''<link rel="stylesheet" href="assets/css/veterans.css">
+<div class="container" style="padding-top:20px"><div class="vet-crisis" role="region" aria-label="Crisis support">
+<span class="vet-crisis-txt">In crisis or thinking about suicide?</span>
+<a href="tel:988">Call 988, then press 1</a>
+<a class="vet-crisis-alt" href="sms:838255">or text 838255</a>
+</div></div>
+'''
+
+# ================================================== veterans.html (front door)
+PAGES['veterans.html'] = dict(title='Present at Home', desc='Support built for fathers returning from service, and their families. Free, confidential, and matched to you.', active='For Veterans', mode='public', body=VET_TOP + '''
+<header class="hero"><div class="container" style="max-width:820px">
+  <div class="eyebrow brass" style="margin-bottom:18px">FATHERS.COM FOR VETERANS</div>
+  <h1 class="d-64">Present at home.</h1>
+  <p class="lead" style="margin:22px 0 8px">Coming home is its own kind of hard. This is a place to reconnect with your kids, on your schedule, with real help matched to where you are. Free. Private. Built for men who served.</p>
+</div></header>
+
+<section class="tight"><div class="container">
+  <div id="vetOnboard">
+    <div class="vet-step" data-step="1">
+      <h2 class="d-36" style="margin-bottom:8px">Where are you?</h2>
+      <p class="lead" style="margin-bottom:28px">One tap. It shapes what we show you next.</p>
+      <button class="vet-opt" data-ctx="active"><span>I am serving now, active, Guard, or Reserve</span></button>
+      <button class="vet-opt" data-ctx="veteran"><span>I am a veteran</span></button>
+      <button class="vet-opt" data-ctx="family"><span>I am a military family member</span></button>
+    </div>
+    <div class="vet-step" data-step="2" hidden>
+      <h2 class="d-36" style="margin-bottom:8px">A little context</h2>
+      <p class="lead" style="margin-bottom:28px">Optional. Two taps that make the match better. Skip any time.</p>
+
+      <div class="vet-field" data-combat>
+        <div class="eyebrow">DID YOU SERVE IN A COMBAT ZONE?</div>
+        <div class="row" style="gap:10px"><button class="chip" data-val="yes" aria-pressed="false">Yes</button><button class="chip" data-val="no" aria-pressed="false">No</button></div>
+      </div>
+
+      <div class="vet-field" data-sep-block hidden>
+        <div class="eyebrow">HOW LONG SINCE YOU SEPARATED?</div>
+        <div class="row" style="gap:10px" data-sep><button class="chip" data-val="recent" aria-pressed="false">Within the last year</button><button class="chip" data-val="past" aria-pressed="false">More than a year ago</button></div>
+      </div>
+
+      <div class="vet-field" data-kids>
+        <div class="eyebrow">YOUR KIDS&rsquo; AGES (TAP ANY)</div>
+        <div class="row wrap" style="gap:10px"><button class="chip" data-band="0-5" aria-pressed="false">0 to 5</button><button class="chip" data-band="6-12" aria-pressed="false">6 to 12</button><button class="chip" data-band="13-18" aria-pressed="false">13 to 18</button><button class="chip" data-band="grown" aria-pressed="false">Grown</button></div>
+      </div>
+
+      <div class="row wrap" style="gap:14px;margin-top:12px">
+        <button class="btn btn-primary" id="vetContinue">Show me what fits</button>
+        <a class="link ash" href="#" data-skip style="align-self:center">Skip</a>
+      </div>
+    </div>
+  </div>
+  <p class="fine" id="vetResume" hidden style="margin-top:24px">Been here before? <a class="link" href="veterans-hub.html">Go to your hub &rarr;</a></p>
+</div></section>
+
+<section class="band"><div class="container" style="max-width:820px">
+  <h2 class="d-36" style="margin-bottom:20px">What you will find here</h2>
+  <div class="stack-16">
+    <div class="check"><span class="checkmark">&check;</span><span>The one free service built for your exact situation, with the number to call and what to expect.</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>A way to record your voice for your kids, a story or a message they can replay.</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>Short, plain lessons on reconnecting, staying steady, and being present.</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>A private two-minute check-in that points you to the right kind of support.</span></div>
+  </div>
+</div></section>
+<script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/veterans.js"></script>
+''')
+
+# ================================================== veterans-hub.html
+PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Support matched to you, plus Voice, skills, and a private check-in.', active='For Veterans', mode='app', body=VET_TOP + '''
+<section class="tight"><div class="container">
+  <div class="eyebrow brass" style="margin-bottom:12px">FATHERS.COM FOR VETERANS</div>
+  <h1 class="d-36" style="margin-bottom:8px">Your hub</h1>
+  <p class="lead" id="vetGreet" style="margin-bottom:0">Here is support built for where you are.</p>
+</div></section>
+
+<div class="container">
+  <section class="vet-section">
+    <div class="vet-sec-head"><h2 class="d-28">Support matched to you</h2><p class="small" style="margin-top:8px">Free, confidential, and built for your situation.</p></div>
+    <div id="vetMatch"><p class="ash">Loading your match&hellip;</p></div>
+    <div id="vetSecondary"></div>
+    <p style="margin-top:8px"><a class="link" href="veterans-resources.html">See all free resources &rarr;</a></p>
+  </section>
+
+  <section class="vet-section">
+    <div class="vet-sec-head"><h2 class="d-28">Record for your kids</h2><p class="small" style="margin-top:8px">A story or a message they can replay while you are away. It rebuilds closeness on their schedule.</p></div>
+    <a class="btn btn-yellow" href="voice.html">Record your voice</a>
+  </section>
+
+  <section class="vet-section">
+    <div class="vet-sec-head"><h2 class="d-28">Start with what you named</h2><p class="small" style="margin-top:8px">Short, plain lessons on the things returning fathers said they needed.</p></div>
+    <div class="vet-mod-grid">
+      <a class="vet-mod" href="veterans-module.html?m=reconnecting"><div class="vet-mod-min">6 MIN</div><h3>When your child feels like a stranger</h3><p>Rebuilding closeness after time away</p></a>
+      <a class="vet-mod" href="veterans-module.html?m=emotion"><div class="vet-mod-min">5 MIN</div><h3>Saying what you feel</h3><p>Putting words to it, out loud</p></a>
+      <a class="vet-mod" href="veterans-module.html?m=temper"><div class="vet-mod-min">6 MIN</div><h3>Staying steady, and repairing</h3><p>Anger, the pause, and the way back</p></a>
+      <a class="vet-mod" href="veterans-module.html?m=coparenting"><div class="vet-mod-min">5 MIN</div><h3>Fathering across two homes</h3><p>Presence when you are not the only house</p></a>
+      <a class="vet-mod" href="veterans-module.html?m=command"><div class="vet-mod-min">5 MIN</div><h3>From command to connection</h3><p>Leading a family is a different job</p></a>
+      <a class="vet-mod" href="veterans-module.html?m=nurturing"><div class="vet-mod-min">4 MIN</div><h3>Small acts, every day</h3><p>Nurturing is a set of habits</p></a>
+    </div>
+  </section>
+
+  <section class="vet-section">
+    <div class="vet-sec-head"><h2 class="d-28">Your baseline</h2><p class="small" style="margin-top:8px">The Keystone Profile shows your real strengths and the one place growth matters most, then builds a plan.</p></div>
+    <a class="btn btn-secondary" href="profile.html">Take your baseline</a>
+  </section>
+
+  <section class="vet-section">
+    <div class="vet-sec-head"><h2 class="d-28">A private check-in</h2><p class="small" style="margin-top:8px">Two minutes, just for you. It is not a diagnosis. It points you to the right kind of support.</p></div>
+    <a class="btn btn-secondary" href="veterans-checkin.html">Take the check-in</a>
+  </section>
+</div>
+<script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/veterans-hub.js"></script>
+''')
+
+# ================================================== veterans-resources.html
+PAGES['veterans-resources.html'] = dict(title='Free support for veterans', desc='Free, confidential support for veterans, service members, and their families. Vet Centers, the crisis line, Military OneSource, VA, and more.', active='For Veterans', mode='public', body=VET_TOP + '''
+<section class="tight"><div class="container" style="max-width:820px">
+  <div class="eyebrow brass" style="margin-bottom:12px">FREE AND CONFIDENTIAL</div>
+  <h1 class="d-36" style="margin-bottom:16px">Support for veterans and their families</h1>
+  <p class="lead">Every resource below is free, and none require you to be enrolled in anything to start. If you are in crisis, use the line at the top of this page.</p>
+</div></section>
+<section><div class="container">
+  <div id="vetAllResources"><p class="ash">Loading resources&hellip;</p></div>
+</div></section>
+<script src="assets/js/veterans-core.js"></script>
+<script>
+(function(){ if(!window.VET) return; var host=document.getElementById("vetAllResources"); if(!host) return;
+var order=["vet_center","military_onesource","va_mh","samhsa","utr"];
+host.innerHTML=order.map(function(k){return VET.resourceCardHTML(VET.RESOURCES[k],{full:true});}).join(""); })();
+</script>
+''')
+
+# ================================================== veterans-checkin.html
+PAGES['veterans-checkin.html'] = dict(title='A private check-in', desc='A private, two-minute check-in that points you to the right support. Not a diagnosis.', active='For Veterans', mode='app', body=VET_TOP + '''
+<section class="tight"><div class="container" style="max-width:760px">
+  <div class="eyebrow brass" style="margin-bottom:12px">PRIVATE, ABOUT TWO MINUTES</div>
+  <h1 class="d-36" style="margin-bottom:18px">A check-in, just for you</h1>
+  <div id="vetCheckin"></div>
+</div></section>
+<script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/veterans-checkin.js"></script>
+''')
+
+# ================================================== voice.html
+PAGES['voice.html'] = dict(title='Record for your kids', desc='Record your voice for your children, a story or a message they can replay.', active='For Veterans', mode='app', body=VET_TOP + '''
+<section class="tight"><div class="container" style="max-width:760px">
+  <div class="eyebrow brass" style="margin-bottom:12px">FOR YOUR KIDS</div>
+  <h1 class="d-36" style="margin-bottom:8px">Record your voice</h1>
+  <p class="lead" style="margin-bottom:28px">A bedtime story or a short message your child can replay any time. Repetition rebuilds your voice and your face in their day, on their schedule.</p>
+  <div id="voiceApp">
+    <div class="voice-types" data-voice-types>
+      <button class="chip is-on" data-kind="bedtime_story" aria-pressed="true">Bedtime story</button>
+      <button class="chip" data-kind="message" aria-pressed="false">A message</button>
+      <button class="chip" data-kind="thinking" aria-pressed="false">Thinking of you</button>
+    </div>
+    <div class="voice-stage">
+      <div id="voiceTimer" class="voice-timer">0:00</div>
+      <div class="voice-controls">
+        <button class="btn btn-primary" id="voiceRec">Start recording</button>
+        <button class="btn btn-secondary" id="voiceStop" hidden>Stop</button>
+      </div>
+      <audio id="voicePreview" controls hidden style="width:100%;margin-top:18px"></audio>
+      <div class="row" id="voiceAfter" hidden style="gap:12px;justify-content:center;margin-top:18px">
+        <button class="btn btn-secondary btn-sm" id="voiceRedo">Record again</button>
+        <button class="btn btn-primary btn-sm" id="voiceSave">Save it</button>
+      </div>
+      <p class="fine" id="voiceMsg" style="margin-top:14px;min-height:16px"></p>
+    </div>
+    <div id="voiceList"></div>
+  </div>
+  <p class="fine" style="margin-top:24px">Your recordings are private to your account. Saving requires a free sign-in.</p>
+</div></section>
+<script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/voice.js"></script>
+''')
+
+# ================================================== veterans-module.html
+PAGES['veterans-module.html'] = dict(title='A skill for returning fathers', desc='A short, plain lesson for returning fathers.', active='For Veterans', mode='public', body=VET_TOP + '''
+<section class="tight"><div class="container" style="max-width:760px">
+  <a class="link ash" href="veterans-hub.html" style="font-size:13px;display:inline-block;margin-bottom:20px">&larr; Your hub</a>
+  <div id="vetModule"><p class="ash">Loading&hellip;</p></div>
+  <div style="margin-top:36px"><a class="link" id="vetModuleNext" href="veterans-hub.html">Next &rarr;</a></div>
+</div></section>
+<script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/veterans-modules.js"></script>
 ''')
 
 # ================================================== WRITER
