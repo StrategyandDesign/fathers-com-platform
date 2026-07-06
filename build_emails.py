@@ -24,7 +24,7 @@ PO Box 996, Tontitown, AR 72770 &nbsp;·&nbsp; <a href="{{{{UNSUBSCRIBE_URL}}}}"
 
 def h1(t): return f'<h1 style="margin:0 0 14px;font-family:Helvetica,Arial,sans-serif;font-weight:600;font-size:25px;line-height:1.2;color:#141210;">{t}</h1>'
 def p(t, mb=18): return f'<p style="margin:0 0 {mb}px;font-size:15px;line-height:1.6;color:#3a352e;">{t}</p>'
-def btn(t, url): return f'''<table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:#D8552B;border-radius:6px;"><a href="{{{{{url}}}}}" style="display:inline-block;padding:14px 26px;font-size:15px;font-weight:bold;color:#141414;text-decoration:none;">{t}</a></td></tr></table>'''
+def btn(t, url): return f'''<table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:#E86A3C;border-radius:6px;"><a href="{{{{{url}}}}}" style="display:inline-block;padding:14px 26px;font-size:15px;font-weight:bold;color:#0A0A0A;text-decoration:none;">{t}</a></td></tr></table>'''
 def slotimg(sid): return f'<div style="background:#1E1B18;border-radius:8px;padding:52px 12px;text-align:center;margin:0 0 18px;"><span style="font-family:Courier,monospace;font-size:11px;color:#6f6a62;">{sid}</span></div>'
 def card(inner): return f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #D8D1C2;border-radius:8px;margin:0 0 14px;"><tr><td style="padding:16px 18px;">{inner}</td></tr></table>'
 def mono(t): return f'<span style="font-family:Courier,monospace;">{t}</span>'

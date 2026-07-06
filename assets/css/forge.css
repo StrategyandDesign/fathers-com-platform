@@ -13,8 +13,8 @@
   --ash:#C9C9C9;              /* secondary text, ~11:1 on black */
   --ember:#C2502D;            /* primary action */
   --ember-hi:#DA5F36;
-  --ember-btn:#E4683D;
-  --ember-btn-hover:#EF7449;
+  --ember-btn:#F0834F;
+  --ember-btn-hover:#F79663;
   --brass:#C9973B;            /* proof layer */
   --pine:#3E5C4B;
   --pine-hi:#6FA98C;
@@ -35,8 +35,8 @@ html[data-theme="light"]{
   --ash:#4A4A4A;              /* ~8:1 on white */
   --ember:#B24422;
   --ember-hi:#9C3A1C;
-  --ember-btn:#D8552B;
-  --ember-btn-hover:#E0603A;
+  --ember-btn:#E86A3C;
+  --ember-btn-hover:#EF7A4E;
   --brass:#7A5A17;
   --pine:#3E5C4B;
   --pine-hi:#2E6B4F;
@@ -141,7 +141,7 @@ html[data-theme="light"] .themeswitch .tsw-dot{left:4px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 26px;
   border-radius:var(--r-btn);font-family:var(--font-ui);font-size:15px;font-weight:500;
   text-decoration:none;cursor:pointer;border:1px solid transparent;transition:background .15s,transform .1s,border-color .15s;white-space:nowrap}
-.btn-primary{background:var(--ember-btn);color:#141414}
+.btn-primary{background:var(--ember-btn);color:#0A0A0A}
 .btn-primary:hover{background:var(--ember-btn-hover)}
 .btn-primary:active{transform:translateY(1px)}
 .btn-primary:disabled{background:#4A4A4A;color:#9E9E9E;cursor:not-allowed}
@@ -364,3 +364,37 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
   .nav-right .hide-m{display:none}
 }
 :focus-visible{outline:2px solid var(--ember-hi);outline-offset:2px}
+
+/* ---------- hero vertical marquee ---------- */
+.heromarquee{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+  height:min(78vh,680px);overflow:hidden;position:relative;
+  /* fade top and bottom edges to transparent */
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 14%,#000 86%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,#000 14%,#000 86%,transparent 100%);
+}
+.hm-col{overflow:hidden}
+.hm-col-b{margin-top:56px}          /* offset the second column for a staggered read */
+.hm-track{display:flex;flex-direction:column;gap:16px;will-change:transform;
+  animation:hm-scroll 34s linear infinite}
+.hm-track-slow{animation-duration:46s}
+.hm-col:hover .hm-track{animation-play-state:paused}
+@keyframes hm-scroll{
+  from{transform:translateY(0)}
+  to{transform:translateY(-50%)}   /* exactly half, since content is duplicated -> seamless */
+}
+.hm-card{position:relative;margin:0;border-radius:var(--r-card);overflow:hidden;
+  aspect-ratio:3/4;background:var(--coal-2);border:1px solid var(--hairline)}
+.hm-card img{width:100%;height:100%;object-fit:cover;display:block}
+.hm-play::before{content:"";position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.5)}
+.hm-tri{position:absolute;z-index:3;left:calc(50% - 6px);top:50%;transform:translateY(-50%);
+  width:0;height:0;border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent}
+@media(max-width:680px){
+  .heromarquee{height:56vh;gap:12px}
+  .hm-col-b{margin-top:40px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hm-track,.hm-track-slow{animation:none}
+  .hm-col-b{margin-top:0}
+}

@@ -6,7 +6,9 @@
 -- ============================================================
 
 -- ---------- roles ----------
-create type app_role as enum ('admin','instructor','content_reviewer','org_admin','circle_leader','member');
+do $$ begin
+  create type app_role as enum ('admin','instructor','content_reviewer','org_admin','circle_leader','member');
+exception when duplicate_object then null; end $$;
 
 create table if not exists user_roles (
   id uuid primary key default gen_random_uuid(),
@@ -273,7 +275,6 @@ begin
     values (_serial, _enrollment, _display, _course, _hours);
   return _serial;
 end $$;
-revoke all on function public.issue_certificate(uuid,text,numeric,numeric) from public;
 
 -- ---------- audit log ----------
 create table if not exists audit_log (

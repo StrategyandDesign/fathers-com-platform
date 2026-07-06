@@ -155,7 +155,7 @@
         ob.disabled=true;ob.textContent='Sending…';
         FC.signIn(em,'plan.html').then(function(r){
           ob.textContent='Email me a sign-in link';ob.disabled=false;
-          document.getElementById('otpMsg').textContent=r.error?('Could not send: '+r.error.message):'Sent. Check your email, click the link, and your baseline saves automatically.';
+          var m=document.getElementById('otpMsg');if(r.error){m.style.color='var(--error)';m.textContent='Could not send: '+r.error.message;}else{ob.textContent='Link sent \u2713';m.style.color='var(--pine-hi)';m.textContent='Sent. Check your email, click the link, and your baseline saves automatically.';}
         });
       });}}
       if(sc.auto)setTimeout(next,sc.auto);

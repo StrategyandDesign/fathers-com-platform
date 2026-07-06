@@ -170,13 +170,31 @@
 
     // Login page
     var lf=document.getElementById('loginForm');
-    if(lf){lf.addEventListener('submit',function(e){
-      e.preventDefault();
-      var email=lf.querySelector('input').value.trim();
-      FC.signIn(email).then(function(r){
-        document.getElementById('loginMsg').textContent=r.error?('Could not send: '+r.error.message):'Check your email. Click the link and you are in.';
+    if(lf){
+      var btn=lf.querySelector('button');
+      var msg=document.getElementById('loginMsg');
+      lf.addEventListener('submit',function(e){
+        e.preventDefault();
+        var email=lf.querySelector('input').value.trim();
+        if(!email){ msg.style.color='var(--error)'; msg.textContent='Enter your email first.'; return; }
+        var label=btn.textContent;
+        btn.disabled=true; btn.textContent='Sending…';
+        msg.style.color='var(--ash)'; msg.textContent='Sending your sign-in link…';
+        FC.signIn(email).then(function(r){
+          if(r.error){
+            btn.disabled=false; btn.textContent=label;
+            msg.style.color='var(--error)'; msg.textContent='Could not send: '+r.error.message;
+          } else {
+            btn.textContent='Link sent \u2713';
+            msg.style.color='var(--pine-hi)';
+            msg.textContent='Check your email ('+email+'). Click the link and you are in. It can take a minute.';
+          }
+        }).catch(function(err){
+          btn.disabled=false; btn.textContent=label;
+          msg.style.color='var(--error)'; msg.textContent='Something went wrong. Try again.';
+        });
       });
-    });}
+    }
 
     if(!session) return;
 

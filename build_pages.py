@@ -65,13 +65,29 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
     <p class="lead" style="margin:22px 0 34px">Every class taught by a father who has been through it. Take the twelve-minute Keystone Profile and get your ninety-day plan.</p>
     <div class="row wrap"><a class="btn btn-primary" href="profile.html">Get your baseline</a><a class="link" href="classes.html">Explore classes first</a></div>
   </div>
-  <div class="mosaic" style="grid-template-columns:repeat(2,1fr)">
-    <div class="slot r-3x4 filled" data-slot="IMG-P1-HERO-01"><img src="assets/img/photos/hero-01.jpg" alt="Veteran father in uniform"></div>
-    <div class="slot r-3x4 filled play-overlay" data-slot="IMG-P1-HERO-02"><img src="assets/img/photos/hero-02.jpg" alt="Father on the porch"><span class="tri"></span></div>
-    <div class="slot r-3x4 filled" data-slot="IMG-P1-HERO-03"><img src="assets/img/photos/hero-03.jpg" alt="Grandfather at home"></div>
-    <div class="slot r-3x4 filled" data-slot="IMG-P1-HERO-04"><img src="assets/img/photos/hero-04.jpg" alt="Father on a garden bench"></div>
-    <div class="slot r-3x4 filled" data-slot="IMG-P1-HERO-05"><img src="assets/img/photos/hero-05.jpg" alt="Smiling father outdoors"></div>
-    <div class="slot r-3x4 filled" data-slot="IMG-P1-HERO-06"><img src="assets/img/photos/hero-06.jpg" alt="Father in the garden"></div>
+  <div class="heromarquee" aria-hidden="true">
+    <div class="hm-col hm-col-a">
+      <div class="hm-track">
+        <figure class="hm-card"><img src="assets/img/photos/hero-01.jpg" alt=""></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-03.jpg" alt=""></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-05.jpg" alt=""></figure>
+        <figure class="hm-card"><img src="assets/img/photos/testimonial-01.jpg" alt=""></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-01.jpg" alt=""></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-03.jpg" alt=""></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-05.jpg" alt=""></figure>
+        <figure class="hm-card"><img src="assets/img/photos/testimonial-01.jpg" alt=""></figure>
+      </div>
+    </div>
+    <div class="hm-col hm-col-b">
+      <div class="hm-track hm-track-slow">
+        <figure class="hm-card hm-play"><img src="assets/img/photos/hero-02.jpg" alt=""><span class="hm-tri"></span></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-06.jpg" alt=""></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-04.jpg" alt=""></figure>
+        <figure class="hm-card hm-play"><img src="assets/img/photos/hero-02.jpg" alt=""><span class="hm-tri"></span></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-06.jpg" alt=""></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-04.jpg" alt=""></figure>
+      </div>
+    </div>
   </div>
 </div></header>
 
@@ -797,7 +813,7 @@ PAGES['gift.html'] = dict(title='Give a father his plan', desc='One year. Every 
       <p style="font-family:var(--font-mono);font-size:12px;letter-spacing:.2em;color:#6b6257;text-transform:uppercase;margin-bottom:14px">A year of Fathers.com</p>
       <h2 style="font-size:26px;color:#141210;margin-bottom:16px">For <span id="pv-to">Dad</span>, from <span id="pv-from">Marcus</span></h2>
       <p id="pv-msg" style="font-family:var(--font-display);font-size:19px;color:#3a352e;line-height:1.45;margin-bottom:24px">You showed me. Now train it.</p>
-      <span style="display:inline-block;background:#D8552B;color:#141414;padding:13px 24px;border-radius:6px;font-weight:600;font-size:14px">Claim it and take your baseline</span>
+      <span style="display:inline-block;background:#E86A3C;color:#0A0A0A;padding:13px 24px;border-radius:6px;font-weight:600;font-size:14px">Claim it and take your baseline</span>
       <p style="font-size:11px;color:#6b6257;margin-top:18px">No card required to redeem.</p>
     </div>
   </div>

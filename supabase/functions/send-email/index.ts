@@ -25,16 +25,16 @@ const BODIES: Record<string, string> = {
 <p style="font-size:15px;color:#3a352e;line-height:1.6">You went quiet last week. It happens.</p>
 <p style="font-size:15px;color:#3a352e;line-height:1.6">The plan does not care about perfect. It cares about next.</p>
 <p style="font-size:15px;color:#3a352e;line-height:1.6">Week 4 takes 25 minutes total.</p>
-<a href="{{PLAN_URL}}" style="display:inline-block;background:#D8552B;color:#141414;padding:14px 26px;border-radius:6px;font-weight:bold;text-decoration:none">Pick it back up</a></div>`,
+<a href="{{PLAN_URL}}" style="display:inline-block;background:#E86A3C;color:#0A0A0A;padding:14px 26px;border-radius:6px;font-weight:bold;text-decoration:none">Pick it back up</a></div>`,
   "org-invite": `<div style="font-family:Helvetica,Arial,sans-serif;background:#F4F0E8;padding:36px;border-radius:8px;max-width:600px">
 <h1 style="font-family:Helvetica,Arial,sans-serif;font-weight:600;font-size:25px;color:#141210;margin:0 0 14px">You have a seat on Fathers.com.</h1>
 <p style="font-size:15px;color:#3a352e;line-height:1.6">{{ORG}} gave you a seat. Take your baseline, get your plan, and join your Circle.</p>
-<a href="{{JOIN_URL}}" style="display:inline-block;background:#D8552B;color:#141414;padding:14px 26px;border-radius:6px;font-weight:bold;text-decoration:none">Claim your seat</a></div>`,
+<a href="{{JOIN_URL}}" style="display:inline-block;background:#E86A3C;color:#0A0A0A;padding:14px 26px;border-radius:6px;font-weight:bold;text-decoration:none">Claim your seat</a></div>`,
   "01-welcome": `<div style="font-family:Helvetica,Arial,sans-serif;background:#F4F0E8;padding:36px;border-radius:8px;max-width:600px">
 <h1 style="font-family:Georgia,serif;font-size:26px;color:#141210;margin:0 0 14px">Your baseline is saved.</h1>
 <p style="font-size:15px;color:#3a352e;line-height:1.6">Presence Baseline: <b style="font-family:Courier,monospace">{{BASELINE}}</b></p>
 <p style="font-size:15px;color:#3a352e;line-height:1.6">Week 1 is ready when you are. One lesson, two actions, 25 minutes total.</p>
-<a href="{{PLAN_URL}}" style="display:inline-block;background:#D8552B;color:#141414;padding:14px 26px;border-radius:6px;font-weight:bold;text-decoration:none">Start Week 1</a></div>`,
+<a href="{{PLAN_URL}}" style="display:inline-block;background:#E86A3C;color:#0A0A0A;padding:14px 26px;border-radius:6px;font-weight:bold;text-decoration:none">Start Week 1</a></div>`,
 };
 
 function fill(s: string, data: Record<string, string>): string {
