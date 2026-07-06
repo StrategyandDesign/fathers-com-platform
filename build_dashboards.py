@@ -52,7 +52,7 @@ FOOT = '''</main>
 PAGES = {
 
 'admin': ('Admin', '''
-<div class="dash-head"><h1 class="d-36">Admin</h1><p class="lead">People, roles, content, and the audit trail.</p></div>
+<div class="dash-head"><h1 class="d-36">Admin</h1><p class="lead">People, roles, content, and the audit trail.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="admin-people">--</div><div class="glance-sub">people on the platform</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="admin-new">--</div><div class="glance-sub">new sign-ups</div></div><div class="glance-card"><div class="glance-lbl">CONTENT</div><div class="glance-big" data-glance="admin-content">--</div><div class="glance-sub">courses live</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="admin-next">Review pending role requests and new content awaiting approval.</div></div></div>
 <div data-tabs>
   <div class="tabs"><button class="active">People &amp; roles</button><button>Content</button><button>Orgs</button><button>Audit</button></div>
 
@@ -91,7 +91,7 @@ PAGES = {
 '''),
 
 'studio': ('Studio', '''
-<div class="dash-head"><h1 class="d-36">Studio</h1><p class="lead">Build courses and assessments. Publish when ready.</p></div>
+<div class="dash-head"><h1 class="d-36">Studio</h1><p class="lead">Build courses and assessments. Publish when ready.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="studio-courses">--</div><div class="glance-sub">courses you own</div></div><div class="glance-card"><div class="glance-lbl">PUBLISHED</div><div class="glance-big" data-glance="studio-live">--</div><div class="glance-sub">live to members</div></div><div class="glance-card"><div class="glance-lbl">IN DRAFT</div><div class="glance-big" data-glance="studio-draft">--</div><div class="glance-sub">not yet published</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="studio-next">Finish a draft, or add lessons to a published course to keep it fresh.</div></div></div>
 <div data-tabs>
   <div class="tabs"><button class="active">Courses</button><button>Assessments</button></div>
 
@@ -116,7 +116,7 @@ PAGES = {
 '''),
 
 'org': ('Organization', '''
-<div class="dash-head"><h1 class="d-36">Organization</h1><p class="lead">Seats, roster, and participation. You never see a man's answers or scores.</p></div>
+<div class="dash-head"><h1 class="d-36">Organization</h1><p class="lead">Seats, roster, and participation. You never see a man's answers or scores.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="org-members">--</div><div class="glance-sub">men on your roster</div></div><div class="glance-card"><div class="glance-lbl">ACTIVE</div><div class="glance-big" data-glance="org-active">--</div><div class="glance-sub">took their baseline</div></div><div class="glance-card"><div class="glance-lbl">SEATS OPEN</div><div class="glance-big" data-glance="org-seats">--</div><div class="glance-sub">left to invite</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="org-next">Invite the men who haven't started, and check participation this month.</div></div></div>
 <div id="org-picker" class="row" style="margin-bottom:24px"></div>
 <div id="org-body">
   <div class="grid-4" id="org-stats" style="margin-bottom:28px"></div>
@@ -130,7 +130,7 @@ PAGES = {
 '''),
 
 'lead': ('Lead a Circle', '''
-<div class="dash-head"><h1 class="d-36">Lead a Circle</h1><p class="lead">Plan the weeks, post to your men, keep the standard.</p></div>
+<div class="dash-head"><h1 class="d-36">Lead a Circle</h1><p class="lead">Plan the weeks, post to your men, keep the standard.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men in your Circle</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">watched the film</div></div><div class="glance-card"><div class="glance-lbl">NEXT MEETING</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">stay ready</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Post this week's question, and check who hasn't watched yet.</div></div></div>
 <div id="circle-picker" class="row" style="margin-bottom:24px"></div>
 <div id="lead-body" data-tabs>
   <div class="tabs"><button class="active">This week</button><button>Plan weeks</button><button>Announce</button><button>Roster</button></div>

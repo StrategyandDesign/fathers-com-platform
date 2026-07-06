@@ -508,9 +508,15 @@ PAGES['plan.html'] = dict(title='My Plan', desc='Your ninety-day plan, built fro
 # ================================================== circles.html (P7 in-product)
 PAGES['circles.html'] = dict(title='My Circle', desc='Living Hope Men. One film, one discussion, one standard.', active='Circles', mode='app', auth=True, body='''
 <section class="tight" style="padding-top:44px"><div class="container">
-  <div class="row between wrap" style="margin-bottom:30px">
+  <div class="row between wrap" style="margin-bottom:24px">
     <div><h1 class="d-36">Living Hope Men, Tuesday 0600</h1>
       <div class="row" style="margin-top:12px"><span class="chip" style="cursor:default">14 men</span><span class="chip" style="cursor:default">Next: Tue Jul 14, 6:00 AM</span></div></div>
+  </div>
+  <div class="glance" style="margin-bottom:28px">
+    <div class="glance-card"><div class="glance-lbl">YOUR CIRCLE</div><div class="glance-big">14</div><div class="glance-sub">men</div></div>
+    <div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big">9</div><div class="glance-sub">watched the film</div></div>
+    <div class="glance-card"><div class="glance-lbl">NEXT MEETING</div><div class="glance-big glance-sm">Tue 0600</div><div class="glance-sub">Jul 14</div></div>
+    <div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt">Post this week's question, and nudge the five who haven't watched.</div></div>
   </div>
   <div data-tabs>
     <div class="tabs"><button class="active">This Week</button><button>Members</button><button>Leader Kit</button></div>

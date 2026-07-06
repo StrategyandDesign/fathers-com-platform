@@ -588,3 +588,40 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 .ks-save-btn{background:transparent;border:none;color:var(--ash);font-family:var(--font-ui);font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:4px;transition:color .12s}
 .ks-save-btn:hover{color:var(--bone)}
 .ks-savelink{margin-top:18px}
+
+/* ---------- member hub: momentum band (retention engine) ---------- */
+.mo-band{display:grid;grid-template-columns:repeat(3,auto) 1.4fr;gap:20px;align-items:center;
+  background:var(--coal);border:1px solid var(--hairline);border-radius:var(--r-card);padding:24px 28px;margin-bottom:20px}
+.mo-stat{display:flex;flex-direction:column}
+.mo-num{font-family:var(--font-mono);font-size:38px;font-weight:500;line-height:1;color:var(--bone)}
+.mo-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ash);margin-top:6px}
+.mo-next{padding-left:24px;border-left:1px solid var(--hairline-strong)}
+.mo-next-txt{font-size:15px;color:var(--bone);line-height:1.4;font-weight:500}
+.mo-achievements{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.mo-badge{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:100px;
+  border:1px solid var(--hairline);font-size:13px;color:var(--slotlabel)}
+.mo-badge.earned{border-color:var(--pine-hi);color:var(--bone);background:rgba(90,140,110,.08)}
+.mo-badge-icon{font-size:12px}
+.mo-badge.earned .mo-badge-icon{color:var(--pine-hi)}
+@media(max-width:820px){
+  .mo-band{grid-template-columns:repeat(3,1fr);gap:16px}
+  .mo-next{grid-column:1 / -1;padding-left:0;padding-top:16px;border-left:none;border-top:1px solid var(--hairline-strong)}
+}
+
+/* ---------- dashboard at-a-glance band (all roles) ---------- */
+.glance{display:grid;grid-template-columns:repeat(3,auto) 1.5fr;gap:18px;align-items:stretch;margin-bottom:32px}
+.glance-card{background:var(--coal);border:1px solid var(--hairline);border-radius:var(--r-card);padding:20px 22px;display:flex;flex-direction:column;justify-content:center}
+.glance-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ash);margin-bottom:10px}
+.glance-big{font-family:var(--font-mono);font-size:36px;font-weight:500;line-height:1;color:var(--bone)}
+.glance-big.glance-sm{font-size:22px}
+.glance-sub{font-size:13px;color:var(--ash);margin-top:6px}
+.glance-next{background:transparent;border-color:var(--hairline-strong)}
+.glance-next-txt{font-size:15px;line-height:1.45;color:var(--bone);font-weight:500}
+@media(max-width:900px){
+  .glance{grid-template-columns:repeat(3,1fr)}
+  .glance-next{grid-column:1 / -1}
+}
+@media(max-width:560px){
+  .glance{grid-template-columns:1fr 1fr}
+  .glance-next{grid-column:1 / -1}
+}

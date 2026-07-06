@@ -87,6 +87,39 @@
       html += '<div class="notice brass" style="margin-bottom:28px">This is a sample plan. <a class="link" href="login.html">Sign in</a> and take your baseline to get yours.</div>';
     }
 
+    // ---- MOMENTUM BAND: the retention engine (streak, actions done, achievements) ----
+    var m = computeMomentum(plan, week);
+    html +=
+      '<div class="mo-band">'+
+        '<div class="mo-stat">'+
+          '<div class="mo-num">'+m.streak+'</div>'+
+          '<div class="mo-lbl">week'+(m.streak===1?'':'s')+' with action</div>'+
+        '</div>'+
+        '<div class="mo-stat">'+
+          '<div class="mo-num">'+m.actionsDone+'</div>'+
+          '<div class="mo-lbl">actions completed</div>'+
+        '</div>'+
+        '<div class="mo-stat">'+
+          '<div class="mo-num">'+m.pctThroughPlan+'%</div>'+
+          '<div class="mo-lbl">through your ninety days</div>'+
+        '</div>'+
+        '<div class="mo-stat mo-next">'+
+          '<div class="mo-lbl" style="margin-bottom:4px">DO NEXT</div>'+
+          '<div class="mo-next-txt">'+esc(m.doNext)+'</div>'+
+        '</div>'+
+      '</div>';
+
+    // achievements earned so far
+    if(m.achievements.length){
+      html += '<div class="mo-achievements">'+
+        m.achievements.map(function(a){
+          return '<div class="mo-badge'+(a.earned?' earned':'')+'" title="'+esc(a.desc)+'">'+
+            '<span class="mo-badge-icon">'+(a.earned?'\u2713':'\u25CB')+'</span>'+
+            '<span>'+esc(a.label)+'</span></div>';
+        }).join('')+
+      '</div>';
+    }
+
     // focus card: what this plan is about
     html +=
       '<div class="card brass-card" style="padding:28px;margin-bottom:28px">'+
@@ -176,6 +209,47 @@
       });
       if(cb.checked){ var row = cb.closest('.actionrow'); if(row) row.classList.add('done'); }
     });
+  }
+
+  // Compute the retention mechanics: streak, actions completed, plan progress, next action, achievements.
+  function computeMomentum(plan, week){
+    var answers = {}; // read completed checkboxes from localStorage
+    var actionsDone = 0, weeksWithAction = 0;
+    for(var w=1; w<=12; w++){
+      var wkDone = 0;
+      for(var a=0; a<2; a++){
+        try { if(localStorage.getItem('fc_plan_w'+w+'_a'+a)==='1'){ actionsDone++; wkDone++; } } catch(e){}
+      }
+      if(wkDone>0) weeksWithAction++;
+    }
+    // streak = consecutive recent weeks (through current) with at least one action
+    var streak = 0;
+    for(var w2=week; w2>=1; w2--){
+      var any=false;
+      for(var a2=0;a2<2;a2++){ try { if(localStorage.getItem('fc_plan_w'+w2+'_a'+a2)==='1') any=true; } catch(e){} }
+      if(any) streak++; else break;
+    }
+    var pctThroughPlan = Math.min(100, Math.round((week/12)*100));
+
+    // do-next: the first uncompleted action in the current week, else next week's first
+    var doNext = plan.weeks[week-1] ? plan.weeks[week-1].actions[0] : 'Keep going.';
+    for(var a3=0;a3<2;a3++){
+      var k = 'fc_plan_w'+week+'_a'+a3;
+      var done=false; try { done = localStorage.getItem(k)==='1'; } catch(e){}
+      if(!done && plan.weeks[week-1]){ doNext = plan.weeks[week-1].actions[a3]; break; }
+    }
+
+    // achievements: concrete, earnable milestones
+    var achievements = [
+      {label:'Baseline set', desc:'You took your Keystone Profile.', earned:true},
+      {label:'First action', desc:'Complete your first plan action.', earned: actionsDone>=1},
+      {label:'One week in', desc:'Act on your plan for a full week.', earned: weeksWithAction>=1},
+      {label:'Phase one', desc:'Finish the first four weeks.', earned: week>4 && weeksWithAction>=3},
+      {label:'Halfway', desc:'Reach week six.', earned: week>=6},
+      {label:'Ten actions', desc:'Complete ten plan actions.', earned: actionsDone>=10},
+      {label:'Ninety days', desc:'Complete your plan and retake.', earned: week>=12 && actionsDone>=15}
+    ];
+    return { streak: streak, actionsDone: actionsDone, pctThroughPlan: pctThroughPlan, doNext: doNext, achievements: achievements };
   }
 
   // ---------- a representative demo result (signed-out preview) ----------

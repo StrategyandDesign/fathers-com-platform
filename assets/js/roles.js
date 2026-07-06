@@ -73,3 +73,50 @@ window.FCR = window.FCR || {};
     });
   });
 })();
+
+/* ---------- dashboard glance populators ----------
+   Fill the at-a-glance numbers with real data when live. Each is best-effort:
+   if a query fails or we're not live, the placeholder stays. */
+(function(){
+  function setGlance(key, value){
+    var el = document.querySelector('[data-glance="'+key+'"]');
+    if(el && value != null) el.textContent = value;
+  }
+  function ready(){ return window.FC && FC.live && FC.uid && FC.uid(); }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    if(!ready()) return;
+    var sb = FC.sb;
+
+    // ADMIN glance
+    if(document.querySelector('[data-glance="admin-people"]')){
+      sb.from('profiles').select('id', {count:'exact', head:true}).then(function(r){
+        if(r && r.count != null) setGlance('admin-people', r.count);
+      }, function(){});
+      sb.from('certificate_courses').select('id', {count:'exact', head:true}).then(function(r){
+        if(r && r.count != null) setGlance('admin-content', r.count);
+      }, function(){});
+    }
+
+    // STUDIO glance (courses owned by this instructor)
+    if(document.querySelector('[data-glance="studio-courses"]')){
+      sb.from('certificate_courses').select('id', {count:'exact', head:true}).then(function(r){
+        if(r && r.count != null) setGlance('studio-courses', r.count);
+      }, function(){});
+    }
+
+    // ORG glance (roster + activity)
+    if(document.querySelector('[data-glance="org-members"]')){
+      sb.from('org_members').select('id', {count:'exact', head:true}).then(function(r){
+        if(r && r.count != null) setGlance('org-members', r.count);
+      }, function(){});
+    }
+
+    // LEAD glance (circle members)
+    if(document.querySelector('[data-glance="lead-men"]')){
+      sb.from('circle_members').select('id', {count:'exact', head:true}).then(function(r){
+        if(r && r.count != null) setGlance('lead-men', r.count);
+      }, function(){});
+    }
+  });
+})();
