@@ -42,7 +42,7 @@ FOOT = '''<footer><div class="container">
   <div><h4>Train</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="profile.html">The Keystone Profile</a></li><li><a href="certificates.html">Certificates</a></li></ul></div>
   <div><h4>Programs</h4><ul><li><a href="groups.html">For Groups</a></li><li><a href="veterans.html">For Veterans</a></li><li><a href="employers.html">For Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
   <div><h4>Company</h4><ul><li><a href="#">About NCF</a></li><li><a href="#">Research</a></li><li><a href="gift.html">Gifts</a></li><li><a href="#">Contact</a></li></ul></div>
-  <div><h4>Legal</h4><ul><li><a href="#">Terms</a></li><li><a href="#">Privacy</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
+  <div><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="security.html">Security</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
 </div>
 <div style="margin-top:48px;max-width:420px"><h4 style="font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:12px">One useful thing for fathers, weekly</h4>
 <form class="row" data-lead="newsletter" data-done="You are on the list. One useful thing, weekly."><input class="input" name="email" type="email" required placeholder="Email address"><button class="btn btn-secondary btn-sm">Send it</button></form></div>
@@ -1084,6 +1084,99 @@ PAGES['certificate.html'] = dict(title='Certificate FC-2026-004317', desc='Fathe
 ''')
 
 # ================================================== verify.html (P10 screen 5, public, no chrome)
+
+# ================================================== LEGAL PAGES (scaffolding, dated today)
+# NOTE: The body text below is PLAIN-LANGUAGE DRAFT scaffolding for legal review.
+# Replace with counsel-reviewed text before relying on these as binding policy.
+LEGAL_INTRO = '''<div class="legal-note"><b>Draft for review.</b> This is placeholder scaffolding. Final language pends legal review to match Fathers.com's actual data and business practices.</div>'''
+
+PAGES['terms.html'] = dict(title='Terms of Service', desc='The terms for using Fathers.com.', active='', mode='public', body='''
+<section class="legal"><div class="container" style="max-width:760px">
+  <div class="eyebrow brass" style="margin-bottom:14px">LEGAL</div>
+  <h1 class="d-48" style="margin-bottom:8px">Terms of Service</h1>
+  <p class="fine" style="margin-bottom:8px">Last updated July 06, 2026</p>
+  ''' + LEGAL_INTRO + '''
+  <div class="legal-body">
+    <h2>1. Agreement to terms</h2>
+    <p>By using Fathers.com, you agree to these terms. Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit. If you do not agree, do not use the service.</p>
+    <h2>2. Who can use Fathers.com</h2>
+    <p>You must be at least 18 years old to create an account. The service is built for fathers, future fathers, and mentors. Content is intended for adults.</p>
+    <h2>3. Your account</h2>
+    <p>You are responsible for your account and for keeping your sign-in secure. Your assessment results and plan are yours. We describe how we handle your data in the Privacy Policy.</p>
+    <h2>4. The Keystone Profile and your plan</h2>
+    <p>The Keystone Father Profile is an educational assessment based on validated research from the National Center for Fathering. It is not a clinical, diagnostic, legal, or medical instrument, and results should not be used as a substitute for professional advice.</p>
+    <h2>5. Certificates</h2>
+    <p>Verified certificates require completion of the stated requirements, including identity verification and a passing assessment. Certificates attest to completion of a Fathers.com course. Acceptance by any court, agency, or program is at that body's discretion; we do not guarantee acceptance.</p>
+    <h2>6. Payments and subscriptions</h2>
+    <p>The Keystone Profile is free. Certain courses, certificates, and subscriptions require payment. Pricing, billing terms, and refund policy will be stated at the point of purchase.</p>
+    <h2>7. Acceptable use</h2>
+    <p>Do not misuse the service, attempt to forge certificates, share your account, or use the service to harm others. We may suspend accounts that violate these terms.</p>
+    <h2>8. Content and intellectual property</h2>
+    <p>The courses, assessment, and materials on Fathers.com are owned by the National Center for Fathering or its licensors. You may use them for your own growth, not for redistribution.</p>
+    <h2>9. Disclaimers and limitation of liability</h2>
+    <p>The service is provided as is. To the fullest extent permitted by law, the National Center for Fathering is not liable for indirect or consequential damages arising from your use of the service.</p>
+    <h2>10. Changes to these terms</h2>
+    <p>We may update these terms. Material changes will be posted here with a new date. Continued use after changes means you accept them.</p>
+    <h2>11. Contact</h2>
+    <p>Questions about these terms: Team@Fathers.com, or PO Box 996, Tontitown, AR 72770.</p>
+  </div>
+</div></section>
+''')
+
+PAGES['privacy.html'] = dict(title='Privacy Policy', desc='How Fathers.com handles your information.', active='', mode='public', body='''
+<section class="legal"><div class="container" style="max-width:760px">
+  <div class="eyebrow brass" style="margin-bottom:14px">LEGAL</div>
+  <h1 class="d-48" style="margin-bottom:8px">Privacy Policy</h1>
+  <p class="fine" style="margin-bottom:8px">Last updated July 06, 2026</p>
+  ''' + LEGAL_INTRO + '''
+  <div class="legal-body">
+    <h2>Our commitment</h2>
+    <p>Fathers.com is a program of the National Center for Fathering. Your assessment answers and plan are personal. We treat them with care and we do not sell them.</p>
+    <h2>What we collect</h2>
+    <p>We collect: the email you use to sign in; your Keystone Profile answers and results; your plan progress; and basic technical data needed to run the service. We collect a government ID only when you enroll in a verified certificate, and we delete it after issuance.</p>
+    <h2>How we use it</h2>
+    <p>We use your information to give you your results, build and save your ninety-day plan, issue certificates you earn, and send you plan reminders and account emails. We do not use your assessment answers for advertising.</p>
+    <h2>What we do not do</h2>
+    <p>We do not sell your personal information. We do not share your assessment results with employers, courts, or programs unless you direct us to. We do not use your reflections about your family for any purpose beyond serving you.</p>
+    <h2>Sharing</h2>
+    <p>We share data only with service providers who help us run the platform (for example, hosting and email delivery), under agreements that require them to protect it. If you are enrolled through an employer or group, we describe separately what that organization can see.</p>
+    <h2>Your choices</h2>
+    <p>You can access your data, correct it, or ask us to delete your account and results. Contact Team@Fathers.com. You can unsubscribe from emails at any time.</p>
+    <h2>Data retention</h2>
+    <p>We keep your results and plan while your account is active. Identity documents for certificates are deleted after the certificate is issued. If you delete your account, we remove your personal data on a reasonable schedule.</p>
+    <h2>Security</h2>
+    <p>We protect your data with access controls and encryption in transit. See our Security page for more.</p>
+    <h2>State privacy rights</h2>
+    <p>Depending on where you live, you may have additional rights (for example, under California law) to access, delete, or restrict use of your information. Contact us to exercise them.</p>
+    <h2>Changes</h2>
+    <p>We may update this policy. Material changes will be posted here with a new date.</p>
+    <h2>Contact</h2>
+    <p>Privacy questions: Team@Fathers.com, or PO Box 996, Tontitown, AR 72770.</p>
+  </div>
+</div></section>
+''')
+
+PAGES['security.html'] = dict(title='Security', desc='How Fathers.com protects your information.', active='', mode='public', body='''
+<section class="legal"><div class="container" style="max-width:760px">
+  <div class="eyebrow brass" style="margin-bottom:14px">LEGAL</div>
+  <h1 class="d-48" style="margin-bottom:8px">Security</h1>
+  <p class="fine" style="margin-bottom:8px">Last updated July 06, 2026</p>
+  ''' + LEGAL_INTRO + '''
+  <div class="legal-body">
+    <h2>How we protect your data</h2>
+    <p>Fathers.com is built on modern, access-controlled infrastructure. Your data is protected by row-level security, so your results and plan are visible only to you and to staff who need access to run the service.</p>
+    <h2>Encryption</h2>
+    <p>Data is encrypted in transit. Sign-in uses secure, passwordless links rather than stored passwords.</p>
+    <h2>Sensitive data</h2>
+    <p>Identity documents submitted for certificates are used only to verify you and are deleted after the certificate is issued. We minimize the sensitive data we hold.</p>
+    <h2>Access controls</h2>
+    <p>Access to member data is limited by role. Administrative access is restricted and logged.</p>
+    <h2>Reporting a concern</h2>
+    <p>If you believe you have found a security issue, contact Team@Fathers.com. We take reports seriously and will respond.</p>
+  </div>
+</div></section>
+''')
+
 PAGES['verify.html'] = dict(title='Verify a certificate', desc='Enter a serial. Confirm a Fathers.com Verified Certificate.', active='', mode='public', nochrome=True, body='''
 <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:64px 20px">
   <a class="brand" href="index.html" style="margin-bottom:56px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark" style="height:34px"><b style="font-family:var(--font-display);font-size:20px">Fathers.com</b></a>

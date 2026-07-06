@@ -576,3 +576,10 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
   .hero-intent-opt{padding:16px 18px}
   .hio-label{font-size:15px}
 }
+
+/* ---------- legal pages ---------- */
+.legal{padding:64px 0 88px}
+.legal-note{background:rgba(233,232,74,.08);border:1px solid var(--brass);border-radius:var(--r-card);padding:16px 20px;margin:20px 0 36px;font-size:14px;color:var(--bone)}
+.legal-note b{color:var(--brass)}
+.legal-body h2{font-family:var(--font-display);font-weight:500;font-size:22px;margin:32px 0 12px;color:var(--bone)}
+.legal-body p{font-size:16px;line-height:1.7;color:var(--ash);margin-bottom:8px;max-width:68ch}
