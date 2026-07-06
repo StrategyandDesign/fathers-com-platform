@@ -62,8 +62,24 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
   <div>
     <div class="eyebrow" style="margin-bottom:18px">FATHERS.COM</div>
     <h1 class="d-64">Learn fatherhood from men who lived it.</h1>
-    <p class="lead" style="margin:22px 0 34px">Every class taught by a father who has been through it. Take the twelve-minute Keystone Profile and get your ninety-day plan.</p>
-    <div class="row wrap"><a class="btn btn-primary" href="profile.html">Get your baseline</a><a class="link" href="classes.html">Explore classes first</a></div>
+    <p class="lead" style="margin:22px 0 28px">Every class taught by a father who has been through it. Start with your free Keystone Profile and get a ninety-day plan built for you.</p>
+    <div class="hero-intent">
+      <div class="hero-intent-q">Where are you in the journey?</div>
+      <div class="hero-intent-opts">
+        <button class="hero-intent-opt" data-path="father">
+          <span class="hio-label">I'm raising children now</span>
+          <span class="hio-arrow">&rarr;</span>
+        </button>
+        <button class="hero-intent-opt" data-path="preparing">
+          <span class="hio-label">I'm preparing, mentoring, or growing</span>
+          <span class="hio-arrow">&rarr;</span>
+        </button>
+      </div>
+      <div class="hero-intent-foot">
+        <span class="fine">Free. About twenty minutes. Your results are private.</span>
+        <a class="link ash" href="classes.html" style="font-size:13px">Or explore classes first</a>
+      </div>
+    </div>
   </div>
   <div class="heromarquee" aria-hidden="true">
     <div class="hm-col hm-col-a">
@@ -81,10 +97,10 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
     </div>
     <div class="hm-col hm-col-b">
       <div class="hm-track hm-track-slow">
-        <figure class="hm-card hm-play"><img src="assets/img/photos/hero-02.jpg" alt=""><span class="hm-tri"></span></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-02.jpg" alt=""></figure>
         <figure class="hm-card"><img src="assets/img/photos/hero-06.jpg" alt=""></figure>
         <figure class="hm-card"><img src="assets/img/photos/hero-04.jpg" alt=""></figure>
-        <figure class="hm-card hm-play"><img src="assets/img/photos/hero-02.jpg" alt=""><span class="hm-tri"></span></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-02.jpg" alt=""></figure>
         <figure class="hm-card"><img src="assets/img/photos/hero-06.jpg" alt=""></figure>
         <figure class="hm-card"><img src="assets/img/photos/hero-04.jpg" alt=""></figure>
       </div>
@@ -995,10 +1011,15 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
     </div>
     <aside class="cert-req-side">
       <div class="cert-req-card">
-        <div class="cert-req-price"><span class="mono">$79</span><span class="fine">one-time</span></div>
-        <a class="btn btn-yellow" href="profile.html" style="width:100%;margin-bottom:12px">Start with your baseline</a>
-        <a class="btn btn-secondary" href="classes.html" style="width:100%">Preview the classes</a>
-        <p class="fine" style="margin-top:18px;text-align:center">Take the Keystone Profile first. It shows you where to focus before you begin.</p>
+        <div class="cert-price-label"><span class="fine">CERTIFICATE</span></div>
+        <div class="cert-req-price"><span class="mono">$79</span><span class="fine">one-time, when you enroll</span></div>
+        <a class="btn btn-secondary" href="classes.html" style="width:100%;margin-bottom:12px">Preview the classes</a>
+        <div class="cert-free-line">
+          <span class="fine">Not sure yet?</span>
+          <b>The Keystone Profile is free.</b>
+          <p class="fine" style="margin-top:6px">Take your baseline first to see where to focus. No cost, no card.</p>
+          <a class="btn btn-yellow" href="profile.html" style="width:100%;margin-top:12px">Take your free baseline</a>
+        </div>
       </div>
       <div class="cert-req-note">
         <b>Issuing for a program?</b>

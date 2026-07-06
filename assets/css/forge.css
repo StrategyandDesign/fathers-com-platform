@@ -550,3 +550,29 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 .ks-gate-row.locked span:first-child{color:var(--ash)}
 .ks-lock{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--slotlabel);text-transform:uppercase}
 .ks-gate-form{margin-top:4px}
+
+/* Certificate price card: separate free baseline from paid certificate */
+.cert-price-label{margin-bottom:6px}
+.cert-price-label .fine{letter-spacing:.16em;color:var(--brass)}
+.cert-free-line{margin-top:18px;padding-top:18px;border-top:1px solid var(--hairline)}
+.cert-free-line .fine{letter-spacing:.04em}
+.cert-free-line b{display:block;font-family:var(--font-display);font-weight:500;font-size:16px;margin-top:4px}
+
+/* ---------- hero intent form (MasterClass-style engagement) ---------- */
+.hero-intent{max-width:520px}
+.hero-intent-q{font-family:var(--font-display);font-weight:500;font-size:18px;margin-bottom:16px;color:var(--bone)}
+.hero-intent-opts{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+.hero-intent-opt{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:var(--coal);border:1.5px solid var(--hairline-strong);border-radius:var(--r-btn);
+  padding:18px 22px;cursor:pointer;font-family:var(--font-ui);text-align:left;
+  transition:border-color .15s,transform .12s,background .15s}
+.hero-intent-opt:hover{border-color:var(--yellow);transform:translateX(3px);background:var(--coal-2)}
+.hio-label{font-size:16px;font-weight:500;color:var(--bone)}
+.hio-arrow{font-size:18px;color:var(--yellow);flex:0 0 auto;transition:transform .12s}
+.hero-intent-opt:hover .hio-arrow{transform:translateX(3px)}
+.hero-intent-foot{display:flex;flex-direction:column;gap:8px}
+.hero-intent-foot .fine{color:var(--ash)}
+@media(max-width:680px){
+  .hero-intent-opt{padding:16px 18px}
+  .hio-label{font-size:15px}
+}

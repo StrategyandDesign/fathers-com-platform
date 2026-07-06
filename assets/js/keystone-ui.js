@@ -16,9 +16,18 @@
       // check for an in-progress session to offer resume
       FC.sb.from('keystone_sessions').select('*').eq('user_id',FC.uid()).eq('status','in_progress')
         .order('updated_at',{ascending:false}).limit(1).maybeSingle().then(function(r){
-          if(r.data){ KS.setPath(r.data.path||'father'); offerResume(r.data); } else { gate(); }
-        }).catch(gate);
-    } else { gate(); }
+          if(r.data){ KS.setPath(r.data.path||'father'); offerResume(r.data); } else { startFresh(); }
+        }).catch(startFresh);
+    } else { startFresh(); }
+  }
+
+  // If the man already chose his path on the homepage hero, honor it and skip the gate.
+  function startFresh(){
+    var pre = null;
+    try { pre = localStorage.getItem('fc_intent_path'); localStorage.removeItem('fc_intent_path'); } catch(e){}
+    if(pre === 'father'){ KS.setPath('father'); chooseMode(); return; }
+    if(pre === 'preparing'){ KS.setPath('preparing'); preparingIntro(); return; }
+    gate();  // no pre-selection: show the full gate question
   }
 
   // THE GATE: one question that routes every man to the right starting point.

@@ -130,6 +130,15 @@
   });}
 
 
+
+  // Hero intent form: tap a path on the homepage, remember it, go to the assessment.
+  document.querySelectorAll('.hero-intent-opt').forEach(function(b){
+    b.addEventListener('click', function(){
+      try { localStorage.setItem('fc_intent_path', b.getAttribute('data-path')); } catch(e){}
+      window.location.href = 'profile.html';
+    });
+  });
+
   // Play overlays: graceful handling until real video is wired.
   // A play button should never be a dead click. For now, tell the truth.
   document.querySelectorAll('.play-overlay, .hm-play, .cert-doc-3d').forEach(function(el){
