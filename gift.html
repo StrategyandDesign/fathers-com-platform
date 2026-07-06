@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Give a father his plan | Fathers.com</title>
+<meta name="description" content="One year. Every class. His baseline and his plan.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
+<link rel="stylesheet" href="assets/css/forge.css">
+</head>
+<body>
+<nav class="nav"><div class="container nav-inner">
+<a class="brand" href="index.html"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark"><b>Fathers.com</b></a>
+<ul class="nav-links"><li><a href="classes.html" >Classes</a></li><li><a href="stories.html" >Stories</a></li><li><a href="certificates.html" >Certificates</a></li><li><a href="groups.html" >For Groups</a></li><li><a href="veterans.html" >For Veterans</a></li></ul>
+<div class="nav-right"><a href="gift.html" class="hide-m">Gifts</a><a href="login.html" class="hide-m">Log in</a><a class="btn btn-primary btn-sm" href="profile.html">Get your baseline</a><button class="themeswitch" data-themeswitch aria-label="Switch palette" title="Switch palette"><span class="tsw-dot"></span></button><button class="nav-toggle">MENU</button></div>
+</div></nav>
+
+<div class="billboard">
+  <div class="slot r-21x9 flush" data-slot="IMG-P8-GFT-01" style="max-height:48vh"></div>
+  <div class="overlay container" style="left:50%;transform:translateX(-50%);max-width:var(--max)">
+    <h1 class="d-48">Give a father his plan.</h1>
+    <p class="small" style="margin-top:10px;max-width:52ch">One year. Every class. His baseline and his plan. He will know it came from you.</p>
+  </div>
+</div>
+<section class="tight"><div class="container split" style="align-items:start">
+  <div class="card" style="padding:32px">
+    <div class="row between" style="margin-bottom:22px"><b>1 year of Fathers.com</b><b class="mono">$120</b></div>
+    <div class="grid-2" style="gap:16px">
+      <div class="field"><label>To</label><input class="input" id="g-to" placeholder="Dad"></div>
+      <div class="field"><label>From</label><input class="input" id="g-from" placeholder="Marcus"></div>
+    </div>
+    <div class="field"><label>Message</label><textarea id="g-msg" maxlength="200" placeholder="You showed me. Now train it."></textarea>
+      <p class="fine" style="margin-top:6px"><span id="g-count">200 left</span></p></div>
+    <div class="field"><label>Delivery</label>
+      <div class="chiprow"><button class="chip selected" data-deliver="now">Send now</button><button class="chip" data-deliver="date">Pick a date</button></div>
+      <input class="input" id="g-date" type="date" value="2027-06-20" style="display:none;margin-top:12px;max-width:220px">
+    </div>
+    <div class="field"><label>Method</label>
+      <div class="chiprow"><button class="chip selected" data-toggle="single">Email</button><button class="chip" data-toggle="single">Printable card</button></div></div>
+    <button class="btn btn-primary" style="width:100%" onclick="toast('Gift order wires to Stripe and Resend at deploy.')">Give the gift</button>
+  </div>
+  <div>
+    <div class="eyebrow" style="margin-bottom:14px">HE SEES THIS</div>
+    <div class="doc" style="padding:40px;max-width:520px;margin:0">
+      <img src="assets/img/logomark-dark.png" alt="Fathers.com" style="height:36px;margin-bottom:24px">
+      <p style="font-family:var(--font-mono);font-size:12px;letter-spacing:.2em;color:#6b6257;text-transform:uppercase;margin-bottom:14px">A year of Fathers.com</p>
+      <h2 style="font-size:26px;color:#141210;margin-bottom:16px">For <span id="pv-to">Dad</span>, from <span id="pv-from">Marcus</span></h2>
+      <p id="pv-msg" style="font-family:var(--font-display);font-size:19px;color:#3a352e;line-height:1.45;margin-bottom:24px">You showed me. Now train it.</p>
+      <span style="display:inline-block;background:#D8552B;color:#141414;padding:13px 24px;border-radius:6px;font-weight:600;font-size:14px">Claim it and take your baseline</span>
+      <p style="font-size:11px;color:#6b6257;margin-top:18px">No card required to redeem.</p>
+    </div>
+  </div>
+</div></section>
+<section class="band tight"><div class="container center" style="max-width:620px">
+  <div class="eyebrow" style="margin-bottom:16px">REDEMPTION PREVIEW</div>
+  <h2 class="d-28" style="margin-bottom:12px">Marcus sent you a year of Fathers.com.</h2>
+  <p class="quote" style="font-size:20px;margin-bottom:26px">"You showed me. Now train it."</p>
+  <a class="btn btn-primary" href="profile.html">Claim it and take your baseline</a>
+  <p class="fine" style="margin-top:14px">No card required to redeem.</p>
+</div></section>
+<script>
+(function(){
+  var t=document.getElementById('g-to'),f=document.getElementById('g-from'),m=document.getElementById('g-msg'),c=document.getElementById('g-count');
+  function u(){document.getElementById('pv-to').textContent=t.value||'Dad';document.getElementById('pv-from').textContent=f.value||'Marcus';document.getElementById('pv-msg').textContent=m.value||'You showed me. Now train it.';c.textContent=(200-m.value.length)+' left';}
+  [t,f,m].forEach(function(x){x.addEventListener('input',u)});u();
+  document.querySelectorAll('[data-deliver]').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('[data-deliver]').forEach(function(x){x.classList.remove('selected')});b.classList.add('selected');
+    document.getElementById('g-date').style.display=b.dataset.deliver==='date'?'':'none';});});
+})();
+</script>
+<footer><div class="container">
+<div class="footgrid">
+  <div><a class="brand" href="index.html" style="margin-bottom:16px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="" style="height:34px"><b>Fathers.com</b></a>
+    <p class="small" style="margin-top:14px;max-width:32ch">Presence is a skill. Train it.</p>
+    <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
+  <div><h4>Train</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="profile.html">The Keystone Profile</a></li><li><a href="certificates.html">Certificates</a></li></ul></div>
+  <div><h4>Programs</h4><ul><li><a href="groups.html">For Groups</a></li><li><a href="veterans.html">For Veterans</a></li><li><a href="employers.html">For Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="#">About NCF</a></li><li><a href="#">Research</a></li><li><a href="gift.html">Gifts</a></li><li><a href="#">Contact</a></li></ul></div>
+  <div><h4>Legal</h4><ul><li><a href="#">Terms</a></li><li><a href="#">Privacy</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
+</div>
+<div style="margin-top:48px;max-width:420px"><h4 style="font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:12px">One useful thing for fathers, weekly</h4>
+<form class="row" data-lead="newsletter" data-done="You are on the list. One useful thing, weekly."><input class="input" name="email" type="email" required placeholder="Email address"><button class="btn btn-secondary btn-sm">Send it</button></form></div>
+<div class="footbottom"><span class="fine">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit.</span><span class="fine">© <span data-year></span> National Center for Fathering</span></div>
+</div></footer>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/roles.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

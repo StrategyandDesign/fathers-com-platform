@@ -1,0 +1,56 @@
+[
+  {
+    "id": "01-welcome",
+    "file": "01-welcome.html",
+    "subject": "Your baseline is saved.",
+    "preview": "Week 1 is ready when you are."
+  },
+  {
+    "id": "02-weekly-plan",
+    "file": "02-weekly-plan.html",
+    "subject": "Week 3: show up on schedule.",
+    "preview": "One lesson. Two actions."
+  },
+  {
+    "id": "03-missed-week",
+    "file": "03-missed-week.html",
+    "subject": "Week 4 is still on the table.",
+    "preview": "No lecture. Just the plan."
+  },
+  {
+    "id": "04-gift-receipt",
+    "file": "04-gift-receipt.html",
+    "subject": "Your gift is set for June 21.",
+    "preview": "One year of Fathers.com, scheduled."
+  },
+  {
+    "id": "05-gift-delivery",
+    "file": "05-gift-delivery.html",
+    "subject": "{{FROM_NAME}} sent you a year of Fathers.com.",
+    "preview": "Every class. Your baseline. Your plan."
+  },
+  {
+    "id": "06-renewal",
+    "file": "06-renewal.html",
+    "subject": "Your membership renews March 4.",
+    "preview": "One year in. Here is the line."
+  },
+  {
+    "id": "07-win-back",
+    "file": "07-win-back.html",
+    "subject": "New class: Raising Teens.",
+    "preview": "Built for the season you said you were in."
+  },
+  {
+    "id": "08-certificate-issued",
+    "file": "08-certificate-issued.html",
+    "subject": "Your certificate is ready. Serial FC-2026-004317.",
+    "preview": "Verified hours, checkable serial."
+  },
+  {
+    "id": "09-leader-digest",
+    "file": "09-leader-digest.html",
+    "subject": "Your Circle this week: 11 of 14 watched.",
+    "preview": "Friday digest for Circle leaders."
+  }
+]

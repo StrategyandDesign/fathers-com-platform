@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify a certificate | Fathers.com</title>
+<meta name="description" content="Enter a serial. Confirm a Fathers.com Verified Certificate.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
+<link rel="stylesheet" href="assets/css/forge.css">
+</head>
+<body>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:64px 20px">
+  <a class="brand" href="index.html" style="margin-bottom:56px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark" style="height:34px"><b style="font-family:var(--font-display);font-size:20px">Fathers.com</b></a>
+  <div style="width:100%;max-width:520px">
+    <h1 class="d-36" style="margin-bottom:8px">Verify a certificate</h1>
+    <p class="small" style="margin-bottom:28px">Enter the serial printed on the document. Ten seconds, no login.</p>
+    <form id="verifyForm" class="row" style="margin-bottom:28px">
+      <input class="input mono" placeholder="FC-2026-004317" aria-label="Certificate serial">
+      <button class="btn btn-primary">Verify</button>
+    </form>
+    <div id="v-ok" class="card" style="display:none;border-color:var(--pine-hi)">
+      <div class="row" style="margin-bottom:18px"><span class="checkmark">✓</span><b style="letter-spacing:.14em">VALID</b></div>
+      <div class="stack-8">
+        <div class="row between"><span class="fine">Recipient</span><b class="small" data-f="name"></b></div>
+        <div class="row between"><span class="fine">Course</span><b class="small" data-f="course"></b></div>
+        <div class="row between"><span class="fine">Hours</span><b class="small mono" data-f="hours"></b></div>
+        <div class="row between"><span class="fine">Date</span><b class="small" data-f="date"></b></div>
+        <div class="row between"><span class="fine">Serial</span><b class="small mono" data-f="serial"></b></div>
+        <div class="row between"><span class="fine">Identity</span><b class="small">Verified at enrollment</b></div>
+        <div class="row between"><span class="fine">Issuer</span><b class="small">National Center for Fathering</b></div>
+      </div>
+      <hr class="hr" style="margin:18px 0"><a class="link ash" href="#" style="font-size:13px">Report a concern</a>
+    </div>
+    <div id="v-no" class="card" style="display:none;border-color:var(--error)">
+      <b>NOT FOUND.</b><p class="small" style="margin-top:8px">Check the serial and try again.</p>
+    </div>
+    <p class="fine" style="margin-top:32px">Demo serials: FC-2026-004317 and FC-2026-001882. Production lookups read the certificates table. See supabase/schema.sql.</p>
+  </div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

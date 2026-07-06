@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sponsor a father | Fathers.com</title>
+<meta name="description" content="$120 gives one year to a father inside, or a veteran father coming home.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
+<link rel="stylesheet" href="assets/css/forge.css">
+</head>
+<body>
+<nav class="nav"><div class="container nav-inner">
+<a class="brand" href="index.html"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark"><b>Fathers.com</b></a>
+<ul class="nav-links"><li><a href="classes.html" >Classes</a></li><li><a href="stories.html" >Stories</a></li><li><a href="certificates.html" >Certificates</a></li><li><a href="groups.html" >For Groups</a></li><li><a href="veterans.html" >For Veterans</a></li></ul>
+<div class="nav-right"><a href="gift.html" class="hide-m">Gifts</a><a href="login.html" class="hide-m">Log in</a><a class="btn btn-primary btn-sm" href="profile.html">Get your baseline</a><button class="themeswitch" data-themeswitch aria-label="Switch palette" title="Switch palette"><span class="tsw-dot"></span></button><button class="nav-toggle">MENU</button></div>
+</div></nav>
+
+<header class="hero"><div class="container split">
+  <div class="slot r-4x3" data-slot="IMG-P8-SPN-01"></div>
+  <div>
+    <h1 class="d-48">Sponsor a father.</h1>
+    <p class="lead" style="margin:20px 0 8px">$120 gives one year to a father inside, or a veteran father coming home.</p>
+    <p class="small" style="margin-bottom:28px">Your gift is tax-deductible. Fathers.com is a program of the National Center for Fathering, a 501(c)(3).</p>
+    <div class="chiprow" style="margin-bottom:16px">
+      <button class="chip selected" data-toggle="single">1 father · $120</button>
+      <button class="chip" data-toggle="single">3 fathers · $360</button>
+      <button class="chip" data-toggle="single">10 fathers · $1,200</button>
+      <button class="chip" data-toggle="single">Custom</button>
+    </div>
+    <label style="display:flex;gap:12px;align-items:center;color:var(--bone);font-size:14px;margin-bottom:18px"><input type="checkbox" class="toggle"> Make it monthly</label>
+    <p class="fine" style="max-width:52ch;margin-bottom:26px">Sponsored seats are assigned through partner facilities and programs. You will get one update when your seat is claimed. No personal details, ever.</p>
+    <button class="btn btn-primary" onclick="toast('Donation processing wires to Stripe at deploy.')">Sponsor</button>
+  </div>
+</div></header>
+<footer><div class="container">
+<div class="footgrid">
+  <div><a class="brand" href="index.html" style="margin-bottom:16px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="" style="height:34px"><b>Fathers.com</b></a>
+    <p class="small" style="margin-top:14px;max-width:32ch">Presence is a skill. Train it.</p>
+    <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
+  <div><h4>Train</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="profile.html">The Keystone Profile</a></li><li><a href="certificates.html">Certificates</a></li></ul></div>
+  <div><h4>Programs</h4><ul><li><a href="groups.html">For Groups</a></li><li><a href="veterans.html">For Veterans</a></li><li><a href="employers.html">For Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="#">About NCF</a></li><li><a href="#">Research</a></li><li><a href="gift.html">Gifts</a></li><li><a href="#">Contact</a></li></ul></div>
+  <div><h4>Legal</h4><ul><li><a href="#">Terms</a></li><li><a href="#">Privacy</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
+</div>
+<div style="margin-top:48px;max-width:420px"><h4 style="font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:12px">One useful thing for fathers, weekly</h4>
+<form class="row" data-lead="newsletter" data-done="You are on the list. One useful thing, weekly."><input class="input" name="email" type="email" required placeholder="Email address"><button class="btn btn-secondary btn-sm">Send it</button></form></div>
+<div class="footbottom"><span class="fine">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit.</span><span class="fine">© <span data-year></span> National Center for Fathering</span></div>
+</div></footer>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/roles.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

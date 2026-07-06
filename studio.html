@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio | Fathers.com</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
+<link rel="stylesheet" href="assets/css/forge.css">
+<link rel="stylesheet" href="assets/css/dash.css">
+</head>
+<body data-auth="required">
+<nav class="nav"><div class="container nav-inner">
+<a class="brand" href="index.html"><img class="lg-dark" src="assets/img/logomark-light.png" alt=""><img class="lg-light" src="assets/img/logomark-dark.png" alt=""><b>Fathers.com</b></a>
+<ul class="nav-links">
+<li><a href="admin.html" data-role="admin">Admin</a></li>
+<li><a href="studio.html" data-role="author">Studio</a></li>
+<li><a href="org.html" data-role="org">Org</a></li>
+<li><a href="lead.html" data-role="leader">Lead</a></li>
+</ul>
+<div class="nav-right">
+<a href="plan.html">My Plan</a>
+<button class="themeswitch" data-themeswitch aria-label="Switch palette"><span class="tsw-dot"></span></button>
+<a href="#" data-signout>Sign out</a>
+<button class="nav-toggle">MENU</button>
+</div>
+</div></nav>
+<div id="denied" class="container" style="display:none;padding:80px 0"><div class="card" style="max-width:520px;margin:0 auto;text-align:center">
+<h2 class="d-28" style="margin-bottom:10px">Not your dashboard</h2>
+<p class="small" style="margin-bottom:20px">This area needs a role you do not have. If that is wrong, ask an admin to grant it.</p>
+<a class="btn btn-primary" href="plan.html">Back to My Plan</a></div></div>
+<div id="demo-note" class="container" style="display:none;padding:24px 0"><div class="notice brass" style="max-width:900px;margin:0 auto">Demo mode. Add Supabase keys in <code>assets/js/config.js</code> to load live data. The controls below show the real interface; writes activate once connected.</div></div>
+<main id="app" class="container" style="padding:40px 0 96px;display:none">
+
+<div class="dash-head"><h1 class="d-36">Studio</h1><p class="lead">Build courses and assessments. Publish when ready.</p></div>
+<div data-tabs>
+  <div class="tabs"><button class="active">Courses</button><button>Assessments</button></div>
+
+  <div class="tabpanel active">
+    <div class="row between" style="margin-bottom:16px">
+      <h3>Your courses</h3>
+      <button class="btn btn-primary btn-sm" id="new-course">New course</button>
+    </div>
+    <div id="course-list">Loading…</div>
+    <div id="course-editor" class="card" style="display:none;margin-top:20px"></div>
+  </div>
+
+  <div class="tabpanel">
+    <div class="row between" style="margin-bottom:16px">
+      <h3>Assessment instruments</h3>
+      <button class="btn btn-primary btn-sm" id="new-instr">New instrument</button>
+    </div>
+    <div id="instr-list">Loading…</div>
+    <div id="instr-editor" class="card" style="display:none;margin-top:20px"></div>
+  </div>
+</div>
+</main>
+<div class="toast"></div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/roles.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/studio.js"></script>
+</body></html>

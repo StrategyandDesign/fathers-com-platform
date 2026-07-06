@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Start your membership | Fathers.com</title>
+<meta name="description" content="One membership. $120 a year. 30-day money-back guarantee.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
+<link rel="stylesheet" href="assets/css/forge.css">
+</head>
+<body>
+<nav class="nav"><div class="container nav-inner">
+<a class="brand" href="index.html"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark"><b>Fathers.com</b></a>
+<ul class="nav-links"><li><a href="classes.html" >Classes</a></li><li><a href="stories.html" >Stories</a></li><li><a href="certificates.html" >Certificates</a></li><li><a href="groups.html" >For Groups</a></li><li><a href="veterans.html" >For Veterans</a></li></ul>
+<div class="nav-right"><a href="gift.html" class="hide-m">Gifts</a><a href="login.html" class="hide-m">Log in</a><a class="btn btn-primary btn-sm" href="profile.html">Get your baseline</a><button class="themeswitch" data-themeswitch aria-label="Switch palette" title="Switch palette"><span class="tsw-dot"></span></button><button class="nav-toggle">MENU</button></div>
+</div></nav>
+
+<section class="tight" style="padding-top:56px"><div class="container" data-seq style="max-width:1080px">
+  <div class="seqpanel">
+    <div style="display:grid;grid-template-columns:1.2fr .9fr;gap:48px;align-items:start">
+      <div>
+        <h1 class="d-36" style="margin-bottom:28px">Start your membership.</h1>
+        <div class="stack-16" style="margin-bottom:24px">
+          <button class="btn btn-secondary" style="width:100%" onclick="toast('Apple Pay wires at deploy. Card fields work below.')">Apple Pay</button>
+          <button class="btn btn-secondary" style="width:100%" onclick="toast('Google Pay wires at deploy. Card fields work below.')">Google Pay</button>
+        </div>
+        <div class="row" style="margin-bottom:24px"><hr class="hr" style="flex:1"><span class="fine">or pay with card</span><hr class="hr" style="flex:1"></div>
+        <div class="field"><label>Card number</label><input class="input" inputmode="numeric" placeholder="4242 4242 4242 4242"></div>
+        <div class="grid-2" style="gap:16px">
+          <div class="field"><label>Expiry</label><input class="input" placeholder="MM / YY"></div>
+          <div class="field"><label>CVC</label><input class="input" inputmode="numeric" placeholder="123"></div>
+        </div>
+        <div class="grid-2" style="gap:16px">
+          <div class="field"><label>Name on card</label><input class="input" placeholder="Marcus T."></div>
+          <div class="field"><label>ZIP</label><input class="input" inputmode="numeric" placeholder="72712"></div>
+        </div>
+        <button class="btn btn-primary" id="paybtn" style="width:100%;margin-top:10px" data-next>Start my membership</button>
+        <p class="fine" style="margin-top:14px">Payment processing wires to Stripe at deploy. No card is charged in this prototype.</p>
+      </div>
+      <aside class="card" style="padding:28px">
+        <div class="row between" style="margin-bottom:4px"><b>Fathers.com Annual</b><b class="mono">$120.00</b></div>
+        <p class="small" style="margin-bottom:14px">$10 a month, billed once a year</p>
+        <div class="row between" style="margin-bottom:18px;padding:10px 12px;border:1px solid var(--hairline);border-radius:6px">
+          <span class="small"><s class="ash">$120</s> <b class="bone">$79 founding member</b></span><span class="pill pill-new">Beta pricing</span></div>
+        <div class="row" style="gap:10px;margin-bottom:18px"><span class="checkmark">✓</span><span class="small">30-day money-back guarantee, no questions</span></div>
+        <hr class="hr" style="margin-bottom:18px">
+        <div class="stack-8">
+          <div class="check"><span class="checkmark">✓</span><span class="small">Every class and workbook</span></div>
+          <div class="check"><span class="checkmark">✓</span><span class="small">Your baseline and ninety-day plan</span></div>
+          <div class="check"><span class="checkmark">✓</span><span class="small">The Daily</span></div>
+          <div class="check"><span class="checkmark">✓</span><span class="small">Audio and downloads</span></div>
+        </div>
+        <p class="fine" style="margin-top:18px">By continuing you agree to the <a class="link ash" href="#" style="font-size:12px">terms</a>. Pricing shown for design pending pricing interviews.</p>
+      </aside>
+    </div>
+  </div>
+  <div class="seqpanel">
+    <div class="center" style="max-width:640px;margin:40px auto">
+      <span class="checkmark" style="width:56px;height:56px;font-size:26px;margin:0 auto 22px;display:inline-flex">✓</span>
+      <h1 class="d-36" style="margin-bottom:10px">You're in.</h1>
+      <p class="small" style="margin-bottom:36px">Receipt sent to m•••@•••.com.</p>
+      <div class="grid-2" style="gap:20px;text-align:left">
+        <a class="card hoverable" href="plan.html" style="text-decoration:none;color:inherit"><div class="eyebrow" style="margin-bottom:10px">NEXT</div><b>Pick up your plan. Week 1 is ready.</b></a>
+        <a class="card hoverable" href="class.html" style="text-decoration:none;color:inherit"><div class="slot r-16x9" data-slot="IMG-P8-CNF-01" style="margin-bottom:12px"></div><b>Start the flagship class</b></a>
+      </div>
+    </div>
+  </div>
+</div></section>
+<footer><div class="container">
+<div class="footgrid">
+  <div><a class="brand" href="index.html" style="margin-bottom:16px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="" style="height:34px"><b>Fathers.com</b></a>
+    <p class="small" style="margin-top:14px;max-width:32ch">Presence is a skill. Train it.</p>
+    <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
+  <div><h4>Train</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="profile.html">The Keystone Profile</a></li><li><a href="certificates.html">Certificates</a></li></ul></div>
+  <div><h4>Programs</h4><ul><li><a href="groups.html">For Groups</a></li><li><a href="veterans.html">For Veterans</a></li><li><a href="employers.html">For Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="#">About NCF</a></li><li><a href="#">Research</a></li><li><a href="gift.html">Gifts</a></li><li><a href="#">Contact</a></li></ul></div>
+  <div><h4>Legal</h4><ul><li><a href="#">Terms</a></li><li><a href="#">Privacy</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
+</div>
+<div style="margin-top:48px;max-width:420px"><h4 style="font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:12px">One useful thing for fathers, weekly</h4>
+<form class="row" data-lead="newsletter" data-done="You are on the list. One useful thing, weekly."><input class="input" name="email" type="email" required placeholder="Email address"><button class="btn btn-secondary btn-sm">Send it</button></form></div>
+<div class="footbottom"><span class="fine">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit.</span><span class="fine">© <span data-year></span> National Center for Fathering</span></div>
+</div></footer>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/roles.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

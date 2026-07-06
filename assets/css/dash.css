@@ -1,0 +1,23 @@
+/* Dashboard-specific styles, layered on forge.css */
+.dash-head{margin-bottom:32px}
+.dash-head h1{margin-bottom:8px}
+.dtable{width:100%;border-collapse:collapse;font-size:14px}
+.dtable th{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ash);text-align:left;padding:10px 14px;border-bottom:1px solid var(--hairline-strong)}
+.dtable td{padding:12px 14px;border-bottom:1px solid var(--hairline);vertical-align:middle}
+.dtable tr:hover td{background:var(--coal-2)}
+.rolechip{display:inline-block;font-family:var(--font-mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--hairline-strong);margin:2px 4px 2px 0}
+.rolechip.admin{border-color:var(--ember);color:var(--ember-hi)}
+.rolechip.instructor{border-color:var(--brass);color:var(--brass)}
+.pubdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.pubdot.on{background:var(--pine-hi)}.pubdot.off{background:var(--ash)}
+.lesson-row{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--hairline);border-radius:8px;margin-bottom:8px;background:var(--coal-2)}
+.lesson-row input{margin:0}
+.lesson-row .num{font-family:var(--font-mono);color:var(--ash);flex:0 0 28px}
+.item-row{border:1px solid var(--hairline);border-radius:8px;padding:14px;margin-bottom:10px;background:var(--coal-2)}
+.mini{font-size:12px;padding:8px 10px;height:auto}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.pill-status{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:999px}
+.pill-status.draft{border:1px solid var(--ash);color:var(--ash)}
+.pill-status.published{border:1px solid var(--pine-hi);color:var(--pine-hi)}
+.builder-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.inline-actions{display:flex;gap:8px;flex-wrap:wrap}
