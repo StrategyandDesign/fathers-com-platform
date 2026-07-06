@@ -129,6 +129,17 @@
     else showCert(DEMO_CERTS[s]||null,s);
   });}
 
+
+  // Play overlays: graceful handling until real video is wired.
+  // A play button should never be a dead click. For now, tell the truth.
+  document.querySelectorAll('.play-overlay, .hm-play, .cert-doc-3d').forEach(function(el){
+    if(el.classList.contains('cert-doc-3d')) return; // the cert doc isn't a video
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', function(){
+      if(window.toast){ toast('Class previews are coming soon. Take your baseline to get started.'); }
+    });
+  });
+
   // Lead + submission forms
   document.querySelectorAll('form[data-lead]').forEach(function(f){
     f.addEventListener('submit',function(e){

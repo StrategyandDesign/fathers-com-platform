@@ -61,3 +61,17 @@ begin new.updated_at = now(); return new; end $$;
 drop trigger if exists trg_touch_keystone on keystone_sessions;
 create trigger trg_touch_keystone before update on keystone_sessions
   for each row execute function public.touch_keystone_session();
+
+-- ---------- plan check-ins ----------
+-- Persists the weekly action checkboxes on a man's plan, so progress syncs across devices.
+create table if not exists plan_checkins (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users on delete cascade,
+  action_key text not null,        -- e.g. fc_plan_w3_a0
+  done boolean not null default false,
+  updated_at timestamptz default now(),
+  unique (user_id, action_key)
+);
+alter table plan_checkins enable row level security;
+create policy "own plan checkins" on plan_checkins for all
+  using (user_id = auth.uid()) with check (user_id = auth.uid());

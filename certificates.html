@@ -91,31 +91,31 @@
     <p class="small" style="max-width:34ch">Open to every man. Each certificate is built on the Keystone framework from the National Center for Fathering.</p>
   </div>
   <div class="cert-cards">
-    <a class="cert-card" href="#fundamentals">
+    <a class="cert-card" href="#fundamentals" data-cert="fundamentals" data-title="Fathering Fundamentals" data-hours="10.0" data-desc="The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">10.0 hrs</span></div>
       <h3>Fathering Fundamentals</h3>
       <p>The flagship. The core of engaged, present fatherhood, hardened into proof.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
     </a>
-    <a class="cert-card" href="#fundamentals">
+    <a class="cert-card" href="#fundamentals" data-cert="coparenting" data-title="Co-Parenting After Divorce" data-hours="8.0" data-desc="Leading well across two households. Built for the hardest season, with the same verification rigor: identity checked, hours logged, checkpoints, and a final assessment.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
       <h3>Co-Parenting After Divorce</h3>
       <p>Leading well across two households. Built for the hardest season.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
     </a>
-    <a class="cert-card" href="#fundamentals">
+    <a class="cert-card" href="#fundamentals" data-cert="reentry" data-title="Reentry Fatherhood" data-hours="12.0" data-desc="For fathers coming home. Rebuilding the relationship from day one, with identity verification, logged time, checkpoints, and a final assessment a court can trust.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">12.0 hrs</span></div>
       <h3>Reentry Fatherhood</h3>
       <p>For fathers coming home. Rebuilding the relationship from day one.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
     </a>
-    <a class="cert-card" href="#fundamentals">
+    <a class="cert-card" href="#fundamentals" data-cert="anger" data-title="Anger and Repair" data-hours="8.0" data-desc="Staying steady under pressure, and mending it when you do not. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
       <h3>Anger and Repair</h3>
       <p>Staying steady under pressure, and mending it when you do not.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
     </a>
-    <a class="cert-card cert-card-wide" href="#fundamentals">
+    <a class="cert-card cert-card-wide" href="#fundamentals" data-cert="legacy" data-title="Legacy and Presence" data-hours="6.0" data-desc="The long view. Building traditions, telling the story, and being there for the years that matter, with the same verification standard behind every Fathers.com certificate.">
       <div class="cert-card-top"><span class="pill pill-new">New</span><span class="cert-card-hrs">6.0 hrs</span></div>
       <h3>Legacy and Presence</h3>
       <p>The long view. Building traditions, telling the story, and being there for the years that matter.</p>
@@ -144,10 +144,10 @@
 <section id="fundamentals"><div class="container">
   <div class="cert-req-grid">
     <div>
-      <div class="eyebrow brass" style="margin-bottom:12px">FLAGSHIP CERTIFICATE</div>
-      <h2 class="d-36" style="margin-bottom:8px">Fathering Fundamentals</h2>
-      <p class="mono small" style="margin-bottom:24px">10.0 verified instructional hours</p>
-      <p style="max-width:56ch;margin-bottom:32px;color:var(--ash)">The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment. Built for every man growing into fatherhood or mentorship, not just those with kids today.</p>
+      <div class="eyebrow brass" style="margin-bottom:12px" id="certEyebrow">FLAGSHIP CERTIFICATE</div>
+      <h2 class="d-36" style="margin-bottom:8px" id="certTitle">Fathering Fundamentals</h2>
+      <p class="mono small" style="margin-bottom:24px" id="certHours">10.0 verified instructional hours</p>
+      <p style="max-width:56ch;margin-bottom:32px;color:var(--ash)" id="certDesc">The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment. Built for every man growing into fatherhood or mentorship, not just those with kids today.</p>
       <h3 style="font-family:var(--font-display);font-weight:500;font-size:20px;margin-bottom:18px">What earning it requires</h3>
       <div class="cert-reqs">
         <div class="cert-req"><span class="cert-req-mark">&check;</span><span>A government ID, verified at enrollment and deleted after issuance</span></div>
@@ -173,6 +173,26 @@
     </aside>
   </div>
 </div></section>
+<script>
+(function(){
+  var cards = document.querySelectorAll('.cert-card[data-cert]');
+  var title = document.getElementById('certTitle');
+  var hours = document.getElementById('certHours');
+  var desc = document.getElementById('certDesc');
+  var eyebrow = document.getElementById('certEyebrow');
+  if(!title) return;
+  cards.forEach(function(c){
+    c.addEventListener('click', function(e){
+      e.preventDefault();
+      title.textContent = c.getAttribute('data-title');
+      hours.textContent = c.getAttribute('data-hours') + ' verified instructional hours';
+      desc.textContent = c.getAttribute('data-desc');
+      eyebrow.textContent = c.getAttribute('data-cert')==='fundamentals' ? 'FLAGSHIP CERTIFICATE' : 'CERTIFICATE';
+      document.getElementById('fundamentals').scrollIntoView({behavior:'smooth'});
+    });
+  });
+})();
+</script>
 <footer><div class="container">
 <div class="footgrid">
   <div><a class="brand" href="index.html" style="margin-bottom:16px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="" style="height:34px"><b>Fathers.com</b></a>

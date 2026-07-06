@@ -474,104 +474,19 @@ PAGES['player.html'] = dict(title='Lesson 4 &middot; The Fundamentals of Fatheri
 ''')
 
 # ================================================== plan.html (P6)
-PAGES['plan.html'] = dict(title='My Plan', desc='Week 3 of 12. What this week asks of you.', active='My Plan', mode='app', auth=True, body='''
+PAGES['plan.html'] = dict(title='My Plan', desc='Your ninety-day plan, built from your Keystone Profile.', active='My Plan', mode='app', auth=True, body='''
 <section class="tight" style="padding-top:44px"><div class="container">
-  <div class="row between wrap" style="margin-bottom:34px">
-    <h1 class="d-36">Morning, Marcus.</h1>
-    <div class="row"><span class="chip" style="cursor:default">Baseline <b class="mono" id="baselineScore" style="margin-left:8px">71</b></span>
-      <span class="chip" id="chainChip" style="cursor:default">⛓ 3 weeks straight</span>
-      <span class="tag">Retake at Day 90</span></div>
-  </div>
-  <div data-tabs>
-    <div class="tabs"><button class="active">Plan</button><button>Progress</button><button>My List</button></div>
-
-    <div class="tabpanel active">
-      <div class="card" id="thisweek" style="padding:32px;margin-bottom:28px">
-        <div class="eyebrow" style="margin-bottom:8px">THIS WEEK</div>
-        <h2 class="d-28" style="margin-bottom:22px">Week 3: Show up on schedule.</h2>
-        <div class="stack-16">
-          <div class="actionrow" style="align-items:center">
-            <div class="slot r-16x9" data-slot="IMG-P6-WK-01" style="flex:0 0 120px"></div>
-            <div style="flex:1"><b style="font-size:15px">Watch: Lesson 5, Repair Fast &middot; 9 min</b>
-              <div class="progress-track" style="margin-top:10px;max-width:220px"><div class="progress-fill" style="width:40%"></div></div></div>
-            <a class="btn btn-primary btn-sm play" href="player.html">Resume</a>
-          </div>
-          <label class="actionrow"><input type="checkbox" data-persist="fc_w3_a1"><div style="flex:1"><div class="txt">Eat breakfast with your kids twice this week.</div><div class="meta">Consistency</div></div></label>
-          <label class="actionrow"><input type="checkbox" data-persist="fc_w3_a2"><div style="flex:1"><div class="txt">Ask each kid one question about their world. No fixing.</div><div class="meta">Awareness</div></div></label>
-        </div>
-        <p class="fine" style="margin-top:16px">Mark them when they happen. Honest beats perfect.</p>
-      </div>
-
-      <h3 style="font-family:var(--font-display);font-size:22px;margin-bottom:16px">Continue watching</h3>
-      <div class="rowscroll" data-repeat="3" data-prefix="IMG-P6-CW-" data-ratio="r-16x9" data-href="player.html"
-        data-titles="Enter Their World|Two Households|The First Pickup" data-metas="62% watched|31% watched|12% watched" style="margin-bottom:40px"></div>
-
-      <div class="card" style="padding:28px;margin-bottom:28px">
-        <div class="eyebrow" style="margin-bottom:16px">YOUR NINETY DAYS</div>
-        <div class="weeks">
-          <span class="done"></span><span class="done"></span><span class="now"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-        </div>
-        <div class="phaselabels"><span>WKS 1-4 &middot; SHOW UP ON SCHEDULE</span><span>5-8 &middot; ENTER THEIR WORLD</span><span>9-12 &middot; SET THE STANDARD</span></div>
-      </div>
-
-      <div class="card" style="max-width:460px">
-        <div class="row" style="gap:16px">
-          <div class="slot r-1x1 play-overlay" data-slot="IMG-P6-DLY-01" style="flex:0 0 72px"><span class="tri" style="border-left-width:10px;border-top-width:6px;border-bottom-width:6px"></span></div>
-          <div><div class="eyebrow" style="margin-bottom:6px">THE DAILY</div>
-          <b style="font-size:15px">Today's 3 minutes: What your silence teaches</b></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tabpanel">
-      <div class="grid-2" style="margin-bottom:36px;align-items:end">
-        <div><div class="eyebrow" style="margin-bottom:12px">BASELINE TO NOW</div>
-          <div class="row" style="gap:40px;align-items:baseline">
-            <div><div class="bigscore ash" style="font-size:64px">71</div><p class="fine">Day 0</p></div>
-            <div><div class="bigscore" style="font-size:64px;color:var(--hairline-strong)">--</div><p class="fine">Day 90</p></div>
-          </div></div>
-        <div><button class="btn btn-secondary" disabled title="Unlocks at Day 90: Aug 12" style="opacity:.5">Retake the Profile</button>
-          <p class="fine" style="margin-top:10px">Unlocks at Day 90: Aug 12.</p></div>
-      </div>
-      <div style="max-width:560px;margin-bottom:44px">
-        <div class="domain"><div class="row1"><span>Involvement</span><span class="score">78</span></div><div class="bar"><span style="width:78%"></span></div></div>
-        <div class="domain gap"><div class="row1"><span>Consistency <span class="tag" style="color:var(--ember-hi)">+ YOUR WORK HERE</span></span><span class="score">55</span></div><div class="bar"><span style="width:55%"></span></div></div>
-        <div class="domain"><div class="row1"><span>Awareness</span><span class="score">74</span></div><div class="bar"><span style="width:74%"></span></div></div>
-        <div class="domain"><div class="row1"><span>Nurturance</span><span class="score">77</span></div><div class="bar"><span style="width:77%"></span></div></div>
-      </div>
-      <div class="grid-4" style="margin-bottom:44px">
-        <div class="card stat"><div class="num">14</div><div class="lbl">Lessons finished</div></div>
-        <div class="card stat"><div class="num">11</div><div class="lbl">Actions done</div></div>
-        <div class="card stat"><div class="num">3</div><div class="lbl">Weeks on plan</div></div>
-        <div class="card stat"><div class="num">9</div><div class="lbl">Notes taken</div></div>
-      </div>
-      <div class="eyebrow" style="margin-bottom:16px">EARNED</div>
-      <div class="row wrap" style="margin-bottom:44px">
-        <div class="badge-earned"><span class="seal">FC</span><span class="t">Fundamentals: Complete</span></div>
-        <div class="badge-earned"><span class="seal">30</span><span class="t">First Month Standard</span></div>
-        <div class="badge-earned locked"><span class="seal">?</span><span class="t">Eight Week Standard</span></div>
-        <div class="badge-earned locked"><span class="seal">?</span><span class="t">Ninety-Day Retake</span></div>
-        <div class="badge-earned locked"><span class="seal">?</span><span class="t">Circle Brother</span></div>
-      </div>
-      <div class="eyebrow" style="margin-bottom:16px">HISTORY</div>
-      <table><tbody>
-        <tr><td class="mono fine">Jul 3</td><td>Marked done: Ask one question about their world</td><td class="tag">ACTION</td></tr>
-        <tr><td class="mono fine">Jul 2</td><td>Finished Lesson 4: Enter Their World</td><td class="tag">LESSON</td></tr>
-        <tr><td class="mono fine">Jul 1</td><td>Marked done: Breakfast with the kids</td><td class="tag">ACTION</td></tr>
-        <tr><td class="mono fine">Jun 29</td><td>Finished Lesson 3: A Schedule They Can Trust</td><td class="tag">LESSON</td></tr>
-      </tbody></table>
-    </div>
-
-    <div class="tabpanel">
-      <div class="grid-3" id="mylist">
-        <a class="mediacard" href="class.html"><div class="slot r-16x9" data-slot="IMG-P6-ML-01"></div><div class="name" style="margin-top:10px">Raising Teens</div><div class="meta">Class</div></a>
-        <a class="mediacard" href="story.html"><div class="slot r-16x9" data-slot="IMG-P6-ML-02"></div><div class="name" style="margin-top:10px">Visitation Day</div><div class="meta">Story &middot; 22 min</div></a>
-        <a class="mediacard" href="class.html"><div class="slot r-16x9" data-slot="IMG-P6-ML-03"></div><div class="name" style="margin-top:10px">Fathering Sons</div><div class="meta">Class</div></a>
-      </div>
-      <p class="fine" style="margin-top:24px">Save classes and stories here. Build your own bench.</p>
+  <div id="planRoot">
+    <!-- states rendered by plan-controller.js -->
+    <div id="planLoading" class="center" style="padding:80px 0">
+      <div class="eyebrow" style="margin-bottom:12px">LOADING YOUR PLAN</div>
+      <p class="ash">One moment.</p>
     </div>
   </div>
 </div></section>
+<script src="assets/js/keystone-data.js"></script>
+<script src="assets/js/plan-engine.js"></script>
+<script src="assets/js/plan-controller.js"></script>
 ''')
 
 # ================================================== circles.html (P7 in-product)
@@ -1011,31 +926,31 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
     <p class="small" style="max-width:34ch">Open to every man. Each certificate is built on the Keystone framework from the National Center for Fathering.</p>
   </div>
   <div class="cert-cards">
-    <a class="cert-card" href="#fundamentals">
+    <a class="cert-card" href="#fundamentals" data-cert="fundamentals" data-title="Fathering Fundamentals" data-hours="10.0" data-desc="The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">10.0 hrs</span></div>
       <h3>Fathering Fundamentals</h3>
       <p>The flagship. The core of engaged, present fatherhood, hardened into proof.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
     </a>
-    <a class="cert-card" href="#fundamentals">
+    <a class="cert-card" href="#fundamentals" data-cert="coparenting" data-title="Co-Parenting After Divorce" data-hours="8.0" data-desc="Leading well across two households. Built for the hardest season, with the same verification rigor: identity checked, hours logged, checkpoints, and a final assessment.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
       <h3>Co-Parenting After Divorce</h3>
       <p>Leading well across two households. Built for the hardest season.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
     </a>
-    <a class="cert-card" href="#fundamentals">
+    <a class="cert-card" href="#fundamentals" data-cert="reentry" data-title="Reentry Fatherhood" data-hours="12.0" data-desc="For fathers coming home. Rebuilding the relationship from day one, with identity verification, logged time, checkpoints, and a final assessment a court can trust.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">12.0 hrs</span></div>
       <h3>Reentry Fatherhood</h3>
       <p>For fathers coming home. Rebuilding the relationship from day one.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
     </a>
-    <a class="cert-card" href="#fundamentals">
+    <a class="cert-card" href="#fundamentals" data-cert="anger" data-title="Anger and Repair" data-hours="8.0" data-desc="Staying steady under pressure, and mending it when you do not. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
       <h3>Anger and Repair</h3>
       <p>Staying steady under pressure, and mending it when you do not.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
     </a>
-    <a class="cert-card cert-card-wide" href="#fundamentals">
+    <a class="cert-card cert-card-wide" href="#fundamentals" data-cert="legacy" data-title="Legacy and Presence" data-hours="6.0" data-desc="The long view. Building traditions, telling the story, and being there for the years that matter, with the same verification standard behind every Fathers.com certificate.">
       <div class="cert-card-top"><span class="pill pill-new">New</span><span class="cert-card-hrs">6.0 hrs</span></div>
       <h3>Legacy and Presence</h3>
       <p>The long view. Building traditions, telling the story, and being there for the years that matter.</p>
@@ -1064,10 +979,10 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
 <section id="fundamentals"><div class="container">
   <div class="cert-req-grid">
     <div>
-      <div class="eyebrow brass" style="margin-bottom:12px">FLAGSHIP CERTIFICATE</div>
-      <h2 class="d-36" style="margin-bottom:8px">Fathering Fundamentals</h2>
-      <p class="mono small" style="margin-bottom:24px">10.0 verified instructional hours</p>
-      <p style="max-width:56ch;margin-bottom:32px;color:var(--ash)">The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment. Built for every man growing into fatherhood or mentorship, not just those with kids today.</p>
+      <div class="eyebrow brass" style="margin-bottom:12px" id="certEyebrow">FLAGSHIP CERTIFICATE</div>
+      <h2 class="d-36" style="margin-bottom:8px" id="certTitle">Fathering Fundamentals</h2>
+      <p class="mono small" style="margin-bottom:24px" id="certHours">10.0 verified instructional hours</p>
+      <p style="max-width:56ch;margin-bottom:32px;color:var(--ash)" id="certDesc">The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment. Built for every man growing into fatherhood or mentorship, not just those with kids today.</p>
       <h3 style="font-family:var(--font-display);font-weight:500;font-size:20px;margin-bottom:18px">What earning it requires</h3>
       <div class="cert-reqs">
         <div class="cert-req"><span class="cert-req-mark">&check;</span><span>A government ID, verified at enrollment and deleted after issuance</span></div>
@@ -1093,6 +1008,26 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
     </aside>
   </div>
 </div></section>
+<script>
+(function(){
+  var cards = document.querySelectorAll('.cert-card[data-cert]');
+  var title = document.getElementById('certTitle');
+  var hours = document.getElementById('certHours');
+  var desc = document.getElementById('certDesc');
+  var eyebrow = document.getElementById('certEyebrow');
+  if(!title) return;
+  cards.forEach(function(c){
+    c.addEventListener('click', function(e){
+      e.preventDefault();
+      title.textContent = c.getAttribute('data-title');
+      hours.textContent = c.getAttribute('data-hours') + ' verified instructional hours';
+      desc.textContent = c.getAttribute('data-desc');
+      eyebrow.textContent = c.getAttribute('data-cert')==='fundamentals' ? 'FLAGSHIP CERTIFICATE' : 'CERTIFICATE';
+      document.getElementById('fundamentals').scrollIntoView({behavior:'smooth'});
+    });
+  });
+})();
+</script>
 ''')
 
 # ================================================== certificate.html (P10 screen 4)

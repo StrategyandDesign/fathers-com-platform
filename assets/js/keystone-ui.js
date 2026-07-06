@@ -167,7 +167,7 @@
           }).join('')+
         '</div>'+
         '<div class="ks-foot">'+
-          '<button class="link ash ks-back" '+(curIndex===0?'style="visibility:hidden"':'')+'>Back</button>'+
+          '<button class="ks-back" '+(curIndex===0?'style="visibility:hidden"':'')+'>Back</button>'+
           '<span class="fine">'+answeredInSec+' answered</span>'+
         '</div>'+
         (KS.getMode()==='by_section' ? '<p class="fine" style="margin-top:18px;text-align:center"><a href="plan.html" class="link ash" style="font-size:12px">Save and finish later</a></p>':'')+
@@ -209,9 +209,85 @@
   // ---------- results: all 26 scales ----------
   function finish(){
     var scored = KS.score();
-    KS.saveResult(scored);
+    // Preserve the completed result locally so it survives the magic-link round trip.
+    try { localStorage.setItem('fc_pending_result', JSON.stringify({
+      scored: scored, preparing: KS.isPreparing(), at: Date.now()
+    })); } catch(e){}
+
+    var signedIn = window.FC && FC.live && FC.uid();
+    if(signedIn){ KS.saveResult(scored); }
+
+    if(KS.isPreparing()){
+      if(!signedIn){ return gateEmail(scored, true); }
+      return finishPreparing(scored);
+    }
+    if(!signedIn){ return gateEmail(scored, false); }
+
+    return showResults(scored);
+  }
+
+  // ---------- THE EMAIL GATE: capture at peak motivation ----------
+  // He just finished. Show a real teaser (proof there's value), then require email
+  // to unlock the full profile and plan. Entering email creates his account (magic link).
+  function gateEmail(scored, isPreparing){
+    var strength = scored.scales[scored.strength];
+    var overall = scored.overall;
+    root.innerHTML = shell(
+      '<div class="ks-gate">'+
+        '<div class="eyebrow brass" style="margin-bottom:14px">YOUR KEYSTONE PROFILE IS READY</div>'+
+        '<h2 style="margin:0 0 6px">You did the honest work. Here\'s your starting point.</h2>'+
+        '<p class="helper" style="margin-bottom:26px">Enter your email to unlock your full profile across all 26 dimensions, plus the personalized ninety-day plan built from your results. We save it to your account so you can pick it back up anytime.</p>'+
+        // teaser: prove value without giving it all away
+        '<div class="ks-gate-teaser">'+
+          '<div class="ks-gate-score"><div class="ks-overall" style="margin:0">'+overall+'</div>'+
+          '<span class="fine">YOUR OVERALL STANDING</span></div>'+
+          '<div class="ks-gate-locked">'+
+            '<div class="ks-gate-row"><span>Your strength</span><b class="brass">'+esc(strength.label)+'</b></div>'+
+            '<div class="ks-gate-row locked"><span>Your growth focus</span><span class="ks-lock">\u25CF Locked</span></div>'+
+            '<div class="ks-gate-row locked"><span>All 26 dimensions scored</span><span class="ks-lock">\u25CF Locked</span></div>'+
+            '<div class="ks-gate-row locked"><span>Your ninety-day plan</span><span class="ks-lock">\u25CF Locked</span></div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="ks-gate-form">'+
+          '<input class="input" type="email" id="ksEmail" placeholder="you@email.com" autocomplete="email">'+
+          '<button class="btn btn-yellow" id="ksUnlock" style="width:100%;margin-top:12px">Unlock my results</button>'+
+          '<p class="ksmsg fine" id="ksMsg" style="margin-top:12px;text-align:center"></p>'+
+        '</div>'+
+        '<p class="fine" style="margin-top:18px;text-align:center">Your results are private. We never share or sell them.</p>'+
+      '</div>');
+
+    var btn = document.getElementById('ksUnlock');
+    var input = document.getElementById('ksEmail');
+    var msg = document.getElementById('ksMsg');
+    function submit(){
+      var email = (input.value||'').trim();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent = 'Enter a valid email.'; msg.style.color='var(--error)'; return; }
+      btn.disabled = true; btn.textContent = 'Sending your link...'; msg.textContent='';
+      if(window.FC && FC.signIn){
+        // send magic link; on return, plan.html will detect the pending result and save it.
+        FC.signIn(email, 'plan.html').then(function(r){
+          if(r && r.error){ msg.textContent = 'Something went wrong. Try again.'; msg.style.color='var(--error)'; btn.disabled=false; btn.textContent='Unlock my results'; return; }
+          root.innerHTML = shell(
+            '<div class="center" style="padding:40px 0">'+
+              '<div class="ks-check">\u2713</div>'+
+              '<h2 style="margin:8px 0">Check your email.</h2>'+
+              '<p class="helper">We sent a secure link to <b>'+esc(email)+'</b>. Click it to unlock your full Keystone Profile and your ninety-day plan. Your results are saved and waiting.</p>'+
+              '<p class="fine" style="margin-top:20px">No password needed. The link signs you in.</p>'+
+            '</div>');
+        });
+      } else {
+        // demo fallback: just show results
+        showResults(scored);
+      }
+    }
+    btn.addEventListener('click', submit);
+    input.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
+    input.focus();
+  }
+
+  // ---------- full results (signed in, or after unlock) ----------
+  function showResults(scored){
     if(KS.isPreparing()){ return finishPreparing(scored); }
-    var meta = KS.sectionMeta;
     var gap = scored.scales[scored.gap], strength = scored.scales[scored.strength];
 
     var sectionsHtml = order.map(function(secKey){
