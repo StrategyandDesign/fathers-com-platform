@@ -29,6 +29,11 @@ window.FC = window.FC || {};
     });
   };
   FC.signOut = function(){ return FC.ready.then(function(){ return FC.sb.auth.signOut(); }); };
+  FC.signInPassword = function(email, password){
+    return FC.ready.then(function(){
+      return FC.sb.auth.signInWithPassword({ email: email, password: password });
+    });
+  };
   FC.uid = function(){ return FC.session && FC.session.user ? FC.session.user.id : null; };
 
   // ---------- 12-week plan template (personalization TODO: reorder by gap) ----------

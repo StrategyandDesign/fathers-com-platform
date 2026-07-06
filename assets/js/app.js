@@ -268,6 +268,27 @@
       });
     }
 
+    // Password sign-in (no email needed). Password lives in Supabase, never in this file.
+    var pt=document.getElementById('pwToggle');
+    var pf=document.getElementById('pwForm');
+    var pm=document.getElementById('pwMsg');
+    if(pt&&pf){ pt.addEventListener('click',function(e){ e.preventDefault(); pf.style.display=''; pt.style.display='none'; }); }
+    if(pf){
+      pf.addEventListener('submit',function(e){
+        e.preventDefault();
+        var ins=pf.querySelectorAll('input');
+        var email=(ins[0].value||'').trim(), pw=ins[1].value||'';
+        var pbtn=pf.querySelector('button'), lbl=pbtn.textContent;
+        if(!email||!pw){ if(pm){pm.style.color='var(--error)';pm.textContent='Enter your email and password.';} return; }
+        pbtn.disabled=true; pbtn.textContent='Signing in…';
+        if(pm){pm.style.color='var(--ash)';pm.textContent='Signing you in…';}
+        FC.signInPassword(email,pw).then(function(r){
+          if(r.error){ pbtn.disabled=false; pbtn.textContent=lbl; if(pm){pm.style.color='var(--error)';pm.textContent=r.error.message;} }
+          else { location.href='plan.html'; }
+        }).catch(function(){ pbtn.disabled=false; pbtn.textContent=lbl; if(pm){pm.style.color='var(--error)';pm.textContent='Something went wrong. Try again.';} });
+      });
+    }
+
     if(!session) return;
 
     // One-time: push a locally finished Keystone to the account

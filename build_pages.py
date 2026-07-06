@@ -1425,13 +1425,21 @@ PAGES['login.html'] = dict(title='Log in', desc='Sign in to Fathers.com with an 
   <a class="brand" href="index.html" style="margin-bottom:56px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark" style="height:34px"><b style="font-family:var(--font-display);font-size:20px">Fathers.com</b></a>
   <div style="width:100%;max-width:440px">
     <h1 class="d-36" style="margin-bottom:8px">Log in</h1>
-    <p class="small" style="margin-bottom:28px">No password. We email you a sign-in link.</p>
+    <p class="small" style="margin-bottom:28px">We email you a sign-in link. No password needed.</p>
     <form id="loginForm" class="stack-16">
-      <input class="input" type="email" required placeholder="Email address" aria-label="Email address">
+      <input class="input" type="email" required placeholder="Email address" aria-label="Email address" autocomplete="username">
       <button class="btn btn-primary" style="width:100%">Email me a sign-in link</button>
     </form>
     <p class="fine" id="loginMsg" style="margin-top:18px">New here? <a class="link ash" href="profile.html" style="font-size:12px">Take the Keystone Profile first.</a></p>
-    <p class="fine" style="margin-top:26px">Sign-in activates once Supabase keys are set in assets/js/config.js.</p>
+
+    <div class="row" style="margin:24px 0 4px"><hr class="hr" style="flex:1"><span class="fine">or</span><hr class="hr" style="flex:1"></div>
+    <a href="#" id="pwToggle" class="link ash" style="font-size:13px">Sign in with a password instead</a>
+    <form id="pwForm" class="stack-16" style="display:none;margin-top:16px">
+      <input class="input" type="email" required placeholder="Email address" aria-label="Email address" autocomplete="username">
+      <input class="input" type="password" required placeholder="Password" aria-label="Password" autocomplete="current-password">
+      <button class="btn btn-primary" style="width:100%">Sign in</button>
+    </form>
+    <p class="fine" id="pwMsg" style="margin-top:14px;min-height:16px"></p>
   </div>
 </div>
 """)
