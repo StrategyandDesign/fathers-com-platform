@@ -15,6 +15,18 @@ The build is dual-mode. With empty keys it runs as a demo. With Supabase keys it
 8. Video: paste lesson URLs into `lessons.video_url` in the Supabase table editor. YouTube embed URLs, Vimeo embed URLs, and direct mp4 all play. Progress saves automatically.
 9. Photos: drop photography into the slot IDs as it arrives. The registry is Appendix A of the prompt series.
 
+## Keystone Father Profile (the full validated instrument)
+The platform ships with the complete 128-item, 26-scale Keystone Father Profile from Dr. Canfield's Technical Bulletin, scored against the published norms (means and SDs from 9,232 respondents). It supports two completion modes (all at once, or section by section with save-and-resume).
+
+To activate it, run the third schema file in the Supabase SQL editor, after the first two:
+1. supabase/schema.sql
+2. supabase/schema_rbac.sql
+3. supabase/schema_keystone.sql  (adds keystone_sessions, keystone_answers, keystone_results)
+
+Once loaded, /profile.html runs the full assessment. A father chooses his mode, answers are saved as he goes, and he can leave and resume on any device. The results screen reports all 26 scales scored against the norm, with his strength and growth-focus flagged.
+
+Note: the instrument data lives in assets/js/keystone-data.js. To edit items or norms later, an instructor can also build/adjust instruments in Studio, but the validated Keystone is loaded directly from the bulletin for fidelity.
+
 ## Roles and dashboards setup
 1. Run `supabase/schema.sql` first, then `supabase/schema_rbac.sql`. The second adds roles, the authoring tables, the instrument builder, org and Circle authoring, the audit log, and a draft starter Keystone instrument.
 2. Sign in once, then in the SQL editor make yourself admin (see ROLES.md).

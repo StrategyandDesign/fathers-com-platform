@@ -72,6 +72,7 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
         <figure class="hm-card"><img src="assets/img/photos/hero-03.jpg" alt=""></figure>
         <figure class="hm-card"><img src="assets/img/photos/hero-05.jpg" alt=""></figure>
         <figure class="hm-card"><img src="assets/img/photos/testimonial-01.jpg" alt=""></figure>
+        <figure class="hm-card"><img src="assets/img/photos/hero-07.jpg" alt=""></figure>
         <figure class="hm-card"><img src="assets/img/photos/hero-01.jpg" alt=""></figure>
         <figure class="hm-card"><img src="assets/img/photos/hero-03.jpg" alt=""></figure>
         <figure class="hm-card"><img src="assets/img/photos/hero-05.jpg" alt=""></figure>
@@ -97,12 +98,12 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
     <div class="row wrap"><a class="btn btn-primary" href="profile.html">Get your baseline</a><a class="btn btn-secondary" href="gift.html">Give a gift</a></div>
   </div>
   <div class="stack-16">
-    <div class="check"><span class="checkmark">✓</span><span>Every class and every workbook</span></div>
-    <div class="check"><span class="checkmark">✓</span><span>New classes every month</span></div>
-    <div class="check"><span class="checkmark">✓</span><span>Audio mode for the drive</span></div>
-    <div class="check"><span class="checkmark">✓</span><span>Downloads for offline</span></div>
-    <div class="check"><span class="checkmark">✓</span><span>Your Keystone baseline and ninety-day plan</span></div>
-    <div class="check"><span class="checkmark">✓</span><span>30-day money-back guarantee</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>Every class and every workbook</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>New classes every month</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>Audio mode for the drive</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>Downloads for offline</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>Your Keystone baseline and ninety-day plan</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>30-day money-back guarantee</span></div>
   </div>
 </div></section>
 
@@ -126,7 +127,7 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
   <div class="rowscroll" data-repeat="5" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html"
     data-titles="Dr. Ken Canfield|Coming Home Present|Fathering Daughters|Fathering After Divorce|Raising Teens"
     data-subs="The Fundamentals of Fathering|Presence after deployment|For the dad she needs|Presence across two homes|Keeping the line open"
-    data-metas="12 lessons · 2h 10m|10 lessons · 1h 44m|12 lessons · 1h 58m|11 lessons · 1h 51m|13 lessons · 2h 06m"></div>
+    data-metas="12 lessons &middot; 2h 10m|10 lessons &middot; 1h 44m|12 lessons &middot; 1h 58m|11 lessons &middot; 1h 51m|13 lessons &middot; 2h 06m"></div>
   <p style="margin-top:20px"><a class="link" href="classes.html">See all classes</a></p>
 </div></section>
 
@@ -264,7 +265,7 @@ PAGES['story.html'] = dict(title='From Combat to the Kitchen Table', desc='One f
       <p class="quote" style="font-size:19px">"Repair beats explain. Every time."</p></div>
     <div class="card"><div class="eyebrow" style="margin-bottom:14px">WHAT HE TRAINS NOW</div>
       <div class="row" style="gap:16px"><div class="slot r-2x3" data-slot="IMG-P3-DET-02" style="flex:0 0 72px"></div>
-      <div><b style="font-size:15px">Watch Ray's class: Coming Home Present</b><p class="small" style="margin-top:6px">10 lessons · 1h 44m</p></div></div>
+      <div><b style="font-size:15px">Watch Ray's class: Coming Home Present</b><p class="small" style="margin-top:6px">10 lessons &middot; 1h 44m</p></div></div>
       <a class="btn btn-secondary btn-sm" href="class.html" style="margin-top:16px">Go to the class</a></div>
     <div class="card"><div class="eyebrow" style="margin-bottom:12px">WHERE HE STARTED</div>
       <p class="small" style="margin-bottom:14px">Ray's first Presence Baseline: <b class="mono bone">43</b></p>
@@ -303,15 +304,15 @@ PAGES['classes.html'] = dict(title='All Classes', desc='Nine classes for the fat
       <div class="chiprow"><a class="chip" data-toggle href="#">After Divorce</a><a class="chip" data-toggle href="#">Stepfathers</a><a class="chip" data-toggle href="#">Back From Combat</a><a class="chip" data-toggle href="#">After the Sentence</a><a class="chip" data-toggle href="#">Grandfathers</a><a class="chip" data-toggle href="#">Faith</a></div></div>
   </div>
   <div class="grid-3" id="classgrid">
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-01"></div><div class="row" style="margin:12px 0 0"><span class="pill pill-new">New</span></div><div class="name">Dr. Ken Canfield</div><div class="sub">The Fundamentals of Fathering</div><div class="meta">12 lessons · 2h 10m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-02"></div><div class="name" style="margin-top:12px">Fathering Daughters</div><div class="sub">For the dad she needs</div><div class="meta">12 lessons · 1h 58m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-03"></div><div class="name" style="margin-top:12px">Fathering Sons</div><div class="sub">Raising the man he becomes</div><div class="meta">11 lessons · 1h 49m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-04"></div><div class="name" style="margin-top:12px">Raising Teens</div><div class="sub">Keeping the line open</div><div class="meta">13 lessons · 2h 06m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-05"></div><div class="name" style="margin-top:12px">The First Five Years</div><div class="sub">Presence from day one</div><div class="meta">10 lessons · 1h 38m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-06"></div><div class="name" style="margin-top:12px">Fathering After Divorce</div><div class="sub">Presence across two homes</div><div class="meta">11 lessons · 1h 51m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-07"></div><div class="name" style="margin-top:12px">Stepfathers and Blended Families</div><div class="sub">Earning the seat</div><div class="meta">10 lessons · 1h 42m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-08"></div><div class="name" style="margin-top:12px">Coming Home Present</div><div class="sub">Presence after deployment</div><div class="meta">10 lessons · 1h 44m</div></a>
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-09"></div><div class="name" style="margin-top:12px">Dr. Ken Canfield</div><div class="sub">Grandfathering</div><div class="meta">9 lessons · 1h 22m</div></a>
+    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-01"></div><div class="row" style="margin:12px 0 0"><span class="pill pill-new">New</span></div><div class="name">Dr. Ken Canfield</div><div class="sub">The Fundamentals of Fathering</div><div class="meta">12 lessons &middot; 2h 10m</div></a>
+    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-02"></div><div class="name" style="margin-top:12px">Fathering Daughters</div><div class="sub">For the dad she needs</div><div class="meta">12 lessons &middot; 1h 58m</div></a>
+    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-03"></div><div class="name" style="margin-top:12px">Fathering Sons</div><div class="sub">Raising the man he becomes</div><div class="meta">11 lessons &middot; 1h 49m</div></a>
+    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-04"></div><div class="name" style="margin-top:12px">Raising Teens</div><div class="sub">Keeping the line open</div><div class="meta">13 lessons &middot; 2h 06m</div></a>
+    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-05"></div><div class="name" style="margin-top:12px">The First Five Years</div><div class="sub">Presence from day one</div><div class="meta">10 lessons &middot; 1h 38m</div></a>
+    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-06"></div><div class="name" style="margin-top:12px">Fathering After Divorce</div><div class="sub">Presence across two homes</div><div class="meta">11 lessons &middot; 1h 51m</div></a>
+    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-07"></div><div class="name" style="margin-top:12px">Stepfathers and Blended Families</div><div class="sub">Earning the seat</div><div class="meta">10 lessons &middot; 1h 42m</div></a>
+    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-08"></div><div class="name" style="margin-top:12px">Coming Home Present</div><div class="sub">Presence after deployment</div><div class="meta">10 lessons &middot; 1h 44m</div></a>
+    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-09"></div><div class="name" style="margin-top:12px">Dr. Ken Canfield</div><div class="sub">Grandfathering</div><div class="meta">9 lessons &middot; 1h 22m</div></a>
   </div>
 </div></section>
 
@@ -350,10 +351,10 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
   <div>
     <h2 class="d-22" style="font-family:var(--font-display);font-size:22px;margin-bottom:18px">What you will train</h2>
     <div class="stack-8" style="margin-bottom:44px">
-      <div class="actionrow"><span class="checkmark">→</span><div class="txt">Read your kids' inner weather.</div></div>
-      <div class="actionrow"><span class="checkmark">→</span><div class="txt">Build a schedule they can trust.</div></div>
-      <div class="actionrow"><span class="checkmark">→</span><div class="txt">Say what you stand for out loud.</div></div>
-      <div class="actionrow"><span class="checkmark">→</span><div class="txt">Repair fast when you blow it.</div></div>
+      <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Read your kids' inner weather.</div></div>
+      <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Build a schedule they can trust.</div></div>
+      <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Say what you stand for out loud.</div></div>
+      <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Repair fast when you blow it.</div></div>
     </div>
     <h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:8px">Lessons</h2>
     <details open><summary><span><b class="mono ash" style="margin-right:14px">01</b>Why Presence Wins</span><span class="tag">8:12</span></summary>
@@ -382,9 +383,9 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
       <button class="btn btn-secondary btn-sm" style="margin-top:16px;width:100%" onclick="toast('Included with membership.')">Included with membership</button></div>
     <div class="card"><div class="eyebrow" style="margin-bottom:14px">INCLUDED IN YOUR MEMBERSHIP</div>
       <div class="stack-8">
-        <div class="check"><span class="checkmark">✓</span><span class="small">Every class and workbook</span></div>
-        <div class="check"><span class="checkmark">✓</span><span class="small">Your baseline and plan</span></div>
-        <div class="check"><span class="checkmark">✓</span><span class="small">30-day money-back guarantee</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Every class and workbook</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Your baseline and plan</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">30-day money-back guarantee</span></div>
       </div></div>
     <div class="card brass-card"><p class="small" style="margin-bottom:12px">Need court-ready proof? This class has a Verified Certificate edition.</p>
       <a class="link brass" href="certificates.html" style="font-size:14px">See the Certificate</a></div>
@@ -400,7 +401,7 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
 ''')
 
 # ================================================== player.html (P5)
-PAGES['player.html'] = dict(title='Lesson 4 · The Fundamentals of Fathering', desc='Lesson player.', active='Classes', mode='app', body='''
+PAGES['player.html'] = dict(title='Lesson 4 &middot; The Fundamentals of Fathering', desc='Lesson player.', active='Classes', mode='app', body='''
 <section class="tight" style="padding-top:36px"><div class="container">
   <p class="tag" style="margin-bottom:14px">The Fundamentals of Fathering / Lesson 4</p>
   <div style="display:grid;grid-template-columns:1.55fr .75fr;gap:32px;align-items:start">
@@ -418,7 +419,7 @@ PAGES['player.html'] = dict(title='Lesson 4 · The Fundamentals of Fathering', d
       </div>
       <div id="audiobar" class="card" style="display:none;margin-top:10px;padding:12px 16px;align-items:center;gap:14px">
         <div class="slot r-1x1" data-slot="IMG-P5-AUD-01" style="width:44px"></div>
-        <b style="font-size:14px">Lesson 4 · Enter Their World</b>
+        <b style="font-size:14px">Lesson 4 &middot; Enter Their World</b>
         <span class="mono fine" style="margin-left:auto">Audio mode</span>
       </div>
       <div data-tabs style="margin-top:28px">
@@ -442,8 +443,8 @@ PAGES['player.html'] = dict(title='Lesson 4 · The Fundamentals of Fathering', d
       </div>
       <div class="card" style="margin-top:30px;padding:28px">
         <div class="row between wrap">
-          <div><div class="row" style="gap:10px;margin-bottom:8px"><span class="checkmark">✓</span><b>Lesson 4 complete</b></div>
-            <p class="small">Up next: Lesson 5, Repair Fast · playing in <b id="countdown" style="font-family:var(--font-mono)"><b>5</b></b>s</p></div>
+          <div><div class="row" style="gap:10px;margin-bottom:8px"><span class="checkmark">&check;</span><b>Lesson 4 complete</b></div>
+            <p class="small">Up next: Lesson 5, Repair Fast &middot; playing in <b id="countdown" style="font-family:var(--font-mono)"><b>5</b></b>s</p></div>
           <div class="row"><button class="btn btn-primary btn-sm">Play now</button><button class="btn btn-secondary btn-sm" onclick="toast('Autoplay canceled.')">Not now</button></div>
         </div>
         <hr class="hr" style="margin:20px 0">
@@ -454,9 +455,9 @@ PAGES['player.html'] = dict(title='Lesson 4 · The Fundamentals of Fathering', d
       <b style="font-size:15px">The Fundamentals of Fathering</b>
       <div class="row" style="margin:12px 0 20px"><div class="progress-track" style="flex:1"><div class="progress-fill pine" style="width:33%"></div></div><span class="mono fine">4 of 12</span></div>
       <div class="stack-8" style="font-size:14px">
-        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">✓</span> 01 Why Presence Wins</span><span class="tag">8:12</span></div>
-        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">✓</span> 02 Your Baseline</span><span class="tag">9:04</span></div>
-        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">✓</span> 03 A Schedule They Can Trust</span><span class="tag">10:31</span></div>
+        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 01 Why Presence Wins</span><span class="tag">8:12</span></div>
+        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 02 Your Baseline</span><span class="tag">9:04</span></div>
+        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 03 A Schedule They Can Trust</span><span class="tag">10:31</span></div>
         <div class="row between" style="padding:10px 12px;border-left:3px solid var(--ember);border-radius:6px;background:var(--coal-2)"><b>04 Enter Their World</b><span class="tag">9:47</span></div>
         <div class="row between" style="padding:10px 12px"><span class="ash">05 Repair Fast</span><span class="tag" onclick="toast('Downloading… saved for offline.')" style="cursor:pointer">⬇ 9:12</span></div>
         <div class="row between" style="padding:10px 12px"><span class="ash">06 Say What You Stand For</span><span class="tag">8:58</span></div>
@@ -491,7 +492,7 @@ PAGES['plan.html'] = dict(title='My Plan', desc='Week 3 of 12. What this week as
         <div class="stack-16">
           <div class="actionrow" style="align-items:center">
             <div class="slot r-16x9" data-slot="IMG-P6-WK-01" style="flex:0 0 120px"></div>
-            <div style="flex:1"><b style="font-size:15px">Watch: Lesson 5, Repair Fast · 9 min</b>
+            <div style="flex:1"><b style="font-size:15px">Watch: Lesson 5, Repair Fast &middot; 9 min</b>
               <div class="progress-track" style="margin-top:10px;max-width:220px"><div class="progress-fill" style="width:40%"></div></div></div>
             <a class="btn btn-primary btn-sm play" href="player.html">Resume</a>
           </div>
@@ -510,7 +511,7 @@ PAGES['plan.html'] = dict(title='My Plan', desc='Week 3 of 12. What this week as
         <div class="weeks">
           <span class="done"></span><span class="done"></span><span class="now"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
         </div>
-        <div class="phaselabels"><span>WKS 1-4 · SHOW UP ON SCHEDULE</span><span>5-8 · ENTER THEIR WORLD</span><span>9-12 · SET THE STANDARD</span></div>
+        <div class="phaselabels"><span>WKS 1-4 &middot; SHOW UP ON SCHEDULE</span><span>5-8 &middot; ENTER THEIR WORLD</span><span>9-12 &middot; SET THE STANDARD</span></div>
       </div>
 
       <div class="card" style="max-width:460px">
@@ -564,7 +565,7 @@ PAGES['plan.html'] = dict(title='My Plan', desc='Week 3 of 12. What this week as
     <div class="tabpanel">
       <div class="grid-3" id="mylist">
         <a class="mediacard" href="class.html"><div class="slot r-16x9" data-slot="IMG-P6-ML-01"></div><div class="name" style="margin-top:10px">Raising Teens</div><div class="meta">Class</div></a>
-        <a class="mediacard" href="story.html"><div class="slot r-16x9" data-slot="IMG-P6-ML-02"></div><div class="name" style="margin-top:10px">Visitation Day</div><div class="meta">Story · 22 min</div></a>
+        <a class="mediacard" href="story.html"><div class="slot r-16x9" data-slot="IMG-P6-ML-02"></div><div class="name" style="margin-top:10px">Visitation Day</div><div class="meta">Story &middot; 22 min</div></a>
         <a class="mediacard" href="class.html"><div class="slot r-16x9" data-slot="IMG-P6-ML-03"></div><div class="name" style="margin-top:10px">Fathering Sons</div><div class="meta">Class</div></a>
       </div>
       <p class="fine" style="margin-top:24px">Save classes and stories here. Build your own bench.</p>
@@ -589,28 +590,28 @@ PAGES['circles.html'] = dict(title='My Circle', desc='Living Hope Men. One film,
           <div class="eyebrow" style="margin-bottom:14px">THIS WEEK IN CIRCLE</div>
           <div class="row" style="gap:18px;align-items:flex-start;margin-bottom:20px">
             <div class="slot r-16x9 play-overlay" data-slot="IMG-P7-CIR-01" style="flex:0 0 200px"><span class="tri"></span></div>
-            <div><b style="font-size:15px">Watch before Tuesday: After the Sentence · 22 min</b></div>
+            <div><b style="font-size:15px">Watch before Tuesday: After the Sentence &middot; 22 min</b></div>
           </div>
           <p class="quote" style="font-size:20px;margin-bottom:18px">"Where did your father's absence still shape your hand?"</p>
-          <div class="actionrow"><span class="checkmark">→</span><div class="txt">Tell one man in this Circle your week 3 action. Let him check you.</div></div>
+          <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Tell one man in this Circle your week 3 action. Let him check you.</div></div>
         </div>
         <div class="card" style="padding:24px">
           <div class="row" style="margin-bottom:22px"><span class="avatarchip">M</span><input class="input" placeholder="Say it straight"><button class="btn btn-primary btn-sm" onclick="toast('Posted to your Circle.')">Post</button></div>
           <div class="stack-24">
             <div><div class="row" style="margin-bottom:8px"><span class="avatarchip">D</span><b style="font-size:14px">Dave R.</b><span class="fine">2h</span><a class="link ash" href="#" style="font-size:12px;margin-left:auto" onclick="event.preventDefault();toast('Reported. A leader will review it.')">Report</a></div>
               <p class="small">Watched it on lunch. The visitation scene wrecked me. My old man never once showed. Breaking that this week.</p>
-              <div class="row" style="margin-top:8px"><a class="link ash" href="#" style="font-size:12px">Like · 6</a><a class="link ash" href="#" style="font-size:12px">Reply</a></div></div>
+              <div class="row" style="margin-top:8px"><a class="link ash" href="#" style="font-size:12px">Like &middot; 6</a><a class="link ash" href="#" style="font-size:12px">Reply</a></div></div>
             <div><div class="row" style="margin-bottom:8px"><span class="avatarchip">T</span><b style="font-size:14px">Tom K.</b><span class="fine">5h</span></div>
               <p class="small">My week 3 action is breakfast twice. Dave, check me Friday.</p>
-              <div class="row" style="margin-top:8px"><a class="link ash" href="#" style="font-size:12px">Like · 4</a><a class="link ash" href="#" style="font-size:12px">Reply</a></div></div>
+              <div class="row" style="margin-top:8px"><a class="link ash" href="#" style="font-size:12px">Like &middot; 4</a><a class="link ash" href="#" style="font-size:12px">Reply</a></div></div>
             <div><div class="row" style="margin-bottom:8px"><span class="avatarchip">J</span><b style="font-size:14px">Jesse P.</b><span class="fine">1d</span></div>
               <p class="small">First week here. Took the Profile Sunday. 58. Starting point.</p>
-              <div class="row" style="margin-top:8px"><a class="link ash" href="#" style="font-size:12px">Like · 9</a><a class="link ash" href="#" style="font-size:12px">Reply</a></div></div>
+              <div class="row" style="margin-top:8px"><a class="link ash" href="#" style="font-size:12px">Like &middot; 9</a><a class="link ash" href="#" style="font-size:12px">Reply</a></div></div>
           </div>
         </div>
       </div>
       <aside class="card" style="padding:20px">
-        <div class="eyebrow" style="margin-bottom:16px">MEMBERS · LAST 4 WEEKS</div>
+        <div class="eyebrow" style="margin-bottom:16px">MEMBERS &middot; LAST 4 WEEKS</div>
         <table style="font-size:13px"><tbody>
           <tr><td style="padding:8px 4px">Marcus T.</td><td class="row" style="gap:6px;border:0;padding:8px 4px"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></td></tr>
           <tr><td style="padding:8px 4px">Dave R.</td><td class="row" style="gap:6px;border:0;padding:8px 4px"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot on"></span></td></tr>
@@ -622,16 +623,16 @@ PAGES['circles.html'] = dict(title='My Circle', desc='Living Hope Men. One film,
 
     <div class="tabpanel">
       <table><thead><tr><th>Name</th><th>Baseline taken</th><th>Last active</th><th>Weeks attended</th></tr></thead><tbody>
-        <tr><td>Marcus T.</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">✓</span></td><td class="fine">Today</td><td class="mono fine">4 / 4</td></tr>
-        <tr><td>Dave R.</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">✓</span></td><td class="fine">2h ago</td><td class="mono fine">3 / 4</td></tr>
-        <tr><td>Tom K.</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">✓</span></td><td class="fine">5h ago</td><td class="mono fine">3 / 4</td></tr>
+        <tr><td>Marcus T.</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">&check;</span></td><td class="fine">Today</td><td class="mono fine">4 / 4</td></tr>
+        <tr><td>Dave R.</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">&check;</span></td><td class="fine">2h ago</td><td class="mono fine">3 / 4</td></tr>
+        <tr><td>Tom K.</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">&check;</span></td><td class="fine">5h ago</td><td class="mono fine">3 / 4</td></tr>
         <tr><td>Jesse P.</td><td class="fine">Not yet</td><td class="fine">1d ago</td><td class="mono fine">1 / 4</td></tr>
       </tbody></table>
     </div>
 
     <div class="tabpanel">
       <div class="grid-2" style="gap:24px">
-        <div class="card"><b style="font-size:15px">Session guide</b><p class="fine" style="margin:6px 0 16px">After the Sentence · 6 pages</p>
+        <div class="card"><b style="font-size:15px">Session guide</b><p class="fine" style="margin:6px 0 16px">After the Sentence &middot; 6 pages</p>
           <button class="btn btn-secondary btn-sm" onclick="toast('PDF wires to Supabase storage.')">Download PDF</button></div>
         <div class="card"><b style="font-size:15px">Start a meeting</b><p class="fine" style="margin:6px 0 16px">Projector-friendly mode: film, question, action on one screen.</p>
           <button class="btn btn-secondary btn-sm" onclick="toast('Opens the projector view.')">Start</button></div>
@@ -667,19 +668,19 @@ PAGES['groups.html'] = dict(title='For Groups', desc='Circles for churches, team
       <div class="bigscore" style="font-size:44px">$2,000<span class="ash" style="font-size:16px;font-family:var(--font-ui)"> / year</span></div>
       <p class="small" style="margin:8px 0 20px">Up to 25 seats</p>
       <div class="stack-8">
-        <div class="check"><span class="checkmark">✓</span><span class="small">Every class and film</span></div>
-        <div class="check"><span class="checkmark">✓</span><span class="small">Leader kits and guides</span></div>
-        <div class="check"><span class="checkmark">✓</span><span class="small">Admin analytics</span></div>
-        <div class="check"><span class="checkmark">✓</span><span class="small">Sponsored-seat option</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Every class and film</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Leader kits and guides</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Admin analytics</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Sponsored-seat option</span></div>
       </div></div>
     <div class="card" style="padding:32px"><div class="eyebrow" style="margin-bottom:12px">ORGANIZATION</div>
       <div class="bigscore" style="font-size:44px">Custom</div>
       <p class="small" style="margin:8px 0 20px">Custom seats, multi-Circle</p>
       <div class="stack-8">
-        <div class="check"><span class="checkmark">✓</span><span class="small">Everything in Circle</span></div>
-        <div class="check"><span class="checkmark">✓</span><span class="small">Rosters and CSV invites</span></div>
-        <div class="check"><span class="checkmark">✓</span><span class="small">Track assignment</span></div>
-        <div class="check"><span class="checkmark">✓</span><span class="small">Completion reporting</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Everything in Circle</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Rosters and CSV invites</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Track assignment</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Completion reporting</span></div>
       </div></div>
   </div>
   <p class="fine center" style="margin-top:18px">Pricing shown for design. Final pricing pends partner interviews.</p>
@@ -702,9 +703,9 @@ PAGES['groups.html'] = dict(title='For Groups', desc='Circles for churches, team
       <button class="btn btn-secondary btn-sm" onclick="toast('CSV upload wires to Supabase.')">Upload CSV</button>
     </div>
     <table><thead><tr><th>Name</th><th>Email</th><th>Baseline</th><th>Last active</th><th>Circle</th></tr></thead><tbody>
-      <tr><td>Marcus T.</td><td class="fine">m.t@…</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">✓</span></td><td class="fine">Today</td><td class="fine">Tuesday 0600</td></tr>
-      <tr><td>Dave R.</td><td class="fine">d.r@…</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">✓</span></td><td class="fine">2h</td><td class="fine">Tuesday 0600</td></tr>
-      <tr><td>Luis A.</td><td class="fine">l.a@…</td><td class="fine">—</td><td class="fine">Invited</td><td class="fine">Thursday 1900</td></tr>
+      <tr><td>Marcus T.</td><td class="fine">m.t@…</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">&check;</span></td><td class="fine">Today</td><td class="fine">Tuesday 0600</td></tr>
+      <tr><td>Dave R.</td><td class="fine">d.r@…</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">&check;</span></td><td class="fine">2h</td><td class="fine">Tuesday 0600</td></tr>
+      <tr><td>Luis A.</td><td class="fine">l.a@…</td><td class="fine">&mdash;</td><td class="fine">Invited</td><td class="fine">Thursday 1900</td></tr>
     </tbody></table>
   </div>
 </div></section>
@@ -754,13 +755,13 @@ PAGES['checkout.html'] = dict(title='Start your membership', desc='One membershi
         <p class="small" style="margin-bottom:14px">$10 a month, billed once a year</p>
         <div class="row between" style="margin-bottom:18px;padding:10px 12px;border:1px solid var(--hairline);border-radius:6px">
           <span class="small"><s class="ash">$120</s> <b class="bone">$79 founding member</b></span><span class="pill pill-new">Beta pricing</span></div>
-        <div class="row" style="gap:10px;margin-bottom:18px"><span class="checkmark">✓</span><span class="small">30-day money-back guarantee, no questions</span></div>
+        <div class="row" style="gap:10px;margin-bottom:18px"><span class="checkmark">&check;</span><span class="small">30-day money-back guarantee, no questions</span></div>
         <hr class="hr" style="margin-bottom:18px">
         <div class="stack-8">
-          <div class="check"><span class="checkmark">✓</span><span class="small">Every class and workbook</span></div>
-          <div class="check"><span class="checkmark">✓</span><span class="small">Your baseline and ninety-day plan</span></div>
-          <div class="check"><span class="checkmark">✓</span><span class="small">The Daily</span></div>
-          <div class="check"><span class="checkmark">✓</span><span class="small">Audio and downloads</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Every class and workbook</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Your baseline and ninety-day plan</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">The Daily</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Audio and downloads</span></div>
         </div>
         <p class="fine" style="margin-top:18px">By continuing you agree to the <a class="link ash" href="#" style="font-size:12px">terms</a>. Pricing shown for design pending pricing interviews.</p>
       </aside>
@@ -768,7 +769,7 @@ PAGES['checkout.html'] = dict(title='Start your membership', desc='One membershi
   </div>
   <div class="seqpanel">
     <div class="center" style="max-width:640px;margin:40px auto">
-      <span class="checkmark" style="width:56px;height:56px;font-size:26px;margin:0 auto 22px;display:inline-flex">✓</span>
+      <span class="checkmark" style="width:56px;height:56px;font-size:26px;margin:0 auto 22px;display:inline-flex">&check;</span>
       <h1 class="d-36" style="margin-bottom:10px">You're in.</h1>
       <p class="small" style="margin-bottom:36px">Receipt sent to m•••@•••.com.</p>
       <div class="grid-2" style="gap:20px;text-align:left">
@@ -846,9 +847,9 @@ PAGES['sponsor.html'] = dict(title='Sponsor a father', desc='$120 gives one year
     <p class="lead" style="margin:20px 0 8px">$120 gives one year to a father inside, or a veteran father coming home.</p>
     <p class="small" style="margin-bottom:28px">Your gift is tax-deductible. Fathers.com is a program of the National Center for Fathering, a 501(c)(3).</p>
     <div class="chiprow" style="margin-bottom:16px">
-      <button class="chip selected" data-toggle="single">1 father · $120</button>
-      <button class="chip" data-toggle="single">3 fathers · $360</button>
-      <button class="chip" data-toggle="single">10 fathers · $1,200</button>
+      <button class="chip selected" data-toggle="single">1 father &middot; $120</button>
+      <button class="chip" data-toggle="single">3 fathers &middot; $360</button>
+      <button class="chip" data-toggle="single">10 fathers &middot; $1,200</button>
       <button class="chip" data-toggle="single">Custom</button>
     </div>
     <label style="display:flex;gap:12px;align-items:center;color:var(--bone);font-size:14px;margin-bottom:18px"><input type="checkbox" class="toggle"> Make it monthly</label>
@@ -884,7 +885,7 @@ PAGES['account.html'] = dict(title='Account', desc='Settings, membership, notifi
 
     <div class="tabpanel">
       <div class="card" style="margin-bottom:20px"><div class="row between wrap">
-        <div><b>Fathers.com Annual</b><p class="small" style="margin-top:6px">Renews March 4, 2027 · $120</p></div>
+        <div><b>Fathers.com Annual</b><p class="small" style="margin-top:6px">Renews March 4, 2027 &middot; $120</p></div>
         <button class="btn btn-secondary btn-sm" onclick="toast('Card update wires to Stripe at deploy.')">Update payment</button></div>
         <hr class="hr" style="margin:18px 0">
         <div class="row between"><span class="small">Visa ending 4242</span><a class="link ash" href="#" style="font-size:13px">Update</a></div></div>
@@ -937,90 +938,160 @@ PAGES['account.html'] = dict(title='Account', desc='Settings, membership, notifi
 ''')
 
 # ================================================== certificates.html (P10 screens 1-3)
-PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Proof you did the work. Verified hours, identity checked, court-checkable serial.', active='Certificates', mode='public', body='''
-<header class="hero band-brass" style="padding:88px 0 72px"><div class="container" style="max-width:880px">
-  <div class="eyebrow brass" style="margin-bottom:16px">FATHERS.COM VERIFIED CERTIFICATES</div>
-  <h1 class="d-48">Proof you did the work.</h1>
-  <p class="lead" style="margin:18px 0 34px">Verified hours. Identity checked. A serial anyone can confirm online in ten seconds.</p>
-  <div class="steps3">
-    <div class="s"><div class="n">01</div><p class="small" style="margin-top:8px">Enroll and verify your ID</p></div>
-    <div class="s"><div class="n">02</div><p class="small" style="margin-top:8px">Do the hours, pass the checkpoints</p></div>
-    <div class="s"><div class="n">03</div><p class="small" style="margin-top:8px">Get a certificate courts can check</p></div>
+PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned proof that you did the work of becoming a better father. Verified hours, identity checked, a serial anyone can confirm.', active='Certificates', mode='public', body='''
+<!-- HERO: the certificate is the thesis -->
+<header class="cert-hero"><div class="container">
+  <div class="cert-hero-grid">
+    <div class="cert-hero-copy">
+      <div class="eyebrow brass" style="margin-bottom:18px">FATHERS.COM VERIFIED CERTIFICATES</div>
+      <h1 class="cert-h1">A document that<br>means something.</h1>
+      <p class="lead" style="margin:22px 0 34px">Not a participation ribbon. Earned proof that you did the work. For fathers, future fathers, and the men who mentor them, with verified hours, a checked identity, and a serial anyone can confirm.</p>
+      <div class="row wrap" style="gap:14px">
+        <a class="btn btn-yellow" href="#catalog">See the certificates</a>
+        <a class="btn btn-secondary" href="verify.html">Verify one</a>
+      </div>
+    </div>
+    <div class="cert-hero-art">
+      <div class="cert-doc-3d">
+        <div class="cert-doc">
+          <div class="cert-doc-brass"></div>
+          <div class="cert-seal">
+            <img src="assets/img/logomark-dark.png" alt="" class="lg-dark"><img src="assets/img/logomark-light.png" alt="" class="lg-light">
+          </div>
+          <div class="cert-doc-kicker">FATHERS.COM VERIFIED CERTIFICATE</div>
+          <div class="cert-doc-name">Marcus T.</div>
+          <div class="cert-doc-course">has completed the Fathering Fundamentals Certificate</div>
+          <div class="cert-doc-meta">10.0 verified instructional hours &middot; June 2, 2026</div>
+          <div class="cert-doc-rule"></div>
+          <div class="cert-doc-foot">
+            <div><div class="cert-doc-serial">SERIAL FC-2026-004317</div><div class="cert-doc-serial">Identity verified at enrollment</div></div>
+            <div class="cert-doc-qr">QR</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div></header>
 
-<section class="tight"><div class="container">
-  <div class="grid-4">
-    <div class="card brass-card hoverable"><div class="slot r-1x1" data-slot="IMG-P10-CAT-01" style="width:64px;margin-bottom:16px"></div>
-      <span class="pill pill-court" style="margin-bottom:12px">Court-ready</span>
-      <h3 style="margin:10px 0 8px;font-size:17px">Fathering Fundamentals Certificate</h3>
-      <p class="mono small">10.0 hours · $79</p>
-      <a class="link brass" href="#course" style="font-size:13px;margin-top:14px;display:inline-block">View requirements</a></div>
-    <div class="card brass-card hoverable"><div class="slot r-1x1" data-slot="IMG-P10-CAT-02" style="width:64px;margin-bottom:16px"></div>
-      <span class="pill pill-court" style="margin-bottom:12px">Court-ready</span>
-      <h3 style="margin:10px 0 8px;font-size:17px">Co-Parenting After Divorce Certificate</h3>
-      <p class="mono small">8.0 hours · $79</p>
-      <a class="link brass" href="#course" style="font-size:13px;margin-top:14px;display:inline-block">View requirements</a></div>
-    <div class="card brass-card hoverable"><div class="slot r-1x1" data-slot="IMG-P10-CAT-03" style="width:64px;margin-bottom:16px"></div>
-      <span class="pill pill-court" style="margin-bottom:12px">Court-ready</span>
-      <h3 style="margin:10px 0 8px;font-size:17px">Reentry Fatherhood Certificate</h3>
-      <p class="mono small">12.0 hours · $79</p>
-      <a class="link brass" href="#course" style="font-size:13px;margin-top:14px;display:inline-block">View requirements</a></div>
-    <div class="card brass-card hoverable"><div class="slot r-1x1" data-slot="IMG-P10-CAT-04" style="width:64px;margin-bottom:16px"></div>
-      <span class="pill pill-court" style="margin-bottom:12px">Court-ready</span>
-      <h3 style="margin:10px 0 8px;font-size:17px">Anger and Repair Certificate</h3>
-      <p class="mono small">8.0 hours · $79</p>
-      <a class="link brass" href="#course" style="font-size:13px;margin-top:14px;display:inline-block">View requirements</a></div>
+<!-- WHAT IT PROVES: verification as the differentiator, four pillars -->
+<section class="cert-proves"><div class="container">
+  <div class="center" style="max-width:640px;margin:0 auto 56px">
+    <h2 class="d-36">Anyone can print a certificate.<br>Ours can be checked.</h2>
+    <p class="lead" style="margin:16px auto 0">Four things separate a Fathers.com certificate from a PDF someone made in an afternoon.</p>
   </div>
-  <p class="fine" style="margin-top:16px">Pricing shown for design. Final pricing pends jurisdiction interviews.</p>
-</div></section>
-
-<section class="band tight"><div class="container row between wrap">
-  <div><b>Issuing for a program?</b><p class="small" style="margin-top:6px">Bulk seats, rosters, and completion reports.</p></div>
-  <a class="btn btn-secondary" href="groups.html#contact">Talk to us</a>
-</div></section>
-
-<section id="course"><div class="container" style="display:grid;grid-template-columns:1.4fr .8fr;gap:56px;align-items:start">
-  <div>
-    <div class="eyebrow brass" style="margin-bottom:12px">CERTIFICATE COURSE</div>
-    <h2 class="d-36" style="margin-bottom:10px">Fathering Fundamentals Certificate</h2>
-    <p class="mono small" style="margin-bottom:22px">10.0 verified hours</p>
-    <p class="small" style="max-width:60ch;margin-bottom:32px">The flagship curriculum hardened into proof. Same lessons, plus identity verification, logged time, checkpoints, and a final assessment. Built for fathers who need a document, not a participation ribbon.</p>
-    <div class="card brass-card" style="margin-bottom:36px"><div class="eyebrow brass" style="margin-bottom:16px">REQUIREMENTS</div>
-      <div class="stack-8">
-        <div class="check"><span class="checkmark" style="background:var(--brass)">✓</span><span class="small">Government ID verified at enrollment</span></div>
-        <div class="check"><span class="checkmark" style="background:var(--brass)">✓</span><span class="small">Per-lesson attention checkpoints</span></div>
-        <div class="check"><span class="checkmark" style="background:var(--brass)">✓</span><span class="small">Time-on-task logged, no skip credit</span></div>
-        <div class="check"><span class="checkmark" style="background:var(--brass)">✓</span><span class="small">Final assessment, 80 percent to pass</span></div>
-        <div class="check"><span class="checkmark" style="background:var(--brass)">✓</span><span class="small">Curriculum basis: the Keystone framework, National Center for Fathering</span></div>
-        <div class="check"><span class="checkmark" style="background:var(--brass)">✓</span><span class="small">Unique serial with public verification page</span></div>
-      </div></div>
-    <h3 style="font-family:var(--font-display);font-size:20px;margin-bottom:14px">How verification works while you watch</h3>
-    <div class="grid-3" style="gap:16px">
-      <div class="card"><p class="fine" style="margin-bottom:12px">ID STEP</p>
-        <div style="border:2px dashed var(--hairline-strong);border-radius:8px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;padding:12px;text-align:center"><span class="fine">Hold your ID inside the frame</span></div>
-        <p class="fine" style="margin-top:10px">Used to verify you. Deleted after issuance per our retention policy. <a class="link ash" href="#" style="font-size:11px">Retake</a></p></div>
-      <div class="card"><p class="fine" style="margin-bottom:12px">MID-LESSON CHECKPOINT</p>
-        <p class="small" style="margin-bottom:12px">What did Ken call the second pillar?</p>
-        <div class="stack-8">
-          <button class="chip" style="width:100%" onclick="toast('Correct. Rolling.')">Consistency</button>
-          <button class="chip" style="width:100%" onclick="toast('Not quite. Rewatch the last two minutes.')">Discipline</button>
-          <button class="chip" style="width:100%" onclick="toast('Not quite. Rewatch the last two minutes.')">Provision</button>
-        </div></div>
-      <div class="card"><p class="fine" style="margin-bottom:12px">HOURS LOGGED</p>
-        <p class="mono" style="font-size:22px;margin-bottom:14px">6.5 / 10.0</p>
-        <div class="progress-track"><div class="progress-fill brass" style="width:65%"></div></div>
-        <p class="fine" style="margin-top:12px">Time counts only while the lesson plays and you pass the checkpoints.</p></div>
+  <div class="cert-pillars">
+    <div class="cert-pillar">
+      <div class="cert-pillar-n">01</div>
+      <h3>Identity verified</h3>
+      <p>A government ID is checked at enrollment, then deleted. The name on the certificate is the man who earned it.</p>
+    </div>
+    <div class="cert-pillar">
+      <div class="cert-pillar-n">02</div>
+      <h3>Hours logged, not claimed</h3>
+      <p>Time on task is measured. No skip credit, no fast-forward. The hours on the document are hours he actually spent.</p>
+    </div>
+    <div class="cert-pillar">
+      <div class="cert-pillar-n">03</div>
+      <h3>Checkpoints passed</h3>
+      <p>Attention checks through every lesson and a final assessment at eighty percent. He learned it, he did not just watch it.</p>
+    </div>
+    <div class="cert-pillar">
+      <div class="cert-pillar-n">04</div>
+      <h3>Publicly verifiable</h3>
+      <p>Every certificate carries a unique serial with a public page. A court, an employer, or a program can confirm it instantly.</p>
     </div>
   </div>
-  <aside class="card brass-card" style="position:sticky;top:110px;padding:28px">
-    <div class="row between" style="margin-bottom:6px"><b>One certificate</b><b class="mono">$79</b></div>
-    <p class="small" style="margin-bottom:20px">90-day access</p>
-    <button class="btn btn-brass" style="width:100%" onclick="this.textContent='Starting…';var b=this;setTimeout(function(){b.textContent='Enroll and verify ID';toast('Enrollment wires to Stripe and ID verification at deploy.')},900)">Enroll and verify ID</button>
-    <p class="fine" style="margin-top:16px">Confirm acceptance with your court or program before enrolling. We provide verification, not legal guarantees.</p>
-    <hr class="hr" style="margin:18px 0">
-    <a class="link brass" href="certificate.html" style="font-size:14px">See a sample certificate</a>
-  </aside>
+</div></section>
+
+<!-- CATALOG: the certificates themselves -->
+<section id="catalog" class="band"><div class="container">
+  <div class="row between wrap" style="margin-bottom:40px;align-items:flex-end">
+    <div><div class="eyebrow brass" style="margin-bottom:12px">THE CERTIFICATES</div>
+    <h2 class="d-36">Five paths. Each one earned.</h2></div>
+    <p class="small" style="max-width:34ch">Open to every man. Each certificate is built on the Keystone framework from the National Center for Fathering.</p>
+  </div>
+  <div class="cert-cards">
+    <a class="cert-card" href="#fundamentals">
+      <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">10.0 hrs</span></div>
+      <h3>Fathering Fundamentals</h3>
+      <p>The flagship. The core of engaged, present fatherhood, hardened into proof.</p>
+      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
+    </a>
+    <a class="cert-card" href="#fundamentals">
+      <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
+      <h3>Co-Parenting After Divorce</h3>
+      <p>Leading well across two households. Built for the hardest season.</p>
+      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
+    </a>
+    <a class="cert-card" href="#fundamentals">
+      <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">12.0 hrs</span></div>
+      <h3>Reentry Fatherhood</h3>
+      <p>For fathers coming home. Rebuilding the relationship from day one.</p>
+      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
+    </a>
+    <a class="cert-card" href="#fundamentals">
+      <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
+      <h3>Anger and Repair</h3>
+      <p>Staying steady under pressure, and mending it when you do not.</p>
+      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
+    </a>
+    <a class="cert-card cert-card-wide" href="#fundamentals">
+      <div class="cert-card-top"><span class="pill pill-new">New</span><span class="cert-card-hrs">6.0 hrs</span></div>
+      <h3>Legacy and Presence</h3>
+      <p>The long view. Building traditions, telling the story, and being there for the years that matter.</p>
+      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
+    </a>
+  </div>
+  <p class="fine" style="margin-top:20px">Pricing shown for design. Final pricing pends jurisdiction interviews.</p>
+</div></section>
+
+<!-- PROOF IN CONTEXT: the certificate as a milestone, with real photography -->
+<section class="cert-context"><div class="container">
+  <div class="cert-context-grid">
+    <div class="cert-context-photo">
+      <img src="assets/img/photos/community-01.jpg" alt="Fathers gathered together">
+    </div>
+    <div class="cert-context-copy">
+      <div class="eyebrow brass" style="margin-bottom:14px">WHY IT MATTERS</div>
+      <h2 class="d-36" style="margin-bottom:20px">The document opens doors.<br>The work changes a family.</h2>
+      <p class="lead" style="margin-bottom:16px">A judge sees a serial they can verify. A program sees hours they can trust. But the man who earned it sees something else: the proof that he showed up, learned, and became someone his children can count on.</p>
+      <p class="small">That is the difference between a certificate and a keepsake. This is both.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- REQUIREMENTS: the flagship, detailed -->
+<section id="fundamentals"><div class="container">
+  <div class="cert-req-grid">
+    <div>
+      <div class="eyebrow brass" style="margin-bottom:12px">FLAGSHIP CERTIFICATE</div>
+      <h2 class="d-36" style="margin-bottom:8px">Fathering Fundamentals</h2>
+      <p class="mono small" style="margin-bottom:24px">10.0 verified instructional hours</p>
+      <p style="max-width:56ch;margin-bottom:32px;color:var(--ash)">The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment. Built for every man growing into fatherhood or mentorship, not just those with kids today.</p>
+      <h3 style="font-family:var(--font-display);font-weight:500;font-size:20px;margin-bottom:18px">What earning it requires</h3>
+      <div class="cert-reqs">
+        <div class="cert-req"><span class="cert-req-mark">&check;</span><span>A government ID, verified at enrollment and deleted after issuance</span></div>
+        <div class="cert-req"><span class="cert-req-mark">&check;</span><span>Attention checkpoints inside every lesson</span></div>
+        <div class="cert-req"><span class="cert-req-mark">&check;</span><span>Time on task logged, with no credit for skipping</span></div>
+        <div class="cert-req"><span class="cert-req-mark">&check;</span><span>A final assessment, eighty percent to pass</span></div>
+        <div class="cert-req"><span class="cert-req-mark">&check;</span><span>Curriculum built on the Keystone framework, National Center for Fathering</span></div>
+        <div class="cert-req"><span class="cert-req-mark">&check;</span><span>A unique serial with a public verification page</span></div>
+      </div>
+    </div>
+    <aside class="cert-req-side">
+      <div class="cert-req-card">
+        <div class="cert-req-price"><span class="mono">$79</span><span class="fine">one-time</span></div>
+        <a class="btn btn-yellow" href="profile.html" style="width:100%;margin-bottom:12px">Start with your baseline</a>
+        <a class="btn btn-secondary" href="classes.html" style="width:100%">Preview the classes</a>
+        <p class="fine" style="margin-top:18px;text-align:center">Take the Keystone Profile first. It shows you where to focus before you begin.</p>
+      </div>
+      <div class="cert-req-note">
+        <b>Issuing for a program?</b>
+        <p class="small" style="margin:6px 0 14px">Bulk seats, rosters, and completion reports for courts, agencies, and ministries.</p>
+        <a class="link brass" href="groups.html#contact" style="font-size:14px">Talk to us &rarr;</a>
+      </div>
+    </aside>
+  </div>
 </div></section>
 ''')
 
@@ -1038,7 +1109,7 @@ PAGES['certificate.html'] = dict(title='Certificate FC-2026-004317', desc='Fathe
     <div class="head">Fathers.com Verified Certificate</div>
     <div class="name">Marcus T.</div>
     <div class="course">has completed the Fathering Fundamentals Certificate</div>
-    <div class="hours">10.0 verified instructional hours · Completed June 2, 2026</div>
+    <div class="hours">10.0 verified instructional hours &middot; Completed June 2, 2026</div>
     <div class="rule"></div>
     <div class="sealrow">
       <div>
@@ -1068,7 +1139,7 @@ PAGES['verify.html'] = dict(title='Verify a certificate', desc='Enter a serial. 
       <button class="btn btn-primary">Verify</button>
     </form>
     <div id="v-ok" class="card" style="display:none;border-color:var(--pine-hi)">
-      <div class="row" style="margin-bottom:18px"><span class="checkmark">✓</span><b style="letter-spacing:.14em">VALID</b></div>
+      <div class="row" style="margin-bottom:18px"><span class="checkmark">&check;</span><b style="letter-spacing:.14em">VALID</b></div>
       <div class="stack-8">
         <div class="row between"><span class="fine">Recipient</span><b class="small" data-f="name"></b></div>
         <div class="row between"><span class="fine">Course</span><b class="small" data-f="course"></b></div>
@@ -1102,8 +1173,8 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='Eight weeks for fat
 
 <section class="tight" id="how"><div class="container">
   <div class="steps3" style="margin-bottom:40px">
-    <div class="s"><div class="n">01</div><p class="small" style="margin-top:8px">Watch a story · 24 min</p></div>
-    <div class="s"><div class="n">02</div><p class="small" style="margin-top:8px">Take your baseline · 12 min</p></div>
+    <div class="s"><div class="n">01</div><p class="small" style="margin-top:8px">Watch a story &middot; 24 min</p></div>
+    <div class="s"><div class="n">02</div><p class="small" style="margin-top:8px">Take your baseline &middot; 12 min</p></div>
     <div class="s"><div class="n">03</div><p class="small" style="margin-top:8px">Join an 8-week cohort</p></div>
   </div>
   <div class="row wrap" style="gap:18px;padding:18px 22px;border:1px solid var(--hairline);border-radius:8px">
@@ -1139,10 +1210,10 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='Eight weeks for fat
       <div class="eyebrow" style="margin-bottom:14px">THIS WEEK</div>
       <div class="row" style="gap:18px;align-items:flex-start;margin-bottom:18px">
         <div class="slot r-16x9 play-overlay" data-slot="IMG-P11-CH-01" style="flex:0 0 180px"><span class="tri"></span></div>
-        <b style="font-size:15px">Watch: The Turn · 18 min</b></div>
-      <div class="actionrow" style="margin-bottom:14px"><span class="checkmark">→</span><div class="txt">Tell your kid one true story from before they were born.</div></div>
+        <b style="font-size:15px">Watch: The Turn &middot; 18 min</b></div>
+      <div class="actionrow" style="margin-bottom:14px"><span class="checkmark">&rarr;</span><div class="txt">Tell your kid one true story from before they were born.</div></div>
       <div class="row between" style="padding:14px 16px;border:1px solid var(--hairline);border-radius:8px">
-        <span class="small">Thursday call · 2000 CT · Cameras optional. First names only.</span>
+        <span class="small">Thursday call &middot; 2000 CT &middot; Cameras optional. First names only.</span>
         <div class="row"><a class="link" href="#" style="font-size:13px" onclick="event.preventDefault();toast('Call link arrives by text Thursday at 1900.')">Join link</a><input type="checkbox" class="toggle" checked title="Remind me"></div></div>
       <div style="margin-top:26px"><div class="weeks" style="grid-template-columns:repeat(8,1fr)">
         <span class="done"></span><span class="done"></span><span class="now"></span><span></span><span></span><span></span><span></span><span></span></div>
@@ -1197,14 +1268,14 @@ PAGES['employers.html'] = dict(title='For Employers', desc='Your parental benefi
   <h2 class="d-28" style="margin-bottom:24px">What's in the seat</h2>
   <div class="grid-2" style="max-width:760px">
     <div class="stack-8">
-      <div class="check"><span class="checkmark">✓</span><span class="small">Every class and workbook</span></div>
-      <div class="check"><span class="checkmark">✓</span><span class="small">The new-father track</span></div>
-      <div class="check"><span class="checkmark">✓</span><span class="small">The Daily</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span class="small">Every class and workbook</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span class="small">The new-father track</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span class="small">The Daily</span></div>
     </div>
     <div class="stack-8">
-      <div class="check"><span class="checkmark">✓</span><span class="small">Audio for the commute</span></div>
-      <div class="check"><span class="checkmark">✓</span><span class="small">Spouse gift seat</span></div>
-      <div class="check"><span class="checkmark">✓</span><span class="small"><b class="bone">Aggregate reporting only.</b></span></div>
+      <div class="check"><span class="checkmark">&check;</span><span class="small">Audio for the commute</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span class="small">Spouse gift seat</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span class="small"><b class="bone">Aggregate reporting only.</b></span></div>
     </div>
   </div>
 </div></section>
@@ -1258,7 +1329,7 @@ if __name__ == '__main__':
             html += p['body']
             html += '\n<script src="assets/js/config.js"></script>\n<script src="assets/js/supabase-client.js"></script>\n<script src="assets/js/app.js"></script>\n'
             if fname == 'profile.html':
-                html += '<script src="assets/js/instrument-runner.js"></script>\n<script src="assets/js/keystone.js"></script>\n'
+                html += '<script src="assets/js/keystone-data.js"></script>\n<script src="assets/js/keystone-full.js"></script>\n<script src="assets/js/keystone-ui.js"></script>\n'
         else:
             html += nav(p.get('active',''), p.get('mode','public'))
             html += p['body']
