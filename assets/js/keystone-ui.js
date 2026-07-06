@@ -13,12 +13,46 @@
   // ---------- entry: choose mode, or resume ----------
   function start(){
     if(window.FC && FC.live && FC.uid()){
-      // check for an in-progress session to offer resume
+      // Did he just save-and-signup mid-assessment? Restore his local work into his new account.
+      var resuming = false;
+      try { resuming = localStorage.getItem('fc_resume_intent') === '1'; } catch(e){}
+      if(resuming){
+        try { localStorage.removeItem('fc_resume_intent'); } catch(e){}
+        var local = KS.restoreLocal();
+        if(local){
+          // create a session for this account and persist his answers, then resume in place.
+          KS.resumeOrStart(local.path === 'preparing' ? 'all_at_once' : 'all_at_once').then(function(){
+            KS.setPath(local.path || 'father');
+            // push each locally-held answer up to the new account session
+            var keys = Object.keys(local.answers || {});
+            var chain = Promise.resolve();
+            keys.forEach(function(k){ chain = chain.then(function(){ return KS.saveAnswer(k, local.answers[k]); }); });
+            chain.then(function(){ resumeInPlace(); });
+          });
+          return;
+        }
+      }
+      // otherwise, offer resume from an existing account session, or start fresh
       FC.sb.from('keystone_sessions').select('*').eq('user_id',FC.uid()).eq('status','in_progress')
         .order('updated_at',{ascending:false}).limit(1).maybeSingle().then(function(r){
           if(r.data){ KS.setPath(r.data.path||'father'); offerResume(r.data); } else { startFresh(); }
         }).catch(startFresh);
     } else { startFresh(); }
+  }
+
+  // Resume the assessment at the first unanswered question of the current path.
+  function resumeInPlace(){
+    var pathOrder = KS.pathSectionKeys();
+    var ans = KS.getAnswers();
+    // find the first section with an unanswered item
+    for(var si=0; si<pathOrder.length; si++){
+      var items = KS.itemsInSection(pathOrder[si]);
+      for(var i=0;i<items.length;i++){
+        if(ans[items[i].key]==null){ runSection(pathOrder[si]); return; }
+      }
+    }
+    // everything answered already -> go to finish
+    finish();
   }
 
   // If the man already chose his path on the homepage hero, honor it and skip the gate.
@@ -179,7 +213,7 @@
           '<button class="ks-back" '+(curIndex===0?'style="visibility:hidden"':'')+'>Back</button>'+
           '<span class="fine">'+answeredInSec+' answered</span>'+
         '</div>'+
-        (KS.getMode()==='by_section' ? '<p class="fine" style="margin-top:18px;text-align:center"><a href="plan.html" class="link ash" style="font-size:12px">Save and finish later</a></p>':'')+
+        '<p class="fine ks-savelink" style="margin-top:18px;text-align:center"><button class="ks-save-btn" id="ksSaveLater">Save and continue later</button></p>'+
       '</div>');
 
     root.querySelectorAll('.ks-opt').forEach(function(b){
@@ -193,6 +227,68 @@
     });
     var back = root.querySelector('.ks-back');
     if(back) back.onclick = function(){ if(curIndex>0){curIndex--; drawItem();} };
+    var saveBtn = document.getElementById('ksSaveLater');
+    if(saveBtn) saveBtn.onclick = function(){ saveAndContinueLater(); };
+  }
+
+  // ---------- SAVE AND CONTINUE LATER (from any question) ----------
+  // Signed in: just confirm it's saved (answers already persist per-answer) and route out.
+  // Signed out: capture email, sign him up, and mark his in-progress work to resume on return.
+  function saveAndContinueLater(){
+    KS.persistLocal();
+    var signedIn = window.FC && FC.live && FC.uid();
+    if(signedIn){
+      root.innerHTML = shell(
+        '<div class="center" style="padding:50px 0">'+
+          '<div class="ks-check">\u2713</div>'+
+          '<h2 style="margin:8px 0">Saved.</h2>'+
+          '<p class="helper">Your progress is saved to your account. Come back anytime and pick up right where you left off.</p>'+
+          '<a class="btn btn-primary" style="margin-top:24px" href="plan.html">Go to my plan</a>'+
+          '<p class="fine" style="margin-top:14px"><a class="link ash" href="profile.html" style="font-size:12px">Or keep going now</a></p>'+
+        '</div>');
+      return;
+    }
+    // signed out: email capture to save + create account
+    var answered = KS.answeredCount();
+    root.innerHTML = shell(
+      '<div class="ks-gate" style="max-width:480px">'+
+        '<div class="eyebrow brass" style="margin-bottom:14px">SAVE YOUR PROGRESS</div>'+
+        '<h2 style="margin:0 0 6px">Keep your place. Finish when you have time.</h2>'+
+        '<p class="helper" style="margin-bottom:22px">You\'ve answered '+answered+' question'+(answered===1?'':'s')+' so far. Enter your email and we\'ll save your progress and send you a link to pick up exactly where you left off, on any device.</p>'+
+        '<div class="ks-gate-form">'+
+          '<input class="input" type="email" id="ksSaveEmail" placeholder="you@email.com" autocomplete="email">'+
+          '<button class="btn btn-yellow" id="ksSaveGo" style="width:100%;margin-top:12px">Save my progress</button>'+
+          '<p class="ksmsg fine" id="ksSaveMsg" style="margin-top:12px;text-align:center"></p>'+
+        '</div>'+
+        '<p class="fine" style="margin-top:16px;text-align:center"><button class="ks-save-btn" id="ksSaveBack">Not now, keep going</button></p>'+
+      '</div>');
+    var input = document.getElementById('ksSaveEmail');
+    var go = document.getElementById('ksSaveGo');
+    var msg = document.getElementById('ksSaveMsg');
+    var backBtn = document.getElementById('ksSaveBack');
+    function submit(){
+      var email = (input.value||'').trim();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent='Enter a valid email.'; msg.style.color='var(--error)'; return; }
+      go.disabled = true; go.textContent = 'Saving...'; msg.textContent='';
+      // flag that this is a resume (not a completed result) so return lands back in the assessment
+      try { localStorage.setItem('fc_resume_intent','1'); } catch(e){}
+      if(window.FC && FC.signIn){
+        FC.signIn(email, 'profile.html').then(function(r){
+          if(r && r.error){ msg.textContent='Something went wrong. Try again.'; msg.style.color='var(--error)'; go.disabled=false; go.textContent='Save my progress'; return; }
+          root.innerHTML = shell(
+            '<div class="center" style="padding:44px 0">'+
+              '<div class="ks-check">\u2713</div>'+
+              '<h2 style="margin:8px 0">Check your email.</h2>'+
+              '<p class="helper">We saved your progress and sent a link to <b>'+esc(email)+'</b>. Click it to sign in and pick up right where you left off.</p>'+
+              '<p class="fine" style="margin-top:20px">No password needed. Your answers are waiting.</p>'+
+            '</div>');
+        });
+      }
+    }
+    go.addEventListener('click', submit);
+    input.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
+    if(backBtn) backBtn.onclick = function(){ drawItem(); };
+    input.focus();
   }
 
   function endSection(){

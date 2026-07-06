@@ -583,3 +583,8 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 .legal-note b{color:var(--brass)}
 .legal-body h2{font-family:var(--font-display);font-weight:500;font-size:22px;margin:32px 0 12px;color:var(--bone)}
 .legal-body p{font-size:16px;line-height:1.7;color:var(--ash);margin-bottom:8px;max-width:68ch}
+
+/* Save-and-continue-later control (visible from question one) */
+.ks-save-btn{background:transparent;border:none;color:var(--ash);font-family:var(--font-ui);font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:4px;transition:color .12s}
+.ks-save-btn:hover{color:var(--bone)}
+.ks-savelink{margin-top:18px}

@@ -88,12 +88,40 @@ window.KS = window.KS || {};
 
   KS.saveAnswer = function(key, value){
     answers[key] = value;
+    // Always mirror progress locally so a signed-out man can save-and-return without losing work.
+    KS.persistLocal();
     if(!(window.FC && FC.live && FC.uid() && session)) return Promise.resolve();
     return FC.sb.from('keystone_answers').upsert({
       session_id: session.id, user_id: FC.uid(), item_key: key, value: value,
       answered_at: new Date().toISOString()
     }, {onConflict:'session_id,item_key'});
   };
+
+  // Save the in-progress assessment to the browser (answers, path, sections done).
+  KS.persistLocal = function(){
+    try {
+      localStorage.setItem('fc_inprogress', JSON.stringify({
+        answers: answers, path: path,
+        sectionsDone: (session && session.sections_done) || [],
+        at: Date.now()
+      }));
+    } catch(e){}
+  };
+
+  // Restore an in-progress assessment from the browser (used on return before sign-in completes).
+  KS.restoreLocal = function(){
+    try {
+      var raw = localStorage.getItem('fc_inprogress');
+      if(!raw) return false;
+      var st = JSON.parse(raw);
+      if(!st || !st.answers) return false;
+      answers = st.answers;
+      if(st.path) path = st.path;
+      return st;
+    } catch(e){ return false; }
+  };
+
+  KS.clearLocal = function(){ try { localStorage.removeItem('fc_inprogress'); } catch(e){} };
 
   KS.markSectionDone = function(secKey, nextKey){
     if(!(window.FC && FC.live && session)) return Promise.resolve();
