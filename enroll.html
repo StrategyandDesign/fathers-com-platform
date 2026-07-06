@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enroll | Fathers.com</title>
+<meta name="description" content="Enroll in a Fathers.com verified certificate.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
+<link rel="stylesheet" href="assets/css/forge.css">
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://fathers-com-platform.vercel.app/enroll.html">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<meta name="theme-color" content="#000000">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Fathers.com">
+<meta property="og:title" content="Enroll | Fathers.com">
+<meta property="og:description" content="Enroll in a Fathers.com verified certificate.">
+<meta property="og:url" content="https://fathers-com-platform.vercel.app/enroll.html">
+<meta property="og:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Fathers.com, learn fatherhood from men who lived it">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Enroll | Fathers.com">
+<meta name="twitter:description" content="Enroll in a Fathers.com verified certificate.">
+<meta name="twitter:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
+</head>
+<body>
+<nav class="nav"><div class="container nav-inner">
+<a class="brand" href="index.html"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark"><b>Fathers.com</b></a>
+<ul class="nav-links"><li><a href="plan.html" >My Plan</a></li><li><a href="classes.html" >Classes</a></li><li><a href="stories.html" >Stories</a></li><li><a href="circles.html" >Circles</a></li><li><a href="certificates.html" class="active">Certificates</a></li></ul>
+<div class="nav-right"><a href="#" data-open-search class="hide-m">Search</a><a href="gift.html" class="hide-m">Gifts</a><a href="account.html" class="avatarchip" title="Account" style="text-decoration:none">M</a><button class="themeswitch" data-themeswitch aria-label="Switch palette" title="Switch palette"><span class="tsw-dot"></span></button><button class="nav-toggle">MENU</button></div>
+</div></nav>
+
+<style>
+.cpn-ok{color:var(--pine-hi)!important}
+.cpn-err{color:var(--error)!important}
+.enroll-code{display:flex;gap:10px;align-items:stretch}
+.enroll-code .input{flex:1}
+</style>
+<section class="tight" style="padding-top:56px"><div class="container" style="max-width:1040px">
+  <div id="enrollPanel">
+    <a class="link ash" href="certificates.html" style="font-size:13px;display:inline-block;margin-bottom:20px">&larr; All certificates</a>
+    <div style="display:grid;grid-template-columns:1.2fr .9fr;gap:48px;align-items:start" class="enroll-grid">
+      <div>
+        <div class="eyebrow brass" style="margin-bottom:14px">FATHERS.COM VERIFIED CERTIFICATE</div>
+        <h1 class="d-36" style="margin-bottom:14px">Enroll in <span id="certTitle">this certificate</span></h1>
+        <p class="lead" style="margin-bottom:30px">Court-ready proof that you did the work. Identity verified, hours logged, checkpoints passed, and a serial anyone can confirm.</p>
+        <div class="eyebrow" style="margin-bottom:16px">WHAT EARNING IT REQUIRES</div>
+        <div class="stack-16">
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Verify your identity once at enrollment. The ID is checked, then deleted.</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Complete the instructional hours. Time on task is measured, not claimed.</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Pass the checkpoints and a final assessment at eighty percent.</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Receive a unique serial with a public verification page.</span></div>
+        </div>
+        <p class="fine" style="margin-top:24px">Have a program code from your church, group, or organization? Enter it in the box and your enrollment is free.</p>
+      </div>
+      <aside class="card" style="padding:28px">
+        <div class="row between" style="margin-bottom:4px"><b id="certTitleSum">This certificate</b><b class="mono" id="priceLine">$79.00</b></div>
+        <p class="small" style="margin-bottom:20px"><span id="certHours">10.0</span> verified instructional hours &middot; one-time</p>
+
+        <div class="field" style="margin-bottom:6px"><label>Program code</label>
+          <div class="enroll-code">
+            <input class="input" id="couponInput" placeholder="Enter code" autocomplete="off" autocapitalize="none" spellcheck="false">
+            <button class="btn btn-secondary" id="couponApply">Apply</button>
+          </div>
+        </div>
+        <p class="fine" id="couponMsg" style="margin:0 0 16px;min-height:16px"></p>
+
+        <hr class="hr" style="margin-bottom:14px">
+        <div class="row between" id="discountLine" style="display:none;margin-bottom:8px"><span class="small">Program code</span><span class="mono small cpn-ok" id="discountAmt">&minus;$79.00</span></div>
+        <div class="row between" style="margin-bottom:20px"><b>Total</b><b class="mono" id="totalLine">$79.00</b></div>
+
+        <button class="btn btn-primary" id="enrollBtn" style="width:100%">Continue</button>
+        <p class="fine" id="enrollNote" style="margin-top:14px">Card payment activates soon. Program-code enrollment is live now.</p>
+      </aside>
+    </div>
+  </div>
+
+  <div id="successPanel" style="display:none">
+    <div class="center" style="max-width:620px;margin:40px auto">
+      <span class="checkmark" style="width:56px;height:56px;font-size:26px;margin:0 auto 22px;display:inline-flex">&check;</span>
+      <h1 class="d-36" style="margin-bottom:10px">You are enrolled.</h1>
+      <p class="small" style="margin-bottom:36px">Your seat in <b class="bone" id="successTitle">this certificate</b> is saved. Your first step is to verify your identity, then begin the hours. Nothing expires, so start whenever you are ready.</p>
+      <div class="row wrap" style="gap:14px;justify-content:center">
+        <a class="btn btn-primary" id="beginBtn" href="class.html">Begin your certificate</a>
+        <a class="btn btn-secondary" href="plan.html">Back to My Plan</a>
+      </div>
+    </div>
+  </div>
+</div></section>
+<script src="assets/js/enroll.js"></script>
+<footer><div class="container">
+<div class="footgrid">
+  <div><a class="brand" href="index.html" style="margin-bottom:16px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="" style="height:34px"><b>Fathers.com</b></a>
+    <p class="small" style="margin-top:14px;max-width:32ch">Presence is a skill. Train it.</p>
+    <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
+  <div><h4>Train</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="profile.html">The Keystone Profile</a></li><li><a href="certificates.html">Certificates</a></li></ul></div>
+  <div><h4>Programs</h4><ul><li><a href="groups.html">For Groups</a></li><li><a href="veterans.html">For Veterans</a></li><li><a href="employers.html">For Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="#">About NCF</a></li><li><a href="#">Research</a></li><li><a href="gift.html">Gifts</a></li><li><a href="mailto:Team@Fathers.com">Contact</a></li></ul></div>
+  <div><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="security.html">Security</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
+</div>
+<div style="margin-top:48px;max-width:420px"><h4 style="font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:12px">One useful thing for fathers, weekly</h4>
+<form class="row" data-lead="newsletter" data-done="You are on the list. One useful thing, weekly."><input class="input" name="email" type="email" required placeholder="Email address"><button class="btn btn-secondary btn-sm">Send it</button></form></div>
+<div class="footbottom"><span class="fine">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit.</span><span class="fine">© <span data-year></span> National Center for Fathering</span></div>
+</div></footer>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/roles.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

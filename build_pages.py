@@ -9,7 +9,7 @@ SITE_URL = "https://fathers-com-platform.vercel.app"
 OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 
 # Private / transactional pages: keep them out of Google's index. Everything else is indexable.
-NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'login.html'}
+NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html'}
 
 
 def _esc(s):
@@ -449,7 +449,9 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
         <div class="check"><span class="checkmark">&check;</span><span class="small">30-day money-back guarantee</span></div>
       </div></div>
     <div class="card brass-card"><p class="small" style="margin-bottom:12px">Need court-ready proof? This class has a Verified Certificate edition.</p>
-      <button class="link brass" id="seeCert" data-cert-course="The Fundamentals of Fathering" data-cert-hours="10.0" style="font-size:14px;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px">See the Certificate</button></div>
+      <div class="row wrap" style="gap:14px;align-items:center">
+        <a class="btn btn-yellow btn-sm" href="enroll.html?cert=fundamentals&amp;title=Fathering%20Fundamentals&amp;hours=10.0">Earn the certificate</a>
+        <button class="link brass" id="seeCert" data-cert-course="The Fundamentals of Fathering" data-cert-hours="10.0" style="font-size:14px;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px">See the Certificate</button></div></div>
   </aside>
 </div></section>
 
@@ -986,6 +988,19 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
   </div>
 </div></section>
 
+<!-- HOW TO EARN ONE: make the process obvious -->
+<section class="tight"><div class="container">
+  <div class="center" style="max-width:640px;margin:0 auto 40px">
+    <div class="eyebrow brass" style="margin-bottom:12px">HOW TO EARN ONE</div>
+    <h2 class="d-36">Three steps to your certificate.</h2>
+  </div>
+  <div class="grid-3">
+    <div class="card" style="padding:24px"><div class="mono ash" style="margin-bottom:10px">STEP 1</div><b>Enroll</b><p class="small" style="margin-top:8px">Pick a certificate and enroll. Free with your program code if you have one.</p></div>
+    <div class="card" style="padding:24px"><div class="mono ash" style="margin-bottom:10px">STEP 2</div><b>Do the work</b><p class="small" style="margin-top:8px">Complete the instructional hours and pass the checkpoints. Time on task is measured.</p></div>
+    <div class="card" style="padding:24px"><div class="mono ash" style="margin-bottom:10px">STEP 3</div><b>Get your serial</b><p class="small" style="margin-top:8px">Pass the final and receive a verified certificate a court or employer can confirm.</p></div>
+  </div>
+</div></section>
+
 <!-- CATALOG: the certificates themselves -->
 <section id="catalog" class="band"><div class="container">
   <div class="row between wrap" style="margin-bottom:40px;align-items:flex-end">
@@ -994,38 +1009,38 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
     <p class="small" style="max-width:34ch">Open to every man. Each certificate is built on the Keystone framework from the National Center for Fathering.</p>
   </div>
   <div class="cert-cards">
-    <a class="cert-card" href="#fundamentals" data-cert="fundamentals" data-title="Fathering Fundamentals" data-hours="10.0" data-desc="The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment.">
+    <a class="cert-card" href="enroll.html?cert=fundamentals&amp;title=Fathering%20Fundamentals&amp;hours=10.0" data-cert="fundamentals" data-title="Fathering Fundamentals" data-hours="10.0" data-desc="The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">10.0 hrs</span></div>
       <h3>Fathering Fundamentals</h3>
       <p>The flagship. The core of engaged, present fatherhood, hardened into proof.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
+      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
     </a>
-    <a class="cert-card" href="#fundamentals" data-cert="coparenting" data-title="Co-Parenting After Divorce" data-hours="8.0" data-desc="Leading well across two households. Built for the hardest season, with the same verification rigor: identity checked, hours logged, checkpoints, and a final assessment.">
+    <a class="cert-card" href="enroll.html?cert=coparenting&amp;title=Co-Parenting%20After%20Divorce&amp;hours=8.0" data-cert="coparenting" data-title="Co-Parenting After Divorce" data-hours="8.0" data-desc="Leading well across two households. Built for the hardest season, with the same verification rigor: identity checked, hours logged, checkpoints, and a final assessment.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
       <h3>Co-Parenting After Divorce</h3>
       <p>Leading well across two households. Built for the hardest season.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
+      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
     </a>
-    <a class="cert-card" href="#fundamentals" data-cert="reentry" data-title="Reentry Fatherhood" data-hours="12.0" data-desc="For fathers coming home. Rebuilding the relationship from day one, with identity verification, logged time, checkpoints, and a final assessment a court can trust.">
+    <a class="cert-card" href="enroll.html?cert=reentry&amp;title=Reentry%20Fatherhood&amp;hours=12.0" data-cert="reentry" data-title="Reentry Fatherhood" data-hours="12.0" data-desc="For fathers coming home. Rebuilding the relationship from day one, with identity verification, logged time, checkpoints, and a final assessment a court can trust.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">12.0 hrs</span></div>
       <h3>Reentry Fatherhood</h3>
       <p>For fathers coming home. Rebuilding the relationship from day one.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
+      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
     </a>
-    <a class="cert-card" href="#fundamentals" data-cert="anger" data-title="Anger and Repair" data-hours="8.0" data-desc="Staying steady under pressure, and mending it when you do not. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
+    <a class="cert-card" href="enroll.html?cert=anger&amp;title=Anger%20and%20Repair&amp;hours=8.0" data-cert="anger" data-title="Anger and Repair" data-hours="8.0" data-desc="Staying steady under pressure, and mending it when you do not. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
       <h3>Anger and Repair</h3>
       <p>Staying steady under pressure, and mending it when you do not.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
+      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
     </a>
-    <a class="cert-card cert-card-wide" href="#fundamentals" data-cert="legacy" data-title="Legacy and Presence" data-hours="6.0" data-desc="The long view. Building traditions, telling the story, and being there for the years that matter, with the same verification standard behind every Fathers.com certificate.">
+    <a class="cert-card cert-card-wide" href="enroll.html?cert=legacy&amp;title=Legacy%20and%20Presence&amp;hours=6.0" data-cert="legacy" data-title="Legacy and Presence" data-hours="6.0" data-desc="The long view. Building traditions, telling the story, and being there for the years that matter, with the same verification standard behind every Fathers.com certificate.">
       <div class="cert-card-top"><span class="pill pill-new">New</span><span class="cert-card-hrs">6.0 hrs</span></div>
       <h3>Legacy and Presence</h3>
       <p>The long view. Building traditions, telling the story, and being there for the years that matter.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">View requirements &rarr;</span></div>
+      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
     </a>
   </div>
-  <p class="fine" style="margin-top:20px">Pricing shown for design. Final pricing pends jurisdiction interviews.</p>
+  <p class="fine" style="margin-top:20px">Each certificate is $79. Fathers in a partnered church, group, or program enroll free with their program code.</p>
 </div></section>
 
 <!-- PROOF IN CONTEXT: the certificate as a milestone, with real photography -->
@@ -1420,6 +1435,68 @@ PAGES['login.html'] = dict(title='Log in', desc='Sign in to Fathers.com with an 
   </div>
 </div>
 """)
+
+# ================================================== enroll.html (certificate enrollment + coupon)
+PAGES['enroll.html'] = dict(title='Enroll', desc='Enroll in a Fathers.com verified certificate.', active='Certificates', mode='app', body='''
+<style>
+.cpn-ok{color:var(--pine-hi)!important}
+.cpn-err{color:var(--error)!important}
+.enroll-code{display:flex;gap:10px;align-items:stretch}
+.enroll-code .input{flex:1}
+</style>
+<section class="tight" style="padding-top:56px"><div class="container" style="max-width:1040px">
+  <div id="enrollPanel">
+    <a class="link ash" href="certificates.html" style="font-size:13px;display:inline-block;margin-bottom:20px">&larr; All certificates</a>
+    <div style="display:grid;grid-template-columns:1.2fr .9fr;gap:48px;align-items:start" class="enroll-grid">
+      <div>
+        <div class="eyebrow brass" style="margin-bottom:14px">FATHERS.COM VERIFIED CERTIFICATE</div>
+        <h1 class="d-36" style="margin-bottom:14px">Enroll in <span id="certTitle">this certificate</span></h1>
+        <p class="lead" style="margin-bottom:30px">Court-ready proof that you did the work. Identity verified, hours logged, checkpoints passed, and a serial anyone can confirm.</p>
+        <div class="eyebrow" style="margin-bottom:16px">WHAT EARNING IT REQUIRES</div>
+        <div class="stack-16">
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Verify your identity once at enrollment. The ID is checked, then deleted.</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Complete the instructional hours. Time on task is measured, not claimed.</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Pass the checkpoints and a final assessment at eighty percent.</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Receive a unique serial with a public verification page.</span></div>
+        </div>
+        <p class="fine" style="margin-top:24px">Have a program code from your church, group, or organization? Enter it in the box and your enrollment is free.</p>
+      </div>
+      <aside class="card" style="padding:28px">
+        <div class="row between" style="margin-bottom:4px"><b id="certTitleSum">This certificate</b><b class="mono" id="priceLine">$79.00</b></div>
+        <p class="small" style="margin-bottom:20px"><span id="certHours">10.0</span> verified instructional hours &middot; one-time</p>
+
+        <div class="field" style="margin-bottom:6px"><label>Program code</label>
+          <div class="enroll-code">
+            <input class="input" id="couponInput" placeholder="Enter code" autocomplete="off" autocapitalize="none" spellcheck="false">
+            <button class="btn btn-secondary" id="couponApply">Apply</button>
+          </div>
+        </div>
+        <p class="fine" id="couponMsg" style="margin:0 0 16px;min-height:16px"></p>
+
+        <hr class="hr" style="margin-bottom:14px">
+        <div class="row between" id="discountLine" style="display:none;margin-bottom:8px"><span class="small">Program code</span><span class="mono small cpn-ok" id="discountAmt">&minus;$79.00</span></div>
+        <div class="row between" style="margin-bottom:20px"><b>Total</b><b class="mono" id="totalLine">$79.00</b></div>
+
+        <button class="btn btn-primary" id="enrollBtn" style="width:100%">Continue</button>
+        <p class="fine" id="enrollNote" style="margin-top:14px">Card payment activates soon. Program-code enrollment is live now.</p>
+      </aside>
+    </div>
+  </div>
+
+  <div id="successPanel" style="display:none">
+    <div class="center" style="max-width:620px;margin:40px auto">
+      <span class="checkmark" style="width:56px;height:56px;font-size:26px;margin:0 auto 22px;display:inline-flex">&check;</span>
+      <h1 class="d-36" style="margin-bottom:10px">You are enrolled.</h1>
+      <p class="small" style="margin-bottom:36px">Your seat in <b class="bone" id="successTitle">this certificate</b> is saved. Your first step is to verify your identity, then begin the hours. Nothing expires, so start whenever you are ready.</p>
+      <div class="row wrap" style="gap:14px;justify-content:center">
+        <a class="btn btn-primary" id="beginBtn" href="class.html">Begin your certificate</a>
+        <a class="btn btn-secondary" href="plan.html">Back to My Plan</a>
+      </div>
+    </div>
+  </div>
+</div></section>
+<script src="assets/js/enroll.js"></script>
+''')
 
 # ================================================== WRITER
 if __name__ == '__main__':

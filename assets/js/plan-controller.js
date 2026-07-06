@@ -180,6 +180,19 @@
     }
     html += '</div>';
 
+    // earn a certificate: the obvious next step from the plan
+    html +=
+      '<div class="card" style="padding:24px;margin-top:8px;border:1px solid var(--brass)">'+
+        '<div class="row between wrap" style="gap:16px;align-items:center">'+
+          '<div style="max-width:58ch">'+
+            '<div class="eyebrow brass" style="margin-bottom:8px">EARN A CERTIFICATE</div>'+
+            '<b style="font-size:16px">Ready for proof you did the work?</b>'+
+            '<p class="small" style="margin-top:6px">Turn your plan into a court-ready, verified certificate. Identity checked, hours logged, a serial anyone can confirm. Free with your program code.</p>'+
+          '</div>'+
+          '<a class="btn btn-yellow" href="certificates.html" style="white-space:nowrap">See certificates</a>'+
+        '</div>'+
+      '</div>';
+
     // retake + link to full results
     html +=
       '<div class="row wrap" style="gap:14px;margin-top:8px">'+
