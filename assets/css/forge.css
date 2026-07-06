@@ -149,7 +149,7 @@ html[data-theme="light"] .themeswitch .tsw-dot{left:4px}
 .btn-primary:hover{background:var(--ember-btn-hover)}
 .btn-primary:active{transform:translateY(1px)}
 .btn-primary:disabled{background:#4A4A4A;color:#9E9E9E;cursor:not-allowed}
-.btn-yellow{background:var(--yellow);color:#0A0A0A}
+.btn-yellow{background:var(--yellow)!important;color:#0A0A0A!important}
 .btn-yellow:hover{background:var(--yellow-hi)}
 html[data-theme="light"] .btn-primary:disabled{background:#DADADA;color:#8A8A8A}
 .btn-secondary{background:transparent;color:var(--bone);border-color:var(--bone)}
@@ -380,10 +380,10 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
   mask-image:linear-gradient(to bottom,transparent 0,#000 14%,#000 86%,transparent 100%);
 }
 .hm-col{overflow:hidden}
-.hm-col-b{margin-top:56px}          /* offset the second column for a staggered read */
+.hm-col-b{margin-top:0}   /* both columns start at the fade edge so both fade equally */
 .hm-track{display:flex;flex-direction:column;gap:16px;will-change:transform;
-  animation:hm-scroll 34s linear infinite}
-.hm-track-slow{animation-duration:46s}
+  animation:hm-scroll 64s linear infinite}
+.hm-track-slow{animation-duration:84s}
 .hm-col:hover .hm-track{animation-play-state:paused}
 @keyframes hm-scroll{
   from{transform:translateY(0)}
@@ -398,7 +398,7 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
   width:0;height:0;border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent}
 @media(max-width:680px){
   .heromarquee{height:56vh;gap:12px}
-  .hm-col-b{margin-top:40px}
+  .hm-col-b{margin-top:0}
 }
 @media (prefers-reduced-motion:reduce){
   .hm-track,.hm-track-slow{animation:none}
