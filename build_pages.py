@@ -404,7 +404,7 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
         <div class="check"><span class="checkmark">&check;</span><span class="small">30-day money-back guarantee</span></div>
       </div></div>
     <div class="card brass-card"><p class="small" style="margin-bottom:12px">Need court-ready proof? This class has a Verified Certificate edition.</p>
-      <a class="link brass" href="certificates.html" style="font-size:14px">See the Certificate</a></div>
+      <button class="link brass" id="seeCert" data-cert-course="The Fundamentals of Fathering" data-cert-hours="10.0" style="font-size:14px;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px">See the Certificate</button></div>
   </aside>
 </div></section>
 
@@ -414,6 +414,7 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
     data-titles="Fathering Sons|Raising Teens|The First Five Years|Coming Home Present"
     data-metas="11 lessons|13 lessons|10 lessons|10 lessons"></div>
 </div></section>
+<script src="assets/js/cert-preview.js"></script>
 ''')
 
 # ================================================== player.html (P5)

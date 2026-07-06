@@ -272,9 +272,11 @@ tr:hover td{background:var(--coal-2)}
 
 /* ---------- accordion ---------- */
 details{border-bottom:1px solid var(--hairline)}
-details summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:20px 4px;font-size:16px;font-weight:500}
+details summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:20px;padding:20px 4px;font-size:16px;font-weight:500}
 details summary::-webkit-details-marker{display:none}
-details summary::after{content:"+";font-family:var(--font-mono);font-size:20px;color:var(--ash)}
+details summary > span:first-child{min-width:0}
+details summary .tag{font-family:var(--font-mono);font-variant-numeric:tabular-nums;min-width:52px;text-align:right;color:var(--ash);background:transparent;border:none;padding:0}
+details summary::after{content:"+";font-family:var(--font-mono);font-size:20px;color:var(--ash);width:20px;text-align:center}
 details[open] summary::after{content:"\2013"}
 details .body{padding:0 4px 22px;color:var(--ash);max-width:64ch}
 
@@ -625,3 +627,28 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
   .glance{grid-template-columns:1fr 1fr}
   .glance-next{grid-column:1 / -1}
 }
+
+/* ---------- certificate preview modal ---------- */
+.certmodal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+.certmodal{background:var(--coal);border:1px solid var(--hairline-strong);border-radius:var(--r-card);max-width:560px;width:100%;padding:32px;position:relative;margin:auto}
+.certmodal-close{position:absolute;top:16px;right:18px;background:none;border:none;color:var(--ash);font-size:28px;line-height:1;cursor:pointer;padding:4px}
+.certmodal-close:hover{color:var(--bone)}
+.certmodal-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;color:var(--brass);text-align:center;margin-bottom:20px}
+/* the rendered certificate document (white, like the real one) */
+.certmodal-doc{background:#FFFFFF;color:#141210;border-radius:6px;padding:36px 32px 28px;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.cmd-brass{height:4px;background:linear-gradient(90deg,#B98A2F,#E4C876,#8A6722);border-radius:2px;margin-bottom:24px}
+.cmd-seal{width:52px;height:52px;margin:0 auto 18px;border-radius:50%;border:2px solid #C9973B;display:flex;align-items:center;justify-content:center;background:#FBF6EA}
+.cmd-seal img{height:28px;width:auto}
+.cmd-kicker{font-family:var(--font-mono);font-size:9px;letter-spacing:.24em;color:#8A7A55;text-align:center;margin-bottom:16px}
+.cmd-name{font-family:var(--font-display);font-weight:600;font-size:28px;text-align:center;color:#141210;margin-bottom:8px;line-height:1}
+.cmd-course{text-align:center;font-size:13px;color:#3A362E;margin-bottom:10px;line-height:1.4}
+.cmd-meta{font-family:var(--font-mono);font-size:10px;text-align:center;color:#6A6252}
+.cmd-rule{border-top:1.5px solid #1B2E28;margin:22px 0 16px}
+.cmd-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.cmd-serials{font-family:var(--font-mono);font-size:9px;color:#6A6252;line-height:1.8}
+.cmd-qr{flex:0 0 auto}
+.cmd-qr canvas{display:block;width:88px;height:88px;border:1px solid #E5E0D5;border-radius:4px}
+.certmodal-note{font-size:12px;color:var(--ash);text-align:center;margin:20px 0;line-height:1.5}
+.certmodal-actions{display:flex;gap:12px}
+.certmodal-actions .btn{flex:1}
+@media(max-width:520px){.certmodal-actions{flex-direction:column}.cmd-foot{flex-direction:column;align-items:center;gap:14px}}
