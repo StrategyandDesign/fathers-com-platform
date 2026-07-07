@@ -9,10 +9,10 @@
   if (!matchEl) return;
 
   var GREET = {
-    active: 'You are serving now. Here is support built for that.',
-    guard_reserve: 'Guard and Reserve carry a double load. Here is support for it.',
-    veteran: 'Welcome home. Here is support built for veterans and their families.',
-    family: 'You hold the home together. Here is support for military families.'
+    active: 'You are still in the fight. This is for the front no one briefs you on: home.',
+    guard_reserve: 'You carry two lives at once. This is for the one waiting at home.',
+    veteran: 'You carried the load out there. Here is where you pick up the one that matters most.',
+    family: 'You hold the line at home. Here is support for your family and the one who served.'
   };
 
   function init(){
