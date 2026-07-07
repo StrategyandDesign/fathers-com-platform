@@ -47,7 +47,13 @@ def test_circles_is_live_not_demo(page, server):
     assert 'id="circlePostBtn"' in html
     assert "assets/js/circles.js" in html
     assert "visitation scene wrecked me" not in html          # demo posts stay dead
-    page.goto(f"{server}/circles.html", wait_until="load"); page.wait_for_timeout(800)
+    page.goto(f"{server}/circles.html", wait_until="load")
+    # Poll rather than hook navigation: the redirect aborts in-flight requests
+    # by design (offline suite), which poisons wait_for_url's event listener.
+    import time as _t
+    deadline = _t.time() + 8
+    while _t.time() < deadline and "login.html" not in page.url:
+        page.wait_for_timeout(200)
     assert "login.html" in page.url                            # the gate works
 
 def test_voice_page_identity(page, server):
@@ -62,3 +68,14 @@ def test_admin_certificate_console_present(page, server):
     html = _fetch(server, "admin.html")
     for hook in ['id="cert-course-select"', 'id="cert-videos"', 'id="cert-approvals"', "admin-certs.js"]:
         assert hook in html
+
+def test_enroll_sends_intent_not_money(page, server):
+    # The enroll page must reference the server-side checkout and carry no
+    # client-side coupon verdict. Structural check on the shipped script.
+    js = _fetch(server, "assets/js/enroll.js")
+    assert "create_checkout" in js                      # calls the server protocol
+    assert "functions.invoke('checkout'" in js
+    assert "raw === CODE" not in js                     # old client-side verdict is gone
+    page.goto(f"{server}/enroll.html?cert=fundamentals", wait_until="load"); page.wait_for_timeout(500)
+    assert page.query_selector("#couponInput") is not None
+    assert page.query_selector("#enrollBtn") is not None
