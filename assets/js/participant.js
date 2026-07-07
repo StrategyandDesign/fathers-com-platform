@@ -10,10 +10,15 @@
   var demo = !(window.FC && FC.live);
 
   function boot(){
-    if (demo) { el('pt-results').innerHTML='<p class="fine">Live data loads with Supabase keys.</p>'; return; }
+    var app = el('app');
+    if (demo) { if(app) app.style.display=''; el('pt-results').innerHTML='<p class="fine">Live data loads with Supabase keys.</p>'; return; }
     if (window.FCR && FCR.guard) {
-      FCR.guard(['admin']).then(function(ok){ if(!ok){ el('pt-denied') && (el('pt-denied').style.display=''); return; } wire(); });
-    } else { wire(); }
+      FCR.guard(['admin']).then(function(ok){
+        if(!ok){ var d=el('denied'); if(d) d.style.display=''; return; }
+        if(app) app.style.display='';       // reveal the dashboard body (was the black-screen bug)
+        wire();
+      }, function(){ if(app) app.style.display=''; wire(); });   // guard error: still show the tool
+    } else { if(app) app.style.display=''; wire(); }
   }
 
   function wire(){

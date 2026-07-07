@@ -92,3 +92,10 @@ def test_keystone_resume_advances_past_full_section(page, server):
     js = _fetch(server, "assets/js/keystone-ui.js")
     assert "curIndex = curItems.length;" in js
     assert "if(i===curItems.length-1) curIndex=i;" not in js
+
+
+def test_participant_dashboard_reveals_app(page, server):
+    # Regression: the dashboard body (#app) must be revealed by the controller
+    # after the role guard, or the page is a black screen.
+    js = _fetch(server, "assets/js/participant.js")
+    assert "app.style.display=''" in js
