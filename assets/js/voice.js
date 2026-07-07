@@ -132,9 +132,10 @@
           if (!rows.length) { list.innerHTML = ''; return; }
           list.innerHTML = '<div class="eyebrow" style="margin:36px 0 16px">YOUR RECORDINGS</div>' +
             rows.map(function(row){
-              return '<div class="voice-item" data-path="' + e(row.storage_path) + '">' +
+              return '<div class="voice-item" data-path="' + e(row.storage_path) + '" data-id="' + e(row.id) + '">' +
                 '<span>' + e(KIND_LABEL[row.kind] || 'Recording') + '</span>' +
-                '<button class="link brass voice-play" type="button">Play</button></div>';
+                '<span class="voice-item-actions"><button class="link brass voice-play" type="button">Play</button>' +
+                '<button class="voice-del" type="button">Delete</button></span></div>';
             }).join('');
           list.querySelectorAll('.voice-play').forEach(function(b){
             b.addEventListener('click', function(){
@@ -143,6 +144,17 @@
                 var url = s && s.data && s.data.signedUrl;
                 if (url) { var a = new Audio(url); a.play(); }
               });
+            });
+          });
+          list.querySelectorAll('.voice-del').forEach(function(b){
+            b.addEventListener('click', function(){
+              var item = b.closest('.voice-item');
+              var path = item.getAttribute('data-path'), id = item.getAttribute('data-id');
+              if (!window.confirm('Delete this recording? This cannot be undone.')) return;
+              b.disabled = true;
+              FC.sb.storage.from('voice').remove([path])
+                .then(function(){ return FC.sb.from('voice_recordings').delete().eq('id', id); })
+                .then(function(){ loadList(); }, function(){ b.disabled = false; });
             });
           });
         });

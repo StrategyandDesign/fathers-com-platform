@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Record for your kids | Fathers.com</title>
-<meta name="description" content="Record your voice for your children, a story or a message they can replay.">
+<title>Voice | Fathers.com</title>
+<meta name="description" content="Record your voice for your kids. A story or a message they can replay, private to you and secure.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,16 +17,16 @@
 <meta name="theme-color" content="#000000">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Fathers.com">
-<meta property="og:title" content="Record for your kids | Fathers.com">
-<meta property="og:description" content="Record your voice for your children, a story or a message they can replay.">
+<meta property="og:title" content="Voice | Fathers.com">
+<meta property="og:description" content="Record your voice for your kids. A story or a message they can replay, private to you and secure.">
 <meta property="og:url" content="https://fathers-com-platform.vercel.app/voice.html">
 <meta property="og:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Fathers.com, learn fatherhood from men who lived it">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Record for your kids | Fathers.com">
-<meta name="twitter:description" content="Record your voice for your children, a story or a message they can replay.">
+<meta name="twitter:title" content="Voice | Fathers.com">
+<meta name="twitter:description" content="Record your voice for your kids. A story or a message they can replay, private to you and secure.">
 <meta name="twitter:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
 </head>
 <body>
@@ -37,33 +37,88 @@
 </div></nav>
 <link rel="stylesheet" href="assets/css/veterans.css">
 
-<section class="tight"><div class="container" style="max-width:760px">
-  <div class="eyebrow brass" style="margin-bottom:12px">FOR YOUR KIDS</div>
-  <h1 class="d-36" style="margin-bottom:8px">Record your voice</h1>
-  <p class="lead" style="margin-bottom:28px">A bedtime story or a short message your child can replay any time. Repetition rebuilds your voice and your face in their day, on their schedule.</p>
-  <div id="voiceApp">
-    <div class="voice-types" data-voice-types>
-      <button class="chip is-on" data-kind="bedtime_story" aria-pressed="true">Bedtime story</button>
-      <button class="chip" data-kind="message" aria-pressed="false">A message</button>
-      <button class="chip" data-kind="thinking" aria-pressed="false">Thinking of you</button>
-    </div>
-    <div class="voice-stage">
-      <div id="voiceTimer" class="voice-timer">0:00</div>
-      <div class="voice-controls">
-        <button class="btn btn-primary" id="voiceRec">Start recording</button>
-        <button class="btn btn-secondary" id="voiceStop" hidden>Stop</button>
-      </div>
-      <audio id="voicePreview" controls hidden style="width:100%;margin-top:18px"></audio>
-      <div class="row" id="voiceAfter" hidden style="gap:12px;justify-content:center;margin-top:18px">
-        <button class="btn btn-secondary btn-sm" id="voiceRedo">Record again</button>
-        <button class="btn btn-primary btn-sm" id="voiceSave">Save it</button>
-      </div>
-      <p class="fine" id="voiceMsg" style="margin-top:14px;min-height:16px"></p>
-    </div>
-    <div id="voiceList"></div>
+<section class="voice-hero">
+  <img class="voice-hero-img" src="assets/img/photos/billboard-stories.jpg" alt="">
+  <div class="voice-hero-inner">
+    <div class="voice-hero-eyebrow">Fathers.com &middot; Voice</div>
+    <h1>Be there, even when you can&rsquo;t be.</h1>
+    <p class="voice-hero-lead">Record your voice for your kids. A bedtime story, a word before a game, something they can play on the nights you are away. A simple thing that does something deep.</p>
+    <a class="btn btn-yellow" href="#record">Start recording</a>
   </div>
-  <p class="fine" style="margin-top:24px">Your recordings are private to your account. Saving requires a free sign-in.</p>
-</div></section>
+</section>
+
+<section class="voice-ed voice-ed-first">
+  <div class="voice-ed-head">
+    <div class="eyebrow brass">What it is</div>
+    <h2>A child holds onto a parent through their voice.</h2>
+    <p>When a father is away, at work, on deployment, or living across two homes, a recording of his voice keeps him in the room. Kids do not need a perfect performance. They need the familiar sound of you, on repeat, on their schedule. It is the same idea behind the reading programs that have kept military families close for decades, made simple and put in your hands.</p>
+  </div>
+</section>
+
+<section class="voice-ed">
+  <div class="voice-ed-head">
+    <div class="eyebrow brass">How it works</div>
+    <h2>Three steps. Two minutes.</h2>
+  </div>
+  <div class="voice-steps">
+    <div class="voice-step"><span class="voice-step-n">1</span><h3>Record</h3><p>Read a story or say what is on your heart, right here in your browser. No app to install.</p></div>
+    <div class="voice-step"><span class="voice-step-n">2</span><h3>It is kept safe</h3><p>Saved privately to your account. Encrypted on the way, locked once it lands.</p></div>
+    <div class="voice-step"><span class="voice-step-n">3</span><h3>They replay it</h3><p>Your child hears you any time they miss you, as many times as they want.</p></div>
+  </div>
+</section>
+
+<section class="voice-ed">
+  <div class="voice-secure">
+    <div class="voice-secure-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div class="voice-secure-body">
+      <div class="eyebrow brass">Private and secure</div>
+      <h2>Your voice stays yours.</h2>
+      <p>Every recording is tied to your account and no one else&rsquo;s. It travels encrypted, is stored in a locked, per-person vault, is never sold or shared, and is yours to delete the moment you want it gone. This is a place you can trust with the private things a father says to his kids.</p>
+    </div>
+  </div>
+</section>
+
+<section class="voice-ed" id="record">
+  <div class="voice-ed-head">
+    <div class="eyebrow brass">Record</div>
+    <h2>Your studio.</h2>
+    <p>Pick what kind of recording, then hit record. Take your time. You can re-record as many times as you like before you save.</p>
+  </div>
+  <div style="margin-top:28px">
+    <div class="voice-prompts">
+      <div class="voice-prompts-lbl">Not sure what to say? Try one of these:</div>
+      <ul>
+        <li>Read the book on their nightstand. Just one chapter.</li>
+        <li>Tell them about a time you were scared and did it anyway.</li>
+        <li>Say the three things you are proudest of about them.</li>
+        <li>Just say good night, the way you always do.</li>
+      </ul>
+    </div>
+    <div id="voiceApp">
+      <div class="voice-types" data-voice-types>
+        <button class="chip is-on" data-kind="bedtime_story" aria-pressed="true">Bedtime story</button>
+        <button class="chip" data-kind="message" aria-pressed="false">A message</button>
+        <button class="chip" data-kind="thinking" aria-pressed="false">Thinking of you</button>
+      </div>
+      <div class="voice-stage">
+        <div id="voiceTimer" class="voice-timer">0:00</div>
+        <div class="voice-controls">
+          <button class="btn btn-primary" id="voiceRec">Start recording</button>
+          <button class="btn btn-secondary" id="voiceStop" hidden>Stop</button>
+        </div>
+        <audio id="voicePreview" controls hidden style="width:100%;margin-top:18px"></audio>
+        <div class="row" id="voiceAfter" hidden style="gap:12px;justify-content:center;margin-top:18px">
+          <button class="btn btn-secondary btn-sm" id="voiceRedo">Record again</button>
+          <button class="btn btn-primary btn-sm" id="voiceSave">Save it</button>
+        </div>
+        <p class="fine" id="voiceMsg" style="margin-top:14px;min-height:16px"></p>
+        <div class="voice-secure-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Encrypted &middot; Private to you &middot; Never shared</span></div>
+      </div>
+      <div id="voiceList"></div>
+    </div>
+    <p class="fine" style="margin-top:20px">Saving keeps your recordings across devices and requires a free sign-in. Nothing is shared without you.</p>
+  </div>
+</section>
 <script src="assets/js/veterans-core.js"></script>
 <script src="assets/js/voice.js"></script>
 <footer><div class="container">

@@ -1508,37 +1508,7 @@ PAGES['veterans-checkin.html'] = dict(title='A private check-in', desc='A privat
 ''')
 
 # ================================================== voice.html
-PAGES['voice.html'] = dict(title='Record for your kids', desc='Record your voice for your children, a story or a message they can replay.', active='For Veterans', mode='app', body=VET_TOP + '''
-<section class="tight"><div class="container" style="max-width:760px">
-  <div class="eyebrow brass" style="margin-bottom:12px">FOR YOUR KIDS</div>
-  <h1 class="d-36" style="margin-bottom:8px">Record your voice</h1>
-  <p class="lead" style="margin-bottom:28px">A bedtime story or a short message your child can replay any time. Repetition rebuilds your voice and your face in their day, on their schedule.</p>
-  <div id="voiceApp">
-    <div class="voice-types" data-voice-types>
-      <button class="chip is-on" data-kind="bedtime_story" aria-pressed="true">Bedtime story</button>
-      <button class="chip" data-kind="message" aria-pressed="false">A message</button>
-      <button class="chip" data-kind="thinking" aria-pressed="false">Thinking of you</button>
-    </div>
-    <div class="voice-stage">
-      <div id="voiceTimer" class="voice-timer">0:00</div>
-      <div class="voice-controls">
-        <button class="btn btn-primary" id="voiceRec">Start recording</button>
-        <button class="btn btn-secondary" id="voiceStop" hidden>Stop</button>
-      </div>
-      <audio id="voicePreview" controls hidden style="width:100%;margin-top:18px"></audio>
-      <div class="row" id="voiceAfter" hidden style="gap:12px;justify-content:center;margin-top:18px">
-        <button class="btn btn-secondary btn-sm" id="voiceRedo">Record again</button>
-        <button class="btn btn-primary btn-sm" id="voiceSave">Save it</button>
-      </div>
-      <p class="fine" id="voiceMsg" style="margin-top:14px;min-height:16px"></p>
-    </div>
-    <div id="voiceList"></div>
-  </div>
-  <p class="fine" style="margin-top:24px">Your recordings are private to your account. Saving requires a free sign-in.</p>
-</div></section>
-<script src="assets/js/veterans-core.js"></script>
-<script src="assets/js/voice.js"></script>
-''')
+
 
 # ================================================== veterans-module.html
 PAGES['veterans-module.html'] = dict(title='A skill for returning fathers', desc='A short, plain lesson for returning fathers.', active='For Veterans', mode='public', body=VET_TOP + '''
@@ -1586,10 +1556,10 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit 
 <section class="vet-ed">
   <div class="vet-split">
     <div>
-      <div class="vet-ed-eyebrow">Record for your kids</div>
+      <div class="vet-ed-eyebrow">A new way to be there &middot; Voice</div>
       <h2>Your voice, in their day.</h2>
-      <p>A story at bedtime. A word before a game. Something they can play when they miss you. Repetition is how a young child holds onto a parent, and it works whether you are across the house or across the world.</p>
-      <a class="btn btn-yellow" href="voice.html">Record your voice</a>
+      <p>Record a story or a message your kids can replay when they miss you. Private to you, secured, and yours alone. It is the most personal tool here, and it has its own home.</p>
+      <a class="btn btn-yellow" href="voice.html">Open Voice</a>
     </div>
     <img class="vet-split-img" src="assets/img/photos/hero-07.jpg" alt="">
   </div>
@@ -1773,6 +1743,93 @@ PAGES['veterans-start.html'] = dict(title='Set up your hub', desc='Tell us where
 </section>
 <script src="assets/js/veterans-core.js"></script>
 <script src="assets/js/veterans-start.js"></script>
+''')
+
+PAGES['voice.html'] = dict(title='Voice', desc='Record your voice for your kids. A story or a message they can replay, private to you and secure.', active='For Veterans', mode='app', body=VET_TOP + '''
+<section class="voice-hero">
+  <img class="voice-hero-img" src="assets/img/photos/billboard-stories.jpg" alt="">
+  <div class="voice-hero-inner">
+    <div class="voice-hero-eyebrow">Fathers.com &middot; Voice</div>
+    <h1>Be there, even when you can&rsquo;t be.</h1>
+    <p class="voice-hero-lead">Record your voice for your kids. A bedtime story, a word before a game, something they can play on the nights you are away. A simple thing that does something deep.</p>
+    <a class="btn btn-yellow" href="#record">Start recording</a>
+  </div>
+</section>
+
+<section class="voice-ed voice-ed-first">
+  <div class="voice-ed-head">
+    <div class="eyebrow brass">What it is</div>
+    <h2>A child holds onto a parent through their voice.</h2>
+    <p>When a father is away, at work, on deployment, or living across two homes, a recording of his voice keeps him in the room. Kids do not need a perfect performance. They need the familiar sound of you, on repeat, on their schedule. It is the same idea behind the reading programs that have kept military families close for decades, made simple and put in your hands.</p>
+  </div>
+</section>
+
+<section class="voice-ed">
+  <div class="voice-ed-head">
+    <div class="eyebrow brass">How it works</div>
+    <h2>Three steps. Two minutes.</h2>
+  </div>
+  <div class="voice-steps">
+    <div class="voice-step"><span class="voice-step-n">1</span><h3>Record</h3><p>Read a story or say what is on your heart, right here in your browser. No app to install.</p></div>
+    <div class="voice-step"><span class="voice-step-n">2</span><h3>It is kept safe</h3><p>Saved privately to your account. Encrypted on the way, locked once it lands.</p></div>
+    <div class="voice-step"><span class="voice-step-n">3</span><h3>They replay it</h3><p>Your child hears you any time they miss you, as many times as they want.</p></div>
+  </div>
+</section>
+
+<section class="voice-ed">
+  <div class="voice-secure">
+    <div class="voice-secure-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div class="voice-secure-body">
+      <div class="eyebrow brass">Private and secure</div>
+      <h2>Your voice stays yours.</h2>
+      <p>Every recording is tied to your account and no one else&rsquo;s. It travels encrypted, is stored in a locked, per-person vault, is never sold or shared, and is yours to delete the moment you want it gone. This is a place you can trust with the private things a father says to his kids.</p>
+    </div>
+  </div>
+</section>
+
+<section class="voice-ed" id="record">
+  <div class="voice-ed-head">
+    <div class="eyebrow brass">Record</div>
+    <h2>Your studio.</h2>
+    <p>Pick what kind of recording, then hit record. Take your time. You can re-record as many times as you like before you save.</p>
+  </div>
+  <div style="margin-top:28px">
+    <div class="voice-prompts">
+      <div class="voice-prompts-lbl">Not sure what to say? Try one of these:</div>
+      <ul>
+        <li>Read the book on their nightstand. Just one chapter.</li>
+        <li>Tell them about a time you were scared and did it anyway.</li>
+        <li>Say the three things you are proudest of about them.</li>
+        <li>Just say good night, the way you always do.</li>
+      </ul>
+    </div>
+    <div id="voiceApp">
+      <div class="voice-types" data-voice-types>
+        <button class="chip is-on" data-kind="bedtime_story" aria-pressed="true">Bedtime story</button>
+        <button class="chip" data-kind="message" aria-pressed="false">A message</button>
+        <button class="chip" data-kind="thinking" aria-pressed="false">Thinking of you</button>
+      </div>
+      <div class="voice-stage">
+        <div id="voiceTimer" class="voice-timer">0:00</div>
+        <div class="voice-controls">
+          <button class="btn btn-primary" id="voiceRec">Start recording</button>
+          <button class="btn btn-secondary" id="voiceStop" hidden>Stop</button>
+        </div>
+        <audio id="voicePreview" controls hidden style="width:100%;margin-top:18px"></audio>
+        <div class="row" id="voiceAfter" hidden style="gap:12px;justify-content:center;margin-top:18px">
+          <button class="btn btn-secondary btn-sm" id="voiceRedo">Record again</button>
+          <button class="btn btn-primary btn-sm" id="voiceSave">Save it</button>
+        </div>
+        <p class="fine" id="voiceMsg" style="margin-top:14px;min-height:16px"></p>
+        <div class="voice-secure-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Encrypted &middot; Private to you &middot; Never shared</span></div>
+      </div>
+      <div id="voiceList"></div>
+    </div>
+    <p class="fine" style="margin-top:20px">Saving keeps your recordings across devices and requires a free sign-in. Nothing is shared without you.</p>
+  </div>
+</section>
+<script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/voice.js"></script>
 ''')
 
 # ================================================== WRITER
