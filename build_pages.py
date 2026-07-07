@@ -104,7 +104,7 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
 <header class="hero"><div class="container split">
   <div>
     <div class="eyebrow" style="margin-bottom:18px">FATHERS.COM</div>
-    <h1 class="d-64">Learn fatherhood from men who lived it.</h1>
+    <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">Learn fatherhood from men who lived it.</h1>
     <p class="lead" style="margin:22px 0 28px">Every class taught by a father who has been through it. Start with your free Keystone Profile and get a ninety-day plan built for you.</p>
     <div class="hero-intent">
       <div class="hero-intent-q">Where are you in the journey?</div>
@@ -193,7 +193,7 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
 
 <section class="band"><div class="container split">
   <div>
-    <h2 class="d-36">Know your baseline in twelve minutes.</h2>
+    <h2 class="d-36">Know your baseline in about twenty minutes.</h2>
     <p style="color:var(--ash);margin:18px 0 28px;max-width:52ch">The Keystone Father Profile measures four things: involvement, consistency, awareness, nurturance. You get a score, a read on where you stand, and a ninety-day plan built from it. Before you pay anything.</p>
     <a class="btn btn-primary" href="profile.html">Start the Profile</a>
   </div>
@@ -251,7 +251,7 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
   <h2 class="d-28" style="margin-bottom:24px">Frequently asked questions</h2>
   <details open><summary>What is Fathers.com?</summary><div class="body">Fathers.com is a training platform from the National Center for Fathering. Classes taught by fathers who lived it, a validated baseline, and a plan you work weekly.</div></details>
   <details><summary>What's included in a membership?</summary><div class="body">Every class, every workbook, your Keystone baseline and ninety-day plan, The Daily, audio mode, and downloads. $120 a year, billed annually, with a 30-day money-back guarantee.</div></details>
-  <details><summary>How does the Keystone Profile work?</summary><div class="body">About 40 questions in twelve minutes. You get four domain scores, an overall baseline, and a plan built from your gap. Your results are yours. We never share them.</div></details>
+  <details><summary>How does the Keystone Profile work?</summary><div class="body">About 40 questions, around twenty minutes. You get four domain scores, an overall baseline, and a plan built from your gap. Your results are yours. We never share them.</div></details>
   <details><summary>How much does it cost?</summary><div class="body">$120 a year. That's $10 a month, billed once annually. Verified Certificates are priced separately.</div></details>
   <details><summary>Are the Certificates accepted by courts?</summary><div class="body">Certificates carry verified hours, identity checks, and a public verification page. Acceptance is decided by each court or program, so confirm with yours before enrolling.</div></details>
   <details><summary>Is this religious?</summary><div class="body">No. Faith is an optional lens you can switch on during the Profile. It changes which classes and actions we recommend. Nothing else.</div></details>
@@ -1076,7 +1076,7 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
       <div class="cert-req-card">
         <div class="cert-price-label"><span class="fine">CERTIFICATE</span></div>
         <div class="cert-req-price"><span class="mono">$79</span><span class="fine">one-time, when you enroll</span></div>
-        <a class="btn btn-secondary" href="classes.html" style="width:100%;margin-bottom:12px">Preview the classes</a>
+        <a class="btn btn-secondary" id="certExplore" href="enroll.html?cert=fundamentals&amp;title=Fathering%20Fundamentals&amp;hours=10.0" style="width:100%;margin-bottom:12px">Explore this certificate</a>
         <div class="cert-free-line">
           <span class="fine">Not sure yet?</span>
           <b>The Keystone Profile is free.</b>
@@ -1107,6 +1107,8 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
       hours.textContent = c.getAttribute('data-hours') + ' verified instructional hours';
       desc.textContent = c.getAttribute('data-desc');
       eyebrow.textContent = c.getAttribute('data-cert')==='fundamentals' ? 'FLAGSHIP CERTIFICATE' : 'CERTIFICATE';
+      var explore = document.getElementById('certExplore');
+      if(explore) explore.setAttribute('href', c.getAttribute('href'));
       document.getElementById('fundamentals').scrollIntoView({behavior:'smooth'});
     });
   });

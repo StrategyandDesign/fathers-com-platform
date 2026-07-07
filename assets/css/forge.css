@@ -652,3 +652,6 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 .certmodal-actions{display:flex;gap:12px}
 .certmodal-actions .btn{flex:1}
 @media(max-width:520px){.certmodal-actions{flex-direction:column}.cmd-foot{flex-direction:column;align-items:center;gap:14px}}
+
+/* A lone filtered card in a rowscroll must not stretch to the full 1fr width. */
+.rowscroll>*{max-width:340px}
