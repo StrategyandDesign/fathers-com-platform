@@ -1342,28 +1342,68 @@ PAGES['employers.html'] = dict(title='For Employers', desc='Your parental benefi
 
 
 # ================================================== login.html (auth)
-PAGES['login.html'] = dict(title='Log in', desc='Sign in to Fathers.com with an emailed link.', active='', mode='public', nochrome=True, body="""
-<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:64px 20px">
-  <a class="brand" href="index.html" style="margin-bottom:56px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark" style="height:34px"><b style="font-family:var(--font-display);font-size:20px">Fathers.com</b></a>
-  <div style="width:100%;max-width:440px">
-    <h1 class="d-36" style="margin-bottom:8px">Log in</h1>
-    <p class="small" style="margin-bottom:28px">We email you a sign-in link. No password needed.</p>
-    <form id="loginForm" class="stack-16">
-      <input class="input" type="email" required placeholder="Email address" aria-label="Email address" autocomplete="username">
-      <button class="btn btn-primary" style="width:100%">Email me a sign-in link</button>
+PAGES['login.html'] = dict(title='Sign in', desc='Sign in to Fathers.com to pick up your plan.', active='', mode='public', nochrome=True, body="""
+<style>
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px 20px}
+.auth-wrap{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center}
+.auth-brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;margin-bottom:26px}
+.auth-brand img{height:30px;width:auto}
+.auth-brand span{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--bone)}
+.auth-card{width:100%;background:var(--coal);border:1px solid var(--hairline);border-radius:16px;padding:36px 32px;box-shadow:var(--shadow)}
+.auth-title{font-family:var(--font-display);font-size:26px;font-weight:600;color:var(--bone);margin-bottom:6px;letter-spacing:-.01em}
+.auth-sub{font-size:14px;color:var(--ash);margin-bottom:26px;line-height:1.5}
+.auth-field{margin-bottom:18px}
+.auth-field label{display:block;font-size:13px;font-weight:600;color:var(--bone);margin-bottom:8px}
+.auth-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.auth-label-row label{margin-bottom:0}
+.auth-forgot{background:none;border:0;padding:0;cursor:pointer;font-family:var(--font-ui);font-size:13px;color:var(--brass);font-weight:500}
+.auth-forgot:hover{text-decoration:underline;text-underline-offset:2px}
+.auth-btn{width:100%;margin-top:6px}
+.auth-msg{font-size:13px;margin-top:12px;min-height:16px;line-height:1.4}
+.auth-or{display:flex;align-items:center;gap:14px;margin:22px 0}
+.auth-or::before,.auth-or::after{content:"";flex:1;height:1px;background:var(--hairline)}
+.auth-or span{font-size:12px;color:var(--ash)}
+.auth-alt{margin-top:24px;font-size:14px;color:var(--ash);text-align:center}
+.auth-alt a{color:var(--bone);font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.auth-legal{margin-top:34px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center}
+.auth-legal a{font-size:12px;color:var(--ash);text-decoration:none}
+.auth-legal a:hover{color:var(--bone)}
+.auth-legal span{font-size:12px;color:var(--hairline-strong)}
+.auth-copy{margin-top:14px;font-size:11px;color:var(--ash);text-align:center;line-height:1.5;max-width:320px}
+@media(max-width:480px){.auth-card{padding:28px 22px}}
+</style>
+<div class="auth-page"><div class="auth-wrap">
+  <a class="auth-brand" href="index.html">
+    <img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com">
+    <img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com">
+    <span>Fathers.com</span>
+  </a>
+  <div class="auth-card">
+    <h1 class="auth-title">Sign in</h1>
+    <p class="auth-sub">Welcome back. Pick up your plan where you left off.</p>
+    <form id="authForm" novalidate>
+      <div class="auth-field">
+        <label for="authEmail">Email</label>
+        <input id="authEmail" class="input" type="email" autocomplete="username" placeholder="you@example.com" required>
+      </div>
+      <div class="auth-field">
+        <div class="auth-label-row"><label for="authPass">Password</label><button type="button" class="auth-forgot" id="authForgot">Forgot?</button></div>
+        <input id="authPass" class="input" type="password" autocomplete="current-password" placeholder="Your password">
+      </div>
+      <button class="btn btn-primary auth-btn" id="authSignin" type="submit">Sign in</button>
+      <p class="auth-msg" id="authMsg" role="status" aria-live="polite"></p>
     </form>
-    <p class="fine" id="loginMsg" style="margin-top:18px">New here? <a class="link ash" href="profile.html" style="font-size:12px">Take the Keystone Profile first.</a></p>
-
-    <div class="row" style="margin:24px 0 4px"><hr class="hr" style="flex:1"><span class="fine">or</span><hr class="hr" style="flex:1"></div>
-    <a href="#" id="pwToggle" class="link ash" style="font-size:13px">Sign in with a password instead</a>
-    <form id="pwForm" class="stack-16" style="display:none;margin-top:16px">
-      <input class="input" type="email" required placeholder="Email address" aria-label="Email address" autocomplete="username">
-      <input class="input" type="password" required placeholder="Password" aria-label="Password" autocomplete="current-password">
-      <button class="btn btn-primary" style="width:100%">Sign in</button>
-    </form>
-    <p class="fine" id="pwMsg" style="margin-top:14px;min-height:16px"></p>
+    <div class="auth-or"><span>or</span></div>
+    <button class="btn btn-secondary auth-btn" id="authMagic" type="button">Email me a sign-in link</button>
   </div>
-</div>
+  <p class="auth-alt">New here? <a href="profile.html">Create an account</a></p>
+  <div class="auth-legal">
+    <a href="terms.html">Terms</a><span aria-hidden="true">&middot;</span>
+    <a href="privacy.html">Privacy</a><span aria-hidden="true">&middot;</span>
+    <a href="security.html">Security</a>
+  </div>
+  <p class="auth-copy">&copy; 2026 Fathers.com. A program of the National Center for Fathering.</p>
+</div></div>
 """)
 
 # ================================================== enroll.html (certificate enrollment + coupon)

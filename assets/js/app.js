@@ -240,53 +240,41 @@
     var loginLink=document.querySelector('.nav-right a[href="login.html"]');
     if(loginLink&&session){loginLink.textContent='My Plan';loginLink.href='plan.html';}
 
-    // Login page
-    var lf=document.getElementById('loginForm');
-    if(lf){
-      var btn=lf.querySelector('button');
-      var msg=document.getElementById('loginMsg');
-      lf.addEventListener('submit',function(e){
-        e.preventDefault();
-        var email=lf.querySelector('input').value.trim();
-        if(!email){ msg.style.color='var(--error)'; msg.textContent='Enter your email first.'; return; }
-        var label=btn.textContent;
-        btn.disabled=true; btn.textContent='Sending…';
-        msg.style.color='var(--ash)'; msg.textContent='Sending your sign-in link…';
-        FC.signIn(email).then(function(r){
-          if(r.error){
-            btn.disabled=false; btn.textContent=label;
-            msg.style.color='var(--error)'; msg.textContent='Could not send: '+r.error.message;
-          } else {
-            btn.textContent='Link sent \u2713';
-            msg.style.color='var(--pine-hi)';
-            msg.textContent='Check your email ('+email+'). Click the link and you are in. It can take a minute.';
-          }
-        }).catch(function(err){
-          btn.disabled=false; btn.textContent=label;
-          msg.style.color='var(--error)'; msg.textContent='Something went wrong. Try again.';
-        });
-      });
-    }
+    // Auth page: enterprise sign-in. Password primary, magic link as passwordless fallback.
+    var af=document.getElementById('authForm');
+    if(af){
+      var authEmail=document.getElementById('authEmail');
+      var authPass=document.getElementById('authPass');
+      var authMsg=document.getElementById('authMsg');
+      var authSignin=document.getElementById('authSignin');
+      var authMagic=document.getElementById('authMagic');
+      var authForgot=document.getElementById('authForgot');
+      function aMsg(t,kind){ if(!authMsg)return; authMsg.textContent=t||''; authMsg.style.color=(kind==='err')?'var(--error)':((kind==='ok')?'var(--pine-hi)':'var(--ash)'); }
 
-    // Password sign-in (no email needed). Password lives in Supabase, never in this file.
-    var pt=document.getElementById('pwToggle');
-    var pf=document.getElementById('pwForm');
-    var pm=document.getElementById('pwMsg');
-    if(pt&&pf){ pt.addEventListener('click',function(e){ e.preventDefault(); pf.style.display=''; pt.style.display='none'; }); }
-    if(pf){
-      pf.addEventListener('submit',function(e){
+      af.addEventListener('submit',function(e){
         e.preventDefault();
-        var ins=pf.querySelectorAll('input');
-        var email=(ins[0].value||'').trim(), pw=ins[1].value||'';
-        var pbtn=pf.querySelector('button'), lbl=pbtn.textContent;
-        if(!email||!pw){ if(pm){pm.style.color='var(--error)';pm.textContent='Enter your email and password.';} return; }
-        pbtn.disabled=true; pbtn.textContent='Signing in…';
-        if(pm){pm.style.color='var(--ash)';pm.textContent='Signing you in…';}
-        FC.signInPassword(email,pw).then(function(r){
-          if(r.error){ pbtn.disabled=false; pbtn.textContent=lbl; if(pm){pm.style.color='var(--error)';pm.textContent=r.error.message;} }
+        var em=(authEmail.value||'').trim(), pw=authPass.value||'';
+        if(!em){ aMsg('Enter your email.','err'); authEmail.focus(); return; }
+        if(!pw){ aMsg('Enter your password, or use a sign-in link below.','err'); authPass.focus(); return; }
+        var lbl=authSignin.textContent; authSignin.disabled=true; authSignin.textContent='Signing in…'; aMsg('Signing you in…');
+        FC.signInPassword(em,pw).then(function(r){
+          if(r.error){ authSignin.disabled=false; authSignin.textContent=lbl; aMsg(r.error.message,'err'); }
           else { location.href='plan.html'; }
-        }).catch(function(){ pbtn.disabled=false; pbtn.textContent=lbl; if(pm){pm.style.color='var(--error)';pm.textContent='Something went wrong. Try again.';} });
+        }).catch(function(){ authSignin.disabled=false; authSignin.textContent=lbl; aMsg('Something went wrong. Try again.','err'); });
       });
+
+      function sendMagic(){
+        var em=(authEmail.value||'').trim();
+        if(!em){ aMsg('Enter your email, then we will send a sign-in link.','err'); authEmail.focus(); return; }
+        var lbl=authMagic.textContent; authMagic.disabled=true; authMagic.textContent='Sending…'; aMsg('Sending your sign-in link…');
+        FC.signIn(em).then(function(r){
+          authMagic.disabled=false; authMagic.textContent=lbl;
+          if(r.error){ aMsg('Could not send: '+r.error.message,'err'); }
+          else { aMsg('Check your email ('+em+'). Click the link to sign in.','ok'); }
+        }).catch(function(){ authMagic.disabled=false; authMagic.textContent=lbl; aMsg('Something went wrong. Try again.','err'); });
+      }
+      if(authMagic) authMagic.addEventListener('click',sendMagic);
+      if(authForgot) authForgot.addEventListener('click',sendMagic);
     }
 
     if(!session) return;
