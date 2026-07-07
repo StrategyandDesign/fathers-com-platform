@@ -79,3 +79,16 @@ def test_enroll_sends_intent_not_money(page, server):
     page.goto(f"{server}/enroll.html?cert=fundamentals", wait_until="load"); page.wait_for_timeout(500)
     assert page.query_selector("#couponInput") is not None
     assert page.query_selector("#enrollBtn") is not None
+
+def test_participant_dashboard_present(page, server):
+    html = _fetch(server, "participant.html")
+    for hook in ['id="pt-search"', 'id="pt-results"', 'id="pt-detail"', "participant.js"]:
+        assert hook in html
+    assert "Individual snapshot" in _fetch(server, "assets/js/participant.js")
+
+def test_keystone_resume_advances_past_full_section(page, server):
+    # Regression for the freeze: a fully-answered section must route to endSection,
+    # not redraw the last item. Assert the fixed clamp is in the shipped script.
+    js = _fetch(server, "assets/js/keystone-ui.js")
+    assert "curIndex = curItems.length;" in js
+    assert "if(i===curItems.length-1) curIndex=i;" not in js

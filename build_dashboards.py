@@ -52,6 +52,7 @@ HEAD = '''<!DOCTYPE html>
 <a class="brand" href="index.html"><img class="lg-dark" src="assets/img/logomark-light.png" alt=""><img class="lg-light" src="assets/img/logomark-dark.png" alt=""><b>Fathers.com</b></a>
 <ul class="nav-links">
 <li><a href="admin.html" data-role="admin">Admin</a></li>
+<li><a href="participant.html" data-role="admin">Participant</a></li>
 <li><a href="studio.html" data-role="author">Studio</a></li>
 <li><a href="org.html" data-role="org">Org</a></li>
 <li><a href="lead.html" data-role="leader">Lead</a></li>
@@ -82,6 +83,21 @@ FOOT = '''</main>
 '''
 
 PAGES = {
+'participant': ('Participant', '''
+<div class="dash-head"><h1 class="d-36">Participant</h1><p class="lead">Search a father and open his individual snapshot. This is private data; handle with care.</p></div>
+<div id="pt-denied" style="display:none"><div class="notice brass">This area needs the admin role.</div></div>
+<div id="pt-root">
+  <div class="card" style="margin-bottom:20px">
+    <div class="row" style="gap:10px;align-items:end;flex-wrap:wrap">
+      <div class="field" style="margin:0;flex:1;min-width:240px"><label>Find a father</label><input class="input" id="pt-search" placeholder="Name or email"></div>
+      <button class="btn btn-primary btn-sm" id="pt-search-btn">Search</button>
+    </div>
+    <div id="pt-results" style="margin-top:16px"><p class="fine">Search by name or email to begin.</p></div>
+  </div>
+  <div class="card" id="pt-detail" style="display:none"></div>
+</div>
+'''),
+
 
 'admin': ('Admin', '''
 <div class="dash-head"><h1 class="d-36">Admin</h1><p class="lead">People, roles, content, and the audit trail.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="admin-people">--</div><div class="glance-sub">people on the platform</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="admin-new">--</div><div class="glance-sub">new sign-ups</div></div><div class="glance-card"><div class="glance-lbl">CONTENT</div><div class="glance-big" data-glance="admin-content">--</div><div class="glance-sub">courses live</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="admin-next">Review pending role requests and new content awaiting approval.</div></div></div>

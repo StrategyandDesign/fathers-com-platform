@@ -17,7 +17,8 @@
 
   /* ---------------- COURSES ---------------- */
   function loadCourses(){
-    FC.sb.from('classes').select('*').order('created_at',{ascending:false}).then(function(r){
+    FC.sb.from('classes').select('*').order('title').then(function(r){
+      if(r.error){ el('course-list').innerHTML='<div class="notice brass" style="margin:0">Could not load courses: '+esc(r.error.message)+'</div>'; return; }
       var rows=r.data||[];
       if(!rows.length){el('course-list').innerHTML='<p class="fine">No courses yet. Create your first.</p>';return;}
       var html='<div class="grid-auto">';
@@ -42,8 +43,13 @@
 
   function editCourse(id){
     FC.sb.from('classes').select('*, lessons(*)').eq('id',id).single().then(function(r){
-      var c=r.data; var lessons=(c.lessons||[]).sort(function(a,b){return a.num-b.num;});
       var box=el('course-editor'); box.style.display='';
+      if(r.error || !r.data){
+        box.innerHTML='<div class="notice brass" style="margin:0">Could not open this course: '+esc((r.error&&r.error.message)||'not found')+'.<br><span class="fine">If this mentions a missing column, run studio_course_columns.sql in Supabase.</span></div>';
+        box.scrollIntoView({behavior:'smooth'});
+        return;
+      }
+      var c=r.data; var lessons=(c.lessons||[]).sort(function(a,b){return a.num-b.num;});
       box.innerHTML=
         '<div class="row between" style="margin-bottom:16px"><h3>Edit course</h3>'+
         '<div class="inline-actions"><button class="btn btn-secondary mini" id="ec-close">Close</button>'+
