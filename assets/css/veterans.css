@@ -210,3 +210,16 @@
 .vet-vmodal-cap b{color:#fff;font-family:var(--font-display);font-size:18px}
 
 @media(max-width:760px){.vet-films{grid-template-columns:1fr;gap:18px}.vet-vmodal-x{top:-36px}}
+
+/* ================= Minimal support + upcoming tools ================= */
+.vet-supportline{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;padding:24px 26px;border-radius:14px;background:var(--coal);border:1px solid var(--hairline)}
+.vet-supportline-main{max-width:66ch}
+.vet-supportline-lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ash);margin-bottom:8px}
+.vet-supportline-main p{font-size:15px;color:var(--bone);line-height:1.55}
+.vet-supportline-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+
+.vet-soon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.vet-soon{padding:24px;border-radius:14px;background:transparent;border:1px dashed var(--hairline-strong)}
+.vet-soon-tag{display:inline-block;font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);border:1px solid var(--hairline-strong);border-radius:100px;padding:4px 10px;margin-bottom:14px}
+.vet-soon h3{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--bone);margin-bottom:6px}
+.vet-soon p{font-size:14px;color:var(--ash);line-height:1.5}

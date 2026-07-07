@@ -1664,40 +1664,31 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who ser
 ''')
 
 # ================================================== veterans-hub.html (editorial hub, rebuilt)
-PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Support matched to you, the field guide, Voice, and a private check-in. Built for fathers who served.', active='For Veterans', mode='app', body=VET_TOP + '''
+
+
+PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit for coming home: films, Voice, a private check-in, and your plan. Built for fathers who served.', active='For Veterans', mode='app', body=VET_TOP + '''
 <section class="vet-hero" style="min-height:420px">
   <img class="vet-hero-img" src="assets/img/photos/community-01.jpg" alt="">
   <div class="vet-hero-inner">
     <div class="vet-hero-eyebrow">Fathers.com &middot; For those who served</div>
-    <h1>Welcome home.</h1>
+    <h1>Your toolkit for the homefront.</h1>
     <p class="vet-hero-lead" id="vetGreet">You carried the load out there. Here is where you pick up the one that matters most.</p>
   </div>
 </section>
 
 <section class="vet-ed vet-ed-noline">
   <div class="vet-ed-head">
-    <div class="vet-ed-eyebrow">Your first move</div>
-    <h2>Your team on the ground</h2>
-    <p>Free, confidential support built for your situation. Often staffed by people who have been where you have been.</p>
-  </div>
-  <div id="vetMatch"><p class="ash">Finding your match&hellip;</p></div>
-  <div id="vetSecondary"></div>
-  <p style="margin-top:8px"><a class="link" href="veterans-resources.html">See every free resource &rarr;</a></p>
-</section>
-
-<section class="vet-ed">
-  <div class="vet-ed-head">
     <div class="vet-ed-eyebrow">The field guide</div>
     <h2>Skills for the homefront</h2>
-    <p>Short, plain reads on what gets hard when you come home. Built from what other fathers who served said they needed most.</p>
+    <p>Short, plain films and reads on what gets hard when you walk back through the door. Built from what other fathers who served said they needed most.</p>
   </div>
   <div class="vet-stories">
-    <a class="vet-story" href="veterans-module.html?m=reconnecting"><img src="assets/img/photos/hero-01.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">6 min read</div><h3>When your kid feels like a stranger</h3><p>Rebuilding closeness after time away</p></div></a>
-    <a class="vet-story" href="veterans-module.html?m=temper"><img src="assets/img/photos/hero-02.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">6 min read</div><h3>Staying steady, and the way back</h3><p>Anger, the pause, and the repair</p></div></a>
-    <a class="vet-story" href="veterans-module.html?m=emotion"><img src="assets/img/photos/hero-03.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">5 min read</div><h3>Saying what you feel</h3><p>Putting words to it, out loud</p></div></a>
-    <a class="vet-story" href="veterans-module.html?m=command"><img src="assets/img/photos/hero-04.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">5 min read</div><h3>From command to connection</h3><p>Leading a family is a different job</p></div></a>
-    <a class="vet-story" href="veterans-module.html?m=coparenting"><img src="assets/img/photos/hero-05.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">5 min read</div><h3>Fathering across two homes</h3><p>Presence when you are not the only house</p></div></a>
-    <a class="vet-story" href="veterans-module.html?m=nurturing"><img src="assets/img/photos/hero-06.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">4 min read</div><h3>Small acts, every day</h3><p>Nurturing is a set of habits</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=reconnecting"><img src="assets/img/photos/hero-01.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">6 min</div><h3>When your kid feels like a stranger</h3><p>Rebuilding closeness after time away</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=temper"><img src="assets/img/photos/hero-02.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">6 min</div><h3>Staying steady, and the way back</h3><p>Anger, the pause, and the repair</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=emotion"><img src="assets/img/photos/hero-03.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">5 min</div><h3>Saying what you feel</h3><p>Breaking through the numbness</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=command"><img src="assets/img/photos/hero-04.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">5 min</div><h3>From command to connection</h3><p>Leading a family is a different job</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=coparenting"><img src="assets/img/photos/hero-05.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">5 min</div><h3>Fathering across two homes</h3><p>Presence when you are not the only house</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=nurturing"><img src="assets/img/photos/hero-06.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">4 min</div><h3>Small acts, every day</h3><p>Nurturing is a set of habits</p></div></a>
   </div>
 </section>
 
@@ -1710,6 +1701,39 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Support match
       <a class="btn btn-yellow" href="voice.html">Record your voice</a>
     </div>
     <img class="vet-split-img" src="assets/img/photos/hero-07.jpg" alt="">
+  </div>
+</section>
+
+<section class="vet-ed">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">Your plan</div>
+    <h2>Know your ground, and check it</h2>
+    <p>Two private tools that meet you where you are and point you forward. Yours alone, never shared.</p>
+  </div>
+  <div class="grid-2" style="gap:24px">
+    <div class="card" style="padding:28px">
+      <b class="bone" style="font-family:var(--font-display);font-size:20px">Your baseline</b>
+      <p class="small" style="margin:10px 0 18px">The Keystone Profile shows your real strengths and the one place growth pays off most, then builds a plan around it.</p>
+      <a class="btn btn-secondary" href="profile.html">Take your baseline</a>
+    </div>
+    <div class="card" style="padding:28px">
+      <b class="bone" style="font-family:var(--font-display);font-size:20px">A private check-in</b>
+      <p class="small" style="margin:10px 0 18px">Two quiet minutes, just for you. It is not a diagnosis. It points you to the right kind of support only if you want it.</p>
+      <a class="btn btn-secondary" href="veterans-checkin.html">Take the check-in</a>
+    </div>
+  </div>
+</section>
+
+<section class="vet-ed">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">In the works</div>
+    <h2>The toolkit is growing</h2>
+    <p>More is coming, built alongside fathers who served. Here is what is next on the bench.</p>
+  </div>
+  <div class="vet-soon-grid">
+    <div class="vet-soon"><span class="vet-soon-tag">Coming soon</span><h3>Battle buddy check-ins</h3><p>Pair with another father who gets it, and keep each other honest week to week.</p></div>
+    <div class="vet-soon"><span class="vet-soon-tag">Coming soon</span><h3>The first 90 days home</h3><p>A guided plan for the hardest stretch of the return, one small move at a time.</p></div>
+    <div class="vet-soon"><span class="vet-soon-tag">Coming soon</span><h3>For the ones who wait</h3><p>Tools built for your partner and your kids, so the whole house comes home together.</p></div>
   </div>
 </section>
 
@@ -1729,26 +1753,17 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Support match
 </section>
 
 <section class="vet-ed">
-  <div class="grid-2" style="gap:24px">
-    <div class="card" style="padding:28px">
-      <div class="vet-ed-eyebrow" style="margin-bottom:10px">Know your ground</div>
-      <b class="bone" style="font-family:var(--font-display);font-size:20px">Your baseline</b>
-      <p class="small" style="margin:10px 0 18px">The Keystone Profile shows your real strengths and the one place growth pays off most, then builds a plan around it.</p>
-      <a class="btn btn-secondary" href="profile.html">Take your baseline</a>
+  <div class="vet-supportline">
+    <div class="vet-supportline-main">
+      <div class="vet-supportline-lbl">Support, if you need it</div>
+      <p>You know these resources, and they are here when you want them. The closest fit for you is <b id="vetMatchName">the Vet Center</b>. In a crisis, call 988 and press 1.</p>
     </div>
-    <div class="card" style="padding:28px">
-      <div class="vet-ed-eyebrow" style="margin-bottom:10px">A private readiness check</div>
-      <b class="bone" style="font-family:var(--font-display);font-size:20px">Two minutes, just for you</b>
-      <p class="small" style="margin:10px 0 18px">A quiet, private check-in. It is not a diagnosis. It points you to the right kind of support if you want it.</p>
-      <a class="btn btn-secondary" href="veterans-checkin.html">Take the check-in</a>
+    <div class="vet-supportline-actions">
+      <a class="btn btn-secondary btn-sm" id="vetMatchCall" href="tel:18779278387">Call</a>
+      <a class="link" href="veterans-resources.html">See all support &rarr;</a>
     </div>
   </div>
 </section>
-
-<div class="vet-support">
-  <span>Support is standing by 24 hours a day, for you or your family. You do not have to be in crisis to call.</span>
-  <a href="tel:988">Call 988, press 1</a>
-</div>
 <script src="assets/js/veterans-core.js"></script>
 <script src="assets/js/veterans-hub.js"></script>
 ''')

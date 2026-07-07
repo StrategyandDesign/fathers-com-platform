@@ -1,12 +1,13 @@
-/* Veterans hub. Renders support matched to the father's context.
-   The rest of the hub (Voice, modules, check-in) is static in the page. */
+/* Veterans hub. Tools-first. Personalizes the greeting and names the single
+   best-fit support resource in the minimal support line. The full directory
+   lives on veterans-resources.html. */
 (function(){
   'use strict';
   if (!window.VET) return;
-  var matchEl = document.getElementById('vetMatch');
-  var secEl = document.getElementById('vetSecondary');
   var greetEl = document.getElementById('vetGreet');
-  if (!matchEl) return;
+  var nameEl = document.getElementById('vetMatchName');
+  var callEl = document.getElementById('vetMatchCall');
+  if (!greetEl && !nameEl) return;
 
   var GREET = {
     active: 'You are still in the fight. This is for the front no one briefs you on: home.',
@@ -17,29 +18,17 @@
 
   function init(){
     VET.getProfile().then(function(profile){
-      if (!profile || !profile.service_context) {
-        // No context yet. Send them to the front door to answer one question.
-        location.href = 'veterans.html';
-        return;
-      }
+      if (!profile || !profile.service_context) { location.href = 'veterans.html'; return; }
+      if (greetEl && GREET[profile.service_context]) greetEl.textContent = GREET[profile.service_context];
 
-      if (greetEl && GREET[profile.service_context]) {
-        greetEl.textContent = GREET[profile.service_context];
-      }
-
-      var primary = VET.matchResource(profile);
-      matchEl.innerHTML = VET.resourceCardHTML(primary, { primary: true, full: true });
-
-      if (secEl) {
-        var extra = VET.secondaryKeys(profile).map(function(k){
-          return VET.resourceCardHTML(VET.RESOURCES[k], { full: false });
-        }).join('');
-        secEl.innerHTML = extra;
+      var res = VET.matchResource(profile);
+      if (nameEl && res) nameEl.textContent = res.name;
+      if (callEl) {
+        if (res && res.phoneHref) { callEl.setAttribute('href', res.phoneHref); }
+        else { callEl.style.display = 'none'; }
       }
     });
   }
-
-  // Wait for the footer client scripts to load before reading the signed-in profile.
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
