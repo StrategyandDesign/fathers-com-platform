@@ -1,6 +1,7 @@
 /* Admin: certificate console. Build a certificate (videos with length, a
    Debrief after each, a final Q&A), publish it, and approve completions.
-   Admin-only: the page is role-guarded and every write is RLS-protected. */
+   Admin-only: the page is role-guarded and every write is RLS-protected.
+   Errors are surfaced loudly so setup problems are obvious. */
 (function(){
   if (!document.getElementById('certs-build')) return;
   function el(id){ return document.getElementById(id); }
@@ -10,9 +11,32 @@
   var demo = !(window.FC && FC.live);
   var courses = [], curCourse = null, curVideo = null, videos = [];
 
+  // Show a loud, visible error in a section (so nothing ever fails silently).
+  function fail(targetId, err){
+    console.error('[certs]', err);
+    var msg = (err && (err.message || err.hint || err.details)) || 'unknown error';
+    var e = el(targetId);
+    if (e) e.innerHTML = '<div class="notice brass" style="margin:0">Failed: ' + esc(msg) + '</div>';
+    note('Failed: ' + msg);
+  }
+
+  function setupNeeded(err){
+    var m = '<div class="notice brass" style="margin:0">The certificate tables are not set up yet. Run <code>certificate_accountability.sql</code> in your Supabase SQL editor, then reload this page.' +
+      '<br><span class="fine">' + esc((err && err.message) || '') + '</span></div>';
+    ['cert-videos','cert-qa','cert-approvals'].forEach(function(id){ var e = el(id); if (e) e.innerHTML = m; });
+    var sel = el('cert-course-select'); if (sel) sel.innerHTML = '';
+  }
+
   function boot(){
     if (demo) return;                       // admin.js shows the demo note
-    FC.ready.then(function(){ loadCourses(); loadApprovals(); });
+    FC.ready.then(function(){
+      // Probe the accountability tables. If missing, tell the admin exactly what to run.
+      FC.sb.from('course_videos').select('id').limit(1).then(function(r){
+        if (r.error) { setupNeeded(r.error); return; }
+        loadCourses();
+        loadApprovals();
+      });
+    });
   }
 
   // ---------- courses ----------
@@ -20,9 +44,10 @@
 
   function loadCourses(){
     FC.sb.from('certificate_courses').select('id,title,hours,published').order('title').then(function(r){
+      if (r.error) { fail('cert-videos', r.error); return; }
       courses = r.data || [];
       var sel = el('cert-course-select');
-      if (!courses.length) { sel.innerHTML=''; el('cert-videos').innerHTML='<p class="fine">No courses yet. Run seed_certificate_courses.sql first.</p>'; return; }
+      if (!courses.length) { sel.innerHTML=''; el('cert-videos').innerHTML='<div class="notice brass" style="margin:0">No certificate courses yet. Run <code>seed_certificate_courses.sql</code> first, then reload.</div>'; return; }
       sel.innerHTML = courses.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.title)+'</option>'; }).join('');
       sel.value = courses[0].id;
       selectCourse();
@@ -54,6 +79,7 @@
 
   function loadVideos(){
     FC.sb.from('course_videos').select('*').eq('course_id', curCourse).order('ord').then(function(r){
+      if (r.error) { fail('cert-videos', r.error); return; }
       videos = r.data || [];
       if (!videos.length) { el('cert-videos').innerHTML = '<p class="fine">No videos yet. Add the first below.</p>'; return; }
       var html = '<table class="dtable"><thead><tr><th>#</th><th>Title</th><th>Length</th><th>Debrief</th><th></th></tr></thead><tbody>';
@@ -73,13 +99,16 @@
   }
 
   function addVideo(){
+    if (!curCourse) { note('Pick a course first.'); return; }
     var title = el('cv-title').value.trim(), url = el('cv-url').value.trim(), mins = parseFloat(el('cv-mins').value || '0');
     if (!title) { el('cv-title').focus(); return; }
+    var btn = el('cv-add'); btn.disabled = true;
     FC.sb.from('course_videos').insert({
       course_id: curCourse, ord: videos.length + 1, title: title,
       video_url: url || null, duration_seconds: Math.round((mins||0) * 60)
     }).then(function(r){
-      if (r.error) { note('Failed: ' + r.error.message); return; }
+      btn.disabled = false;
+      if (r.error) { fail('cert-videos', r.error); return; }
       el('cv-title').value=''; el('cv-url').value=''; el('cv-mins').value=''; loadVideos();
     });
   }
@@ -96,6 +125,7 @@
 
   function loadQuestions(){
     FC.sb.from('quiz_questions').select('*').eq('video_id', curVideo).order('ord').then(function(r){
+      if (r.error) { fail('cert-questions', r.error); return; }
       var qs = r.data || [];
       if (!qs.length) { el('cert-questions').innerHTML = '<p class="fine">No questions yet. Ten is the target.</p>'; return; }
       el('cert-questions').innerHTML = qs.map(function(q, i){
@@ -109,7 +139,7 @@
   }
 
   function addQuestion(){
-    if (!curVideo) return;
+    if (!curVideo) { note('Open a video\u2019s Debrief first.'); return; }
     var prompt = el('cq-prompt').value.trim();
     var choices = [el('cq-a').value.trim(), el('cq-b').value.trim(), el('cq-c').value.trim(), el('cq-d').value.trim()].filter(Boolean);
     var correct = parseInt(el('cq-correct').value, 10);
@@ -117,7 +147,7 @@
     if (correct >= choices.length) correct = 0;
     FC.sb.from('quiz_questions').select('id', { count: 'exact', head: true }).eq('video_id', curVideo).then(function(cr){
       FC.sb.from('quiz_questions').insert({ video_id: curVideo, ord: (cr.count||0)+1, prompt: prompt, choices: choices, correct_index: correct }).then(function(r){
-        if (r.error) { note('Failed: ' + r.error.message); return; }
+        if (r.error) { fail('cert-questions', r.error); return; }
         el('cq-prompt').value=''; el('cq-a').value=''; el('cq-b').value=''; el('cq-c').value=''; el('cq-d').value=''; loadQuestions();
       });
     });
@@ -126,6 +156,7 @@
   // ---------- final Q&A ----------
   function loadQA(){
     FC.sb.from('final_qa_questions').select('*').eq('course_id', curCourse).order('ord').then(function(r){
+      if (r.error) { fail('cert-qa', r.error); return; }
       var qa = r.data || [];
       if (!qa.length) { el('cert-qa').innerHTML = '<p class="fine">No prompts yet.</p>'; return; }
       el('cert-qa').innerHTML = qa.map(function(q, i){
@@ -136,10 +167,11 @@
   }
 
   function addQA(){
+    if (!curCourse) { note('Pick a course first.'); return; }
     var prompt = el('qa-prompt').value.trim(); if (!prompt) return;
     FC.sb.from('final_qa_questions').select('id', { count: 'exact', head: true }).eq('course_id', curCourse).then(function(cr){
       FC.sb.from('final_qa_questions').insert({ course_id: curCourse, ord: (cr.count||0)+1, prompt: prompt }).then(function(r){
-        if (r.error) { note('Failed: ' + r.error.message); return; }
+        if (r.error) { fail('cert-qa', r.error); return; }
         el('qa-prompt').value=''; loadQA();
       });
     });
@@ -151,6 +183,7 @@
       .in('status', ['submitted', 'in_progress', 'approved', 'signed', 'denied'])
       .order('created_at', { ascending: false })
       .then(function(r){
+        if (r.error) { fail('cert-approvals', r.error); return; }
         var awards = r.data || [];
         if (!awards.length) { el('cert-approvals').innerHTML = '<p class="fine">No completions yet. They appear here when fathers finish a course.</p>'; return; }
         var uids = Array.from(new Set(awards.map(function(a){ return a.user_id; })));
@@ -161,8 +194,8 @@
           awards.forEach(function(a){
             var actions = a.status === 'submitted'
               ? '<button class="btn btn-primary mini" data-approve="' + esc(a.id) + '">Approve</button> <button class="btn btn-secondary mini" data-deny="' + esc(a.id) + '">Deny</button>'
-              : '<span class="fine">—</span>';
-            html += '<tr><td>' + esc(names[a.user_id] || '—') + '</td><td>' + esc(cmap[a.course_id] || '—') + '</td><td><span class="chip">' + esc(a.status) + '</span></td><td>' + actions + '</td></tr>';
+              : '<span class="fine">\u2014</span>';
+            html += '<tr><td>' + esc(names[a.user_id] || '\u2014') + '</td><td>' + esc(cmap[a.course_id] || '\u2014') + '</td><td><span class="chip">' + esc(a.status) + '</span></td><td>' + actions + '</td></tr>';
           });
           html += '</tbody></table>';
           el('cert-approvals').innerHTML = html;
