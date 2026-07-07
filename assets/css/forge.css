@@ -655,3 +655,20 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 
 /* A lone filtered card in a rowscroll must not stretch to the full 1fr width. */
 .rowscroll>*{max-width:340px}
+
+/* ---------- circles: posts + replies ---------- */
+.cir-post{padding:20px 0;border-top:1px solid var(--hairline)}
+.cir-post:first-child{border-top:0;padding-top:4px}
+.cir-post-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cir-post-head b{font-size:14px}
+.cir-report{margin-left:auto;background:none;border:0;padding:0;cursor:pointer;font-size:12px;color:var(--ash)}
+.cir-report:hover{color:var(--error)}
+.cir-body{font-size:15px;line-height:1.55;color:var(--bone)}
+.cir-replies{margin:14px 0 0;padding-left:16px;border-left:2px solid var(--hairline);display:grid;gap:14px}
+.cir-reply{display:flex;gap:10px;align-items:flex-start}
+.cir-reply-head{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.cir-reply-head b{font-size:13px}
+.cir-reply-body{font-size:14px;line-height:1.5;color:var(--ash)}
+.cir-replyform{display:flex;gap:10px;margin-top:14px}
+.cir-replyform .input{flex:1;font-size:14px}
+.avatarchip.sm{width:26px;height:26px;font-size:11px;flex:0 0 26px}

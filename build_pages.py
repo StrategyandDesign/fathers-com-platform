@@ -577,18 +577,8 @@ PAGES['circles.html'] = dict(title='My Circle', desc='Living Hope Men. One film,
           <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Tell one man in this Circle your week 3 action. Let him check you.</div></div>
         </div>
         <div class="card" style="padding:24px">
-          <div class="row" style="margin-bottom:22px"><span class="avatarchip">M</span><input class="input" placeholder="Say it straight"><button class="btn btn-primary btn-sm" onclick="toast('Posted to your Circle.')">Post</button></div>
-          <div class="stack-24">
-            <div><div class="row" style="margin-bottom:8px"><span class="avatarchip">D</span><b style="font-size:14px">Dave R.</b><span class="fine">2h</span><a class="link ash" href="#" style="font-size:12px;margin-left:auto" onclick="event.preventDefault();toast('Reported. A leader will review it.')">Report</a></div>
-              <p class="small">Watched it on lunch. The visitation scene wrecked me. My old man never once showed. Breaking that this week.</p>
-              <div class="row" style="margin-top:8px"><a class="link ash" href="#" style="font-size:12px">Like &middot; 6</a><a class="link ash" href="#" style="font-size:12px">Reply</a></div></div>
-            <div><div class="row" style="margin-bottom:8px"><span class="avatarchip">T</span><b style="font-size:14px">Tom K.</b><span class="fine">5h</span></div>
-              <p class="small">My week 3 action is breakfast twice. Dave, check me Friday.</p>
-              <div class="row" style="margin-top:8px"><a class="link ash" href="#" style="font-size:12px">Like &middot; 4</a><a class="link ash" href="#" style="font-size:12px">Reply</a></div></div>
-            <div><div class="row" style="margin-bottom:8px"><span class="avatarchip">J</span><b style="font-size:14px">Jesse P.</b><span class="fine">1d</span></div>
-              <p class="small">First week here. Took the Profile Sunday. 58. Starting point.</p>
-              <div class="row" style="margin-top:8px"><a class="link ash" href="#" style="font-size:12px">Like &middot; 9</a><a class="link ash" href="#" style="font-size:12px">Reply</a></div></div>
-          </div>
+          <div class="row" style="margin-bottom:20px;gap:12px"><span class="avatarchip">M</span><input class="input" id="circlePostInput" placeholder="Say it straight"><button class="btn btn-primary btn-sm" id="circlePostBtn">Post</button></div>
+          <div id="circleFeed"><p class="ash" style="padding:12px 0">Loading your circle&hellip;</p></div>
         </div>
       </div>
       <aside class="card" style="padding:20px">
@@ -629,6 +619,7 @@ PAGES['circles.html'] = dict(title='My Circle', desc='Living Hope Men. One film,
     </div>
   </div>
 </div></section>
+<script src="assets/js/circles.js"></script>
 ''')
 
 # ================================================== groups.html (P7 marketing + admin)
