@@ -86,7 +86,7 @@ PAGES = {
 'admin': ('Admin', '''
 <div class="dash-head"><h1 class="d-36">Admin</h1><p class="lead">People, roles, content, and the audit trail.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="admin-people">--</div><div class="glance-sub">people on the platform</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="admin-new">--</div><div class="glance-sub">new sign-ups</div></div><div class="glance-card"><div class="glance-lbl">CONTENT</div><div class="glance-big" data-glance="admin-content">--</div><div class="glance-sub">courses live</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="admin-next">Review pending role requests and new content awaiting approval.</div></div></div>
 <div data-tabs>
-  <div class="tabs"><button class="active">People &amp; roles</button><button>Content</button><button>Orgs</button><button>Audit</button></div>
+  <div class="tabs"><button class="active">People &amp; roles</button><button>Content</button><button>Orgs</button><button>Audit</button><button>Certificates</button></div>
 
   <div class="tabpanel active">
     <div class="card" style="margin-bottom:20px">
@@ -119,7 +119,55 @@ PAGES = {
   </div>
 
   <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Audit log</h3><div id="audit-table">Loading audit…</div></div></div>
+
+  <div class="tabpanel">
+    <div class="card" style="margin-bottom:20px">
+      <div class="row between wrap" style="margin-bottom:18px;gap:12px">
+        <h3>Build a certificate</h3>
+        <div class="row" style="gap:10px;align-items:center">
+          <select class="input" id="cert-course-select" style="min-width:200px"></select>
+          <span class="chip" id="cert-publish-state">Draft</span>
+          <button class="btn btn-secondary btn-sm" id="cert-publish">Publish</button>
+        </div>
+      </div>
+      <div id="certs-build">
+        <div class="eyebrow" style="margin:0 0 12px">VIDEOS, WITH LENGTH SO WE KNOW IF THEY WATCHED</div>
+        <div id="cert-videos" class="fine">Loading&hellip;</div>
+        <div class="row wrap" style="gap:10px;margin-top:16px;align-items:end">
+          <div class="field" style="margin:0;flex:2;min-width:180px"><label>Video title</label><input class="input" id="cv-title"></div>
+          <div class="field" style="margin:0;flex:2;min-width:180px"><label>Video URL (MP4)</label><input class="input" id="cv-url"></div>
+          <div class="field" style="margin:0;flex:1;min-width:110px"><label>Length (min)</label><input class="input" id="cv-mins" type="number" min="0" step="0.1"></div>
+          <button class="btn btn-primary btn-sm" id="cv-add">Add video</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="cert-debrief-card" style="margin-bottom:20px;display:none">
+      <h3 id="cert-debrief-title" style="margin-bottom:8px">Debrief</h3>
+      <p class="fine" style="margin-bottom:12px">Ten questions after this video. Fathers see it as a Debrief, not a quiz.</p>
+      <div id="cert-questions" class="fine">&nbsp;</div>
+      <div style="margin-top:16px;border-top:1px solid var(--hairline);padding-top:16px">
+        <div class="field" style="margin:0 0 10px"><label>Question</label><input class="input" id="cq-prompt"></div>
+        <div class="row wrap" style="gap:10px"><input class="input" id="cq-a" placeholder="Choice A" style="flex:1;min-width:140px"><input class="input" id="cq-b" placeholder="Choice B" style="flex:1;min-width:140px"><input class="input" id="cq-c" placeholder="Choice C" style="flex:1;min-width:140px"><input class="input" id="cq-d" placeholder="Choice D" style="flex:1;min-width:140px"></div>
+        <div class="row" style="gap:10px;margin-top:10px;align-items:end"><div class="field" style="margin:0"><label>Correct answer</label><select class="input" id="cq-correct"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div><button class="btn btn-primary btn-sm" id="cq-add">Add question</button></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <h3 style="margin-bottom:6px">Final Q&amp;A</h3>
+      <p class="fine" style="margin-bottom:14px">Longform prompts after the last video. A man writes his answers; you read them at approval.</p>
+      <div id="cert-qa" class="fine">Loading&hellip;</div>
+      <div class="row" style="gap:10px;margin-top:14px;align-items:end"><div class="field" style="margin:0;flex:1"><label>Prompt</label><input class="input" id="qa-prompt"></div><button class="btn btn-primary btn-sm" id="qa-add">Add prompt</button></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:6px">Completions to approve</h3>
+      <p class="fine" style="margin-bottom:14px">Fathers who finished. Approve to let a man sign his own certificate.</p>
+      <div id="cert-approvals" class="fine">Loading&hellip;</div>
+    </div>
+  </div>
 </div>
+<script src="assets/js/admin-certs.js"></script>
 '''),
 
 'studio': ('Studio', '''
