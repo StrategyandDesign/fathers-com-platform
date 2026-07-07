@@ -44,6 +44,7 @@ window.FCR = window.FCR || {};
     if(!right || !FCR.roles.length) return;
     var links = [];
     if(FCR.isAdmin()) links.push(['Admin','admin.html']);
+    if(FCR.isAdmin()) links.push(['Participant','participant.html']);
     if(FCR.canAuthor()) links.push(['Studio','studio.html']);
     if(FCR.leadsAnyOrg()) links.push(['Org','org.html']);
     if(FCR.has('circle_leader')) links.push(['Lead','lead.html']);

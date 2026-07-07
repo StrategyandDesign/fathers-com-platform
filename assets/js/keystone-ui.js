@@ -174,10 +174,11 @@
   function runSection(secKey){
     curSection = secKey;
     curItems = KS.itemsInSection(secKey);
-    // resume at first unanswered in this section
+    // resume at first unanswered in this section; if all are answered, go past
+    // the end so drawItem() routes to endSection() instead of redrawing the last item.
     var ans = KS.getAnswers();
-    curIndex = 0;
-    for(var i=0;i<curItems.length;i++){ if(ans[curItems[i].key]==null){ curIndex=i; break; } if(i===curItems.length-1) curIndex=i; }
+    curIndex = curItems.length;
+    for(var i=0;i<curItems.length;i++){ if(ans[curItems[i].key]==null){ curIndex=i; break; } }
     drawItem();
   }
 

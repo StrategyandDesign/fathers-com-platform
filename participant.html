@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lead a Circle | Fathers.com</title>
+<title>Participant | Fathers.com</title>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -10,13 +10,13 @@
 <link rel="stylesheet" href="assets/css/forge.css">
 <link rel="stylesheet" href="assets/css/dash.css">
 <meta name="robots" content="noindex,follow">
-<link rel="canonical" href="https://fathers-com-platform.vercel.app/lead.html">
+<link rel="canonical" href="https://fathers-com-platform.vercel.app/participant.html">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <meta name="theme-color" content="#000000">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Fathers.com">
-<meta property="og:title" content="Lead a Circle | Fathers.com">
-<meta property="og:url" content="https://fathers-com-platform.vercel.app/lead.html">
+<meta property="og:title" content="Participant | Fathers.com">
+<meta property="og:url" content="https://fathers-com-platform.vercel.app/participant.html">
 <meta property="og:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -47,29 +47,17 @@
 <div id="demo-note" class="container" style="display:none;padding:24px 0"><div class="notice brass" style="max-width:900px;margin:0 auto">Demo mode. Add Supabase keys in <code>assets/js/config.js</code> to load live data. The controls below show the real interface; writes activate once connected.</div></div>
 <main id="app" class="container" style="padding:40px 0 96px;display:none">
 
-<div class="dash-head"><h1 class="d-36">Lead a Circle</h1><p class="lead">Plan the weeks, post to your men, keep the standard.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men in your Circle</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">watched the film</div></div><div class="glance-card"><div class="glance-lbl">NEXT MEETING</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">stay ready</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Post this week's question, and check who hasn't watched yet.</div></div></div>
-<div id="circle-picker" class="row" style="margin-bottom:24px"></div>
-<div id="lead-body" data-tabs>
-  <div class="tabs"><button class="active">This week</button><button>Plan weeks</button><button>Announce</button><button>Roster</button></div>
-  <div class="tabpanel active"><div id="lead-thisweek">Pick a Circle…</div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Set a week</h3>
-    <div class="grid-4" style="gap:12px;align-items:end">
-      <div class="field" style="margin:0"><label>Week</label><input class="input" id="cw-week" type="number" value="1"></div>
-      <div class="field" style="margin:0"><label>Class slug</label><input class="input" id="cw-class" placeholder="fundamentals"></div>
-      <div class="field" style="margin:0"><label>Lesson #</label><input class="input" id="cw-lesson" type="number" value="1"></div>
-      <div class="field" style="margin:0"><label>Meets on</label><input class="input" id="cw-date" type="date"></div>
+<div class="dash-head"><h1 class="d-36">Participant</h1><p class="lead">Search a father and open his individual snapshot. This is private data; handle with care.</p></div>
+<div id="pt-denied" style="display:none"><div class="notice brass">This area needs the admin role.</div></div>
+<div id="pt-root">
+  <div class="card" style="margin-bottom:20px">
+    <div class="row" style="gap:10px;align-items:end;flex-wrap:wrap">
+      <div class="field" style="margin:0;flex:1;min-width:240px"><label>Find a father</label><input class="input" id="pt-search" placeholder="Name or email"></div>
+      <button class="btn btn-primary btn-sm" id="pt-search-btn">Search</button>
     </div>
-    <div class="field" style="margin-top:12px"><label>Discussion question</label><input class="input" id="cw-q"></div>
-    <div class="field"><label>Shared action</label><input class="input" id="cw-action"></div>
-    <button class="btn btn-primary btn-sm" id="cw-go">Save week</button>
-    <div id="cw-list" style="margin-top:20px"></div>
-  </div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Announce to your Circle</h3>
-    <textarea class="input" id="ann-body" placeholder="Say it straight."></textarea>
-    <button class="btn btn-primary btn-sm" id="ann-go" style="margin-top:12px">Post announcement</button>
-    <div id="ann-list" style="margin-top:20px"></div>
-  </div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Members</h3><div id="lead-roster"></div></div></div>
+    <div id="pt-results" style="margin-top:16px"><p class="fine">Search by name or email to begin.</p></div>
+  </div>
+  <div class="card" id="pt-detail" style="display:none"></div>
 </div>
 </main>
 <div class="toast"></div>
@@ -77,5 +65,5 @@
 <script src="assets/js/supabase-client.js"></script>
 <script src="assets/js/roles.js"></script>
 <script src="assets/js/app.js"></script>
-<script src="assets/js/lead.js"></script>
+<script src="assets/js/participant.js"></script>
 </body></html>
