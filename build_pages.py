@@ -9,7 +9,7 @@ SITE_URL = "https://fathers-com-platform.vercel.app"
 OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 
 # Private / transactional pages: keep them out of Google's index. Everything else is indexable.
-NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-checkin.html', 'voice.html'}
+NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html'}
 
 
 def _esc(s):
@@ -271,18 +271,14 @@ PAGES['stories.html'] = dict(title='Stories', desc='Epic fatherhood films. Origi
     <div class="slot r-21x9 play-overlay" data-slot="IMG-P3-BILL-01"><span class="tri"></span></div>
     <div class="overlay">
       <div class="eyebrow" style="margin-bottom:12px">STORIES</div>
-      <h1 class="d-48" style="margin-bottom:8px">From Combat to the Kitchen Table</h1>
-      <p class="small" style="margin-bottom:18px">Nineteen years in. Two tours. One promise to his son.</p>
+      <h1 class="d-48" style="margin-bottom:8px">Home by Six</h1>
+      <p class="small" style="margin-bottom:18px">A father who chose to be there, one ordinary evening at a time.</p>
       <div class="row"><a class="btn btn-primary play" href="story.html">Watch</a><a class="btn btn-secondary" href="story.html">Trailer</a><span class="tag">24 min</span></div>
     </div>
   </div>
 </div></section>
 
 <section class="tight"><div class="container stack-32">
-  <div><h2 class="d-22" style="font-family:var(--font-display);font-size:24px;margin-bottom:18px">Back From Combat</h2>
-  <div class="rowscroll" data-repeat="6" data-prefix="IMG-P3-ROW1-" data-ratio="r-16x9" data-href="story.html"
-    data-titles="The Longest Deployment|Base Housing|What the Silence Said|Two Flags|Reveille at Home|The Handoff"
-    data-metas="24 min|18 min|21 min|26 min|17 min|22 min"></div></div>
   <div><h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:18px">After the Sentence</h2>
   <div class="rowscroll" data-repeat="6" data-prefix="IMG-P3-ROW2-" data-ratio="r-16x9" data-href="story.html"
     data-titles="Visitation Day|Eight Years, Every Letter|The First Pickup|Walking Papers|The Long Way Back|Signed Out"
@@ -1554,114 +1550,7 @@ PAGES['veterans-module.html'] = dict(title='A skill for returning fathers', desc
 ''')
 
 # ================================================== veterans.html (front door, rebuilt)
-PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who served. Coming all the way home to your kids, on your terms. Free, confidential support matched to you.', active='For Veterans', mode='public', body=VET_TOP + '''
-<section class="vet-hero">
-  <img class="vet-hero-img" src="assets/img/photos/billboard-home.jpg" alt="">
-  <div class="vet-hero-inner">
-    <div class="vet-hero-eyebrow">Fathers.com &middot; For those who served</div>
-    <h1>The next mission is the one at home.</h1>
-    <p class="vet-hero-lead">You did the hard thing over there. Coming all the way home to your kids is its own kind of hard, and nobody hands you orders for it. This is where you do that work, on your terms, alongside men who get it. Free, confidential, and it never touches your record.</p>
-    <div class="vet-hero-actions">
-      <a class="btn btn-yellow" href="#start">Start here</a>
-      <a class="btn btn-onimg" href="veterans-resources.html">See the free support</a>
-    </div>
-  </div>
-</section>
 
-<section class="vet-ed vet-ed-noline" id="start">
-  <div class="vet-ed-head">
-    <div class="vet-ed-eyebrow">Two taps to start</div>
-    <h2>Where are you?</h2>
-    <p>It shapes what we show you next. No account needed to look.</p>
-  </div>
-  <div id="vetOnboard">
-    <div class="vet-step" data-step="1">
-      <button class="vet-opt" data-ctx="active"><span>I am serving now, active, Guard, or Reserve</span></button>
-      <button class="vet-opt" data-ctx="veteran"><span>I am a veteran</span></button>
-      <button class="vet-opt" data-ctx="family"><span>I am a military family member</span></button>
-    </div>
-    <div class="vet-step" data-step="2" hidden>
-      <p class="lead" style="margin-bottom:26px">A little context. Optional, and it sharpens the match. Skip any time.</p>
-      <div class="vet-field" data-combat>
-        <div class="eyebrow">DID YOU SERVE IN A COMBAT ZONE?</div>
-        <div class="row" style="gap:10px"><button class="chip" data-val="yes" aria-pressed="false">Yes</button><button class="chip" data-val="no" aria-pressed="false">No</button></div>
-      </div>
-      <div class="vet-field" data-sep-block hidden>
-        <div class="eyebrow">HOW LONG SINCE YOU SEPARATED?</div>
-        <div class="row" style="gap:10px" data-sep><button class="chip" data-val="recent" aria-pressed="false">Within the last year</button><button class="chip" data-val="past" aria-pressed="false">More than a year ago</button></div>
-      </div>
-      <div class="vet-field" data-kids>
-        <div class="eyebrow">YOUR KIDS&rsquo; AGES (TAP ANY)</div>
-        <div class="row wrap" style="gap:10px"><button class="chip" data-band="0-5" aria-pressed="false">0 to 5</button><button class="chip" data-band="6-12" aria-pressed="false">6 to 12</button><button class="chip" data-band="13-18" aria-pressed="false">13 to 18</button><button class="chip" data-band="grown" aria-pressed="false">Grown</button></div>
-      </div>
-      <div class="row wrap" style="gap:14px;margin-top:12px">
-        <button class="btn btn-primary" id="vetContinue">Show me what fits</button>
-        <a class="link ash" href="#" data-skip style="align-self:center">Skip</a>
-      </div>
-    </div>
-  </div>
-  <p class="fine" id="vetResume" hidden style="margin-top:24px">Been here before? <a class="link" href="veterans-hub.html">Go to your hub &rarr;</a></p>
-</section>
-
-<section class="vet-ed">
-  <div class="vet-ed-head">
-    <div class="vet-ed-eyebrow">Watch, free</div>
-    <h2>Three films. Start with the one that hits home.</h2>
-    <p>Short, honest lessons from fathers who came home and had to learn this. Watch all three, no account needed.</p>
-  </div>
-  <div class="vet-films">
-    <button class="vet-film" data-key="reconnecting" data-title="When your kid feels like a stranger">
-      <div class="vet-film-thumb"><img src="assets/img/photos/hero-01.jpg" alt=""><span class="vet-film-play"></span><span class="vet-film-dur">Watch</span></div>
-      <div class="vet-film-meta"><h3>When your kid feels like a stranger</h3><p>Rebuilding closeness after time away</p></div>
-    </button>
-    <button class="vet-film" data-key="emotion" data-title="Saying what you feel">
-      <div class="vet-film-thumb"><img src="assets/img/photos/hero-03.jpg" alt=""><span class="vet-film-play"></span><span class="vet-film-dur">Watch</span></div>
-      <div class="vet-film-meta"><h3>Saying what you feel</h3><p>Breaking through the numbness, out loud</p></div>
-    </button>
-    <button class="vet-film" data-key="temper" data-title="Staying steady, and the way back">
-      <div class="vet-film-thumb"><img src="assets/img/photos/hero-02.jpg" alt=""><span class="vet-film-play"></span><span class="vet-film-dur">Watch</span></div>
-      <div class="vet-film-meta"><h3>Staying steady, and the way back</h3><p>Anger, the pause, and the repair</p></div>
-    </button>
-  </div>
-  <div class="vet-lock">
-    <div>
-      <div class="eyebrow brass" style="margin-bottom:8px">The rest of the field guide</div>
-      <b class="bone" style="font-size:18px">This is three of more than a dozen.</b>
-      <p class="small" style="margin-top:6px">Join free to unlock every film and lesson, save your progress, and record your voice for your kids. No cost, ever, for those who served.</p>
-    </div>
-    <a class="btn btn-yellow" href="profile.html">Join free</a>
-  </div>
-</section>
-
-<section class="vet-ed">
-  <div class="vet-ed-head">
-    <div class="vet-ed-eyebrow">What you get</div>
-    <h2>Everything a man needs to come all the way home.</h2>
-  </div>
-  <div class="grid-4" style="gap:28px">
-    <div><b class="bone" style="font-size:16px">Your team on the ground</b><p class="small" style="margin-top:8px">The one free service built for your situation, with the number to call and what to expect.</p></div>
-    <div><b class="bone" style="font-size:16px">Your voice, in their day</b><p class="small" style="margin-top:8px">Record a story or a message your kids can replay while you are away.</p></div>
-    <div><b class="bone" style="font-size:16px">The field guide</b><p class="small" style="margin-top:8px">Short, plain reads on what gets hard when you walk back through the door.</p></div>
-    <div><b class="bone" style="font-size:16px">A private check-in</b><p class="small" style="margin-top:8px">Two minutes, just for you. Not a diagnosis. It points you to help if you want it.</p></div>
-  </div>
-</section>
-
-<div class="vet-support">
-  <span>Support is standing by 24 hours a day, for you or your family. You do not have to be in crisis to call.</span>
-  <a href="tel:988">Call 988, press 1</a>
-</div>
-<div id="vetVideoModal" class="vet-vmodal" hidden>
-  <div class="vet-vmodal-backdrop" data-vclose></div>
-  <div class="vet-vmodal-inner">
-    <button class="vet-vmodal-x" data-vclose aria-label="Close">&times;</button>
-    <div id="vetVideoStage"></div>
-    <div class="vet-vmodal-cap"><b id="vetVideoTitle"></b><a class="btn btn-yellow btn-sm" href="profile.html">Join free for the rest</a></div>
-  </div>
-</div>
-<script src="assets/js/veterans-core.js"></script>
-<script src="assets/js/veterans.js"></script>
-<script src="assets/js/veterans-video.js"></script>
-''')
 
 # ================================================== veterans-hub.html (editorial hub, rebuilt)
 
@@ -1766,6 +1655,122 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit 
 </section>
 <script src="assets/js/veterans-core.js"></script>
 <script src="assets/js/veterans-hub.js"></script>
+''')
+
+# ================================================== veterans.html (public: pitch + free films)
+PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who served. Coming all the way home to your kids, on your terms. Three free films, then join for the rest.', active='For Veterans', mode='public', body=VET_TOP + '''
+<section class="vet-hero">
+  <img class="vet-hero-img" src="assets/img/photos/billboard-home.jpg" alt="">
+  <div class="vet-hero-inner">
+    <div class="vet-hero-eyebrow">Fathers.com &middot; For those who served</div>
+    <h1>The next mission is the one at home.</h1>
+    <p class="vet-hero-lead">You did the hard thing over there. Coming all the way home to your kids is its own kind of hard, and nobody hands you orders for it. Start with three films, free. No account, no email.</p>
+    <div class="vet-hero-actions">
+      <a class="btn btn-yellow" href="#watch">Watch, free</a>
+      <a class="btn btn-onimg" href="veterans-resources.html">See the free support</a>
+    </div>
+  </div>
+</section>
+
+<section class="vet-ed vet-ed-noline" id="watch">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">Watch, free</div>
+    <h2>Three films. Start with the one that hits home.</h2>
+    <p>Short, honest lessons from fathers who came home and had to learn this. Watch all three, no account needed.</p>
+  </div>
+  <div class="vet-films">
+    <button class="vet-film" data-key="reconnecting" data-title="When your kid feels like a stranger">
+      <div class="vet-film-thumb"><img src="assets/img/photos/hero-01.jpg" alt=""><span class="vet-film-play"></span><span class="vet-film-dur">Watch</span></div>
+      <div class="vet-film-meta"><h3>When your kid feels like a stranger</h3><p>Rebuilding closeness after time away</p></div>
+    </button>
+    <button class="vet-film" data-key="emotion" data-title="Saying what you feel">
+      <div class="vet-film-thumb"><img src="assets/img/photos/hero-03.jpg" alt=""><span class="vet-film-play"></span><span class="vet-film-dur">Watch</span></div>
+      <div class="vet-film-meta"><h3>Saying what you feel</h3><p>Breaking through the numbness, out loud</p></div>
+    </button>
+    <button class="vet-film" data-key="temper" data-title="Staying steady, and the way back">
+      <div class="vet-film-thumb"><img src="assets/img/photos/hero-02.jpg" alt=""><span class="vet-film-play"></span><span class="vet-film-dur">Watch</span></div>
+      <div class="vet-film-meta"><h3>Staying steady, and the way back</h3><p>Anger, the pause, and the repair</p></div>
+    </button>
+  </div>
+  <div class="vet-lock">
+    <div>
+      <div class="eyebrow brass" style="margin-bottom:8px">The rest of the field guide</div>
+      <b class="bone" style="font-size:18px">This is three of more than a dozen.</b>
+      <p class="small" style="margin-top:6px">Join free to unlock every film and lesson, save your progress, and record your voice for your kids. No cost, ever, for those who served.</p>
+    </div>
+    <a class="btn btn-yellow" href="login.html?next=veterans-start.html">Join free</a>
+  </div>
+  <p class="fine" style="margin-top:18px">Already a member? <a class="link" href="veterans-hub.html">Go to your hub &rarr;</a></p>
+</section>
+
+<section class="vet-ed">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">What you get when you join</div>
+    <h2>Everything a man needs to come all the way home.</h2>
+  </div>
+  <div class="grid-4" style="gap:28px">
+    <div><b class="bone" style="font-size:16px">The full field guide</b><p class="small" style="margin-top:8px">Every film and read on what gets hard when you walk back through the door.</p></div>
+    <div><b class="bone" style="font-size:16px">Your voice, in their day</b><p class="small" style="margin-top:8px">Record a story or a message your kids can replay while you are away.</p></div>
+    <div><b class="bone" style="font-size:16px">Support matched to you</b><p class="small" style="margin-top:8px">The one free service built for your situation, with the number and what to expect.</p></div>
+    <div><b class="bone" style="font-size:16px">A private check-in</b><p class="small" style="margin-top:8px">Two minutes, just for you. Not a diagnosis. It points you to help if you want it.</p></div>
+  </div>
+</section>
+
+<div class="vet-support">
+  <span>Support is standing by 24 hours a day, for you or your family. You do not have to be in crisis to call.</span>
+  <a href="tel:988">Call 988, press 1</a>
+</div>
+
+<div id="vetVideoModal" class="vet-vmodal" hidden>
+  <div class="vet-vmodal-backdrop" data-vclose></div>
+  <div class="vet-vmodal-inner">
+    <button class="vet-vmodal-x" data-vclose aria-label="Close">&times;</button>
+    <div id="vetVideoStage"></div>
+    <div class="vet-vmodal-cap"><b id="vetVideoTitle"></b><a class="btn btn-yellow btn-sm" href="login.html?next=veterans-start.html">Join free for the rest</a></div>
+  </div>
+</div>
+<script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/veterans-video.js"></script>
+''')
+
+# ================================================== veterans-start.html (identify, after joining)
+PAGES['veterans-start.html'] = dict(title='Set up your hub', desc='Tell us where you are so we can point you to what fits.', active='For Veterans', mode='app', body=VET_TOP + '''
+<section class="vet-ed vet-ed-noline" style="padding-top:56px;max-width:720px">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">Welcome in</div>
+    <h2>Let us set up your hub.</h2>
+    <p>Two quick taps so we can point you to what fits. This is saved to your account.</p>
+  </div>
+  <div id="vetStartLoading" class="ash" style="padding:20px 0">One moment&hellip;</div>
+  <div id="vetOnboard" hidden>
+    <div class="vet-step" data-step="1">
+      <button class="vet-opt" data-ctx="active"><span>I am serving now, active, Guard, or Reserve</span></button>
+      <button class="vet-opt" data-ctx="veteran"><span>I am a veteran</span></button>
+      <button class="vet-opt" data-ctx="family"><span>I am a military family member</span></button>
+    </div>
+    <div class="vet-step" data-step="2" hidden>
+      <p class="lead" style="margin-bottom:26px">A little context. Optional, and it sharpens the match. Skip any time.</p>
+      <div class="vet-field" data-combat>
+        <div class="eyebrow">DID YOU SERVE IN A COMBAT ZONE?</div>
+        <div class="row" style="gap:10px"><button class="chip" data-val="yes" aria-pressed="false">Yes</button><button class="chip" data-val="no" aria-pressed="false">No</button></div>
+      </div>
+      <div class="vet-field" data-sep-block hidden>
+        <div class="eyebrow">HOW LONG SINCE YOU SEPARATED?</div>
+        <div class="row" style="gap:10px" data-sep><button class="chip" data-val="recent" aria-pressed="false">Within the last year</button><button class="chip" data-val="past" aria-pressed="false">More than a year ago</button></div>
+      </div>
+      <div class="vet-field" data-kids>
+        <div class="eyebrow">YOUR KIDS&rsquo; AGES (TAP ANY)</div>
+        <div class="row wrap" style="gap:10px"><button class="chip" data-band="0-5" aria-pressed="false">0 to 5</button><button class="chip" data-band="6-12" aria-pressed="false">6 to 12</button><button class="chip" data-band="13-18" aria-pressed="false">13 to 18</button><button class="chip" data-band="grown" aria-pressed="false">Grown</button></div>
+      </div>
+      <div class="row wrap" style="gap:14px;margin-top:12px">
+        <button class="btn btn-primary" id="vetContinue">Go to my hub</button>
+        <a class="link ash" href="#" data-skip style="align-self:center">Skip</a>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/veterans-start.js"></script>
 ''')
 
 # ================================================== WRITER

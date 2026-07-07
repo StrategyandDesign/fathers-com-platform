@@ -249,6 +249,8 @@
       var authSignin=document.getElementById('authSignin');
       var authMagic=document.getElementById('authMagic');
       var authForgot=document.getElementById('authForgot');
+      var _nraw=(new URLSearchParams(location.search).get('next')||'');
+      var nextDest=/^[a-z0-9._-]+\.html([?#].*)?$/i.test(_nraw)?_nraw:'plan.html';
       function aMsg(t,kind){ if(!authMsg)return; authMsg.textContent=t||''; authMsg.style.color=(kind==='err')?'var(--error)':((kind==='ok')?'var(--pine-hi)':'var(--ash)'); }
 
       af.addEventListener('submit',function(e){
@@ -259,7 +261,7 @@
         var lbl=authSignin.textContent; authSignin.disabled=true; authSignin.textContent='Signing in…'; aMsg('Signing you in…');
         FC.signInPassword(em,pw).then(function(r){
           if(r.error){ authSignin.disabled=false; authSignin.textContent=lbl; aMsg(r.error.message,'err'); }
-          else { location.href='plan.html'; }
+          else { location.href=nextDest; }
         }).catch(function(){ authSignin.disabled=false; authSignin.textContent=lbl; aMsg('Something went wrong. Try again.','err'); });
       });
 
@@ -267,7 +269,7 @@
         var em=(authEmail.value||'').trim();
         if(!em){ aMsg('Enter your email, then we will send a sign-in link.','err'); authEmail.focus(); return; }
         var lbl=authMagic.textContent; authMagic.disabled=true; authMagic.textContent='Sending…'; aMsg('Sending your sign-in link…');
-        FC.signIn(em).then(function(r){
+        FC.signIn(em, nextDest).then(function(r){
           authMagic.disabled=false; authMagic.textContent=lbl;
           if(r.error){ aMsg('Could not send: '+r.error.message,'err'); }
           else { aMsg('Check your email ('+em+'). Click the link to sign in.','ok'); }

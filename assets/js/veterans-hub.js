@@ -18,7 +18,7 @@
 
   function init(){
     VET.getProfile().then(function(profile){
-      if (!profile || !profile.service_context) { location.href = 'veterans.html'; return; }
+      if (!profile || !profile.service_context) { location.href = 'veterans-start.html'; return; }
       if (greetEl && GREET[profile.service_context]) greetEl.textContent = GREET[profile.service_context];
 
       var res = VET.matchResource(profile);
