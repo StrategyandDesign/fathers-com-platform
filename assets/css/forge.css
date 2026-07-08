@@ -718,3 +718,4 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 .cw-status-icon.cw-warn{background:var(--brass)}
 .cw-status h2{font-family:var(--font-display);font-size:26px;font-weight:600;color:var(--bone);margin-bottom:12px}
 .cw-status p{color:var(--ash);line-height:1.6;margin-bottom:24px}
+.cw-embed{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}

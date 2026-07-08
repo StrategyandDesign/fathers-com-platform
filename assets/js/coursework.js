@@ -111,17 +111,34 @@
   // ---------- video + watch tracking ----------
   var watchTimer=null, watched=0, threshold=0, curVideo=null;
 
+  // Accepts a bare Vimeo ID (e.g. 1198023217), a vimeo.com URL, or a full MP4 URL.
+  function vimeoId(ref){
+    if(!ref) return null;
+    ref = String(ref).trim();
+    if(/^\d+$/.test(ref)) return ref;                                  // bare id
+    var m = ref.match(/vimeo\.com\/(?:video\/)?(\d+)/i);               // vimeo url
+    return m ? m[1] : null;
+  }
+
   function openVideo(i){
     curVideo = videos[i];
     var v = curVideo;
     watched = (progress[v.id] && progress[v.id].watched_seconds) || 0;
-    // must watch ~95% of known length before the Debrief unlocks (min 5s for tiny demos)
+    // must reach ~95% of known length before the Debrief unlocks (min 5s for tiny demos)
     threshold = Math.max(5, Math.floor((v.duration_seconds||0) * 0.95));
 
-    var src = v.video_url || '';
-    var player = src
-      ? '<video id="cw-video" controls playsinline preload="metadata" style="width:100%;border-radius:12px;background:#000" src="'+esc(src)+'"></video>'
-      : '<div class="cw-novid"><div class="eyebrow brass" style="margin-bottom:10px">No video URL set</div><p class="small">An admin adds the video URL in the Certificates tab. For now you can still simulate watching to preview the flow.</p><button class="btn btn-secondary btn-sm" id="cw-sim" style="margin-top:12px">Simulate watching</button></div>';
+    var ref = v.video_url || '';
+    var vid = vimeoId(ref);
+    var isMp4 = !vid && /^https?:\/\/.+\.(mp4|webm|mov)(\?.*)?$/i.test(ref);
+
+    var player;
+    if (vid) {
+      player = '<div class="cw-embed"><iframe id="cw-vimeo" src="https://player.vimeo.com/video/'+esc(vid)+'?title=0&byline=0&portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>';
+    } else if (isMp4) {
+      player = '<video id="cw-video" controls playsinline preload="metadata" style="width:100%;border-radius:12px;background:#000" src="'+esc(ref)+'"></video>';
+    } else {
+      player = '<div class="cw-novid"><div class="eyebrow brass" style="margin-bottom:10px">No video set</div><p class="small">An admin adds the Vimeo link or ID in the Certificates tab. For now you can simulate watching to preview the flow.</p><button class="btn btn-secondary btn-sm" id="cw-sim" style="margin-top:12px">Simulate watching</button></div>';
+    }
 
     stage(
       '<button class="link ash" id="cw-back" style="margin-bottom:16px">\u2190 All lessons</button>'+
@@ -132,28 +149,54 @@
       '<div class="fine" id="cw-watch-txt"></div></div>'+
       '<div class="cw-video-actions"><button class="btn btn-primary" id="cw-to-debrief" disabled>Continue to Debrief</button></div>'
     );
-    $('cw-back').addEventListener('click', function(){ stopWatch(); renderOutline(); });
+    $('cw-back').addEventListener('click', function(){ stopWatch(); teardownVimeo(); renderOutline(); });
     updateWatchUI();
 
-    var vid = $('cw-video');
-    if (vid){
-      vid.addEventListener('timeupdate', function(){
-        // count actual elapsed watch, not scrubbing: track max continuous position seen
-        watched = Math.max(watched, Math.floor(vid.currentTime));
-        updateWatchUI();
-      });
-      vid.addEventListener('play', startWatch);
-      vid.addEventListener('pause', stopWatch);
-      vid.addEventListener('ended', function(){ watched=Math.max(watched, threshold); stopWatch(); updateWatchUI(); });
+    if (vid) {
+      wireVimeo();
+    } else {
+      var el5 = $('cw-video');
+      if (el5){
+        el5.addEventListener('timeupdate', function(){ watched = Math.max(watched, Math.floor(el5.currentTime)); updateWatchUI(); });
+        el5.addEventListener('play', startWatch);
+        el5.addEventListener('pause', stopWatch);
+        el5.addEventListener('ended', function(){ watched=Math.max(watched, threshold); stopWatch(); updateWatchUI(); });
+      }
     }
     var sim=$('cw-sim');
     if (sim){ sim.addEventListener('click', function(){ startWatch(); sim.textContent='Watching\u2026'; sim.disabled=true; }); }
 
     var cont=$('cw-to-debrief');
-    cont.addEventListener('click', function(){ stopWatch(); saveProgress(true); openDebrief(); });
+    cont.addEventListener('click', function(){ stopWatch(); teardownVimeo(); saveProgress(true); openDebrief(); });
   }
 
-  function startWatch(){ if(watchTimer) return; watchTimer=setInterval(function(){ watched+=1; updateWatchUI(); if(watched % 10 === 0) saveProgress(false); }, 1000); }
+  // ---- Vimeo Player API tracking (loads the SDK once) ----
+  var vimeoPlayer=null;
+  function ensureVimeoSDK(){
+    return new Promise(function(resolve){
+      if (window.Vimeo && window.Vimeo.Player) { resolve(); return; }
+      var s=document.createElement('script'); s.src='https://player.vimeo.com/api/player.js';
+      s.onload=function(){ resolve(); }; s.onerror=function(){ resolve(); };
+      document.head.appendChild(s);
+    });
+  }
+  function wireVimeo(){
+    ensureVimeoSDK().then(function(){
+      var iframe=$('cw-vimeo');
+      if(!iframe || !(window.Vimeo && window.Vimeo.Player)){
+        // SDK blocked: fall back to a manual "I watched it" affordance so a father is never stuck.
+        var txt=$('cw-watch-txt'); if(txt) txt.innerHTML='Player could not report progress. <button class="link brass" id="cw-manual">I watched the whole lesson</button>';
+        var mb=document.getElementById('cw-manual'); if(mb) mb.addEventListener('click', function(){ watched=threshold; updateWatchUI(); });
+        return;
+      }
+      vimeoPlayer = new window.Vimeo.Player(iframe);
+      vimeoPlayer.on('timeupdate', function(data){ watched = Math.max(watched, Math.floor(data.seconds||0)); updateWatchUI(); if(watched % 10 === 0) saveProgress(false); });
+      vimeoPlayer.on('ended', function(){ watched=Math.max(watched, threshold); updateWatchUI(); saveProgress(true); });
+    });
+  }
+  function teardownVimeo(){ if(vimeoPlayer){ try{ vimeoPlayer.unload(); }catch(e){} vimeoPlayer=null; } }
+
+  function startWatch(){ if(watchTimer || vimeoPlayer) return; watchTimer=setInterval(function(){ watched+=1; updateWatchUI(); if(watched % 10 === 0) saveProgress(false); }, 1000); }
   function stopWatch(){ if(watchTimer){ clearInterval(watchTimer); watchTimer=null; saveProgress(watched>=threshold); } }
 
   function updateWatchUI(){
