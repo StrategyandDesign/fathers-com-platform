@@ -110,8 +110,38 @@
         metric('CIRCLE', (cRes.count!=null?cRes.count:'\u2014'),'posts')+
       '</div>';
 
-      box.innerHTML = '<h3 style="margin-bottom:6px">'+esc(name)+'</h3><p class="fine" style="margin-bottom:20px">Individual snapshot. Handle with care; this is a man\u2019s private data.</p>' + html;
+      box.innerHTML = '<h3 style="margin-bottom:6px">'+esc(name)+'</h3><p class="fine" style="margin-bottom:20px">Individual snapshot. Handle with care; this is a man\u2019s private data.</p>' + html + '<div id="pt-voice"></div>';
+      loadVoice(uid);
     });
+  }
+
+  // Recordings with playback. Admin-only view; streams via a signed URL.
+  var VKIND = { bedtime_story:'Bedtime story', message:'A message', thinking:'Thinking of you' };
+  function loadVoice(uid){
+    var host = document.getElementById('pt-voice'); if(!host) return;
+    FC.sb.from('voice_recordings').select('id,kind,storage_path,created_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(20)
+      .then(function(r){
+        if(r.error){ return; }                    // table may not exist; activity card already handled it
+        var rows=r.data||[]; if(!rows.length) return;
+        host.innerHTML = '<div class="eyebrow" style="margin:24px 0 12px">RECORDINGS</div>'+
+          rows.map(function(row){
+            var when = new Date(row.created_at).toLocaleDateString();
+            return '<div class="voice-item" data-path="'+esc(row.storage_path)+'">'+
+              '<span>'+esc(VKIND[row.kind]||'Recording')+' <span class="fine">\u00b7 '+esc(when)+'</span></span>'+
+              '<button class="link brass pt-play" type="button">Play</button></div>';
+          }).join('');
+        host.querySelectorAll('.pt-play').forEach(function(b){
+          b.addEventListener('click', function(){
+            var path=b.closest('.voice-item').getAttribute('data-path');
+            b.textContent='Loading\u2026'; b.disabled=true;
+            FC.sb.storage.from('voice').createSignedUrl(path,3600).then(function(s){
+              var url=s&&s.data&&s.data.signedUrl;
+              if(url){ var a=new Audio(url); a.onended=function(){b.textContent='Play';b.disabled=false;}; a.onerror=function(){b.textContent='No audio file';b.disabled=false;}; a.play().then(function(){b.textContent='Playing\u2026';},function(){b.textContent='Play';b.disabled=false;}); }
+              else { b.textContent='Unavailable'; b.disabled=false; }
+            }, function(){ b.textContent='Unavailable'; b.disabled=false; });
+          });
+        });
+      });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
