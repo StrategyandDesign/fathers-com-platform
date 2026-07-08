@@ -1823,6 +1823,19 @@ PAGES['voice.html'] = dict(title='Voice', desc='Record your voice for your kids.
 <script src="assets/js/voice.js"></script>
 ''')
 
+PAGES['course.html'] = dict(title='Your Certificate', desc='Watch the lessons, pass each Debrief, answer the final Q&A, and submit for approval.', active='Certificates', mode='app', auth=True, body='''
+<section class="cw-wrap" id="cw-root">
+  <div class="cw-head">
+    <a class="link ash" href="certificates.html" style="display:inline-block;margin-bottom:16px">&larr; All certificates</a>
+    <div class="eyebrow brass">FATHERS.COM VERIFIED CERTIFICATE</div>
+    <h1 class="d-36" id="cw-title" style="margin-top:8px">Your certificate</h1>
+  </div>
+  <div id="cw-note"></div>
+  <div id="cw-stage"><p class="ash">Loading\u2026</p></div>
+</section>
+<script src="assets/js/coursework.js"></script>
+''')
+
 # ================================================== WRITER
 if __name__ == '__main__':
     out = os.path.dirname(os.path.abspath(__file__))

@@ -99,3 +99,15 @@ def test_participant_dashboard_reveals_app(page, server):
     # after the role guard, or the page is a black screen.
     js = _fetch(server, "assets/js/participant.js")
     assert "app.style.display=''" in js
+
+def test_coursework_page_present(page, server):
+    html = _fetch(server, "course.html")
+    for hook in ['id="cw-root"', 'id="cw-stage"', "coursework.js"]:
+        assert hook in html
+    js = _fetch(server, "assets/js/coursework.js")
+    # the four pillars of the flow exist in the controller
+    assert "video_progress" in js and "quiz_responses" in js and "final_qa_responses" in js
+    assert "status:'submitted'" in js or 'status: "submitted"' in js
+
+def test_enroll_begin_button_targets_coursework(page, server):
+    assert "course.html?cert=" in _fetch(server, "assets/js/enroll.js")
