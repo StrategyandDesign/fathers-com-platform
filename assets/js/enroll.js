@@ -91,6 +91,6 @@
     var ca = $('couponApply'); if(ca) ca.addEventListener('click', function(e){ e.preventDefault(); applyCode(); });
     var ci = $('couponInput'); if(ci) ci.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); applyCode(); } });
     var btn = $('enrollBtn'); if(btn) btn.addEventListener('click', function(e){ e.preventDefault(); enroll(); });
-    var begin = $('beginBtn'); if(begin) begin.setAttribute('href', 'class.html');
+    var begin = $('beginBtn'); if(begin) begin.setAttribute('href', 'course.html?cert=' + encodeURIComponent(slug));
   });
 })();
