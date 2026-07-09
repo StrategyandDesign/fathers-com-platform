@@ -99,7 +99,8 @@
       return FC.sb.storage.from('voice').upload(path, blob, { contentType: blob.type || 'audio/webm', upsert: false })
         .then(function(up){
           if (up && up.error) throw up.error;
-          return FC.sb.from('voice_recordings').insert({ user_id: uid, kind: kind, storage_path: path });
+          var vTitle=(window.FC_VOICE_PROMPT && window.FC_VOICE_PROMPT.title) || null;
+          return FC.sb.from('voice_recordings').insert({ user_id: uid, kind: kind, storage_path: path, title: vTitle });
         })
         .then(function(){
           setMsg('Saved. It is waiting for your child whenever they want it.');

@@ -74,10 +74,14 @@ window.KS = window.KS || {};
       .order('updated_at',{ascending:false}).limit(1).maybeSingle()
       .then(function(r){
         if(r.data){ session = r.data; mode = session.mode; path = session.path || 'father'; return KS.loadAnswers(); }
-        return FC.sb.from('keystone_sessions').insert({
+        var _row = {
           user_id: FC.uid(), mode: mode, path: path, status:'in_progress',
           current_section: KS.pathSectionKeys()[0], sections_done: []
-        }).select().single().then(function(r2){ session = r2.data; return {}; });
+        };
+        try{ var _tag=JSON.parse(localStorage.getItem('fc_org_tag')||'null');
+          if(_tag){ _row.organization_id=_tag.organization_id||null; _row.program_id=_tag.program_id||null; _row.cohort_id=_tag.cohort_id||null; }
+        }catch(_){}
+        return FC.sb.from('keystone_sessions').insert(_row).select().single().then(function(r2){ session = r2.data; return {}; });
       });
   };
 

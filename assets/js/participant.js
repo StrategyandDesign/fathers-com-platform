@@ -64,7 +64,7 @@
     // Activity counts (best effort; tables may not exist yet).
     var pVoice  = FC.sb.from('voice_recordings').select('id',{count:'exact',head:true}).eq('user_id',uid);
     var pCircle = FC.sb.from('circle_posts').select('id',{count:'exact',head:true}).eq('user_id',uid);
-    var pCourses= FC.sb.from('certificate_courses').select('id,title');
+    var pCourses= FC.sb.from('certificate_courses').select('id,title').eq('published',true);
 
     Promise.all([pBaseline,pEnroll,pAward,pVoice,pCircle,pCourses].map(function(p){return p.then(function(r){return r;},function(e){return {error:e};});}))
     .then(function(res){

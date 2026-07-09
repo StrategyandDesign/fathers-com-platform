@@ -201,14 +201,11 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 <section class="tight"><div class="container">
   <h2 class="d-28" style="margin-bottom:12px">A plan you actually work.</h2>
   <p style="color:var(--ash);margin:0 0 24px;max-width:56ch">Your Profile becomes a ninety-day plan, one clear step at a time. New classes every month, on the drive or on the couch. The Profile and your plan are always free.</p>
-  <div class="chiprow" data-filter="#homeclasses" data-select="single" style="margin-bottom:28px">
-    <a class="chip selected" data-all href="#">All</a><a class="chip" data-cat="new-dads" href="#">New Dads</a><a class="chip" data-cat="fathering-daughters" href="#">Fathering Daughters</a><a class="chip" data-cat="fathering-sons" href="#">Fathering Sons</a><a class="chip" data-cat="teens" href="#">Teens</a><a class="chip" data-cat="after-divorce" href="#">After Divorce</a><a class="chip" data-cat="stepfathers" href="#">Stepfathers</a><a class="chip" data-cat="back-from-combat" href="#">Back From Combat</a><a class="chip" data-cat="after-the-sentence" href="#">After the Sentence</a><a class="chip" data-cat="grandfathers" href="#">Grandfathers</a>
-  </div>
-  <div class="rowscroll" id="homeclasses" data-repeat="5" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html"
-    data-titles="Dr. Ken Canfield|Coming Home Present|Fathering Daughters|Fathering After Divorce|Raising Teens"
-    data-subs="The Fundamentals of Fathering|Presence after deployment|For the dad she needs|Presence across two homes|Keeping the line open"
-    data-metas="12 lessons &middot; 2h 10m|10 lessons &middot; 1h 44m|12 lessons &middot; 1h 58m|11 lessons &middot; 1h 51m|13 lessons &middot; 2h 06m"
-    data-cats="new-dads|back-from-combat|fathering-daughters|after-divorce|teens"></div>
+  <div class="rowscroll" id="homeclasses" data-repeat="3" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html"
+    data-titles="Dr. Ken Canfield|Steady Under Pressure|Coming Home Present"
+    data-subs="The Fundamentals of Fathering|A father&rsquo;s temper, trained|Presence after time away"
+    data-metas="12 lessons &middot; 2h 10m|8 modules &middot; Verified Certificate|10 modules &middot; Verified Certificate"
+    data-cats="fundamentals|steady|coming-home"></div>
   <p style="margin-top:20px"><a class="link" href="classes.html">See all classes</a></p>
 </div></section>
 
@@ -336,7 +333,7 @@ PAGES['story.html'] = dict(title='From Combat to the Kitchen Table', desc='One f
       <div class="row between" style="padding:14px 16px;border:1px solid var(--hairline);border-radius:8px"><span><b class="mono ash" style="margin-right:14px">14:10</b>The Turn</span></div>
       <div class="row between" style="padding:14px 16px;border:1px solid var(--hairline);border-radius:8px"><span><b class="mono ash" style="margin-right:14px">19:30</b>The Standard</span></div>
     </div>
-    <div class="row" style="margin-top:26px"><a class="link ash" href="#" style="font-size:13px">Share link</a><a class="link ash" href="#" style="font-size:13px">Text it</a><a class="link ash" href="#" style="font-size:13px">Email it</a><a class="link ash" href="#" style="font-size:13px;margin-left:auto">Report</a></div>
+    <div class="row" style="margin-top:26px"><a class="link ash" href="#" data-share="copy" style="font-size:13px">Share link</a><a class="link ash" href="#" data-share="sms" style="font-size:13px">Text it</a><a class="link ash" href="#" data-share="email" style="font-size:13px">Email it</a><a class="link ash" href="#" data-share="report" style="font-size:13px;margin-left:auto">Report</a></div>
   </div>
   <aside class="stack-24">
     <div class="card"><div class="eyebrow" style="margin-bottom:14px">WHAT HE WISHED HE KNEW SOONER</div>
@@ -371,30 +368,19 @@ PAGES['story.html'] = dict(title='From Combat to the Kitchen Table', desc='One f
 ''')
 
 # ================================================== classes.html (P4 catalog)
-PAGES['classes.html'] = dict(title='All Classes', desc='Nine classes for the father you are right now.', active='Classes', mode='public', body='''
+PAGES['classes.html'] = dict(title='Classes', desc='Three classes. One standard. Presence, steadiness, and coming home, taught by fathers who lived it.', active='Classes', mode='public', body='''
 <section class="tight" style="padding-top:56px"><div class="container">
-  <div class="row between wrap" style="margin-bottom:30px">
-    <h1 class="d-36">All Classes</h1>
+  <div class="row between wrap" style="margin-bottom:14px">
+    <h1 class="d-36">Three classes. One standard.</h1>
     <button class="input" data-open-search style="max-width:320px;text-align:left;color:var(--ash);cursor:pointer">Search classes and lessons</button>
   </div>
-  <div class="stack-16" style="margin-bottom:40px">
-    <div class="row wrap"><span class="tag" style="width:92px">LIFE STAGE</span>
-      <div class="chiprow" data-filter="#classgrid" data-select="multi"><a class="chip" data-cat="expecting" href="#">Expecting</a><a class="chip" data-cat="0-5" href="#">0-5</a><a class="chip" data-cat="6-12" href="#">6-12</a><a class="chip" data-cat="teens" href="#">Teens</a><a class="chip" data-cat="grown" href="#">Grown</a></div></div>
-    <div class="row wrap"><span class="tag" style="width:92px">SITUATION</span>
-      <div class="chiprow" data-filter="#classgrid" data-select="multi"><a class="chip" data-cat="after-divorce" href="#">After Divorce</a><a class="chip" data-cat="stepfathers" href="#">Stepfathers</a><a class="chip" data-cat="back-from-combat" href="#">Back From Combat</a><a class="chip" data-cat="after-the-sentence" href="#">After the Sentence</a><a class="chip" data-cat="grandfathers" href="#">Grandfathers</a><a class="chip" data-cat="faith" href="#">Faith</a></div></div>
-  </div>
-  <!-- Category tags live on each card below via data-cat. Chips auto-hide when no class matches. -->
+  <p style="color:var(--ash);margin:0 0 36px;max-width:62ch">We cut the catalog to the three that matter in every room where fathers are met: the home, the court, the facility, the base. Each one moves your Keystone score. Each one can be earned as a Verified Certificate.</p>
   <div class="grid-3" id="classgrid">
-    <a class="mediacard" data-cat="0-5 6-12 teens" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-01"></div><div class="row" style="margin:12px 0 0"><span class="pill pill-new">New</span></div><div class="name">Dr. Ken Canfield</div><div class="sub">The Fundamentals of Fathering</div><div class="meta">12 lessons &middot; 2h 10m</div></a>
-    <a class="mediacard" data-cat="0-5 6-12 teens" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-02"></div><div class="name" style="margin-top:12px">Fathering Daughters</div><div class="sub">For the dad she needs</div><div class="meta">12 lessons &middot; 1h 58m</div></a>
-    <a class="mediacard" data-cat="0-5 6-12 teens" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-03"></div><div class="name" style="margin-top:12px">Fathering Sons</div><div class="sub">Raising the man he becomes</div><div class="meta">11 lessons &middot; 1h 49m</div></a>
-    <a class="mediacard" data-cat="teens" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-04"></div><div class="name" style="margin-top:12px">Raising Teens</div><div class="sub">Keeping the line open</div><div class="meta">13 lessons &middot; 2h 06m</div></a>
-    <a class="mediacard" data-cat="expecting 0-5" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-05"></div><div class="name" style="margin-top:12px">The First Five Years</div><div class="sub">Presence from day one</div><div class="meta">10 lessons &middot; 1h 38m</div></a>
-    <a class="mediacard" data-cat="6-12 teens after-divorce" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-06"></div><div class="name" style="margin-top:12px">Fathering After Divorce</div><div class="sub">Presence across two homes</div><div class="meta">11 lessons &middot; 1h 51m</div></a>
-    <a class="mediacard" data-cat="6-12 teens stepfathers" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-07"></div><div class="name" style="margin-top:12px">Stepfathers and Blended Families</div><div class="sub">Earning the seat</div><div class="meta">10 lessons &middot; 1h 42m</div></a>
-    <a class="mediacard" data-cat="0-5 6-12 teens back-from-combat" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-08"></div><div class="name" style="margin-top:12px">Coming Home Present</div><div class="sub">Presence after deployment</div><div class="meta">10 lessons &middot; 1h 44m</div></a>
-    <a class="mediacard" data-cat="grown grandfathers" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-09"></div><div class="name" style="margin-top:12px">Dr. Ken Canfield</div><div class="sub">Grandfathering</div><div class="meta">9 lessons &middot; 1h 22m</div></a>
+    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-01"></div><div class="row" style="margin:12px 0 0"><span class="pill pill-new">Flagship</span></div><div class="name">Dr. Ken Canfield</div><div class="sub">The Fundamentals of Fathering</div><div class="meta">12 lessons &middot; 2h 10m &middot; Free</div></a>
+    <a class="mediacard" href="certificates.html#catalog"><div class="slot r-2x3" data-slot="IMG-P4-CAT-02"></div><div class="name" style="margin-top:12px">Steady Under Pressure</div><div class="sub">A father&rsquo;s temper, trained</div><div class="meta">8 modules &middot; Verified Certificate</div></a>
+    <a class="mediacard" href="certificates.html#catalog"><div class="slot r-2x3" data-slot="IMG-P4-CAT-08"></div><div class="name" style="margin-top:12px">Coming Home Present</div><div class="sub">Presence after time away</div><div class="meta">10 modules &middot; Verified Certificate</div></a>
   </div>
+  <p class="fine" style="margin-top:24px">Presence. Steadiness. Coming home. Start with your free Profile and your plan will put them in order for you.</p>
 </div></section>
 
 <div class="searchveil" id="searchveil"><div class="searchpanel">
@@ -759,7 +745,7 @@ PAGES['checkout.html'] = dict(title='Start your membership', desc='One membershi
           <div class="check"><span class="checkmark">&check;</span><span class="small">The Daily</span></div>
           <div class="check"><span class="checkmark">&check;</span><span class="small">Audio and downloads</span></div>
         </div>
-        <p class="fine" style="margin-top:18px">By continuing you agree to the <a class="link ash" href="#" style="font-size:12px">terms</a>. Pricing shown for design pending pricing interviews.</p>
+        <p class="fine" style="margin-top:18px">By continuing you agree to the <a class="link ash" href="terms.html" style="font-size:12px">terms</a>. Pricing shown for design pending pricing interviews.</p>
       </aside>
     </div>
   </div>
@@ -863,7 +849,7 @@ PAGES['account.html'] = dict(title='Account', desc='Settings, membership, notifi
     <div class="tabs"><button class="active">Profile</button><button>Membership</button><button>Notifications</button><button>Cancel path</button></div>
 
     <div class="tabpanel active">
-      <div class="row" style="gap:20px;margin-bottom:28px"><div class="slot r-1x1" data-slot="IMG-P9-AVA-01" style="width:72px;border-radius:50%"></div><a class="link ash" href="#" style="font-size:13px">Change</a></div>
+      <div class="row" style="gap:20px;margin-bottom:28px"><div class="slot r-1x1" data-slot="IMG-P9-AVA-01" style="width:72px;border-radius:50%"></div><a class="link ash" href="mailto:Team@Fathers.com?subject=Change%20my%20account%20email" style="font-size:13px">Change</a></div>
       <div class="grid-2" style="gap:16px">
         <div class="field"><label>Name</label><input class="input" value="Marcus T."></div>
         <div class="field"><label>Email</label><input class="input" value="m.t@example.com"></div>
@@ -884,11 +870,11 @@ PAGES['account.html'] = dict(title='Account', desc='Settings, membership, notifi
         <div><b>Fathers.com Annual</b><p class="small" style="margin-top:6px">Renews March 4, 2027 &middot; $120</p></div>
         <button class="btn btn-secondary btn-sm" onclick="toast('Card update wires to Stripe at deploy.')">Update payment</button></div>
         <hr class="hr" style="margin:18px 0">
-        <div class="row between"><span class="small">Visa ending 4242</span><a class="link ash" href="#" style="font-size:13px">Update</a></div></div>
+        <div class="row between"><span class="small">Visa ending 4242</span><a class="link ash" href="mailto:Team@Fathers.com?subject=Update%20my%20payment%20method" style="font-size:13px">Update</a></div></div>
       <div class="card" style="margin-bottom:20px"><div class="eyebrow" style="margin-bottom:14px">RECEIPTS</div>
         <table><tbody>
-          <tr><td class="mono fine">Mar 4, 2026</td><td>Annual membership</td><td class="mono">$120.00</td><td><a class="link ash" href="#" style="font-size:13px">PDF</a></td></tr>
-          <tr><td class="mono fine">Jun 2, 2026</td><td>Fathering Fundamentals Certificate</td><td class="mono">$79.00</td><td><a class="link ash" href="#" style="font-size:13px">PDF</a></td></tr>
+          <tr><td class="mono fine">Mar 4, 2026</td><td>Annual membership</td><td class="mono">$120.00</td><td><a class="link ash" href="#" data-print style="font-size:13px">PDF</a></td></tr>
+          <tr><td class="mono fine">Jun 2, 2026</td><td>Fathering Fundamentals Certificate</td><td class="mono">$79.00</td><td><a class="link ash" href="#" data-print style="font-size:13px">PDF</a></td></tr>
         </tbody></table></div>
       <div class="grid-2" style="gap:16px;margin-bottom:24px">
         <a class="card hoverable" href="gift.html" style="text-decoration:none"><b style="font-size:15px">Give a gift</b><p class="fine" style="margin-top:6px">One year, from you.</p></a>
@@ -1016,8 +1002,8 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
 <section id="catalog" class="band"><div class="container">
   <div class="row between wrap" style="margin-bottom:40px;align-items:flex-end">
     <div><div class="eyebrow brass" style="margin-bottom:12px">THE CERTIFICATES</div>
-    <h2 class="d-36">Five paths. Each one earned.</h2></div>
-    <p class="small" style="max-width:34ch">Open to every man. Each certificate is built on the Keystone framework from the National Center for Fathering.</p>
+    <h2 class="d-36">Three certificates. Chosen for the rooms where fathers are met.</h2></div>
+    <p class="small" style="max-width:34ch">Open to every man. Presence, steadiness, and coming home: the three credentials courts, programs, and commands actually ask for, built on the Keystone framework.</p>
   </div>
   <div class="cert-cards">
     <a class="cert-card" href="enroll.html?cert=fundamentals&amp;title=Fathering%20Fundamentals&amp;hours=10.0" data-cert="fundamentals" data-title="Fathering Fundamentals" data-hours="10.0" data-desc="The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment.">
@@ -1026,31 +1012,19 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
       <p>The flagship. The core of engaged, present fatherhood, hardened into proof.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
     </a>
-    <a class="cert-card" href="enroll.html?cert=coparenting&amp;title=Co-Parenting%20After%20Divorce&amp;hours=8.0" data-cert="coparenting" data-title="Co-Parenting After Divorce" data-hours="8.0" data-desc="Leading well across two households. Built for the hardest season, with the same verification rigor: identity checked, hours logged, checkpoints, and a final assessment.">
-      <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
-      <h3>Co-Parenting After Divorce</h3>
-      <p>Leading well across two households. Built for the hardest season.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
-    </a>
-    <a class="cert-card" href="enroll.html?cert=reentry&amp;title=Reentry%20Fatherhood&amp;hours=12.0" data-cert="reentry" data-title="Reentry Fatherhood" data-hours="12.0" data-desc="For fathers coming home. Rebuilding the relationship from day one, with identity verification, logged time, checkpoints, and a final assessment a court can trust.">
+        <a class="cert-card" href="enroll.html?cert=reentry&amp;title=Coming%20Home%20Present&amp;hours=12.0" data-cert="reentry" data-title="Coming Home Present" data-hours="12.0" data-desc="For fathers coming home: after a deployment, after a sentence, after any time away. Rebuilding presence from day one, with identity verification, logged time, checkpoints, and a final assessment a court or command can trust.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">12.0 hrs</span></div>
-      <h3>Reentry Fatherhood</h3>
-      <p>For fathers coming home. Rebuilding the relationship from day one.</p>
+      <h3>Coming Home Present</h3>
+      <p>For fathers coming home: after a deployment, after a sentence, after any time away.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
     </a>
-    <a class="cert-card" href="enroll.html?cert=anger&amp;title=Anger%20and%20Repair&amp;hours=8.0" data-cert="anger" data-title="Anger and Repair" data-hours="8.0" data-desc="Staying steady under pressure, and mending it when you do not. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
+    <a class="cert-card" href="enroll.html?cert=anger&amp;title=Steady%20Under%20Pressure&amp;hours=8.0" data-cert="anger" data-title="Steady Under Pressure" data-hours="8.0" data-desc="A father&rsquo;s temper, trained. The pause, the repair, and the steadiness your kids can feel. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
-      <h3>Anger and Repair</h3>
-      <p>Staying steady under pressure, and mending it when you do not.</p>
+      <h3>Steady Under Pressure</h3>
+      <p>A father&rsquo;s temper, trained. The pause, the repair, and the steadiness your kids can feel.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
     </a>
-    <a class="cert-card cert-card-wide" href="enroll.html?cert=legacy&amp;title=Legacy%20and%20Presence&amp;hours=6.0" data-cert="legacy" data-title="Legacy and Presence" data-hours="6.0" data-desc="The long view. Building traditions, telling the story, and being there for the years that matter, with the same verification standard behind every Fathers.com certificate.">
-      <div class="cert-card-top"><span class="pill pill-new">New</span><span class="cert-card-hrs">6.0 hrs</span></div>
-      <h3>Legacy and Presence</h3>
-      <p>The long view. Building traditions, telling the story, and being there for the years that matter.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
-    </a>
-  </div>
+      </div>
   <p class="fine" style="margin-top:20px">Each certificate is $79. Fathers in a partnered church, group, or program enroll free with their program code.</p>
 </div></section>
 
@@ -1278,7 +1252,7 @@ PAGES['verify.html'] = dict(title='Verify a certificate', desc='Enter a serial. 
         <div class="row between"><span class="fine">Identity</span><b class="small">Verified at enrollment</b></div>
         <div class="row between"><span class="fine">Issuer</span><b class="small">National Center for Fathering</b></div>
       </div>
-      <hr class="hr" style="margin:18px 0"><a class="link ash" href="#" style="font-size:13px">Report a concern</a>
+      <hr class="hr" style="margin:18px 0"><a class="link ash" href="#" data-share="report" style="font-size:13px">Report a concern</a>
     </div>
     <div id="v-no" class="card" style="display:none;border-color:var(--error)">
       <b>NOT FOUND.</b><p class="small" style="margin-top:8px">Check the serial and try again.</p>
@@ -1697,9 +1671,17 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who ser
   </div>
   <div class="grid-4" style="gap:28px">
     <div><b class="bone" style="font-size:16px">The full field guide</b><p class="small" style="margin-top:8px">Every film and read on what gets hard when you walk back through the door.</p></div>
-    <div><b class="bone" style="font-size:16px">Your voice, in their day</b><p class="small" style="margin-top:8px">Record a story or a message your kids can replay while you are away.</p></div>
+    <div><b class="bone" style="font-size:16px">The Legacy Archive</b><p class="small" style="margin-top:8px">Guided prompts, recorded in your voice, titled and kept for your kids: bedtime, milestones, the hard days, your story.</p></div>
     <div><b class="bone" style="font-size:16px">Support matched to you</b><p class="small" style="margin-top:8px">The one free service built for your situation, with the number and what to expect.</p></div>
     <div><b class="bone" style="font-size:16px">A private check-in</b><p class="small" style="margin-top:8px">Two minutes, just for you. Not a diagnosis. It points you to help if you want it.</p></div>
+  </div>
+</section>
+
+<section class="vet-ed">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">For units and programs</div>
+    <h2>Bringing your whole unit?</h2>
+    <p>One join link enrolls every man under your cohort: the assessment, the three courses (presence, steadiness, coming home), the ninety-day plan, and the Legacy Voice Archive. Leadership sees cohort movement, never a man&rsquo;s private answers. <a class="link" href="organizations.html">For Organizations &rarr;</a></p>
   </div>
 </section>
 
@@ -1810,13 +1792,9 @@ PAGES['voice.html'] = dict(title='Voice', desc='Record your voice for your kids.
   </div>
   <div style="margin-top:28px">
     <div class="voice-prompts">
-      <div class="voice-prompts-lbl">Not sure what to say? Try one of these:</div>
-      <ul>
-        <li>Read the book on their nightstand. Just one chapter.</li>
-        <li>Tell them about a time you were scared and did it anyway.</li>
-        <li>Say the three things you are proudest of about them.</li>
-        <li>Just say good night, the way you always do.</li>
-      </ul>
+      <div class="voice-prompts-lbl">The Legacy Archive. Pick a prompt, or say your own thing:</div>
+      <div id="promptPicker"></div>
+      <p class="fine" id="promptCurrent" hidden style="margin-top:10px"></p>
     </div>
     <div id="voiceApp">
       <div class="voice-types" data-voice-types>
@@ -1844,6 +1822,7 @@ PAGES['voice.html'] = dict(title='Voice', desc='Record your voice for your kids.
   </div>
 </section>
 <script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/voice-prompts.js"></script>
 <script src="assets/js/voice.js"></script>
 ''')
 
@@ -1906,47 +1885,78 @@ PAGES['find-a-program.html'] = dict(title='Find a fatherhood program that works'
 ''')
 
 # ================================================== organizations.html
-PAGES['organizations.html'] = dict(title='Run your fathers on the Keystone Standard', desc='Measure every father, grow them on a plan, certify the work, and prove what is happening. Whether you have a fatherhood program or none at all.', active='For Organizations', mode='public', body='''
-<header class="hero"><div class="container" style="max-width:900px">
+PAGES['organizations.html'] = dict(title='The measurable standard for effective fathering programs', desc='Assess your fatherhood program against the Keystone norm. Prove it works with the Efficacy Report. No program yet? Deploy ours in a day.', active='For Organizations', mode='public', body='''
+<header class="hero"><div class="container" style="max-width:920px">
   <div class="eyebrow" style="margin-bottom:18px">FOR ORGANIZATIONS</div>
-  <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">Run your fathers on the Keystone Standard.</h1>
-  <p class="lead" style="margin:22px 0 8px">Measure every father against a validated, normed instrument. Grow them on a plan. Certify the work. Get the report that proves to your funder, your court, or your command what is actually happening.</p>
+  <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">The measurable standard for effective fathering programs.</h1>
+  <p class="lead" style="margin:22px 0 8px">Every program says it works. The Keystone Standard is how you prove it: a validated instrument normed on 9,232 fathers, measured at baseline and exit, printed in the report your funder, your court, or your command already asks for. Run your program on it. And if you have no program, deploy ours in a day.</p>
 </div></header>
 
-<section class="band tight"><div class="container">
-  <h2 class="d-28" style="margin-bottom:8px">No fatherhood program yet? You can still start today.</h2>
-  <p style="color:var(--ash);margin:0 0 32px;max-width:60ch">You already intake fathers. The floor is never nothing.</p>
-  <div class="grid-3">
-    <div class="card" style="padding:28px"><div class="eyebrow" style="margin-bottom:12px">STEP ONE</div><h3 style="margin-bottom:8px">Measure at the door.</h3><p class="small" style="color:var(--ash)">Run the Keystone Profile at intake. You hold a validated engagement baseline on every man, with zero program required.</p></div>
-    <div class="card" style="padding:28px"><div class="eyebrow" style="margin-bottom:12px">STEP TWO</div><h3 style="margin-bottom:8px">Route to what works.</h3><p class="small" style="color:var(--ash)">Each father's profile points to the rated program that fits him. We become your diagnostic and referral layer.</p></div>
-    <div class="card" style="padding:28px"><div class="eyebrow" style="margin-bottom:12px">STEP THREE</div><h3 style="margin-bottom:8px">Switch on the rail.</h3><p class="small" style="color:var(--ash)">When you want a program of your own, ours turns on in a day: assessment, plan, growth loop, re-assessment, certificate.</p></div>
+<section class="band tight"><div class="container split">
+  <div>
+    <div class="eyebrow brass" style="margin-bottom:14px">AVAILABLE NOW</div>
+    <h2 class="d-36" style="font-size:32px">The Efficacy Report.</h2>
+    <p style="color:var(--ash);margin:16px 0 18px;max-width:52ch">One page per cohort: how many fathers started, how many finished, where they began on the four dimensions, where they ended, and the movement in between, benchmarked against the national norm. Individual fathers are never shown. Aggregates only.</p>
+    <p style="color:var(--ash);margin:0 0 26px;max-width:52ch">This is the document that turns a grant renewal from a story into a number.</p>
+    <div class="row wrap"><a class="btn btn-primary" href="efficacy-report.html?demo=1">See a sample report</a><a class="btn btn-secondary" href="#walkthrough">Request yours</a></div>
+  </div>
+  <div class="card" style="padding:32px">
+    <div class="eyebrow" style="margin-bottom:16px">WHAT A FUNDER SEES</div>
+    <div class="stack-16">
+      <div class="check"><span class="checkmark">&check;</span><span>Baseline and exit scores on the four Keystone dimensions</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span>Cohort movement, benchmarked against 9,232 fathers</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span>Completion rates that hold up to an auditor</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span>Outcome overlays when your agency links its data</span></div>
+    </div>
   </div>
 </div></section>
 
 <section><div class="container">
-  <h2 class="d-28" style="margin-bottom:8px">One measurement engine. Three reports.</h2>
-  <p style="color:var(--ash);margin:0 0 32px;max-width:60ch">The same normed spine, printed in the language of the outcome you are accountable for.</p>
+  <h2 class="d-28" style="margin-bottom:8px">Outcome overlays: the same spine, in the language you answer to.</h2>
+  <p style="color:var(--ash);margin:0 0 32px;max-width:62ch">Movement is what we measure. Outcomes are what you are accountable for. When the responsible agency links its outcome records to your cohorts through the secure intake, the overlay switches on. Until then, the report says so honestly.</p>
   <div class="grid-3">
-    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">CORRECTIONS &amp; REENTRY</div><h3 style="margin-bottom:8px">The Recidivism Report</h3><p class="small" style="color:var(--ash)">Father engagement measured and linked to reoffense outcomes, per participant and per cohort, in the format your funder already requires.</p></div>
-    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">CHILD SUPPORT</div><h3 style="margin-bottom:8px">The Collection Report</h3><p class="small" style="color:var(--ash)">Engagement linked to payment compliance. Engaged fathers pay. Prove the connection with your own caseload.</p></div>
-    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">VETERAN &amp; MILITARY</div><h3 style="margin-bottom:8px">The Readiness Report</h3><p class="small" style="color:var(--ash)">Engagement linked to retention and family stability, with a legacy voice-capture track built for reintegration.</p></div>
+    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">CORRECTIONS &amp; REENTRY</div><h3 style="margin-bottom:8px">The Recidivism Overlay</h3><p class="small" style="color:var(--ash)">Keystone movement set against reoffense records, completers versus non-completers, per cohort. The number a reentry grant lives or dies on.</p></div>
+    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">CHILD SUPPORT</div><h3 style="margin-bottom:8px">The Collection Overlay</h3><p class="small" style="color:var(--ash)">Engagement set against payment compliance. Engaged fathers pay. Show the connection in your own caseload.</p></div>
+    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">VETERAN &amp; MILITARY</div><h3 style="margin-bottom:8px">The Readiness Overlay</h3><p class="small" style="color:var(--ash)">Engagement set against retention and family stability, with the Legacy Voice Archive built into the track.</p></div>
   </div>
 </div></section>
 
-<section class="band"><div class="container split">
-  <div>
-    <h2 class="d-36" style="font-size:32px">Already running fathers?</h2>
-    <p style="color:var(--ash);margin:16px 0 26px;max-width:50ch">Circles for churches, teams, and crews. Cohorts for grantee programs. Tracks for veteran services and employers. Your fathers, one standard, one dashboard, one report your funder trusts.</p>
-    <div class="row wrap"><a class="btn btn-secondary" href="groups.html">Groups &amp; Circles</a><a class="btn btn-secondary" href="veterans.html">Veteran Programs</a><a class="btn btn-secondary" href="employers.html">Employers</a></div>
+<section class="band tight"><div class="container">
+  <h2 class="d-28" style="margin-bottom:8px">No fatherhood program yet? The floor is never nothing.</h2>
+  <p style="color:var(--ash);margin:0 0 32px;max-width:60ch">You already intake fathers. Start measuring today and switch the rest on when you are ready.</p>
+  <div class="grid-3">
+    <div class="card" style="padding:28px"><div class="eyebrow" style="margin-bottom:12px">STEP ONE</div><h3 style="margin-bottom:8px">Measure at the door.</h3><p class="small" style="color:var(--ash)">Run the Keystone Profile at intake. A validated engagement baseline on every man, zero program required.</p></div>
+    <div class="card" style="padding:28px"><div class="eyebrow" style="margin-bottom:12px">STEP TWO</div><h3 style="margin-bottom:8px">Route to what works.</h3><p class="small" style="color:var(--ash)">Each profile points to the rated program that fits him. We become your diagnostic and referral layer.</p></div>
+    <div class="card" style="padding:28px"><div class="eyebrow" style="margin-bottom:12px">STEP THREE</div><h3 style="margin-bottom:8px">Deploy ours in a day.</h3><p class="small" style="color:var(--ash)">The assessment, three courses (presence, steadiness, coming home), the ninety-day plan, the certificate. Switched on, not built.</p></div>
   </div>
-  <div class="card" style="padding:32px">
+</div></section>
+
+<section><div class="container split">
+  <div>
+    <div class="eyebrow" style="margin-bottom:14px">DEPLOY AT SCALE</div>
+    <h2 class="d-36" style="font-size:32px">One join link. Every man tagged to your cohort.</h2>
+    <p style="color:var(--ash);margin:16px 0 18px;max-width:52ch">A unit, a facility, a caseload, a congregation: share one link and every father who enters it is assessed under your organization, program, and cohort. The report builds itself as they move. Leadership sees cohort movement, never a man&rsquo;s private answers.</p>
+    <p style="color:var(--ash);max-width:52ch">Bringing a whole force? The veteran track ships complete: assessment, the three courses, the plan, and the Legacy Voice Archive with guided prompts a father records for his children.</p>
+  </div>
+  <div class="card" style="padding:32px" id="walkthrough">
     <div class="eyebrow" style="margin-bottom:16px">REQUEST A WALKTHROUGH</div>
-    <p class="small" style="color:var(--ash);margin-bottom:20px">Twenty minutes. Your program, your funder's report, live.</p>
+    <p class="small" style="color:var(--ash);margin-bottom:20px">Twenty minutes. Your program, your funder&rsquo;s report, live. We will set up your join link on the call.</p>
     <form class="stack-16" data-lead="org-inquiry" data-done="Received. We will reach out to schedule your walkthrough.">
       <input class="input" name="org" required placeholder="Organization name">
       <input class="input" name="email" type="email" required placeholder="Work email">
       <button class="btn btn-primary">Request a walkthrough</button>
     </form>
+    <p class="fine" style="margin-top:14px">Already on the standard? <a class="link ash" href="efficacy-report.html">Open your Efficacy Report</a>.</p>
+  </div>
+</div></section>
+
+<section class="band tight"><div class="container">
+  <div class="row wrap" style="gap:14px;align-items:center">
+    <span class="small" style="color:var(--ash)">Also built for:</span>
+    <a class="btn btn-secondary btn-sm" href="groups.html">Groups &amp; Circles</a>
+    <a class="btn btn-secondary btn-sm" href="veterans.html">Veteran Programs</a>
+    <a class="btn btn-secondary btn-sm" href="employers.html">Employers</a>
+    <a class="btn btn-secondary btn-sm" href="find-a-program.html">Get your program rated</a>
   </div>
 </div></section>
 ''')
@@ -2035,6 +2045,27 @@ PAGES['research.html'] = dict(title='The research behind the Keystone Profile', 
     <p class="fine" style="margin-top:12px">Free. About twenty minutes. Private.</p>
   </div>
 </div></section>
+''')
+
+# ================================================== efficacy-report.html
+PAGES['efficacy-report.html'] = dict(title='The Efficacy Report', desc='Cohort movement on the Keystone Father Profile, benchmarked against 9,232 fathers, in the format funders ask for.', active='For Organizations', mode='public', body='''
+<section class="tight" style="padding-top:56px"><div class="container" style="max-width:980px">
+  <div class="row between wrap" style="align-items:flex-end;margin-bottom:8px">
+    <div>
+      <div class="eyebrow brass" style="margin-bottom:12px">THE EFFICACY REPORT</div>
+      <h1 class="d-36">Proof, in one page.</h1>
+    </div>
+    <div class="row" style="gap:10px">
+      <select class="input" id="reportOrg" hidden style="max-width:260px"></select>
+      <button class="btn btn-secondary btn-sm" data-print>Print</button>
+    </div>
+  </div>
+  <p style="color:var(--ash);margin:0 0 28px;max-width:62ch">Movement on the four Keystone dimensions, per cohort, benchmarked against the national norm. This page is the deliverable: print it, attach it, submit it.</p>
+  <div id="reportRoot"></div>
+  <p class="fine" style="margin-top:22px">Not on the standard yet? <a class="link" href="organizations.html">Start here</a>. Methodology: <a class="link ash" href="research.html">the research</a>.</p>
+</div></section>
+<style>@media print{.nav,footer,.btn,select{display:none!important}body{background:#fff;color:#000}}</style>
+<script src="assets/js/report.js"></script>
 ''')
 
 # ================================================== WRITER

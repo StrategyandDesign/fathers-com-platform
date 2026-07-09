@@ -108,7 +108,7 @@ window.FCR = window.FCR || {};
 
     // ORG glance (roster + activity)
     if(document.querySelector('[data-glance="org-members"]')){
-      sb.from('org_members').select('id', {count:'exact', head:true}).then(function(r){
+      sb.from('org_participation').select('id', {count:'exact', head:true}).then(function(r){
         if(r && r.count != null) setGlance('org-members', r.count);
       }, function(){});
     }

@@ -104,8 +104,18 @@
   };
 
   // Search overlay
+  function ensureVeil(){
+    var v=document.getElementById('searchveil');
+    if(!v){
+      v=document.createElement('div'); v.className='searchveil'; v.id='searchveil';
+      v.innerHTML='<div class="searchpanel"><input class="input" placeholder="Search classes and lessons"><p class="fine" style="margin-top:14px">Type to search. Press Escape to close.</p></div>';
+      document.body.appendChild(v);
+      v.addEventListener('click',function(e){if(e.target===v)v.classList.remove('open')});
+    }
+    return v;
+  }
   var veil=document.getElementById('searchveil');
-  document.querySelectorAll('[data-open-search]').forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();veil.classList.add('open');veil.querySelector('input').focus();})});
+  document.querySelectorAll('[data-open-search]').forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();var v=ensureVeil();v.classList.add('open');var inp=v.querySelector('input');if(inp)inp.focus();})});
   if(veil){veil.addEventListener('click',function(e){if(e.target===veil)veil.classList.remove('open')});
     document.addEventListener('keydown',function(e){if(e.key==='Escape')veil.classList.remove('open')});}
 
@@ -164,6 +174,7 @@
                   'FC-2026-001882':{recipient_display:'Ray M.',course_title:'Reentry Fatherhood Certificate',hours:'12.0',issued_at:'2026-04-18'}};
   function showCert(d,serial){
     var ok=document.getElementById('v-ok'),no=document.getElementById('v-no');
+    if(!ok||!no) return;
     if(d){ok.style.display='';no.style.display='none';
       ok.querySelector('[data-f=name]').textContent=d.recipient_display;
       ok.querySelector('[data-f=course]').textContent=d.course_title;
@@ -197,7 +208,9 @@
     if(el.classList.contains('cert-doc-3d')) return; // the cert doc isn't a video
     el.style.cursor = 'pointer';
     el.addEventListener('click', function(){
-      if(window.toast){ toast('Class previews are coming soon. Take your baseline to get started.'); }
+      // A play button must produce a real result: open the flagship class page.
+      if(!/class\.html$/.test(location.pathname)) location.href='class.html';
+      else if(window.toast) toast('Full lessons unlock with the free Profile. Trailers are being wired now.');
     });
   });
 
@@ -366,5 +379,41 @@
     document.querySelectorAll('[data-signout]').forEach(function(b){
       b.addEventListener('click',function(e){e.preventDefault();FC.signOut().then(function(){location.href='index.html'})});
     });
+
+    // Share links: [data-share="copy|sms|email|native|report"]. Every share click does its job.
+    document.querySelectorAll('[data-share]').forEach(function(el){
+      el.addEventListener('click',function(e){
+        e.preventDefault();
+        var kind=el.dataset.share, url=location.href.split('#')[0], title=document.title;
+        if(kind==='copy'){
+          (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){toast('Link copied.')},function(){prompt('Copy this link:',url)});
+        } else if(kind==='sms'){ location.href='sms:?&body='+encodeURIComponent(title+' '+url); }
+        else if(kind==='email'){ location.href='mailto:?subject='+encodeURIComponent(title)+'&body='+encodeURIComponent(url); }
+        else if(kind==='report'){ location.href='mailto:Team@Fathers.com?subject='+encodeURIComponent('Report a concern: '+title)+'&body='+encodeURIComponent(url); }
+        else if(navigator.share){ navigator.share({title:title,url:url}).catch(function(){}); }
+        else { (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){toast('Link copied.')},function(){prompt('Copy this link:',url)}); }
+      });
+    });
+
+    // Print hooks: [data-print]
+    document.querySelectorAll('[data-print]').forEach(function(el){
+      el.addEventListener('click',function(e){e.preventDefault();window.print();});
+    });
+
+    // Program join codes: ?join=CODE tags this man's assessments to an org/program/cohort.
+    try{
+      var jc=new URLSearchParams(location.search).get('join');
+      if(jc){ localStorage.setItem('fc_join_code', jc.trim().toUpperCase()); }
+      var pend=localStorage.getItem('fc_join_code');
+      if(pend && FC.live && FC.sb){
+        FC.sb.from('org_join_codes').select('org_id,program_id,cohort_id,active').eq('code',pend).maybeSingle()
+          .then(function(r){
+            if(r && r.data && r.data.active){
+              localStorage.setItem('fc_org_tag', JSON.stringify({organization_id:r.data.org_id, program_id:r.data.program_id, cohort_id:r.data.cohort_id, code:pend}));
+              if(jc && window.toast) toast('Linked to program code '+pend+'.');
+            }
+          }, function(){});
+      }
+    }catch(_){}
   });
 })();

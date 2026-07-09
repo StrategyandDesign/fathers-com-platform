@@ -86,13 +86,9 @@
   </div>
   <div style="margin-top:28px">
     <div class="voice-prompts">
-      <div class="voice-prompts-lbl">Not sure what to say? Try one of these:</div>
-      <ul>
-        <li>Read the book on their nightstand. Just one chapter.</li>
-        <li>Tell them about a time you were scared and did it anyway.</li>
-        <li>Say the three things you are proudest of about them.</li>
-        <li>Just say good night, the way you always do.</li>
-      </ul>
+      <div class="voice-prompts-lbl">The Legacy Archive. Pick a prompt, or say your own thing:</div>
+      <div id="promptPicker"></div>
+      <p class="fine" id="promptCurrent" hidden style="margin-top:10px"></p>
     </div>
     <div id="voiceApp">
       <div class="voice-types" data-voice-types>
@@ -120,6 +116,7 @@
   </div>
 </section>
 <script src="assets/js/veterans-core.js"></script>
+<script src="assets/js/voice-prompts.js"></script>
 <script src="assets/js/voice.js"></script>
 <footer><div class="container">
 <div class="footgrid">
