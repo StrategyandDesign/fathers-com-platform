@@ -201,7 +201,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 <section class="tight"><div class="container">
   <h2 class="d-28" style="margin-bottom:12px">A plan you actually work.</h2>
   <p style="color:var(--ash);margin:0 0 24px;max-width:56ch">Your Profile becomes a ninety-day plan, one clear step at a time. New classes every month, on the drive or on the couch. The Profile and your plan are always free.</p>
-  <div class="rowscroll" id="homeclasses" data-repeat="3" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html"
+  <div class="rowscroll" id="homeclasses" data-repeat="3" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html" data-hrefs="class.html|certificates.html#catalog|certificates.html#catalog"
     data-titles="Dr. Ken Canfield|Steady Under Pressure|Coming Home Present"
     data-subs="The Fundamentals of Fathering|A father&rsquo;s temper, trained|Presence after time away"
     data-metas="12 lessons &middot; 2h 10m|8 modules &middot; Verified Certificate|10 modules &middot; Verified Certificate"
@@ -387,13 +387,13 @@ PAGES['classes.html'] = dict(title='Classes', desc='Three classes. One standard.
   <input class="input" placeholder="Search classes and lessons" value="consistency">
   <div class="grid-2" style="margin-top:22px;gap:32px">
     <div><div class="eyebrow" style="margin-bottom:14px">RECENT</div>
-      <p class="small" style="margin-bottom:10px">repair</p><p class="small" style="margin-bottom:10px">teen daughter</p><p class="small">deployment</p></div>
+      <p class="small" style="margin-bottom:10px">repair</p><p class="small" style="margin-bottom:10px">temper</p><p class="small">deployment</p></div>
     <div><div class="eyebrow" style="margin-bottom:14px">RESULTS FOR "CONSISTENCY"</div>
       <div class="stack-16">
         <div class="row"><div class="slot r-1x1" data-slot="IMG-P4-SRCH-01" style="width:44px"></div><div><b style="font-size:14px">The Fundamentals of Fathering</b><p class="fine">Class</p></div></div>
-        <div class="row"><div class="slot r-1x1" data-slot="IMG-P4-SRCH-02" style="width:44px"></div><div><b style="font-size:14px">Fathering After Divorce</b><p class="fine">Class</p></div></div>
+        <div class="row"><div class="slot r-1x1" data-slot="IMG-P4-SRCH-02" style="width:44px"></div><div><b style="font-size:14px">Coming Home Present</b><p class="fine">Class</p></div></div>
         <div class="row"><div class="slot r-1x1" data-slot="IMG-P4-SRCH-03" style="width:44px"></div><div><b style="font-size:14px">Lesson 3: A Schedule They Can Trust</b><p class="fine">In The Fundamentals of Fathering</p></div></div>
-        <div class="row"><div class="slot r-1x1" data-slot="IMG-P4-SRCH-04" style="width:44px"></div><div><b style="font-size:14px">Lesson 7: Same Dad, Both Houses</b><p class="fine">In Fathering After Divorce</p></div></div>
+        <div class="row"><div class="slot r-1x1" data-slot="IMG-P4-SRCH-04" style="width:44px"></div><div><b style="font-size:14px">Lesson 3: The Pause That Saves It</b><p class="fine">In Steady Under Pressure</p></div></div>
       </div></div>
   </div>
 </div></div>
@@ -462,10 +462,11 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
 </div></section>
 
 <section class="band tight"><div class="container">
-  <h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:20px">Related classes</h2>
-  <div class="rowscroll" data-repeat="4" data-prefix="IMG-P4-REL-" data-ratio="r-2x3" data-href="class.html"
-    data-titles="Fathering Sons|Raising Teens|The First Five Years|Coming Home Present"
-    data-metas="11 lessons|13 lessons|10 lessons|10 lessons"></div>
+  <h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:20px">Keep training. The other two.</h2>
+  <div class="rowscroll" data-repeat="2" data-prefix="IMG-P4-REL-" data-ratio="r-2x3" data-href="certificates.html#catalog"
+    data-titles="Steady Under Pressure|Coming Home Present"
+    data-subs="A father&rsquo;s temper, trained|Presence after time away"
+    data-metas="8 modules &middot; Verified Certificate|10 modules &middot; Verified Certificate"></div>
 </div></section>
 <script src="assets/js/cert-preview.js"></script>
 ''')

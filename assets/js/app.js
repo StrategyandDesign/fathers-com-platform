@@ -34,7 +34,8 @@
     for(var i=1;i<=n;i++){
       var id=prefix+String(i).padStart(2,'0');
       var a=document.createElement('a');
-      a.className='mediacard';a.href=row.dataset.href||'#';
+      var hrefs=(row.dataset.hrefs||'').split('|');
+      a.className='mediacard';a.href=(hrefs[i-1]&&hrefs[i-1].trim())||row.dataset.href||'#';
       if(cats[i-1]&&cats[i-1].trim()) a.setAttribute('data-cat',cats[i-1].trim());
       a.innerHTML='<div class="slot '+ratio+'" data-slot="'+id+'"></div>'+
         (titles[i-1]?'<div class="name">'+titles[i-1]+'</div>':'')+
