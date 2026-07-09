@@ -31,8 +31,8 @@
     if (demo) return;                       // admin.js shows the demo note
     FC.ready.then(function(){
       // Load courses unconditionally so the dropdown fills.
-        loadApprovals();
-      });
+      loadCourses();
+      loadApprovals();
     });
   }
 
