@@ -111,3 +111,9 @@ def test_coursework_page_present(page, server):
 
 def test_enroll_begin_button_targets_coursework(page, server):
     assert "course.html?cert=" in _fetch(server, "assets/js/enroll.js")
+
+def test_coursework_supports_vimeo(page, server):
+    js = _fetch(server, "assets/js/coursework.js")
+    assert "player.vimeo.com/video/" in js          # vimeo embed
+    assert "Vimeo.Player" in js                      # vimeo player api tracking
+    assert "vimeoId" in js                           # accepts bare id or url
