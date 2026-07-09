@@ -37,7 +37,7 @@ def social_meta(fname, title, desc):
         + f'<meta property="og:image" content="{OG_IMAGE}">\n'
         + '<meta property="og:image:width" content="1200">\n'
         + '<meta property="og:image:height" content="630">\n'
-        + '<meta property="og:image:alt" content="Fathers.com, learn fatherhood from men who lived it">\n'
+        + '<meta property="og:image:alt" content="Fathers.com, know where you stand as a father">\n'
         + '<meta name="twitter:card" content="summary_large_image">\n'
         + f'<meta name="twitter:title" content="{ttl}">\n'
         + f'<meta name="twitter:description" content="{ds}">\n'
@@ -63,11 +63,14 @@ HEAD = '''<!DOCTYPE html>
 '''
 
 def nav(active='', mode='public'):
-    links = [('Classes','classes.html'),('Stories','stories.html'),('Certificates','certificates.html'),('For Groups','groups.html'),('For Veterans','veterans.html')]
     if mode=='app':
-        links = [('My Plan','plan.html')] + links[:2] + [('Circles','circles.html'),('Certificates','certificates.html')]
+        links = [('My Plan','plan.html'),('Classes','classes.html'),('Stories','stories.html'),('Circles','circles.html'),('Certificates','certificates.html')]
+    else:
+        links = [('Your Profile','profile.html'),('Classes','classes.html'),('Certificates','certificates.html'),('Find a Program','find-a-program.html'),('For Organizations','organizations.html'),('Gatherings','gatherings.html')]
+        # Legacy page actives map onto the new public nav so highlighting stays sane.
+        active = {'For Groups':'For Organizations','For Veterans':'For Organizations','Stories':'Classes'}.get(active, active)
     lis = ''.join(f'<li><a href="{h}" {"class=\"active\"" if t==active else ""}>{t}</a></li>' for t,h in links)
-    right = ('<a href="gift.html" class="hide-m">Gifts</a><a href="login.html" class="hide-m">Log in</a><a class="btn btn-yellow btn-sm" href="profile.html">Get your baseline</a>'
+    right = ('<a href="gift.html" class="hide-m">Gifts</a><a href="login.html" class="hide-m">Log in</a><a class="btn btn-yellow btn-sm" href="profile.html">Start your Profile</a>'
              if mode=='public' else
              '<a href="#" data-open-search class="hide-m">Search</a><a href="gift.html" class="hide-m">Gifts</a><a href="account.html" class="avatarchip" title="Account" style="text-decoration:none">M</a>')
     return f'''<nav class="nav"><div class="container nav-inner">
@@ -82,9 +85,10 @@ FOOT = '''<footer><div class="container">
   <div><a class="brand" href="index.html" style="margin-bottom:16px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="" style="height:34px"><b>Fathers.com</b></a>
     <p class="small" style="margin-top:14px;max-width:32ch">Presence is a skill. Train it.</p>
     <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
-  <div><h4>Train</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="profile.html">The Keystone Profile</a></li><li><a href="certificates.html">Certificates</a></li></ul></div>
-  <div><h4>Programs</h4><ul><li><a href="groups.html">For Groups</a></li><li><a href="veterans.html">For Veterans</a></li><li><a href="employers.html">For Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
-  <div><h4>Company</h4><ul><li><a href="#">About NCF</a></li><li><a href="#">Research</a></li><li><a href="gift.html">Gifts</a></li><li><a href="mailto:Team@Fathers.com">Contact</a></li></ul></div>
+  <div><h4>Measure</h4><ul><li><a href="profile.html">The Keystone Profile</a></li><li><a href="research.html">The Research</a></li><li><a href="find-a-program.html">Find a Program</a></li></ul></div>
+  <div><h4>Train &amp; Prove</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="certificates.html">Certificates</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
+  <div><h4>For Organizations</h4><ul><li><a href="organizations.html">The Standard</a></li><li><a href="groups.html">Groups &amp; Circles</a></li><li><a href="veterans.html">Veteran Programs</a></li><li><a href="employers.html">Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="about.html">About NCF</a></li><li><a href="research.html">Research</a></li><li><a href="gatherings.html">Gatherings</a></li><li><a href="gift.html">Gifts</a></li><li><a href="mailto:Team@Fathers.com">Contact</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="security.html">Security</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
 </div>
 <div style="margin-top:48px;max-width:420px"><h4 style="font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:12px">One useful thing for fathers, weekly</h4>
@@ -100,12 +104,12 @@ FOOT = '''<footer><div class="container">
 PAGES = {}
 
 # ================================================== index.html (P1)
-PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc='Take the twelve-minute Keystone Profile and get your ninety-day plan.', active='', mode='public', body='''
+PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take the free Keystone Father Profile. Four scores, one honest read, and a ninety-day plan built for you. About twenty minutes.', active='', mode='public', body='''
 <header class="hero"><div class="container split">
   <div>
     <div class="eyebrow" style="margin-bottom:18px">FATHERS.COM</div>
-    <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">Learn fatherhood from men who lived it.</h1>
-    <p class="lead" style="margin:22px 0 28px">Every class taught by a father who has been through it. Start with your free Keystone Profile and get a ninety-day plan built for you.</p>
+    <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">Know where you stand as a father.</h1>
+    <p class="lead" style="margin:22px 0 28px">Start with the free Keystone Profile. Get your score on the four things that matter, and a ninety-day plan built for you. Then grow it with classes taught by fathers who lived it.</p>
     <div class="hero-intent">
       <div class="hero-intent-q">Where are you in the journey?</div>
       <div class="hero-intent-opts">
@@ -151,51 +155,11 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
   </div>
 </div></header>
 
-<section class="band tight" id="membership"><div class="container split" style="align-items:start">
-  <div>
-    <h2 style="font-family:var(--font-ui);font-weight:600;font-size:22px;margin-bottom:22px">What's in a Fathers.com membership?</h2>
-    <div class="row wrap"><a class="btn btn-primary" href="profile.html">Get your baseline</a><a class="btn btn-secondary" href="gift.html">Give a gift</a></div>
-  </div>
-  <div class="stack-16">
-    <div class="check"><span class="checkmark">&check;</span><span>Every class and every workbook</span></div>
-    <div class="check"><span class="checkmark">&check;</span><span>New classes every month</span></div>
-    <div class="check"><span class="checkmark">&check;</span><span>Audio mode for the drive</span></div>
-    <div class="check"><span class="checkmark">&check;</span><span>Downloads for offline</span></div>
-    <div class="check"><span class="checkmark">&check;</span><span>Your Keystone baseline and ninety-day plan</span></div>
-    <div class="check"><span class="checkmark">&check;</span><span>30-day money-back guarantee</span></div>
-  </div>
-</div></section>
-
-<section><div class="container">
-  <div class="billboard">
-    <div class="slot r-21x9 play-overlay" data-slot="IMG-P1-BILL-01"><span class="tri"></span></div>
-    <div class="overlay">
-      <span class="pill pill-new" style="margin-bottom:14px">New</span>
-      <h2 class="d-36" style="margin:10px 0 8px">The Fundamentals of Fathering</h2>
-      <p class="small" style="margin-bottom:18px">The flagship class on presence, taught by Dr. Ken Canfield.</p>
-      <a class="btn btn-secondary play" href="class.html">Watch trailer</a>
-    </div>
-  </div>
-</div></section>
-
-<section class="tight"><div class="container">
-  <h2 class="d-28" style="margin-bottom:20px">Classes for the father you are right now.</h2>
-  <div class="chiprow" data-filter="#homeclasses" data-select="single" style="margin-bottom:28px">
-    <a class="chip selected" data-all href="#">All</a><a class="chip" data-cat="new-dads" href="#">New Dads</a><a class="chip" data-cat="fathering-daughters" href="#">Fathering Daughters</a><a class="chip" data-cat="fathering-sons" href="#">Fathering Sons</a><a class="chip" data-cat="teens" href="#">Teens</a><a class="chip" data-cat="after-divorce" href="#">After Divorce</a><a class="chip" data-cat="stepfathers" href="#">Stepfathers</a><a class="chip" data-cat="back-from-combat" href="#">Back From Combat</a><a class="chip" data-cat="after-the-sentence" href="#">After the Sentence</a><a class="chip" data-cat="grandfathers" href="#">Grandfathers</a>
-  </div>
-  <div class="rowscroll" id="homeclasses" data-repeat="5" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html"
-    data-titles="Dr. Ken Canfield|Coming Home Present|Fathering Daughters|Fathering After Divorce|Raising Teens"
-    data-subs="The Fundamentals of Fathering|Presence after deployment|For the dad she needs|Presence across two homes|Keeping the line open"
-    data-metas="12 lessons &middot; 2h 10m|10 lessons &middot; 1h 44m|12 lessons &middot; 1h 58m|11 lessons &middot; 1h 51m|13 lessons &middot; 2h 06m"
-    data-cats="new-dads|back-from-combat|fathering-daughters|after-divorce|teens"></div>
-  <p style="margin-top:20px"><a class="link" href="classes.html">See all classes</a></p>
-</div></section>
-
 <section class="band"><div class="container split">
   <div>
-    <h2 class="d-36">Know your baseline in about twenty minutes.</h2>
-    <p style="color:var(--ash);margin:18px 0 28px;max-width:52ch">The Keystone Father Profile measures four things: involvement, consistency, awareness, nurturance. You get a score, a read on where you stand, and a ninety-day plan built from it. Before you pay anything.</p>
-    <a class="btn btn-primary" href="profile.html">Start the Profile</a>
+    <h2 class="d-36">Four things decide the kind of father you are.</h2>
+    <p style="color:var(--ash);margin:18px 0 28px;max-width:52ch">Involvement. Consistency. Awareness. Nurturance. The Keystone Father Profile measures all four, normed against 9,232 fathers. You get a score, an honest read on where you stand, and a ninety-day plan built from your gaps. Free, before you pay for anything.</p>
+    <a class="btn btn-primary" href="profile.html">Start your Profile</a>
   </div>
   <div class="card" style="padding:32px">
     <div class="eyebrow" style="margin-bottom:16px">YOUR PRESENCE BASELINE</div>
@@ -207,12 +171,54 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
   </div>
 </div></section>
 
+<section class="band tight" id="start-free"><div class="container split" style="align-items:start">
+  <div>
+    <h2 style="font-family:var(--font-ui);font-weight:600;font-size:22px;margin-bottom:22px">Start free. Grow on a plan.</h2>
+    <div class="row wrap"><a class="btn btn-primary" href="profile.html">Start your Profile</a><a class="btn btn-secondary" href="gift.html">Give a gift</a></div>
+  </div>
+  <div class="stack-16">
+    <div class="check"><span class="checkmark">&check;</span><span>Your Keystone Profile and ninety-day plan, free</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>Dr. Canfield's Fundamentals of Fathering, free</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>Classes taught by fathers who lived it</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>A Verified Certificate when you finish the work</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>Full class library membership, optional</span></div>
+    <div class="check"><span class="checkmark">&check;</span><span>30-day money-back guarantee on anything paid</span></div>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <div class="billboard">
+    <div class="slot r-21x9 play-overlay" data-slot="IMG-P1-BILL-01"><span class="tri"></span></div>
+    <div class="overlay">
+      <div class="eyebrow" style="margin-bottom:12px">BUILT ON THREE DECADES OF RESEARCH</div>
+      <h2 class="d-36" style="margin:0 0 8px">The Fundamentals of Fathering</h2>
+      <p class="small" style="margin-bottom:18px">The Keystone Profile grows out of the work of Dr. Ken Canfield, founder of the National Center for Fathering. Start with his flagship class on presence. Free.</p>
+      <a class="btn btn-secondary play" href="class.html">Watch The Fundamentals</a>
+    </div>
+  </div>
+</div></section>
+
+<section class="tight"><div class="container">
+  <h2 class="d-28" style="margin-bottom:12px">A plan you actually work.</h2>
+  <p style="color:var(--ash);margin:0 0 24px;max-width:56ch">Your Profile becomes a ninety-day plan, one clear step at a time. New classes every month, on the drive or on the couch. The Profile and your plan are always free.</p>
+  <div class="chiprow" data-filter="#homeclasses" data-select="single" style="margin-bottom:28px">
+    <a class="chip selected" data-all href="#">All</a><a class="chip" data-cat="new-dads" href="#">New Dads</a><a class="chip" data-cat="fathering-daughters" href="#">Fathering Daughters</a><a class="chip" data-cat="fathering-sons" href="#">Fathering Sons</a><a class="chip" data-cat="teens" href="#">Teens</a><a class="chip" data-cat="after-divorce" href="#">After Divorce</a><a class="chip" data-cat="stepfathers" href="#">Stepfathers</a><a class="chip" data-cat="back-from-combat" href="#">Back From Combat</a><a class="chip" data-cat="after-the-sentence" href="#">After the Sentence</a><a class="chip" data-cat="grandfathers" href="#">Grandfathers</a>
+  </div>
+  <div class="rowscroll" id="homeclasses" data-repeat="5" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html"
+    data-titles="Dr. Ken Canfield|Coming Home Present|Fathering Daughters|Fathering After Divorce|Raising Teens"
+    data-subs="The Fundamentals of Fathering|Presence after deployment|For the dad she needs|Presence across two homes|Keeping the line open"
+    data-metas="12 lessons &middot; 2h 10m|10 lessons &middot; 1h 44m|12 lessons &middot; 1h 58m|11 lessons &middot; 1h 51m|13 lessons &middot; 2h 06m"
+    data-cats="new-dads|back-from-combat|fathering-daughters|after-divorce|teens"></div>
+  <p style="margin-top:20px"><a class="link" href="classes.html">See all classes</a></p>
+</div></section>
+
 <section class="band-brass"><div class="container split">
   <div>
     <div class="eyebrow brass" style="margin-bottom:14px">FATHERS.COM VERIFIED CERTIFICATES</div>
     <h2 class="d-36" style="font-size:32px">Proof you did the work.</h2>
-    <p style="color:var(--ash);margin:16px 0 26px;max-width:50ch">Verified hours, identity-checked, with a serial any court, program, or employer can confirm online.</p>
+    <p style="color:var(--ash);margin:16px 0 26px;max-width:50ch">Verified hours, identity-checked, with a serial any court, program, or employer can confirm online. When you finish, you hold something that counts outside this site.</p>
     <a class="btn btn-brass" href="certificates.html">Explore Certificates</a>
+    <p class="fine" style="margin-top:16px">Run a program? Issue Fathers.com certificates to your participants. <a class="link ash" href="groups.html" style="font-size:12px">For organizations</a>.</p>
   </div>
   <div class="card brass-card">
     <div class="row" style="gap:20px">
@@ -227,10 +233,35 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
 <section><div class="container split">
   <div class="slot r-4x3" data-slot="IMG-P1-GRP-01"></div>
   <div>
-    <h2 class="d-36" style="font-size:32px">Better together. Bring your men.</h2>
-    <p style="color:var(--ash);margin:16px 0 26px;max-width:48ch">Circles for churches, teams, and crews. One film a week, one discussion guide, one standard.</p>
-    <a class="btn btn-secondary" href="groups.html">For groups</a>
+    <h2 class="d-36" style="font-size:32px">Run your fathers on the standard.</h2>
+    <p style="color:var(--ash);margin:16px 0 20px;max-width:50ch">Circles for churches, teams, and crews. One film a week, one guide, one standard. And for programs that serve fathers at scale, measure every father, grow them on a plan, and prove what is working.</p>
+    <p class="small" style="color:var(--ash);margin:0 0 24px;max-width:50ch"><b style="color:var(--bone)">No program yet?</b> Start with the assessment. You already intake fathers. Measure them at the door and hold a baseline you did not have.</p>
+    <a class="btn btn-secondary" href="organizations.html">For organizations</a>
     <p class="fine" style="margin-top:16px">Also for <a class="link ash" href="employers.html" style="font-size:12px">employers</a> and <a class="link ash" href="veterans.html" style="font-size:12px">veteran programs</a>.</p>
+  </div>
+</div></section>
+
+<section class="band"><div class="container split">
+  <div>
+    <div class="eyebrow" style="margin-bottom:14px">FIND A PROGRAM</div>
+    <h2 class="d-36" style="font-size:32px">Looking for a fatherhood program? Find one that works.</h2>
+    <p style="color:var(--ash);margin:16px 0 26px;max-width:52ch">Not every father starts with us. Tell us the situation, a new dad, a return from deployment, a reentry, a divorce, and we will point you to a program that fits. We rate them so you do not have to guess.</p>
+  </div>
+  <div>
+    <a class="btn btn-primary" href="find-a-program.html">Find a program</a>
+    <p class="fine" style="margin-top:12px">We rate programs against one published standard, including our own.</p>
+  </div>
+</div></section>
+
+<section><div class="container split">
+  <div>
+    <div class="eyebrow" style="margin-bottom:14px">GATHERINGS</div>
+    <h2 class="d-36" style="font-size:32px">We gather fathers in real life.</h2>
+    <p style="color:var(--ash);margin:16px 0 26px;max-width:52ch">The work is not only on a screen. Fathers.com hosts gatherings that bring men, mentors, and the people who lead them into the same room. Get notified about a gathering near you.</p>
+  </div>
+  <div>
+    <a class="btn btn-secondary" href="gatherings.html">See gatherings</a>
+    <p class="fine" style="margin-top:12px">One or two flagship events to start. Bring one to your city.</p>
   </div>
 </div></section>
 
@@ -240,19 +271,12 @@ PAGES['index.html'] = dict(title='Learn fatherhood from men who lived it', desc=
   <div class="row" style="justify-content:center;gap:8px;margin-top:22px"><span class="dot on"></span><span class="dot"></span><span class="dot"></span></div>
 </div></section>
 
-<section class="band tight"><div class="container split">
-  <div><h2 class="d-28">Try a class on us.</h2>
-    <p class="small" style="margin-top:10px;max-width:44ch">Enter your email and we will send you one full lesson and one week of The Daily.</p></div>
-  <div><form class="row" data-lead="try-a-class" data-done="Sent. Check your email for the lesson."><input class="input" name="email" type="email" required placeholder="Email address"><button class="btn btn-primary">Send it</button></form>
-    <p class="fine" style="margin-top:12px">One email a week at most. Unsubscribe any time. <a class="link ash" href="#" style="font-size:12px">Privacy</a></p></div>
-</div></section>
-
 <section><div class="container" style="max-width:820px">
   <h2 class="d-28" style="margin-bottom:24px">Frequently asked questions</h2>
-  <details open><summary>What is Fathers.com?</summary><div class="body">Fathers.com is a training platform from the National Center for Fathering. Classes taught by fathers who lived it, a validated baseline, and a plan you work weekly.</div></details>
-  <details><summary>What's included in a membership?</summary><div class="body">Every class, every workbook, your Keystone baseline and ninety-day plan, The Daily, audio mode, and downloads. $120 a year, billed annually, with a 30-day money-back guarantee.</div></details>
-  <details><summary>How does the Keystone Profile work?</summary><div class="body">About 40 questions, around twenty minutes. You get four domain scores, an overall baseline, and a plan built from your gap. Your results are yours. We never share them.</div></details>
-  <details><summary>How much does it cost?</summary><div class="body">$120 a year. That's $10 a month, billed once annually. Verified Certificates are priced separately.</div></details>
+  <details open><summary>What is Fathers.com?</summary><div class="body">Fathers.com is the home of the Keystone Standard, from the National Center for Fathering. Measure where you stand as a father, grow with a plan, and prove the work with a verified certificate. Programs and agencies use the same standard to show whether fathers are changing.</div></details>
+  <details><summary>How much does it cost?</summary><div class="body">Your Keystone Profile and your ninety-day plan are free, along with Dr. Canfield's Fundamentals of Fathering. Verified Certificates are priced separately. A full class library membership is optional at $120 a year, with a 30-day money-back guarantee.</div></details>
+  <details><summary>How does the Keystone Profile work?</summary><div class="body">About 40 questions, around twenty minutes. You get four domain scores, an overall baseline, and a plan built from your gaps, normed against 9,232 fathers. Your results are yours. We never share them.</div></details>
+  <details><summary>Do you rate other programs?</summary><div class="body">Yes. We publish a standard for whether a father program works and rate programs against it, including our own, so fathers and funders can tell what actually helps. Tell us what you need and we will point you to one that fits.</div></details>
   <details><summary>Are the Certificates accepted by courts?</summary><div class="body">Certificates carry verified hours, identity checks, and a public verification page. Acceptance is decided by each court or program, so confirm with yours before enrolling.</div></details>
   <details><summary>Is this religious?</summary><div class="body">No. Faith is an optional lens you can switch on during the Profile. It changes which classes and actions we recommend. Nothing else.</div></details>
 </div></section>
@@ -1834,6 +1858,183 @@ PAGES['course.html'] = dict(title='Your Certificate', desc='Watch the lessons, p
   <div id="cw-stage"><p class="ash">Loading\u2026</p></div>
 </section>
 <script src="assets/js/coursework.js"></script>
+''')
+
+# ================================================== find-a-program.html
+PAGES['find-a-program.html'] = dict(title='Find a fatherhood program that works', desc='Tell us the situation and we will point you to a program that fits. We rate them against one published standard.', active='Find a Program', mode='public', body='''
+<header class="hero"><div class="container" style="max-width:820px">
+  <div class="eyebrow" style="margin-bottom:18px">FIND A PROGRAM</div>
+  <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">Find a fatherhood program that works.</h1>
+  <p class="lead" style="margin:22px 0 8px">Not every father starts with us, and he should not have to guess. Tell us the situation and where you are. We will point you to a program that fits, whether it is ours or someone else's.</p>
+</div></header>
+
+<section class="band tight"><div class="container" style="max-width:820px">
+  <form class="stack-16" data-lead="find-a-program" data-done="Got it. A real person will reply with a program that fits.">
+    <div><label class="small" for="fap-sit">What is the situation?</label>
+      <select class="input" id="fap-sit" name="situation" required>
+        <option value="" disabled selected>Choose one</option>
+        <option>New dad</option>
+        <option>Fathering after divorce</option>
+        <option>Back from deployment</option>
+        <option>After incarceration</option>
+        <option>Stepfather</option>
+        <option>Mentoring other fathers</option>
+        <option>Something else</option>
+      </select></div>
+    <div><label class="small" for="fap-city">City or region</label>
+      <input class="input" id="fap-city" name="city" placeholder="e.g. Springdale, AR"></div>
+    <div><label class="small" for="fap-email">Email for the reply</label>
+      <input class="input" id="fap-email" name="email" type="email" required placeholder="Email address"></div>
+    <div><button class="btn btn-primary">Find a program</button></div>
+    <p class="fine">Free. A real person replies. We never share your information.</p>
+  </form>
+</div></section>
+
+<section><div class="container split">
+  <div>
+    <h2 class="d-36" style="font-size:32px">How we rate programs.</h2>
+    <p style="color:var(--ash);margin:16px 0 26px;max-width:52ch">One published standard, measured on the same four dimensions we measure fathers on: involvement, consistency, awareness, nurturance. We rate every program against it, including our own, and we show our method. Programs that meet the bar earn the recommendation.</p>
+    <p class="fine">The directory is young. While it grows, requests are routed by hand by our team.</p>
+  </div>
+  <div class="card" style="padding:32px">
+    <div class="eyebrow" style="margin-bottom:16px">RUN A PROGRAM?</div>
+    <h3 style="margin-bottom:10px">Get rated. Get found.</h3>
+    <p class="small" style="color:var(--ash);margin-bottom:20px">Put your program on the standard, prove it works, and let fathers and funders find you.</p>
+    <form class="row" data-lead="get-rated" data-done="Thank you. We will reach out about the rating process."><input class="input" name="email" type="email" required placeholder="Work email"><button class="btn btn-secondary btn-sm">Start</button></form>
+  </div>
+</div></section>
+''')
+
+# ================================================== organizations.html
+PAGES['organizations.html'] = dict(title='Run your fathers on the Keystone Standard', desc='Measure every father, grow them on a plan, certify the work, and prove what is happening. Whether you have a fatherhood program or none at all.', active='For Organizations', mode='public', body='''
+<header class="hero"><div class="container" style="max-width:900px">
+  <div class="eyebrow" style="margin-bottom:18px">FOR ORGANIZATIONS</div>
+  <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">Run your fathers on the Keystone Standard.</h1>
+  <p class="lead" style="margin:22px 0 8px">Measure every father against a validated, normed instrument. Grow them on a plan. Certify the work. Get the report that proves to your funder, your court, or your command what is actually happening.</p>
+</div></header>
+
+<section class="band tight"><div class="container">
+  <h2 class="d-28" style="margin-bottom:8px">No fatherhood program yet? You can still start today.</h2>
+  <p style="color:var(--ash);margin:0 0 32px;max-width:60ch">You already intake fathers. The floor is never nothing.</p>
+  <div class="grid-3">
+    <div class="card" style="padding:28px"><div class="eyebrow" style="margin-bottom:12px">STEP ONE</div><h3 style="margin-bottom:8px">Measure at the door.</h3><p class="small" style="color:var(--ash)">Run the Keystone Profile at intake. You hold a validated engagement baseline on every man, with zero program required.</p></div>
+    <div class="card" style="padding:28px"><div class="eyebrow" style="margin-bottom:12px">STEP TWO</div><h3 style="margin-bottom:8px">Route to what works.</h3><p class="small" style="color:var(--ash)">Each father's profile points to the rated program that fits him. We become your diagnostic and referral layer.</p></div>
+    <div class="card" style="padding:28px"><div class="eyebrow" style="margin-bottom:12px">STEP THREE</div><h3 style="margin-bottom:8px">Switch on the rail.</h3><p class="small" style="color:var(--ash)">When you want a program of your own, ours turns on in a day: assessment, plan, growth loop, re-assessment, certificate.</p></div>
+  </div>
+</div></section>
+
+<section><div class="container">
+  <h2 class="d-28" style="margin-bottom:8px">One measurement engine. Three reports.</h2>
+  <p style="color:var(--ash);margin:0 0 32px;max-width:60ch">The same normed spine, printed in the language of the outcome you are accountable for.</p>
+  <div class="grid-3">
+    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">CORRECTIONS &amp; REENTRY</div><h3 style="margin-bottom:8px">The Recidivism Report</h3><p class="small" style="color:var(--ash)">Father engagement measured and linked to reoffense outcomes, per participant and per cohort, in the format your funder already requires.</p></div>
+    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">CHILD SUPPORT</div><h3 style="margin-bottom:8px">The Collection Report</h3><p class="small" style="color:var(--ash)">Engagement linked to payment compliance. Engaged fathers pay. Prove the connection with your own caseload.</p></div>
+    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">VETERAN &amp; MILITARY</div><h3 style="margin-bottom:8px">The Readiness Report</h3><p class="small" style="color:var(--ash)">Engagement linked to retention and family stability, with a legacy voice-capture track built for reintegration.</p></div>
+  </div>
+</div></section>
+
+<section class="band"><div class="container split">
+  <div>
+    <h2 class="d-36" style="font-size:32px">Already running fathers?</h2>
+    <p style="color:var(--ash);margin:16px 0 26px;max-width:50ch">Circles for churches, teams, and crews. Cohorts for grantee programs. Tracks for veteran services and employers. Your fathers, one standard, one dashboard, one report your funder trusts.</p>
+    <div class="row wrap"><a class="btn btn-secondary" href="groups.html">Groups &amp; Circles</a><a class="btn btn-secondary" href="veterans.html">Veteran Programs</a><a class="btn btn-secondary" href="employers.html">Employers</a></div>
+  </div>
+  <div class="card" style="padding:32px">
+    <div class="eyebrow" style="margin-bottom:16px">REQUEST A WALKTHROUGH</div>
+    <p class="small" style="color:var(--ash);margin-bottom:20px">Twenty minutes. Your program, your funder's report, live.</p>
+    <form class="stack-16" data-lead="org-inquiry" data-done="Received. We will reach out to schedule your walkthrough.">
+      <input class="input" name="org" required placeholder="Organization name">
+      <input class="input" name="email" type="email" required placeholder="Work email">
+      <button class="btn btn-primary">Request a walkthrough</button>
+    </form>
+  </div>
+</div></section>
+''')
+
+# ================================================== gatherings.html
+PAGES['gatherings.html'] = dict(title='Gatherings', desc='Fathers, in real life. Events that bring men, mentors, and the people who lead them into the same room.', active='Gatherings', mode='public', body='''
+<header class="hero"><div class="container" style="max-width:820px">
+  <div class="eyebrow" style="margin-bottom:18px">GATHERINGS</div>
+  <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">Fathers, in real life.</h1>
+  <p class="lead" style="margin:22px 0 8px">Presence is not only trained on a screen. We gather fathers, mentors, and the people who lead them, to learn, to be sharpened, and to stand together.</p>
+</div></header>
+
+<section class="band tight"><div class="container split">
+  <div>
+    <h2 class="d-28">Be first to know.</h2>
+    <p class="small" style="color:var(--ash);margin-top:10px;max-width:44ch">We are starting with one or two flagship gatherings. Tell us where you are and we will tell you when one is near you.</p>
+  </div>
+  <div>
+    <form class="stack-16" data-lead="gatherings" data-done="You are on the list. We will tell you when a gathering is near you.">
+      <input class="input" name="city" placeholder="City or region">
+      <input class="input" name="email" type="email" required placeholder="Email address">
+      <button class="btn btn-primary">Notify me</button>
+    </form>
+    <p class="fine" style="margin-top:12px">Want to bring a gathering to your church, base, or city? Same form. Say so when we reply.</p>
+  </div>
+</div></section>
+''')
+
+# ================================================== about.html
+PAGES['about.html'] = dict(title='About the National Center for Fathering', desc='NCF measures fathers, certifies their growth, rates the programs that serve them, and convenes the field.', active='', mode='public', body='''
+<header class="hero"><div class="container" style="max-width:860px">
+  <div class="eyebrow" style="margin-bottom:18px">ABOUT NCF</div>
+  <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">The trusted third party for fatherhood.</h1>
+  <p class="lead" style="margin:22px 0 8px">The National Center for Fathering measures fathers, certifies their growth, rates the programs that serve them, and convenes the field. We author nothing we sell, which is exactly what lets us hold one standard for everyone, including ourselves.</p>
+</div></header>
+
+<section class="band tight"><div class="container split">
+  <div>
+    <h2 class="d-36" style="font-size:32px">Built on three decades of research.</h2>
+    <p style="color:var(--ash);margin:16px 0 18px;max-width:52ch">NCF was founded by Dr. Ken Canfield, whose research and books on fathering have guided a generation of men. The Keystone Father Profile grows directly out of that work: four dimensions, normed on 9,232 fathers, made practical.</p>
+    <p style="color:var(--ash);max-width:52ch">Fathers.com is the home of that standard: the free Profile for any father, the classes to grow it, the Verified Certificate that proves the work, and the reporting that shows programs, funders, and agencies whether fathers are changing.</p>
+  </div>
+  <div class="card" style="padding:32px">
+    <div class="eyebrow" style="margin-bottom:16px">WHAT WE DO</div>
+    <div class="stack-16">
+      <div class="check"><span class="checkmark">&check;</span><span><b>Measure.</b> The Keystone Profile, free for every father.</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span><b>Certify.</b> Verified, court-checkable proof of the work.</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span><b>Rate.</b> One published standard for whether programs work.</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span><b>Convene.</b> Gatherings that bring the field into one room.</span></div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="container" style="max-width:820px">
+  <p class="small" style="color:var(--ash)">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit. PO Box 996, Tontitown, AR 72770. <a class="link" href="mailto:Team@Fathers.com">Team@Fathers.com</a></p>
+</div></section>
+''')
+
+# ================================================== research.html
+PAGES['research.html'] = dict(title='The research behind the Keystone Profile', desc='Four dimensions. Normed on 9,232 fathers. A versioned instrument, scored against published norms.', active='', mode='public', body='''
+<header class="hero"><div class="container" style="max-width:860px">
+  <div class="eyebrow" style="margin-bottom:18px">RESEARCH</div>
+  <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">The instrument behind the standard.</h1>
+  <p class="lead" style="margin:22px 0 8px">The Keystone Father Profile is a validated, versioned instrument built from Dr. Ken Canfield's research and normed on 9,232 fathers. It is the spine of everything on this platform.</p>
+</div></header>
+
+<section class="band tight"><div class="container">
+  <h2 class="d-28" style="margin-bottom:8px">Four dimensions decide the kind of father you are.</h2>
+  <p style="color:var(--ash);margin:0 0 32px;max-width:60ch">Every score, plan, certificate, and report on this platform is built from movement on these four.</p>
+  <div class="grid-2">
+    <div class="card" style="padding:28px"><h3 style="margin-bottom:8px">Involvement</h3><p class="small" style="color:var(--ash)">The time and attention a father actually gives, not the time he intends to give.</p></div>
+    <div class="card" style="padding:28px"><h3 style="margin-bottom:8px">Consistency</h3><p class="small" style="color:var(--ash)">Whether a father shows up the same way on ordinary days, not only on the big ones.</p></div>
+    <div class="card" style="padding:28px"><h3 style="margin-bottom:8px">Awareness</h3><p class="small" style="color:var(--ash)">How well a father knows his actual child: what they fear, love, and carry right now.</p></div>
+    <div class="card" style="padding:28px"><h3 style="margin-bottom:8px">Nurturance</h3><p class="small" style="color:var(--ash)">The warmth a child can feel, expressed so the child receives it.</p></div>
+  </div>
+</div></section>
+
+<section><div class="container split">
+  <div>
+    <h2 class="d-36" style="font-size:32px">How scoring works.</h2>
+    <p style="color:var(--ash);margin:16px 0 18px;max-width:52ch">The full instrument is sectioned and resumable, scored against published norms, and versioned so every result states exactly which instrument produced it. Your answers produce scale scores, an overall standing, your strongest scale, and the gap your plan is built from.</p>
+    <p style="color:var(--ash);max-width:52ch">Your results belong to you. We never share an individual father's results. Programs see cohort movement, never a man's private answers.</p>
+  </div>
+  <div>
+    <a class="btn btn-primary" href="profile.html">Take the Profile</a>
+    <p class="fine" style="margin-top:12px">Free. About twenty minutes. Private.</p>
+  </div>
+</div></section>
 ''')
 
 # ================================================== WRITER
