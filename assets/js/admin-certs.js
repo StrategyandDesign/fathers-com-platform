@@ -30,10 +30,7 @@
   function boot(){
     if (demo) return;                       // admin.js shows the demo note
     FC.ready.then(function(){
-      // Probe the accountability tables. If missing, tell the admin exactly what to run.
-      FC.sb.from('course_videos').select('id').limit(1).then(function(r){
-        if (r.error) { setupNeeded(r.error); return; }
-        loadCourses();
+      // Load courses unconditionally so the dropdown fills.
         loadApprovals();
       });
     });
