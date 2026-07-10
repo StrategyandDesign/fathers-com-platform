@@ -1591,7 +1591,7 @@ PAGES['veterans-hub.html'] = dict(title='The Homefront', desc='Train for the mis
   <div class="vet-hero-inner">
     <div class="vet-hero-eyebrow">Fathers.com &middot; For those who served</div>
     <h1>The mission continues.</h1>
-    <p class="vet-hero-lead" id="vetGreet">You carried the load out there. This is where you train for the one that matters most, and put it on the record.</p>
+    <p class="vet-hero-lead" id="vetGreet">You carried the load out there. This is where you train for the one that matters most, and put it on the record. You are early; the men here first set the standard.</p>
   </div>
 </section>
 
@@ -1719,17 +1719,37 @@ PAGES['veterans-hub.html'] = dict(title='The Homefront', desc='Train for the mis
 ''')
 
 # ================================================== veterans.html (public: pitch + free films)
-PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who served. Three films, free forever. Join for the field notes, your plan, and the Legacy Archive.', active='For Veterans', mode='public', body=VET_TOP + '''
+PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who served: train for the mission at home and leave them your voice, in your own words, theirs forever. Free forever.', active='For Veterans', mode='public', body=VET_TOP + '''
 <section class="vet-hero">
   <img class="vet-hero-img" src="assets/img/photos/billboard-home.jpg" alt="">
   <div class="vet-hero-inner">
     <div class="vet-hero-eyebrow">Fathers.com &middot; For those who served</div>
     <h1>The next mission is the one at home.</h1>
-    <p class="vet-hero-lead">You did the hard thing over there. Coming all the way home to your kids is its own kind of hard, and nobody hands you orders for it. Start with three films, free. No account, no email.</p>
+    <p class="vet-hero-lead">You did the hard thing over there. Coming all the way home to your kids is its own kind of hard, and nobody hands you orders for it. Train for it in fifteen minutes a week, and leave them something no program ever gave a man: your voice, in your own words, theirs forever. Free forever for those who served.</p>
     <div class="vet-hero-actions">
       <a class="btn btn-yellow" href="#watch">Watch, free</a>
       <a class="btn btn-onimg" href="login.html?next=veterans-start.html">Join free</a>
     </div>
+  </div>
+</section>
+
+<section class="vet-ed vet-ed-noline">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">The shift</div>
+    <h2>They built programs for broken men. You were never broken.</h2>
+    <p>You were between missions. So this is not treatment and it is not a support group. It is training, a record, and proof: the way you would run any mission that matters.</p>
+  </div>
+</section>
+
+<section class="vet-ed" id="archive">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">The Legacy Archive</div>
+    <h2>Leave them your voice.</h2>
+    <p>Guided prompts, recorded in your own words: why you serve, the hard days, the things you want them to know at sixteen. Plenty of good programs help a man read a book to his kids across the miles. A book ends. Your voice, your words, your story: that stays, theirs forever, no matter what.</p>
+  </div>
+  <div class="row wrap" style="gap:12px;margin-top:6px">
+    <a class="btn btn-yellow" href="login.html?next=voice.html">Join free, record tonight</a>
+    <a class="link" href="voice.html" style="align-self:center">Already in? Open the Archive &rarr;</a>
   </div>
 </section>
 
@@ -1808,6 +1828,25 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who ser
     <p>One join link enrolls every man under your cohort: the Keystone Profile, the free flagship course, the ninety-day plan, and the Legacy Voice Archive, with the veteran certificate track as it releases. Leadership sees cohort movement, never a man&rsquo;s private answers. <a class="link" href="organizations.html">For Organizations &rarr;</a></p>
   </div>
 </section>
+
+<section class="vet-ed vet-ed-noline">
+  <div class="vet-ed-head" style="text-align:center">
+    <div class="vet-ed-eyebrow">Know a man who served?</div>
+    <p>Send him this page. It costs him nothing, and his kids keep his voice forever.</p>
+    <p style="margin-top:14px"><button class="btn btn-secondary btn-sm" id="vetShare">Copy the link</button> <span class="fine" id="vetShareMsg" style="margin-left:10px"></span></p>
+  </div>
+</section>
+<script>
+(function(){
+  var b=document.getElementById('vetShare'); if(!b) return;
+  b.addEventListener('click', function(){
+    var url=location.origin+'/veterans.html';
+    (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){
+      document.getElementById('vetShareMsg').textContent='Copied. Send it to him.';
+    }, function(){ document.getElementById('vetShareMsg').textContent=url; });
+  });
+})();
+</script>
 
 <p class="fine" style="text-align:center;color:var(--ash);padding:26px 0 8px">Around the clock, if you ever want it: <a class="link" href="tel:988">988, press 1</a>.</p>
 
