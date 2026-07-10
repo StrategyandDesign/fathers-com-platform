@@ -9,7 +9,7 @@ SITE_URL = "https://fathers-com-platform.vercel.app"
 OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 
 # Private / transactional pages: keep them out of Google's index. Everything else is indexable.
-NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html'}
+NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html'}
 
 
 def _esc(s):
@@ -66,7 +66,7 @@ def nav(active='', mode='public'):
     if mode=='app':
         links = [('My Plan','plan.html'),('Classes','classes.html'),('Stories','stories.html'),('Circles','circles.html'),('Certificates','certificates.html')]
     else:
-        links = [('The Profile','profile.html'),('Classes','classes.html'),('Certificates','certificates.html'),('Stories','stories.html'),('Find a Program','find-a-program.html'),('For Organizations','organizations.html')]
+        links = [('The Profile','profile.html'),('Classes','classes.html'),('Certificates','certificates.html'),('Stories','stories.html'),('For Organizations','organizations.html')]
         # Legacy page actives map onto the new public nav so highlighting stays sane.
         active = {'For Groups':'For Organizations','For Veterans':'For Organizations','Stories':'Classes'}.get(active, active)
     lis = ''.join(f'<li><a href="{h}" {"class=\"active\"" if t==active else ""}>{t}</a></li>' for t,h in links)
@@ -85,7 +85,7 @@ FOOT = '''<footer><div class="container">
   <div><a class="brand" href="index.html" style="margin-bottom:16px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="" style="height:34px"><b>Fathers.com</b></a>
     <p class="small" style="margin-top:14px;max-width:32ch">Presence is a skill. Train it.</p>
     <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
-  <div><h4>Measure</h4><ul><li><a href="profile.html">The Keystone Profile</a></li><li><a href="research.html">The Research</a></li><li><a href="find-a-program.html">Find a Program</a></li></ul></div>
+  <div><h4>Measure</h4><ul><li><a href="profile.html">The Keystone Profile</a></li><li><a href="research.html">The Research</a></li></ul></div>
   <div><h4>Train &amp; Prove</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="certificates.html">Certificates</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
   <div><h4>For Organizations</h4><ul><li><a href="organizations.html">The Standard</a></li><li><a href="groups.html">Groups &amp; Circles</a></li><li><a href="veterans.html">Veteran Programs</a></li><li><a href="employers.html">Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
   <div><h4>Company</h4><ul><li><a href="about.html">About NCF</a></li><li><a href="research.html">Research</a></li><li><a href="gatherings.html">Gatherings</a></li><li><a href="gift.html">Gifts</a></li><li><a href="mailto:Team@Fathers.com">Contact</a></li></ul></div>
@@ -246,17 +246,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 
 
 
-<section class="band"><div class="container split">
-  <div>
-    <div class="eyebrow" style="margin-bottom:14px">FIND A PROGRAM</div>
-    <h2 class="d-36" style="font-size:32px">Looking for a fatherhood program? Find one that works.</h2>
-    <p style="color:var(--ash);margin:16px 0 26px;max-width:52ch">Not every father starts with us. Tell us the situation, a new dad, a return from deployment, a reentry, a divorce, and we will point you to a program that fits. Every one of them runs on the same published standard.</p>
-  </div>
-  <div>
-    <a class="btn btn-primary" href="find-a-program.html">Find a program</a>
-    <p class="fine" style="margin-top:12px">We rate programs against one published standard, including our own.</p>
-  </div>
-</div></section>
+
 
 <section><div class="container split">
   <div class="slot r-4x3" data-slot="IMG-P1-GRP-01"></div>
@@ -1919,52 +1909,31 @@ PAGES['course.html'] = dict(title='Your Certificate', desc='Watch the lessons, p
 ''')
 
 # ================================================== find-a-program.html
-PAGES['find-a-program.html'] = dict(title='Find a fatherhood program that works', desc='Tell us the situation and we will point you to a program that fits. Every listed program runs on one published standard.', active='Find a Program', mode='public', body='''
-<header class="hero"><div class="container" style="max-width:820px">
-  <div class="eyebrow" style="margin-bottom:18px">FIND A PROGRAM</div>
-  <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">Find a fatherhood program that works.</h1>
-  <p class="lead" style="margin:22px 0 8px">Not every father starts with us, and he should not have to guess. Tell us the situation and where you are. We will point you to a program that fits, whether it is ours or someone else's.</p>
-</div></header>
-
-<section class="band tight"><div class="container" style="max-width:820px">
-  <form class="stack-16" data-lead="find-a-program" data-done="Got it. A real person will reply with a program that fits.">
-    <div><label class="small" for="fap-sit">What is the situation?</label>
-      <select class="input" id="fap-sit" name="situation" required>
-        <option value="" disabled selected>Choose one</option>
-        <option>New dad</option>
-        <option>Fathering after divorce</option>
-        <option>Back from deployment</option>
-        <option>After incarceration</option>
-        <option>Stepfather</option>
-        <option>Mentoring other fathers</option>
-        <option>Something else</option>
-      </select></div>
-    <div><label class="small" for="fap-city">City or region</label>
-      <input class="input" id="fap-city" name="city" placeholder="e.g. Springdale, AR"></div>
-    <div><label class="small" for="fap-email">Email for the reply</label>
-      <input class="input" id="fap-email" name="email" type="email" required placeholder="Email address"></div>
-    <div><button class="btn btn-primary">Find a program</button></div>
-    <p class="fine">Free. A real person replies. We never share your information.</p>
+PAGES['find-a-program.html'] = dict(title='Find a Program', desc='The program directory publishes with the first rated cohort on the Keystone Standard.', active='', mode='public', body='''
+<section class="tight" style="padding-top:72px"><div class="container" style="max-width:760px;text-align:center">
+  <div class="eyebrow" style="margin-bottom:16px">FIND A PROGRAM</div>
+  <h1 class="d-36" style="margin-bottom:14px">The directory opens with the first rated cohort.</h1>
+  <p style="color:var(--ash);max-width:56ch;margin:0 auto 34px">Programs are being measured on the Keystone Standard now: the same instrument, the same norms, the same report. When the first cohort's ratings publish, this page becomes the place a father finds a program that provably works. Until then, we will not point you at a list we cannot stand behind.</p>
+  <div class="grid-2" style="gap:22px;text-align:left">
+    <div class="card" style="padding:28px">
+      <div class="eyebrow" style="margin-bottom:12px">FOR A FATHER, TODAY</div>
+      <p class="small" style="color:var(--ash);margin-bottom:18px">You do not need a directory to start. The Profile is free, takes about twenty minutes, and your ninety-day plan builds itself from your answers.</p>
+      <a class="btn btn-primary" href="profile.html">Start your Profile</a>
+    </div>
+    <div class="card" style="padding:28px">
+      <div class="eyebrow" style="margin-bottom:12px">RUN A PROGRAM?</div>
+      <p class="small" style="color:var(--ash);margin-bottom:18px">Get on the Standard now and in line for the first rated cohort. Twenty minutes, your funder&rsquo;s report, live.</p>
+      <a class="btn btn-secondary" href="organizations.html#walkthrough">Get on the Standard</a>
+    </div>
+  </div>
+  <p class="fine" style="margin-top:28px">Want to know the moment the directory opens?</p>
+  <form class="row" style="justify-content:center;margin-top:12px" data-lead="directory-waitlist" data-done="You are on the list. You will hear when the first ratings publish.">
+    <input class="input" name="email" type="email" required placeholder="Email address" style="max-width:280px">
+    <button class="btn btn-secondary btn-sm">Notify me</button>
   </form>
-</div></section>
-
-<section><div class="container split">
-  <div>
-    <h2 class="d-36" style="font-size:32px">How we rate programs.</h2>
-    <p style="color:var(--ash);margin:16px 0 26px;max-width:52ch">One published standard, measured on the same four dimensions we measure fathers on: involvement, consistency, awareness, nurturance. Every program listed here runs on the Keystone Standard: the same instrument, the same norms, the same report. Public ratings publish with the first rated cohort.</p>
-    <p style="color:var(--ash);margin:0 0 26px"><a class="link" href="organizations.html#walkthrough">Run a program? Get on the Standard, and in line for the first cohort &rarr;</a></p>
-    <p class="fine">The directory is young. While it grows, requests are routed by hand by our team.</p>
-  </div>
-  <div class="card" style="padding:32px">
-    <div class="eyebrow" style="margin-bottom:16px">RUN A PROGRAM?</div>
-    <h3 style="margin-bottom:10px">Get rated. Get found.</h3>
-    <p class="small" style="color:var(--ash);margin-bottom:20px">Put your program on the standard, prove it works, and let fathers and funders find you.</p>
-    <form class="row" data-lead="get-rated" data-done="Thank you. We will reach out about the rating process."><input class="input" name="email" type="email" required placeholder="Work email"><button class="btn btn-secondary btn-sm">Start</button></form>
-  </div>
 </div></section>
 ''')
 
-# ================================================== organizations.html
 PAGES['organizations.html'] = dict(title='The measurable standard for effective fathering programs', desc='Assess your fatherhood program against the Keystone norm. Prove it works with the Efficacy Report. No program yet? Deploy ours in a day.', active='For Organizations', mode='public', body='''
 <header class="hero"><div class="container" style="max-width:920px">
   <div class="eyebrow" style="margin-bottom:18px">FOR ORGANIZATIONS</div>
@@ -2052,7 +2021,7 @@ PAGES['organizations.html'] = dict(title='The measurable standard for effective 
     <a class="btn btn-secondary btn-sm" href="groups.html">Groups &amp; Circles</a>
     <a class="btn btn-secondary btn-sm" href="veterans.html">Veteran Programs</a>
     <a class="btn btn-secondary btn-sm" href="employers.html">Employers</a>
-    <a class="btn btn-secondary btn-sm" href="find-a-program.html">Get your program rated</a>
+    <a class="btn btn-secondary btn-sm" href="organizations.html#walkthrough">Get on the Standard</a>
   </div>
 </div></section>
 ''')
