@@ -407,13 +407,22 @@
       if(jc){ localStorage.setItem('fc_join_code', jc.trim().toUpperCase()); }
       var pend=localStorage.getItem('fc_join_code');
       if(pend && FC.live && FC.sb){
-        FC.sb.from('org_join_codes').select('org_id,program_id,cohort_id,active').eq('code',pend).maybeSingle()
+        FC.sb.from('org_join_codes').select('*').eq('code',pend).maybeSingle()
           .then(function(r){
             if(r && r.data && r.data.active){
-              localStorage.setItem('fc_org_tag', JSON.stringify({organization_id:r.data.org_id, program_id:r.data.program_id, cohort_id:r.data.cohort_id, code:pend}));
+              localStorage.setItem('fc_org_tag', JSON.stringify({organization_id:r.data.org_id, program_id:r.data.program_id, cohort_id:r.data.cohort_id, code:pend, support_note:r.data.support_note||null}));
               if(jc && window.toast) toast('Linked to program code '+pend+'.');
             }
           }, function(){});
+      }
+    }catch(_){}
+
+    // Program-provided support contacts, shown wherever the page has a slot.
+    try{
+      var _t=JSON.parse(localStorage.getItem('fc_org_tag')||'null');
+      if(_t && _t.support_note){
+        var os=document.getElementById('orgSupport');
+        if(os){ var tx=document.getElementById('orgSupportTxt'); if(tx) tx.textContent=_t.support_note; os.hidden=false; }
       }
     }catch(_){}
   });

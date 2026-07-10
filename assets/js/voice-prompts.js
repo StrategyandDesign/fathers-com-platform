@@ -10,6 +10,12 @@
       'Tell them what you can see from where you are right now.',
       'Count the days until you are home, out loud, together.'
     ]},
+    { cat: 'The goodbye', items: [
+      'Why I go, in my own words.',
+      'What I promise you while I am gone.',
+      'Play this when you miss me.',
+      'For the one holding the line at home.'
+    ]},
     { cat: 'Before the moment', items: [
       'What to remember before the big game.',
       'The night before the first day of school.',
@@ -22,6 +28,12 @@
       'For the day you graduate.',
       'For your wedding day.',
       'For the day you hold your first child.'
+    ]},
+    { cat: 'The table', items: [
+      'A blessing for the table when my chair is empty.',
+      'What our table means to me.',
+      'For the first dinner after I come back.',
+      'A story from when I was your age, told for dessert.'
     ]},
     { cat: 'The hard days', items: [
       'For a day when you feel alone.',

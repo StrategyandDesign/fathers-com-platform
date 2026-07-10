@@ -1494,6 +1494,11 @@ PAGES['veterans-resources.html'] = dict(title='Free support for veterans', desc=
   <p class="lead">Every resource below is free, and none require you to be enrolled in anything to start. If you are in crisis, use the line at the top of this page.</p>
 </div></section>
 <section><div class="container">
+  <div id="orgSupport" hidden class="card" style="padding:18px 22px;margin-bottom:14px">
+    <div class="eyebrow" style="margin-bottom:6px">YOUR PROGRAM'S SUPPORT</div>
+    <p class="small" id="orgSupportTxt" style="margin:0"></p>
+  </div>
+  <p class="fine" style="margin-bottom:14px">The resources below are United States services. Joined with a unit or program link? Your program's own support contacts appear above when provided.</p>
   <div id="vetAllResources"><p class="ash">Loading resources&hellip;</p></div>
 </div></section>
 <script src="assets/js/veterans-core.js"></script>
@@ -1544,6 +1549,15 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit 
     <div class="vet-hero-eyebrow">Fathers.com &middot; For those who served</div>
     <h1>Your toolkit for the homefront.</h1>
     <p class="vet-hero-lead" id="vetGreet">You carried the load out there. Here is where you pick up the one that matters most.</p>
+  </div>
+</section>
+
+<section class="vet-ed vet-ed-noline" style="padding-top:8px">
+  <div class="vet-ed-head">
+    <div id="orgSupport" hidden class="card" style="padding:18px 22px">
+      <div class="vet-ed-eyebrow" style="margin-bottom:6px">YOUR PROGRAM'S SUPPORT</div>
+      <p class="small" id="orgSupportTxt" style="margin:0"></p>
+    </div>
   </div>
 </section>
 
@@ -1696,6 +1710,20 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who ser
     <div><b class="bone" style="font-size:16px">Support matched to you</b><p class="small" style="margin-top:8px">The one free service built for your situation, with the number and what to expect.</p></div>
     <div><b class="bone" style="font-size:16px">A private check-in</b><p class="small" style="margin-top:8px">Two minutes, just for you. Not a diagnosis. It points you to help if you want it.</p></div>
   </div>
+</section>
+
+<section class="vet-ed" id="routine">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">SERVE. RETURN. REPEAT.</div>
+    <h2>Coming home is not one day. It is a skill you will use again.</h2>
+    <p>Some fathers come home once. Many come home again and again, with the next call-up already on the calendar. The temptation is to keep a little distance so the next goodbye hurts less. Your kids cannot afford that math. Get close anyway. This is the routine that makes it possible.</p>
+  </div>
+  <div class="grid-3" style="margin-top:26px">
+    <div class="card" style="padding:26px"><div class="eyebrow" style="margin-bottom:10px">BEFORE YOU GO</div><p class="small" style="color:var(--ash)">Record three things in the Legacy Archive: why you go, what you promise, and one to play when they miss you. Brief each kid in one sentence they can repeat. Ten minutes, total. <a class="link" href="voice.html">Record now &rarr;</a></p></div>
+    <div class="card" style="padding:26px"><div class="eyebrow" style="margin-bottom:10px">WHILE YOU ARE AWAY</div><p class="small" style="color:var(--ash)">One voice note beats zero phone calls. Away-night prompts are ready for when you have two minutes and no words. She is holding the line at home; ask her for one thing you can own from a distance. <a class="link" href="voice.html">The prompts &rarr;</a></p></div>
+    <div class="card" style="padding:26px"><div class="eyebrow" style="margin-bottom:10px">THE FIRST 72 HOURS HOME</div><p class="small" style="color:var(--ash)">Re-entry is a handoff, not a takeover. Take the private check-in, protect one evening at the table, and give each kid ten minutes alone with you. Expect the little ones to test you on day two. That is attachment, not disrespect. <a class="link" href="veterans-checkin.html">The check-in &rarr;</a></p></div>
+  </div>
+  <p class="fine" style="margin-top:18px">Between returns, your plan keeps one small move in front of you. And when the next call comes, the archive means your voice stays home even when you cannot.</p>
 </section>
 
 <section class="vet-ed">
@@ -1939,7 +1967,7 @@ PAGES['organizations.html'] = dict(title='The measurable standard for effective 
   <div class="grid-3">
     <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">CORRECTIONS &amp; REENTRY</div><h3 style="margin-bottom:8px">The Recidivism Overlay</h3><p class="small" style="color:var(--ash)">Keystone movement set against reoffense records, completers versus non-completers, per cohort. The number a reentry grant lives or dies on.</p></div>
     <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">CHILD SUPPORT</div><h3 style="margin-bottom:8px">The Collection Overlay</h3><p class="small" style="color:var(--ash)">Engagement set against payment compliance. Engaged fathers pay. Show the connection in your own caseload.</p></div>
-    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">VETERAN &amp; MILITARY</div><h3 style="margin-bottom:8px">The Readiness Overlay</h3><p class="small" style="color:var(--ash)">Engagement set against retention and family stability, with the Legacy Voice Archive built into the track.</p></div>
+    <div class="card" style="padding:28px"><div class="eyebrow brass" style="margin-bottom:12px">VETERAN &amp; MILITARY</div><h3 style="margin-bottom:8px">The Readiness Overlay</h3><p class="small" style="color:var(--ash)">Engagement set against retention and family stability, with the Legacy Voice Archive built into the track. Cohorts persist across repeated mobilizations; movement accumulates call-up after call-up.</p></div>
   </div>
 </div></section>
 
