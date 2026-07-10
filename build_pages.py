@@ -2250,7 +2250,8 @@ PAGES['efficacy-report.html'] = dict(title='The Efficacy Report', desc='Cohort m
 if __name__ == '__main__':
     out = os.path.dirname(os.path.abspath(__file__))
     for fname, p in PAGES.items():
-        theme_js = "'light'" if fname=='organizations.html' else 'localStorage.getItem("fc_theme")||"dark"'
+        FORCED_THEME = {'organizations.html': "'light'", 'index.html': "'dark'", 'profile.html': "'dark'", 'stories.html': "'dark'"}
+        theme_js = FORCED_THEME.get(fname, 'localStorage.getItem("fc_theme")||"dark"')
         html = HEAD.format(title=p['title'], desc=p['desc'], meta=social_meta(fname, p['title'], p['desc']), THEME=theme_js)
         if p.get('nochrome'):
             html += p['body']
