@@ -100,6 +100,7 @@
         .then(function(up){
           if (up && up.error) throw up.error;
           var vTitle=(window.FC_VOICE_PROMPT && window.FC_VOICE_PROMPT.title) || null;
+          try{ localStorage.setItem('fc_vet_step_voice','1'); }catch(_){}
           return FC.sb.from('voice_recordings').insert({ user_id: uid, kind: kind, storage_path: path, title: vTitle });
         })
         .then(function(){

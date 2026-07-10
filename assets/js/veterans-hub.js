@@ -32,3 +32,27 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
+
+
+/* START HERE: three steps with honest done-states.
+   Steps 1 and 2 are device-local flags; step 3 is real (a recording exists). */
+(function(){
+  function setState(step, done){
+    var card=document.querySelector('[data-vetstep="'+step+'"]'); if(!card) return;
+    var st=card.querySelector('[data-state]'); if(!st) return;
+    if(done){ st.textContent='DONE \u2713'; st.style.color='var(--pine-hi, #7fb069)'; card.style.opacity='.82'; }
+    else { st.textContent='NOT YET'; st.style.color='var(--ash)'; }
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    if(!document.getElementById('startHere')) return;
+    var ck=false, fm=false;
+    try{ ck = localStorage.getItem('fc_vet_step_checkin')==='1'; fm = localStorage.getItem('fc_vet_step_film')==='1'; }catch(_){}
+    setState('checkin', ck); setState('film', fm); setState('voice', false);
+    try{
+      if(window.FC && FC.live && FC.uid && FC.uid()){
+        FC.sb.from('voice_recordings').select('id',{count:'exact',head:true}).eq('user_id',FC.uid())
+          .then(function(r){ setState('voice', (r.count||0)>0); }, function(){});
+      } else if(localStorage.getItem('fc_vet_step_voice')==='1'){ setState('voice', true); }
+    }catch(_){}
+  });
+})();

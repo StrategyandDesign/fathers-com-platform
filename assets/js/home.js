@@ -17,7 +17,7 @@
       safe(sb.from('voice_recordings').select('id',{count:'exact',head:true}).eq('user_id',uid)),
       safe(sb.from('circle_posts').select('id',{count:'exact',head:true}).eq('user_id',uid)),
       safe(sb.from('certificate_awards').select('status,course_id').eq('user_id',uid)),
-      safe(sb.from('certificate_enrollments').select('course_id,status,state').eq('user_id',uid)),
+      safe(sb.from('certificate_pursuits').select('course_id,status,state,effective_state').eq('user_id',uid)),
       safe(sb.from('certificate_courses').select('id,slug,title')),
       safe(sb.from('voice_recordings').select('kind,created_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(1))
     ]).then(function(res){
@@ -97,6 +97,10 @@
         courseCard = card('YOUR CERTIFICATE','Fathering Fundamentals: earned.',
           'Verified, serialed, and publicly checkable. The next tracks are in development.',
           'verify.html','See how verification works');
+      } else if(fundEnr && fundEnr.effective_state==='stalled'){
+        courseCard = card('PICK IT BACK UP','Fathering Fundamentals',
+          'Three weeks since your last lesson. Ten minutes tonight restarts the clock; every hour and Checkpoint you logged is still yours.',
+          'course.html?cert=fundamentals','Continue the course');
       } else if(fundEnr){
         courseCard = card('CONTINUE YOUR CERTIFICATE','Fathering Fundamentals',
           'Pick up where you left off. Hours are logged as you watch; each lesson ends in a Checkpoint.',

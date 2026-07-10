@@ -111,3 +111,6 @@ VET_MODULES.order = ['reconnecting', 'emotion', 'temper', 'coparenting', 'comman
     nextEl.textContent = 'Next: ' + VET_MODULES[next].title + ' \u2192';
   }
 })();
+
+// Opening any module counts as the first film for the START HERE steps.
+try{ localStorage.setItem('fc_vet_step_film','1'); }catch(_){}

@@ -32,8 +32,27 @@
         + '</tr>';
     });
     h += '</table></div>';
+    if(!isDemo){
+      h += '<div class="row wrap" style="gap:12px;margin-top:18px">'
+        + '<button class="btn btn-secondary btn-sm" data-print>Print this brief</button>'
+        + '<button class="btn btn-secondary btn-sm" id="rptEmail">Email me this brief</button>'
+        + '<span class="fine" id="rptMsg"></span></div>';
+    }
     h += '<p class="fine" style="margin-top:16px">Individual fathers are never shown. Cohort aggregates only. Outcome overlays (recidivism, collection, readiness) appear when the responsible agency links its outcome records to this cohort through the secure intake.</p>';
     root.innerHTML = h;
+    var em = document.getElementById('rptEmail');
+    if(em) em.addEventListener('click', function(){
+      var msg=document.getElementById('rptMsg');
+      em.disabled=true; if(msg) msg.textContent='Sending\u2026';
+      FC.sb.auth.getUser().then(function(u){
+        var to = u && u.data && u.data.user && u.data.user.email;
+        if(!to){ if(msg) msg.textContent='Sign in first.'; em.disabled=false; return; }
+        var lines = rows.map(function(x){ return (x.cohort||'Unassigned')+': '+(x.fathers||0)+' fathers, '+(x.completed||0)+' completed, movement '+(x.movement==null?'n/a':x.movement); }).join('\n');
+        FC.sb.functions.invoke('send-email',{body:{to:to,template:'monthly-brief',data:{ORG:orgName,MONTH:new Date().toLocaleDateString(undefined,{month:'long',year:'numeric'}),SUMMARY:lines,LINK:location.origin+'/efficacy-report.html'}}})
+          .then(function(){ if(msg) msg.textContent='Sent to '+to+'.'; em.disabled=false; },
+                function(){ if(msg) msg.textContent='Email service is not deployed yet; use Print for now.'; em.disabled=false; });
+      });
+    });
   }
 
   if(demo){

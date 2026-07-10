@@ -1067,7 +1067,7 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
         <div class="cert-card" style="cursor:default" data-cert="reentry" data-title="Coming Home Present" data-hours="12.0" data-desc="For fathers coming home: after a deployment, after a sentence, after any time away. Rebuilding presence from day one, with identity verification, logged time, checkpoints, and a final assessment a court or command can trust.">
       <div class="cert-card-top"><span class="pill" style="opacity:.75">In development</span><span class="cert-card-hrs">12.0 hrs</span></div>
       <h3>Coming Home Present</h3>
-      <p>Presence after time away. In development now; waitlist members shape the first cohort and train first.</p>
+      <p>Presence after time away, built for men who serve and return. Earned the hard way on purpose; the kind of proof peers respect. In development; waitlist members train first.</p>
       <div class="cert-card-foot"><span class="mono">Waitlist</span><a class="cert-card-go" href="#waitlist">Join the waitlist &rarr;</a></div>
     </div>
     <div class="cert-card" style="cursor:default" data-cert="anger" data-title="Steady Under Pressure" data-hours="8.0" data-desc="A father&rsquo;s temper, trained. The pause, the repair, and the steadiness your kids can feel. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
@@ -1603,7 +1603,34 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit 
   </div>
 </section>
 
-<section class="vet-ed vet-ed-noline">
+<section class="vet-ed vet-ed-noline" id="startHere">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">START HERE</div>
+    <h2>Three steps. Fifteen minutes. Then everything below makes sense.</h2>
+  </div>
+  <div class="grid-3" style="margin-top:22px">
+    <div class="card" style="padding:24px 26px" data-vetstep="checkin">
+      <div class="row between" style="margin-bottom:10px"><span class="pill">STEP 1</span><span class="fine mono" data-state>&nbsp;</span></div>
+      <h3 style="margin-bottom:6px">Take the check-in</h3>
+      <p class="small" style="color:var(--ash);margin-bottom:14px">Two minutes, private, no wrong answers. It sets your starting point so the plan fits the week you are actually having.</p>
+      <a class="btn btn-secondary btn-sm" href="veterans-checkin.html">Start the check-in</a>
+    </div>
+    <div class="card" style="padding:24px 26px" data-vetstep="film">
+      <div class="row between" style="margin-bottom:10px"><span class="pill">STEP 2</span><span class="fine mono" data-state>&nbsp;</span></div>
+      <h3 style="margin-bottom:6px">Watch your first film</h3>
+      <p class="small" style="color:var(--ash);margin-bottom:14px">Short and plain, from fathers who walked back through the same door. Pick any one below; the first is twelve minutes.</p>
+      <a class="btn btn-secondary btn-sm" href="#fieldguide">Pick a film</a>
+    </div>
+    <div class="card" style="padding:24px 26px" data-vetstep="voice">
+      <div class="row between" style="margin-bottom:10px"><span class="pill">STEP 3</span><span class="fine mono" data-state>&nbsp;</span></div>
+      <h3 style="margin-bottom:6px">Record sixty seconds</h3>
+      <p class="small" style="color:var(--ash);margin-bottom:14px">Here is why: it plays on the nights you cannot be there, and it stays theirs no matter what. One take is enough. Prompts are ready if the words are not.</p>
+      <a class="btn btn-secondary btn-sm" href="voice.html">Record it</a>
+    </div>
+  </div>
+</section>
+
+<section class="vet-ed vet-ed-noline" id="fieldguide">
   <div class="vet-ed-head">
     <div class="vet-ed-eyebrow">The field guide</div>
     <h2>Skills for the homefront</h2>
@@ -1765,7 +1792,7 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who ser
     <div class="card" style="padding:26px"><div class="eyebrow" style="margin-bottom:10px">WHILE YOU ARE AWAY</div><p class="small" style="color:var(--ash)">One voice note beats zero phone calls. Away-night prompts are ready for when you have two minutes and no words. She is holding the line at home; ask her for one thing you can own from a distance. <a class="link" href="voice.html">The prompts &rarr;</a></p></div>
     <div class="card" style="padding:26px"><div class="eyebrow" style="margin-bottom:10px">THE FIRST 72 HOURS HOME</div><p class="small" style="color:var(--ash)">Re-entry is a handoff, not a takeover. Take the private check-in, protect one evening at the table, and give each kid ten minutes alone with you. Expect the little ones to test you on day two. That is attachment, not disrespect. <a class="link" href="veterans-checkin.html">The check-in &rarr;</a></p></div>
   </div>
-  <p class="fine" style="margin-top:18px">Between returns, your plan keeps one small move in front of you. And when the next call comes, the archive means your voice stays home even when you cannot.</p>
+  <p class="fine" style="margin-top:18px">Between returns, your plan keeps one small move in front of you. And when the next call comes, the archive means your voice stays home even when you cannot. What you earn here is earned the hard way on purpose. That is the kind of proof men respect.</p>
 </section>
 
 <section class="vet-ed">

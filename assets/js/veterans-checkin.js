@@ -121,6 +121,7 @@
   }
 
   function renderResult(result, profile){
+    try{ localStorage.setItem('fc_vet_step_checkin','1'); }catch(_){}
     var primary = VET.matchResource(profile || {});
     var head, lead;
     if (result.anyElevated) {

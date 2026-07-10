@@ -47,16 +47,41 @@
 <div id="demo-note" class="container" style="display:none;padding:24px 0"><div class="notice brass" style="max-width:900px;margin:0 auto">Demo mode. Add Supabase keys in <code>assets/js/config.js</code> to load live data. The controls below show the real interface; writes activate once connected.</div></div>
 <main id="app" class="container" style="padding:40px 0 96px;display:none">
 
-<div class="dash-head"><h1 class="d-36">Organization</h1><p class="lead">Seats, roster, and participation. You never see a man's answers or scores.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="org-members">--</div><div class="glance-sub">men on your roster</div></div><div class="glance-card"><div class="glance-lbl">ACTIVE</div><div class="glance-big" data-glance="org-active">--</div><div class="glance-sub">took their baseline</div></div><div class="glance-card"><div class="glance-lbl">SEATS OPEN</div><div class="glance-big" data-glance="org-seats">--</div><div class="glance-sub">left to invite</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="org-next">Invite the men who haven't started, and check participation this month.</div></div></div>
+<div class="dash-head"><h1 class="d-36">Your program</h1><p class="lead">Your window on the service: men measured, movement, completions. You never see a man's answers or scores.</p></div>
 <div id="org-picker" class="row" style="margin-bottom:24px"></div>
 <div id="org-body">
-  <div class="grid-4" id="org-stats" style="margin-bottom:28px"></div>
-  <div class="card" style="margin-bottom:20px">
-    <div class="row between" style="margin-bottom:14px"><h3>Invite a man</h3></div>
-    <div class="row" style="max-width:520px"><input class="input" id="inv-email" placeholder="man@example.com"><button class="btn btn-primary btn-sm" id="inv-go">Send invite</button></div>
-    <p class="fine" id="inv-msg" style="margin-top:10px"></p>
+  <div class="home-grid">
+    <aside>
+      <div class="card" style="padding:22px 24px;margin-bottom:16px">
+        <div class="eyebrow" style="margin-bottom:8px">YOUR ORGANIZATION</div>
+        <div class="d-28" id="orgName">&nbsp;</div>
+        <p class="fine" id="orgMeta" style="color:var(--ash);margin-top:4px"></p>
+      </div>
+      <div class="card" style="padding:22px 24px;margin-bottom:16px">
+        <div class="eyebrow" style="margin-bottom:10px">YOUR JOIN LINK</div>
+        <div id="orgJoin"><p class="fine" style="color:var(--ash)">Loading&hellip;</p></div>
+      </div>
+      <div class="card" style="padding:22px 24px">
+        <div class="eyebrow" style="margin-bottom:14px">STATISTICS</div>
+        <div id="orgStats"><p class="fine" style="color:var(--ash)">Loading&hellip;</p></div>
+      </div>
+    </aside>
+    <div>
+      <div id="orgNext"></div>
+      <div class="eyebrow" style="margin:6px 0 12px">YOUR COHORTS</div>
+      <div id="orgCohorts"><p class="fine" style="color:var(--ash)">Loading&hellip;</p></div>
+      <div class="card" style="margin:22px 0 20px;padding:24px 26px">
+        <div class="row between" style="margin-bottom:12px"><h3>Invite a man directly</h3></div>
+        <p class="fine" style="color:var(--ash);margin-bottom:12px">The join link does this at scale; direct invites are for the one-offs.</p>
+        <div class="row" style="max-width:520px"><input class="input" id="inv-email" placeholder="man@example.com"><button class="btn btn-primary btn-sm" id="inv-go">Send invite</button></div>
+        <p class="fine" id="inv-msg" style="margin-top:8px"></p>
+      </div>
+      <details class="card" style="padding:20px 26px">
+        <summary style="cursor:pointer"><b>Roster</b> <span class="fine" style="color:var(--ash)">seat-by-seat participation</span></summary>
+        <div id="roster-table" style="margin-top:16px"><p class="fine">Loading&hellip;</p></div>
+      </details>
+    </div>
   </div>
-  <div class="card"><h3 style="margin-bottom:14px">Roster</h3><div id="roster-table">Pick an organization…</div></div>
 </div>
 </main>
 <div class="toast"></div>
