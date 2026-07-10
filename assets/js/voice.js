@@ -1,126 +1,195 @@
-/* Voice. Record a short audio message a child can replay.
-   Records in the browser, previews, and saves to Supabase storage when
-   signed in. Degrades cleanly with no mic, denied permission, or an old browser. */
+/* The Legacy Archive. One prompt, one button.
+   The man talks; the machine does the rest. Recording auto-saves on stop,
+   with Undo instead of a confirm. Signed-out men record first: the take is
+   held in this browser and kept the moment they join. */
 (function(){
   'use strict';
   var app = document.getElementById('voiceApp');
   if (!app || !window.VET) return;
   var e = VET.esc;
 
-  var recBtn = document.getElementById('voiceRec');
-  var stopBtn = document.getElementById('voiceStop');
+  var btn = document.getElementById('vBtn');
+  var btnLbl = document.getElementById('vBtnLbl');
+  var promptEl = document.getElementById('vPrompt');
+  var swap = document.getElementById('vSwap');
+  var allBtn = document.getElementById('vAllBtn');
+  var allWrap = document.getElementById('vAllWrap');
+  var done = document.getElementById('vDone');
+  var doneTxt = document.getElementById('vDoneTxt');
+  var undo = document.getElementById('vUndo');
+  var again = document.getElementById('vAgain');
+  var keep = document.getElementById('vKeep');
+  var guest = document.getElementById('vGuest');
   var preview = document.getElementById('voicePreview');
-  var after = document.getElementById('voiceAfter');
-  var redo = document.getElementById('voiceRedo');
-  var save = document.getElementById('voiceSave');
   var msg = document.getElementById('voiceMsg');
   var timerEl = document.getElementById('voiceTimer');
-  var typeWrap = document.querySelector('[data-voice-types]');
 
-  var kind = 'bedtime_story';
   var mediaRecorder = null, chunks = [], stream = null, blob = null, tick = null, seconds = 0;
+  var state = 'idle'; // idle | rec | saving | done
+  var lastSaved = null; // {id, path}
 
   var supported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
-  if (!supported) {
-    setMsg('Recording is not supported in this browser. Try Chrome or Safari on your phone.', true);
-    if (recBtn) recBtn.disabled = true;
-    return;
+  if (!supported) { setMsg('Recording is not supported in this browser. Try Chrome or Safari on your phone.', true); if (btn) btn.disabled = true; return; }
+
+  function setMsg(t, err){ if (msg){ msg.textContent = t || ''; msg.style.color = err ? 'var(--error)' : 'var(--ash)'; } }
+  function fmt(s){ var m = Math.floor(s/60), r = s%60; return m + ':' + (r<10?'0':'') + r; }
+  function startTimer(){ seconds = 0; timerEl.textContent = '0:00'; tick = setInterval(function(){ seconds++; timerEl.textContent = fmt(seconds) + (seconds < 60 ? '' : ''); if (seconds >= 300) stopRec(); }, 1000); }
+  function stopTimer(){ if (tick){ clearInterval(tick); tick = null; } }
+  function releaseStream(){ if (stream){ stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; } }
+
+  /* ---------- the adaptive prompt: the machine picks, the man can override ---------- */
+  var FLAT = [];
+  (window.FC_VOICE_PROMPTS || []).forEach(function(c){ (c.items||[]).forEach(function(t){ FLAT.push({ cat: c.cat, title: t }); }); });
+  var doneTitles = {};
+  try { (JSON.parse(localStorage.getItem('fc_voice_done')||'[]')).forEach(function(t){ doneTitles[t] = 1; }); } catch(_){}
+  var cursor = 0;
+  function currentPrompt(){ return FLAT[cursor % FLAT.length] || { cat:'', title:'Say what is on your heart.' }; }
+  function showPrompt(){
+    var p = currentPrompt();
+    window.FC_VOICE_PROMPT = { title: p.title, cat: p.cat };
+    if (promptEl) promptEl.textContent = p.title;
   }
+  function pickFirstUnrecorded(){
+    for (var i = 0; i < FLAT.length; i++){ if (!doneTitles[FLAT[i].title]){ cursor = i; return; } }
+    cursor = (new Date().getDate()) % FLAT.length; // everything banked: rotate by day
+  }
+  function advance(){ var start = cursor; do { cursor = (cursor + 1) % FLAT.length; } while (doneTitles[FLAT[cursor].title] && cursor !== start); showPrompt(); }
+  pickFirstUnrecorded(); showPrompt();
+  if (swap) swap.addEventListener('click', advance);
+  if (allBtn) allBtn.addEventListener('click', function(){ if (allWrap){ allWrap.open = true; allWrap.scrollIntoView({behavior:'smooth', block:'nearest'}); } });
+  var picker = document.getElementById('promptPicker');
+  if (picker) picker.addEventListener('click', function(){ setTimeout(function(){
+    if (window.FC_VOICE_PROMPT && window.FC_VOICE_PROMPT.title && promptEl){ promptEl.textContent = FC_VOICE_PROMPT.title; if (allWrap) allWrap.open = false; window.scrollTo({ top: app.offsetTop - 90, behavior: 'smooth' }); }
+  }, 30); });
 
-  function setMsg(t, err){ if (!msg) return; msg.textContent = t || ''; msg.style.color = err ? 'var(--error)' : 'var(--ash)'; }
-  function fmt(s){ var m = Math.floor(s / 60); var r = s % 60; return m + ':' + (r < 10 ? '0' : '') + r; }
-  function startTimer(){ seconds = 0; if (timerEl) timerEl.textContent = '0:00'; tick = setInterval(function(){ seconds++; if (timerEl) timerEl.textContent = fmt(seconds); if (seconds >= 300) stop(); }, 1000); }
-  function stopTimer(){ if (tick) { clearInterval(tick); tick = null; } }
-  function releaseStream(){ if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; } }
+  function kindFor(cat){ return cat === 'Away nights' ? 'bedtime_story' : 'message'; }
 
-  if (typeWrap) typeWrap.querySelectorAll('[data-kind]').forEach(function(b){
-    b.addEventListener('click', function(){
-      kind = b.getAttribute('data-kind');
-      typeWrap.querySelectorAll('[data-kind]').forEach(function(x){ x.classList.toggle('is-on', x === b); x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-    });
-  });
+  /* ---------- one button ---------- */
+  function onBtn(){ if (state === 'idle') startRec(); else if (state === 'rec') stopRec(); }
+  if (btn) btn.addEventListener('click', onBtn);
 
-  function record(){
+  function startRec(){
     setMsg('');
     navigator.mediaDevices.getUserMedia({ audio: true }).then(function(s){
-      stream = s;
-      chunks = []; blob = null;
-      try { mediaRecorder = new MediaRecorder(stream); }
-      catch (err) { mediaRecorder = new MediaRecorder(stream, {}); }
+      stream = s; chunks = []; blob = null;
+      try { mediaRecorder = new MediaRecorder(stream); } catch (err) { mediaRecorder = new MediaRecorder(stream, {}); }
       mediaRecorder.ondataavailable = function(ev){ if (ev.data && ev.data.size) chunks.push(ev.data); };
       mediaRecorder.onstop = function(){
         blob = new Blob(chunks, { type: (chunks[0] && chunks[0].type) || 'audio/webm' });
-        if (preview) { preview.src = URL.createObjectURL(blob); preview.hidden = false; }
-        if (after) after.hidden = false;
+        if (preview) preview.src = URL.createObjectURL(blob);
         releaseStream();
+        keepIt();
       };
       mediaRecorder.start();
+      state = 'rec';
+      btn.classList.add('is-rec');
+      if (btnLbl) btnLbl.textContent = 'Done';
+      setMsg('Talking to them now. Tap when you are done; sixty seconds is plenty.');
+      if (done) done.hidden = true;
       startTimer();
-      if (recBtn) recBtn.hidden = true;
-      if (stopBtn) stopBtn.hidden = false;
-      if (preview) preview.hidden = true;
-      if (after) after.hidden = true;
     }).catch(function(err){
       var m = 'Could not start recording.';
-      if (err && (err.name === 'NotAllowedError' || err.name === 'SecurityError')) m = 'Microphone access was blocked. Allow it in your browser settings, then try again.';
+      if (err && (err.name === 'NotAllowedError' || err.name === 'SecurityError')) m = 'Microphone access was blocked. Allow it in your browser settings, then tap again.';
       else if (err && err.name === 'NotFoundError') m = 'No microphone was found on this device.';
       setMsg(m, true);
     });
   }
 
-  function stop(){
+  function stopRec(){
     stopTimer();
+    state = 'saving';
+    btn.classList.remove('is-rec');
+    if (btnLbl) btnLbl.textContent = 'Record';
     if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-    if (recBtn) recBtn.hidden = false;
-    if (stopBtn) stopBtn.hidden = true;
   }
 
-  function resetForRedo(){
-    blob = null;
-    if (preview) { preview.hidden = true; preview.removeAttribute('src'); }
-    if (after) after.hidden = true;
-    if (timerEl) timerEl.textContent = '0:00';
-    setMsg('');
-  }
+  /* ---------- the machine keeps it ---------- */
+  function markDone(title){ doneTitles[title] = 1; try { localStorage.setItem('fc_voice_done', JSON.stringify(Object.keys(doneTitles))); } catch(_){} }
 
-  function doSave(){
-    if (!blob) return;
-    if (!window.FC || !FC.live) {
-      setMsg('Saved on this device. Sign in to keep your recordings across devices.');
-      if (after) after.hidden = true;
+  function keepIt(){
+    var p = window.FC_VOICE_PROMPT || currentPrompt();
+    var signedIn = window.FC && FC.live && FC.uid && FC.uid();
+    if (!signedIn){
+      // Hold the take in this browser; keep it the moment he joins.
+      var r = new FileReader();
+      r.onload = function(){
+        try { sessionStorage.setItem('fc_voice_pending', JSON.stringify({ b64: r.result, type: blob.type || 'audio/webm', title: p.title, kind: kindFor(p.cat) })); } catch(_){}
+        state = 'done';
+        if (doneTxt) doneTxt.textContent = 'Recorded: ' + p.title + '. It is held on this device.';
+        if (keep) keep.hidden = false;
+        if (undo) undo.hidden = true;
+        if (done) done.hidden = false;
+        if (guest) guest.hidden = false;
+        setMsg('');
+      };
+      r.readAsDataURL(blob);
       return;
     }
-    if (save) { save.disabled = true; save.textContent = 'Saving\u2026'; }
-    setMsg('Saving your recording\u2026');
-    FC.ready.then(function(){
-      var uid = FC.uid && FC.uid();
-      if (!uid) { location.href = 'login.html?next=' + encodeURIComponent('voice.html'); return; }
-      var path = uid + '/' + Date.now() + '.webm';
-      return FC.sb.storage.from('voice').upload(path, blob, { contentType: blob.type || 'audio/webm', upsert: false })
-        .then(function(up){
-          if (up && up.error) throw up.error;
-          var vTitle=(window.FC_VOICE_PROMPT && window.FC_VOICE_PROMPT.title) || null;
-          try{ localStorage.setItem('fc_vet_step_voice','1'); }catch(_){}
-          return FC.sb.from('voice_recordings').insert({ user_id: uid, kind: kind, storage_path: path, title: vTitle });
-        })
-        .then(function(){
-          setMsg('Saved. It is waiting for your child whenever they want it.');
-          if (after) after.hidden = true;
-          if (save) { save.disabled = false; save.textContent = 'Save it'; }
-          loadList();
-        });
-    }).catch(function(){
-      if (save) { save.disabled = false; save.textContent = 'Save it'; }
-      setMsg('Could not save it. Your recording is still here, try Save again.', true);
+    setMsg('Keeping it\u2026');
+    uploadBlob(blob, p.title, kindFor(p.cat)).then(function(saved){
+      lastSaved = saved;
+      markDone(p.title);
+      state = 'done';
+      if (doneTxt) doneTxt.textContent = 'Kept: ' + p.title + ' \u00b7 today. It is waiting for them whenever they want it.';
+      if (keep) keep.hidden = true;
+      if (undo) undo.hidden = false;
+      if (done) done.hidden = false;
+      setMsg('');
+      loadList();
+    }, function(){
+      state = 'done';
+      if (doneTxt) doneTxt.textContent = 'Recorded, but it could not be kept just now. Play it here, or tap Record another to try again.';
+      if (undo) undo.hidden = true;
+      if (done) done.hidden = false;
+      setMsg('');
     });
   }
 
-  if (recBtn) recBtn.addEventListener('click', record);
-  if (stopBtn) stopBtn.addEventListener('click', stop);
-  if (redo) redo.addEventListener('click', function(){ resetForRedo(); record(); });
-  if (save) save.addEventListener('click', doSave);
+  function uploadBlob(b, title, kind){
+    return FC.ready.then(function(){
+      var uid = FC.uid && FC.uid();
+      if (!uid) throw new Error('no session');
+      var path = uid + '/' + Date.now() + '.webm';
+      return FC.sb.storage.from('voice').upload(path, b, { contentType: b.type || 'audio/webm', upsert: false })
+        .then(function(up){
+          if (up && up.error) throw up.error;
+          try { localStorage.setItem('fc_vet_step_voice','1'); } catch(_){}
+          return FC.sb.from('voice_recordings').insert({ user_id: uid, kind: kind, storage_path: path, title: title }).select('id').single();
+        })
+        .then(function(ins){ return { id: ins && ins.data && ins.data.id, path: path }; });
+    });
+  }
 
-  // Saved recordings list (best effort).
+  if (undo) undo.addEventListener('click', function(){
+    if (!lastSaved) { if (done) done.hidden = true; state = 'idle'; return; }
+    undo.disabled = true;
+    FC.sb.storage.from('voice').remove([lastSaved.path])
+      .then(function(){ return lastSaved.id ? FC.sb.from('voice_recordings').delete().eq('id', lastSaved.id) : null; })
+      .then(function(){ undo.disabled = false; lastSaved = null; if (done) done.hidden = true; state = 'idle'; setMsg('Undone. It is gone.'); loadList(); },
+            function(){ undo.disabled = false; setMsg('Could not undo just now.', true); });
+  });
+  if (again) again.addEventListener('click', function(){ if (done) done.hidden = true; timerEl.textContent = '\u00a0'; lastSaved = null; state = 'idle'; advance(); startRec(); });
+
+  /* ---------- a pending take from before sign-in gets kept automatically ---------- */
+  function keepPending(){
+    var raw = null;
+    try { raw = sessionStorage.getItem('fc_voice_pending'); } catch(_){}
+    if (!raw || !(window.FC && FC.live)) return;
+    FC.ready.then(function(){
+      if (!(FC.uid && FC.uid())) return;
+      var p = JSON.parse(raw);
+      fetch(p.b64).then(function(res){ return res.blob(); }).then(function(b){
+        return uploadBlob(b, p.title, p.kind);
+      }).then(function(){
+        try { sessionStorage.removeItem('fc_voice_pending'); } catch(_){}
+        markDone(p.title);
+        setMsg('Kept the one you recorded before you joined: ' + p.title + '.');
+        loadList();
+      }).catch(function(){});
+    });
+  }
+
+  /* ---------- the shelf ---------- */
   var KIND_LABEL = { bedtime_story: 'Bedtime story', message: 'A message', thinking: 'Thinking of you' };
   function loadList(){
     var list = document.getElementById('voiceList');
@@ -128,22 +197,25 @@
     FC.ready.then(function(){
       var uid = FC.uid && FC.uid();
       if (!uid) return;
-      return FC.sb.from('voice_recordings').select('*').eq('user_id', uid).order('created_at', { ascending: false }).limit(20)
+      return FC.sb.from('voice_recordings').select('*').eq('user_id', uid).order('created_at', { ascending: false }).limit(30)
         .then(function(r){
           var rows = (r && r.data) || [];
+          rows.forEach(function(row){ if (row.title) doneTitles[row.title] = 1; });
+          if (state === 'idle'){ pickFirstUnrecorded(); showPrompt(); }
           if (!rows.length) { list.innerHTML = ''; return; }
-          list.innerHTML = '<div class="eyebrow" style="margin:36px 0 16px">YOUR RECORDINGS</div>' +
+          list.innerHTML = '<div class="eyebrow" style="margin:36px 0 16px">THE ARCHIVE \u00b7 ' + rows.length + ' KEPT</div>' +
             rows.map(function(row){
+              var when = row.created_at ? new Date(row.created_at).toLocaleDateString() : '';
               return '<div class="voice-item" data-path="' + e(row.storage_path) + '" data-id="' + e(row.id) + '">' +
-                '<span>' + e(KIND_LABEL[row.kind] || 'Recording') + '</span>' +
+                '<span>' + e(row.title || KIND_LABEL[row.kind] || 'Recording') + (when ? ' <span class="fine" style="color:var(--ash)">\u00b7 ' + when + '</span>' : '') + '</span>' +
                 '<span class="voice-item-actions"><button class="link brass voice-play" type="button">Play</button>' +
                 '<button class="voice-del" type="button">Delete</button></span></div>';
             }).join('');
           list.querySelectorAll('.voice-play').forEach(function(b){
             b.addEventListener('click', function(){
               var path = b.closest('.voice-item').getAttribute('data-path');
-              FC.sb.storage.from('voice').createSignedUrl(path, 3600).then(function(s){
-                var url = s && s.data && s.data.signedUrl;
+              FC.sb.storage.from('voice').createSignedUrl(path, 3600).then(function(s2){
+                var url = s2 && s2.data && s2.data.signedUrl;
                 if (url) { var a = new Audio(url); a.play(); }
               });
             });
@@ -162,7 +234,12 @@
         });
     }).catch(function(){});
   }
-  // Wait for footer client scripts before loading saved recordings.
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadList);
-  else loadList();
+
+  function boot(){
+    var signedIn = window.FC && FC.live;
+    if (!signedIn && guest) guest.hidden = false;
+    keepPending();
+    loadList();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
