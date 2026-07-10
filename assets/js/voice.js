@@ -83,7 +83,7 @@
       mediaRecorder.start();
       state = 'rec';
       btn.classList.add('is-rec');
-      if (btnLbl) btnLbl.textContent = 'Done';
+      if (btnLbl) btnLbl.textContent = 'End';
       setMsg('Talking to them now. Tap when you are done; sixty seconds is plenty.');
       if (done) done.hidden = true;
       startTimer();
@@ -203,13 +203,13 @@
           rows.forEach(function(row){ if (row.title) doneTitles[row.title] = 1; });
           if (state === 'idle'){ pickFirstUnrecorded(); showPrompt(); }
           if (!rows.length) { list.innerHTML = ''; return; }
-          list.innerHTML = '<div class="eyebrow" style="margin:36px 0 16px">THE ARCHIVE \u00b7 ' + rows.length + ' KEPT</div>' +
+          list.innerHTML = '<div class="vx-shelfhead">The Archive \u00b7 ' + rows.length + ' kept</div>' +
             rows.map(function(row){
               var when = row.created_at ? new Date(row.created_at).toLocaleDateString() : '';
-              return '<div class="voice-item" data-path="' + e(row.storage_path) + '" data-id="' + e(row.id) + '">' +
-                '<span>' + e(row.title || KIND_LABEL[row.kind] || 'Recording') + (when ? ' <span class="fine" style="color:var(--ash)">\u00b7 ' + when + '</span>' : '') + '</span>' +
-                '<span class="voice-item-actions"><button class="link brass voice-play" type="button">Play</button>' +
-                '<button class="voice-del" type="button">Delete</button></span></div>';
+              return '<div class="voice-item vx-row" data-path="' + e(row.storage_path) + '" data-id="' + e(row.id) + '">' +
+                '<button class="voice-play vx-ic" type="button" aria-label="Play">\u25b6</button>' +
+                '<span class="vx-rowmain"><span class="vx-rowtitle">' + e(row.title || KIND_LABEL[row.kind] || 'Recording') + '</span>' + (when ? '<span class="vx-rowdate">\u00b7 ' + when + '</span>' : '') + '</span>' +
+                '<button class="voice-del" type="button">Delete</button></div>';
             }).join('');
           list.querySelectorAll('.voice-play').forEach(function(b){
             b.addEventListener('click', function(){

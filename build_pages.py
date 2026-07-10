@@ -1903,51 +1903,47 @@ PAGES['veterans-start.html'] = dict(title='Set up your hub', desc='Tell us where
 ''')
 
 PAGES['voice.html'] = dict(title='The Legacy Archive', desc='Leave them your voice. Sixty seconds tonight outlives almost everything else you will make this week.', active='For Veterans', mode='app', body=VET_TOP + '''
-<section class="voice-hero" style="min-height:300px">
-  <img class="voice-hero-img" src="assets/img/photos/billboard-stories.jpg" alt="">
-  <div class="voice-hero-inner">
-    <div class="voice-hero-eyebrow">The Legacy Archive</div>
+<section class="vx">
+  <div class="vx-col">
     <h1>Leave them your voice.</h1>
-    <p class="voice-hero-lead">Sixty seconds tonight outlives almost everything else you will make this week.</p>
-  </div>
-</section>
+    <p class="vx-sub">Sixty seconds tonight outlives almost everything else you will make this week.</p>
 
-<section class="voice-ed voice-ed-first" id="record">
-  <div class="vmoment" id="voiceApp">
-    <div class="vmoment-lbl">TONIGHT&rsquo;S PROMPT</div>
-    <div class="vmoment-prompt" id="vPrompt">Say good night the way you always do.</div>
-    <p class="fine" style="margin:6px 0 22px"><button class="link brass" id="vSwap" type="button">Different prompt</button> &nbsp;&middot;&nbsp; <button class="link" id="vAllBtn" type="button" style="color:var(--ash)">See all prompts</button></p>
+    <div class="vx-card" id="voiceApp">
+      <div class="vx-lbl">TONIGHT&rsquo;S PROMPT</div>
+      <div class="vx-prompt" id="vPrompt">Say good night the way you always do.</div>
+      <p class="vx-links"><button class="link brass" id="vSwap" type="button">Different prompt</button> &nbsp;&middot;&nbsp; <button class="link" id="vAllBtn" type="button" style="color:#71767b">See all prompts</button></p>
 
-    <button class="vrec" id="vBtn" type="button" aria-label="Record"><span class="vrec-dot"></span><span class="vrec-lbl" id="vBtnLbl">Record</span></button>
-    <div class="voice-timer" id="voiceTimer" style="margin-top:14px">&nbsp;</div>
-    <p class="fine" id="voiceMsg" style="margin-top:6px;min-height:16px"></p>
-
-    <div id="vDone" hidden style="margin-top:10px">
-      <p class="small" id="vDoneTxt" style="margin-bottom:12px"></p>
-      <audio id="voicePreview" controls style="width:100%;max-width:420px;margin:0 auto 14px;display:block"></audio>
-      <div class="row" style="gap:12px;justify-content:center">
-        <button class="btn btn-secondary btn-sm" id="vUndo" type="button">Undo</button>
-        <button class="btn btn-yellow btn-sm" id="vAgain" type="button">Record another</button>
+      <div class="row" style="align-items:center;gap:14px">
+        <button class="vrec" id="vBtn" type="button" aria-label="Record"><span class="vrec-dot"></span><span class="vrec-lbl" id="vBtnLbl">Record</span></button>
+        <div class="voice-timer" id="voiceTimer">&nbsp;</div>
       </div>
-      <div class="row" style="gap:12px;justify-content:center;margin-top:12px">
-        <a class="btn btn-primary btn-sm" id="vKeep" href="login.html?next=voice.html" hidden>Join free to keep it</a>
+      <p class="fine" id="voiceMsg" style="margin-top:10px;min-height:16px"></p>
+
+      <div id="vDone" hidden style="margin-top:14px;border-top:1px solid #2f3336;padding-top:16px">
+        <p class="small" id="vDoneTxt" style="margin-bottom:12px;color:#e7e9ea;font-size:15px"></p>
+        <audio id="voicePreview" controls style="width:100%;margin:0 0 14px;display:block"></audio>
+        <div class="row" style="gap:10px;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" id="vUndo" type="button">Undo</button>
+          <button class="btn btn-yellow btn-sm" id="vAgain" type="button">Record another</button>
+          <a class="btn btn-primary btn-sm" id="vKeep" href="login.html?next=voice.html" hidden>Join free to keep it</a>
+        </div>
       </div>
+
+      <p class="fine" style="margin-top:16px">Encrypted &middot; private to you &middot; never shared &middot; delete anytime</p>
+      <p class="fine" id="vGuest" hidden>Record first. Keeping it takes a free sign-in after, and we will hold this one for you.</p>
     </div>
 
-    <p class="fine" style="margin-top:22px;color:var(--ash)">Encrypted &middot; private to you &middot; never shared &middot; delete anytime</p>
-    <p class="fine" id="vGuest" hidden style="color:var(--ash)">Record first. Keeping it takes a free sign-in after, and we will hold this one for you.</p>
-
-    <details id="vAllWrap" style="margin-top:26px;text-align:left">
-      <summary class="fine" style="cursor:pointer;color:var(--ash)">The full prompt library</summary>
+    <details id="vAllWrap" style="margin-top:18px">
+      <summary>The full prompt library</summary>
       <div class="voice-prompts" style="margin-top:14px">
         <div id="promptPicker"></div>
         <p class="fine" id="promptCurrent" hidden style="margin-top:10px"></p>
       </div>
     </details>
-  </div>
 
-  <div id="voiceList"></div>
-  <p class="fine" style="margin-top:26px;color:var(--ash);text-align:center">Kids replay these on their schedule. That is the whole point.</p>
+    <div id="voiceList"></div>
+    <p class="fine" style="margin-top:26px;text-align:center">Kids replay these on their schedule. That is the whole point.</p>
+  </div>
 </section>
 <script src="assets/js/veterans-core.js"></script>
 <script src="assets/js/voice-prompts.js"></script>
@@ -2274,7 +2270,7 @@ PAGES['efficacy-report.html'] = dict(title='The Efficacy Report', desc='Cohort m
 if __name__ == '__main__':
     out = os.path.dirname(os.path.abspath(__file__))
     for fname, p in PAGES.items():
-        FORCED_THEME = {'organizations.html': "'light'", 'index.html': "'dark'", 'profile.html': "'dark'", 'stories.html': "'dark'", 'certificates.html': "'dark'", 'enroll.html': "'dark'", 'class.html': "'dark'", 'course.html': "'dark'", 'player.html': "'dark'", 'checkout.html': "'dark'", 'certificate.html': "'dark'"}
+        FORCED_THEME = {'organizations.html': "'light'", 'index.html': "'dark'", 'profile.html': "'dark'", 'stories.html': "'dark'", 'certificates.html': "'dark'", 'enroll.html': "'dark'", 'class.html': "'dark'", 'course.html': "'dark'", 'player.html': "'dark'", 'checkout.html': "'dark'", 'certificate.html': "'dark'", 'voice.html': "'dark'"}
         theme_js = FORCED_THEME.get(fname, 'localStorage.getItem("fc_theme")||"dark"')
         html = HEAD.format(title=p['title'], desc=p['desc'], meta=social_meta(fname, p['title'], p['desc']), THEME=theme_js)
         if p.get('nochrome'):

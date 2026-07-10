@@ -279,3 +279,39 @@
 .vrec.is-rec{background:rgba(226,90,42,.12);animation:vpulse 1.6s ease-in-out infinite}
 .vrec.is-rec .vrec-dot{border-radius:3px;width:14px;height:14px}
 @keyframes vpulse{0%,100%{box-shadow:0 0 0 0 rgba(226,90,42,.35)}50%{box-shadow:0 0 0 14px rgba(226,90,42,0)}}
+
+/* ---------- vx: the Archive, X-grade ---------- */
+.vx{background:#000;margin:0 calc(50% - 50vw);padding:44px 16px 72px}
+.vx-col{max-width:600px;margin:0 auto}
+.vx h1{font-size:31px;letter-spacing:-.02em;line-height:1.15;color:#e7e9ea;margin:0 0 6px}
+.vx-sub{font-size:15px;line-height:1.45;color:#71767b;margin:0 0 26px}
+.vx-card{border:1px solid #2f3336;border-radius:16px;padding:22px 20px;background:#000}
+.vx-lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;color:#71767b;margin-bottom:8px}
+.vx-prompt{font-size:20px;font-weight:800;line-height:1.3;color:#e7e9ea;letter-spacing:-.01em}
+.vx-links{margin:10px 0 18px}
+.vx-links .link{font-size:13px}
+.vx .vrec{width:auto;height:auto;border-radius:9999px;border:0;background:var(--ember,#e25a2a);color:#fff;padding:12px 28px;flex-direction:row;gap:10px}
+.vx .vrec .vrec-lbl{font-family:inherit;font-size:15px;font-weight:700;letter-spacing:0;color:#fff}
+.vx .vrec .vrec-dot{width:10px;height:10px;background:#fff}
+.vx .vrec:hover{transform:none;filter:brightness(.92)}
+.vx .vrec.is-rec{background:transparent;border:1px solid #2f3336;animation:none;box-shadow:none}
+.vx .vrec.is-rec .vrec-dot{background:#f4212e;border-radius:50%;width:10px;height:10px;animation:vxblink 1.2s ease-in-out infinite}
+.vx .vrec.is-rec .vrec-lbl{color:#e7e9ea}
+@keyframes vxblink{0%,100%{opacity:1}50%{opacity:.25}}
+.vx .voice-timer{font-family:var(--font-mono);font-size:13px;color:#71767b;min-height:18px}
+.vx .fine{font-size:13px;color:#71767b}
+.vx .small{font-size:15px}
+.vx .btn{border-radius:9999px;font-weight:700;font-size:14px}
+.vx details summary{color:#71767b;font-size:13px;cursor:pointer;list-style-position:inside}
+.vx .chip{border:1px solid #2f3336;border-radius:9999px;background:transparent;color:#e7e9ea;font-size:13px}
+.vx .chip.is-on,.vx .chip:hover{border-color:var(--ember,#e25a2a);background:rgba(226,90,42,.08)}
+.vx-shelfhead{font-size:17px;font-weight:800;color:#e7e9ea;letter-spacing:-.01em;margin:34px 0 4px}
+.vx-row{display:flex;align-items:center;gap:12px;padding:12px 8px;border-bottom:1px solid #2f3336;border-radius:10px}
+.vx-row:hover{background:#16181c}
+.vx-ic{width:40px;height:40px;min-width:40px;border-radius:50%;border:1px solid #2f3336;background:transparent;color:var(--ember,#e25a2a);font-size:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.vx-ic:hover{border-color:var(--ember,#e25a2a);background:rgba(226,90,42,.08)}
+.vx-rowmain{flex:1;min-width:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.vx-rowtitle{font-size:15px;font-weight:700;color:#e7e9ea}
+.vx-rowdate{font-size:13px;color:#71767b}
+.vx .voice-del{background:none;border:0;color:#71767b;font-size:13px;cursor:pointer;padding:6px 10px;border-radius:9999px}
+.vx .voice-del:hover{color:#f4212e;background:rgba(244,33,46,.1)}
