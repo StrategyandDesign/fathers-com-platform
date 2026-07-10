@@ -1,5 +1,5 @@
 /* Certificate coursework player. The participant side of the accountability model.
-   Watch videos in order (watch time tracked against known length), pass a Debrief
+   Watch videos in order (watch time tracked against known length), pass a Checkpoint
    after each, answer the final Q&A, submit for admin approval. Signed-in + enrolled.
    Reads and writes are RLS-gated (certificate_accountability.sql). */
 (function(){
@@ -77,7 +77,7 @@
         ? '<button class="btn btn-primary btn-sm" data-open="'+i+'">'+(progress[v.id]?'Resume':'Start')+'</button>'
         : (done ? '<button class="btn btn-secondary btn-sm" data-open="'+i+'">Rewatch</button>' : '<button class="btn btn-secondary btn-sm" disabled>Locked</button>');
       return '<div class="cw-row"><div class="cw-row-main"><div class="cw-row-num">'+(i+1)+'</div>'+
-        '<div><div class="cw-row-title">'+esc(v.title)+'</div><div class="fine">'+fmt(v.duration_seconds)+' \u00b7 Debrief after</div></div></div>'+
+        '<div><div class="cw-row-title">'+esc(v.title)+'</div><div class="fine">'+fmt(v.duration_seconds)+' \u00b7 Checkpoint after</div></div></div>'+
         '<div class="cw-row-right">'+state+action+'</div></div>';
     }).join('');
 
@@ -99,7 +99,7 @@
 
   function statusPanel(){
     var map = {
-      submitted: ['Submitted for review','Your work is in. An administrator will review your Debriefs and final answers, then approve your certificate. You will be able to sign it here once approved.'],
+      submitted: ['Submitted for review','Your work is in. An administrator will review your Checkpoints and final answers, then approve your certificate. You will be able to sign it here once approved.'],
       approved:  ['Approved','Your certificate is approved. The signing step will appear here.'],
       signed:    ['Signed','Your certificate is signed and complete. Well done.']
     };
@@ -124,7 +124,7 @@
     curVideo = videos[i];
     var v = curVideo;
     watched = (progress[v.id] && progress[v.id].watched_seconds) || 0;
-    // must reach ~95% of known length before the Debrief unlocks (min 5s for tiny demos)
+    // must reach ~95% of known length before the Checkpoint unlocks (min 5s for tiny demos)
     threshold = Math.max(5, Math.floor((v.duration_seconds||0) * 0.95));
 
     var ref = v.video_url || '';
@@ -147,7 +147,7 @@
       '<div class="cw-video-wrap">'+player+'</div>'+
       '<div class="cw-watch"><div class="cw-watch-bar"><div class="cw-watch-fill" id="cw-watch-fill"></div></div>'+
       '<div class="fine" id="cw-watch-txt"></div></div>'+
-      '<div class="cw-video-actions"><button class="btn btn-primary" id="cw-to-debrief" disabled>Continue to Debrief</button></div>'
+      '<div class="cw-video-actions"><button class="btn btn-primary" id="cw-to-debrief" disabled>Continue to Checkpoint</button></div>'
     );
     $('cw-back').addEventListener('click', function(){ stopWatch(); teardownVimeo(); renderOutline(); });
     updateWatchUI();
@@ -167,7 +167,7 @@
     if (sim){ sim.addEventListener('click', function(){ startWatch(); sim.textContent='Watching\u2026'; sim.disabled=true; }); }
 
     var cont=$('cw-to-debrief');
-    cont.addEventListener('click', function(){ stopWatch(); teardownVimeo(); saveProgress(true); openDebrief(); });
+    cont.addEventListener('click', function(){ stopWatch(); teardownVimeo(); saveProgress(true); openCheckpoint(); });
   }
 
   // ---- Vimeo Player API tracking (loads the SDK once) ----
@@ -202,7 +202,7 @@
   function updateWatchUI(){
     var pct = threshold ? Math.min(100, Math.round(watched/threshold*100)) : 100;
     var fill=$('cw-watch-fill'); if(fill) fill.style.width = pct+'%';
-    var txt=$('cw-watch-txt'); if(txt) txt.textContent = watched>=threshold ? 'Watched. Debrief unlocked.' : ('Watched '+fmt(watched)+' of about '+fmt(threshold)+' needed');
+    var txt=$('cw-watch-txt'); if(txt) txt.textContent = watched>=threshold ? 'Watched. Checkpoint unlocked.' : ('Watched '+fmt(watched)+' of about '+fmt(threshold)+' needed');
     var cont=$('cw-to-debrief'); if(cont) cont.disabled = watched < threshold;
   }
 
@@ -214,19 +214,19 @@
   }
 
   // ---------- debrief ----------
-  function openDebrief(){
-    stage('<p class="ash">Loading the Debrief\u2026</p>');
+  function openCheckpoint(){
+    stage('<p class="ash">Loading the Checkpoint\u2026</p>');
     FC.sb.from('quiz_questions').select('*').eq('video_id',curVideo.id).order('ord').then(function(r){
       if(r.error){ stage('<div class="notice brass">'+esc(r.error.message)+'</div>'); return; }
       var qs=r.data||[];
       if(!qs.length){ // no debrief authored: count the lesson done and move on
         markVideoComplete(); note(''); renderOutline(); return;
       }
-      renderDebrief(qs, 0, {});
+      renderCheckpoint(qs, 0, {});
     });
   }
 
-  function renderDebrief(qs, idx, answers){
+  function renderCheckpoint(qs, idx, answers){
     var q = qs[idx];
     var choices = (q.choices||[]).map(function(ch,ci){
       return '<button class="cw-choice" data-ci="'+ci+'"><span class="cw-choice-dot"></span>'+esc(ch)+'</button>';
@@ -236,7 +236,7 @@
       '<div class="fine" style="margin:6px 0 18px">Question '+(idx+1)+' of '+qs.length+'</div>'+
       '<h2 class="cw-q">'+esc(q.prompt)+'</h2>'+
       '<div class="cw-choices">'+choices+'</div>'+
-      '<div class="cw-q-actions"><button class="btn btn-primary" id="cw-q-next" disabled>'+(idx===qs.length-1?'Finish Debrief':'Next')+'</button></div>'
+      '<div class="cw-q-actions"><button class="btn btn-primary" id="cw-q-next" disabled>'+(idx===qs.length-1?'Finish Checkpoint':'Next')+'</button></div>'
     );
     var chosen=null;
     root.querySelectorAll('.cw-choice').forEach(function(b){
@@ -250,22 +250,22 @@
       var correct = (chosen === q.correct_index);
       answers[q.id] = { chosen_index:chosen, correct:correct };
       FC.sb.from('quiz_responses').upsert({ user_id:uid, question_id:q.id, chosen_index:chosen, correct:correct }, { onConflict:'user_id,question_id' });
-      if(idx < qs.length-1){ renderDebrief(qs, idx+1, answers); }
-      else { finishDebrief(qs, answers); }
+      if(idx < qs.length-1){ renderCheckpoint(qs, idx+1, answers); }
+      else { finishCheckpoint(qs, answers); }
     });
   }
 
-  function finishDebrief(qs, answers){
+  function finishCheckpoint(qs, answers){
     var right = Object.keys(answers).filter(function(k){return answers[k].correct;}).length;
-    var pass = right >= Math.ceil(qs.length*0.8);   // 80% to pass a Debrief
+    var pass = right >= Math.ceil(qs.length*0.8);   // 80% to pass a Checkpoint
     if(pass){
       markVideoComplete();
-      stage('<div class="cw-status"><div class="cw-status-icon">\u2713</div><h2>Debrief passed</h2><p>'+right+' of '+qs.length+' correct. Lesson complete.</p><button class="btn btn-primary" id="cw-continue">Continue</button></div>');
+      stage('<div class="cw-status"><div class="cw-status-icon">\u2713</div><h2>Checkpoint passed</h2><p>'+right+' of '+qs.length+' correct. Lesson complete.</p><button class="btn btn-primary" id="cw-continue">Continue</button></div>');
       $('cw-continue').addEventListener('click', renderOutline);
     } else {
-      stage('<div class="cw-status"><div class="cw-status-icon cw-warn">!</div><h2>Not quite</h2><p>'+right+' of '+qs.length+' correct. Review the lesson and try the Debrief again.</p><div class="row" style="gap:12px;justify-content:center"><button class="btn btn-secondary" id="cw-rewatch">Rewatch lesson</button><button class="btn btn-primary" id="cw-retry">Retry Debrief</button></div></div>');
+      stage('<div class="cw-status"><div class="cw-status-icon cw-warn">!</div><h2>Not quite</h2><p>'+right+' of '+qs.length+' correct. Review the lesson and try the Checkpoint again.</p><div class="row" style="gap:12px;justify-content:center"><button class="btn btn-secondary" id="cw-rewatch">Rewatch lesson</button><button class="btn btn-primary" id="cw-retry">Retry Checkpoint</button></div></div>');
       $('cw-rewatch').addEventListener('click', function(){ var i=videos.indexOf(curVideo); openVideo(i); });
-      $('cw-retry').addEventListener('click', openDebrief);
+      $('cw-retry').addEventListener('click', openCheckpoint);
     }
   }
 
