@@ -55,7 +55,7 @@ HEAD = '''<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
+<script>document.documentElement.dataset.theme={THEME};</script>
 <link rel="stylesheet" href="assets/css/forge.css">
 {meta}
 </head>
@@ -1772,6 +1772,7 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who ser
   <div class="vet-ed-head">
     <div class="vet-ed-eyebrow">What you get when you join</div>
     <h2>Everything a man needs to come all the way home.</h2>
+    <p>Fifteen minutes gets you moving: a two-minute private check-in, your first film, and sixty seconds recorded in your own voice for your kids. Then all of this, free forever.</p>
   </div>
   <div class="grid-4" style="gap:28px">
     <div><b class="bone" style="font-size:16px">The full field guide</b><p class="small" style="margin-top:8px">Every film and read on what gets hard when you walk back through the door.</p></div>
@@ -1783,23 +1784,32 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who ser
 
 <section class="vet-ed" id="routine">
   <div class="vet-ed-head">
-    <div class="vet-ed-eyebrow">SERVE. RETURN. REPEAT.</div>
-    <h2>Coming home is not one day. It is a skill you will use again.</h2>
-    <p>Some fathers come home once. Many come home again and again, with the next call-up already on the calendar. The temptation is to keep a little distance so the next goodbye hurts less. Your kids cannot afford that math. Get close anyway. This is the routine that makes it possible.</p>
+    <div class="vet-ed-eyebrow">Still serving? The Return Routine</div>
+    <h2>If the next call-up is already on the calendar.</h2>
+    <p>Guard, reserve, or active: some fathers come home again and again. If that is you, this routine is yours. The temptation is to keep a little distance so the next goodbye hurts less. Your kids cannot afford that math. Get close anyway. This is the routine that makes it possible.</p>
   </div>
   <div class="grid-3" style="margin-top:26px">
     <div class="card" style="padding:26px"><div class="eyebrow" style="margin-bottom:10px">BEFORE YOU GO</div><p class="small" style="color:var(--ash)">Record three things in the Legacy Archive: why you go, what you promise, and one to play when they miss you. Brief each kid in one sentence they can repeat. Ten minutes, total. <a class="link" href="voice.html">Record now &rarr;</a></p></div>
     <div class="card" style="padding:26px"><div class="eyebrow" style="margin-bottom:10px">WHILE YOU ARE AWAY</div><p class="small" style="color:var(--ash)">One voice note beats zero phone calls. Away-night prompts are ready for when you have two minutes and no words. She is holding the line at home; ask her for one thing you can own from a distance. <a class="link" href="voice.html">The prompts &rarr;</a></p></div>
     <div class="card" style="padding:26px"><div class="eyebrow" style="margin-bottom:10px">THE FIRST 72 HOURS HOME</div><p class="small" style="color:var(--ash)">Re-entry is a handoff, not a takeover. Take the private check-in, protect one evening at the table, and give each kid ten minutes alone with you. Expect the little ones to test you on day two. That is attachment, not disrespect. <a class="link" href="veterans-checkin.html">The check-in &rarr;</a></p></div>
   </div>
-  <p class="fine" style="margin-top:18px">Between returns, your plan keeps one small move in front of you. And when the next call comes, the archive means your voice stays home even when you cannot. What you earn here is earned the hard way on purpose. That is the kind of proof men respect.</p>
+  <p class="fine" style="margin-top:18px">Between returns, your plan keeps one small move in front of you. And when the next call comes, the archive means your voice stays home even when you cannot.</p>
+</section>
+
+<section class="vet-ed">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">The certificate track &middot; in development</div>
+    <h2>Coming Home Present. Earned, never given.</h2>
+    <p>A verified certificate built for men who serve and return: identity checked, hours logged, a final passed. Earned the hard way on purpose. That is the kind of proof men respect, because it cannot be bought. It is in development now; waitlist members train first. Today, the flagship course, The 7 Secrets of Effective Fathers, is already free to every member.</p>
+  </div>
+  <p style="margin-top:4px"><a class="btn btn-secondary btn-sm" href="certificates.html#waitlist">Join the waitlist</a></p>
 </section>
 
 <section class="vet-ed">
   <div class="vet-ed-head">
     <div class="vet-ed-eyebrow">For units and programs</div>
     <h2>Bringing your whole unit?</h2>
-    <p>One join link enrolls every man under your cohort: the assessment, the three courses (presence, steadiness, coming home), the ninety-day plan, and the Legacy Voice Archive. Leadership sees cohort movement, never a man&rsquo;s private answers. <a class="link" href="organizations.html">For Organizations &rarr;</a></p>
+    <p>One join link enrolls every man under your cohort: the Keystone Profile, the free flagship course, the ninety-day plan, and the Legacy Voice Archive, with the veteran certificate track as it releases. Leadership sees cohort movement, never a man&rsquo;s private answers. <a class="link" href="organizations.html">For Organizations &rarr;</a></p>
   </div>
 </section>
 
@@ -1990,6 +2000,19 @@ PAGES['organizations.html'] = dict(title='The measurable standard for effective 
   <p class="lead" style="margin:22px 0 8px">Every program says it works. The Keystone Standard is how you prove it: a validated instrument normed on 9,232 fathers, measured at baseline and exit, printed in the report your funder, your court, or your command already asks for. Run your program on it. And if you have no program, deploy ours in a day.</p>
 </div></header>
 
+<section class="tight" style="padding:34px 0 8px"><div class="container">
+  <div class="eyebrow" style="margin-bottom:12px">FIND YOUR FIT</div>
+  <h2 class="d-28" style="margin-bottom:18px">Every kind of program lands here. Start where you live.</h2>
+  <div class="grid-3">
+    <a class="card" href="#walkthrough" style="padding:20px 22px;text-decoration:none"><h3 style="margin-bottom:6px">Fatherhood programs</h3><p class="fine" style="color:var(--ash)">Keep the curriculum you trust. We make it provable.</p></a>
+    <a class="card" href="#courts" style="padding:20px 22px;text-decoration:none"><h3 style="margin-bottom:6px">Courts &amp; probation</h3><p class="fine" style="color:var(--ash)">Order the class by name. Verify a certificate in ten seconds.</p></a>
+    <a class="card" href="#walkthrough" style="padding:20px 22px;text-decoration:none"><h3 style="margin-bottom:6px">Corrections &amp; reentry</h3><p class="fine" style="color:var(--ash)">Baseline at intake, movement by release. The floor is never nothing.</p></a>
+    <a class="card" href="veterans.html" style="padding:20px 22px;text-decoration:none"><h3 style="margin-bottom:6px">Veteran units &amp; military</h3><p class="fine" style="color:var(--ash)">One join link for the whole unit. Free for those who served.</p></a>
+    <a class="card" href="groups.html" style="padding:20px 22px;text-decoration:none"><h3 style="margin-bottom:6px">Churches, groups &amp; circles</h3><p class="fine" style="color:var(--ash)">Small groups of fathers, measured and moving together.</p></a>
+    <a class="card" href="employers.html" style="padding:20px 22px;text-decoration:none"><h3 style="margin-bottom:6px">Employers</h3><p class="fine" style="color:var(--ash)">A benefit fathers actually use, with proof it worked.</p></a>
+  </div>
+</div></section>
+
 <section class="band tight"><div class="container split">
   <div>
     <div class="eyebrow brass" style="margin-bottom:14px">AVAILABLE NOW</div>
@@ -2019,7 +2042,7 @@ PAGES['organizations.html'] = dict(title='The measurable standard for effective 
   </div>
 </div></section>
 
-<section class="band tight"><div class="container split">
+<section id="courts" class="band tight"><div class="container split">
   <div>
     <div class="eyebrow" style="margin-bottom:14px">FOR COURTS AND PROBATION</div>
     <h2 class="d-28" style="margin-bottom:8px">Order the class by name. Verify in ten seconds.</h2>
@@ -2188,7 +2211,8 @@ PAGES['efficacy-report.html'] = dict(title='The Efficacy Report', desc='Cohort m
 if __name__ == '__main__':
     out = os.path.dirname(os.path.abspath(__file__))
     for fname, p in PAGES.items():
-        html = HEAD.format(title=p['title'], desc=p['desc'], meta=social_meta(fname, p['title'], p['desc']))
+        theme_js = "'light'" if fname=='organizations.html' else 'localStorage.getItem("fc_theme")||"dark"'
+        html = HEAD.format(title=p['title'], desc=p['desc'], meta=social_meta(fname, p['title'], p['desc']), THEME=theme_js)
         if p.get('nochrome'):
             html += p['body']
             html += '\n<script src="assets/js/config.js"></script>\n<script src="assets/js/supabase-client.js"></script>\n<script src="assets/js/app.js"></script>\n'
