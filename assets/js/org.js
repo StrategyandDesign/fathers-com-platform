@@ -15,7 +15,18 @@
   function loadOrgs(){
     FC.sb.from('orgs').select('id,name,seats,renews_on').then(function(r){
       var rows=r.data||[];
-      if(!rows.length){el('org-picker').innerHTML='<p class="fine">No organizations visible to you yet.</p>';return;}
+      if(!rows.length){
+        el('org-picker').innerHTML='';
+        var body=el('org-body');
+        if(body) body.innerHTML='<div class="card" style="padding:32px;max-width:640px">'+
+          '<div class="eyebrow" style="margin-bottom:10px">NO ORGANIZATION YET</div>'+
+          '<h3 style="margin-bottom:8px">Your program is not set up here yet.</h3>'+
+          '<p class="small" style="color:var(--ash);margin-bottom:16px">Once your organization is created and you are added as its admin, this page becomes your window: men measured, movement, completions, and your join link. You never see a man\u2019s answers or scores.</p>'+
+          '<p class="small" style="color:var(--ash)">To get set up, write <a class="link" href="mailto:Team@Fathers.com?subject=Set%20up%20our%20organization">Team@Fathers.com</a> and we will stand up your program and send your join link, usually same day.</p>'+
+        '</div>';
+        ['org-members','org-active','org-seats'].forEach(function(k){var g=document.querySelector('[data-glance="'+k+'"]'); if(g) g.textContent='0';});
+        var n=document.querySelector('[data-glance="org-next"]'); if(n) n.textContent='Get your organization created, then invite your first cohort with one link.';
+        return;}
       el('org-picker').innerHTML=rows.map(function(o,i){return '<button class="chip'+(i===0?' selected':'')+'" data-org="'+o.id+'">'+esc(o.name)+'</button>';}).join('');
       el('org-picker').querySelectorAll('[data-org]').forEach(function(b){b.addEventListener('click',function(){
         el('org-picker').querySelectorAll('.chip').forEach(function(x){x.classList.remove('selected');});b.classList.add('selected');

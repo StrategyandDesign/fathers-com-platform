@@ -12,6 +12,11 @@
 
   // ---------- entry: choose mode, or resume ----------
   function start(){
+    // An explicit track choice on the homepage always wins, signed in or not.
+    var intent = null;
+    try { intent = localStorage.getItem('fc_intent_path'); if(intent) localStorage.removeItem('fc_intent_path'); } catch(e){}
+    if(intent === 'preparing'){ KS.setPath('preparing'); preparingIntro(); return; }
+    if(intent === 'father'){ KS.setPath('father'); chooseMode(); return; }
     if(window.FC && FC.live && FC.uid()){
       // Did he just save-and-signup mid-assessment? Restore his local work into his new account.
       var resuming = false;
@@ -21,8 +26,8 @@
         var local = KS.restoreLocal();
         if(local){
           // create a session for this account and persist his answers, then resume in place.
-          KS.resumeOrStart(local.path === 'preparing' ? 'all_at_once' : 'all_at_once').then(function(){
-            KS.setPath(local.path || 'father');
+          KS.setPath(local.path || 'father');
+          KS.resumeOrStart('all_at_once').then(function(){
             // push each locally-held answer up to the new account session
             var keys = Object.keys(local.answers || {});
             var chain = Promise.resolve();
@@ -91,6 +96,7 @@
   // Non-father path: welcoming intro, then the childhood-reflection questions (no mode choice needed, it's short).
   function preparingIntro(){
     var items = KS.pathItems();
+    if(!items.length){ gate(); return; }
     root.innerHTML = shell(
       '<div class="eyebrow brass" style="margin-bottom:18px">YOUR STARTING POINT</div>'+
       '<h2 style="margin:0 0 8px">Start with the father you had.</h2>'+
@@ -116,7 +122,7 @@
         '</div>');
       document.getElementById('ks-resume').onclick = function(){ routeNext(); };
       document.getElementById('ks-restart').onclick = function(){
-        if(confirm('Start the Keystone over? Your previous answers stay saved but a new run begins.')) chooseMode();
+        if(confirm('Start the Keystone over? Your previous answers stay saved but a new run begins.')) gate();
       };
     });
   }
@@ -336,7 +342,11 @@
   // He just finished. Show a real teaser (proof there's value), then require email
   // to unlock the full profile and plan. Entering email creates his account (magic link).
   function gateEmail(scored, isPreparing){
-    var strength = scored.scales[scored.strength];
+    var strength = scored.scales[scored.strength] || {label:'Your reflection'};
+    if(isPreparing){
+      var csg = scored.scales.childhood_satisfaction || {band:{label:'Reflective'}};
+      strength = {label: csg.band.label};
+    }
     var overall = scored.overall;
     root.innerHTML = shell(
       '<div class="ks-gate">'+
@@ -348,10 +358,13 @@
           '<div class="ks-gate-score"><div class="ks-overall" style="margin:0">'+overall+'</div>'+
           '<span class="fine">YOUR OVERALL STANDING</span></div>'+
           '<div class="ks-gate-locked">'+
-            '<div class="ks-gate-row"><span>Your strength</span><b class="brass">'+esc(strength.label)+'</b></div>'+
-            '<div class="ks-gate-row locked"><span>Your growth focus</span><span class="ks-lock">\u25CF Locked</span></div>'+
-            '<div class="ks-gate-row locked"><span>All 26 dimensions scored</span><span class="ks-lock">\u25CF Locked</span></div>'+
-            '<div class="ks-gate-row locked"><span>Your ninety-day plan</span><span class="ks-lock">\u25CF Locked</span></div>'+
+            '<div class="ks-gate-row"><span>'+(isPreparing?'Your reflection':'Your strength')+'</span><b class="brass">'+esc(strength.label)+'</b></div>'+
+            (isPreparing
+              ? '<div class="ks-gate-row locked"><span>Your full reflection, kept for you</span><span class="ks-lock">\u25CF Locked</span></div>'+
+                '<div class="ks-gate-row locked"><span>Your starting plan</span><span class="ks-lock">\u25CF Locked</span></div>'
+              : '<div class="ks-gate-row locked"><span>Your growth focus</span><span class="ks-lock">\u25CF Locked</span></div>'+
+                '<div class="ks-gate-row locked"><span>All 26 dimensions scored</span><span class="ks-lock">\u25CF Locked</span></div>'+
+                '<div class="ks-gate-row locked"><span>Your ninety-day plan</span><span class="ks-lock">\u25CF Locked</span></div>')+
           '</div>'+
         '</div>'+
         '<div class="ks-gate-form">'+

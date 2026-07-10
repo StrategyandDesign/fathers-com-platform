@@ -9,7 +9,7 @@ SITE_URL = "https://fathers-com-platform.vercel.app"
 OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 
 # Private / transactional pages: keep them out of Google's index. Everything else is indexable.
-NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html'}
+NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html', 'classes.html'}
 
 
 def _esc(s):
@@ -64,11 +64,11 @@ HEAD = '''<!DOCTYPE html>
 
 def nav(active='', mode='public'):
     if mode=='app':
-        links = [('My Plan','plan.html'),('Classes','classes.html'),('Stories','stories.html'),('Circles','circles.html'),('Certificates','certificates.html')]
+        links = [('Home','plan.html'),('Certificates','certificates.html'),('Stories','stories.html'),('Circles','circles.html')]
     else:
-        links = [('The Profile','profile.html'),('Classes','classes.html'),('Certificates','certificates.html'),('Stories','stories.html'),('For Organizations','organizations.html')]
+        links = [('The Profile','profile.html'),('Certificates','certificates.html'),('Stories','stories.html'),('For Organizations','organizations.html')]
         # Legacy page actives map onto the new public nav so highlighting stays sane.
-        active = {'For Groups':'For Organizations','For Veterans':'For Organizations','Stories':'Classes'}.get(active, active)
+        active = {'For Groups':'For Organizations','For Veterans':'For Organizations','Classes':'Certificates','My Plan':'Home'}.get(active, active)
     lis = ''.join(f'<li><a href="{h}" {"class=\"active\"" if t==active else ""}>{t}</a></li>' for t,h in links)
     right = ('<a href="gift.html" class="hide-m">Gifts</a><a href="login.html" class="hide-m">Log in</a><a class="btn btn-yellow btn-sm" href="profile.html">Start your Profile</a>'
              if mode=='public' else
@@ -86,7 +86,7 @@ FOOT = '''<footer><div class="container">
     <p class="small" style="margin-top:14px;max-width:32ch">Presence is a skill. Train it.</p>
     <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
   <div><h4>Measure</h4><ul><li><a href="profile.html">The Keystone Profile</a></li><li><a href="research.html">The Research</a></li></ul></div>
-  <div><h4>Train &amp; Prove</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="certificates.html">Certificates</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
+  <div><h4>Train &amp; Prove</h4><ul><li><a href="stories.html">Stories</a></li><li><a href="certificates.html">Certificates</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
   <div><h4>For Organizations</h4><ul><li><a href="organizations.html">The Standard</a></li><li><a href="groups.html">Groups &amp; Circles</a></li><li><a href="veterans.html">Veteran Programs</a></li><li><a href="employers.html">Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
   <div><h4>Company</h4><ul><li><a href="about.html">About NCF</a></li><li><a href="research.html">Research</a></li><li><a href="gatherings.html">Gatherings</a></li><li><a href="gift.html">Gifts</a></li><li><a href="mailto:Team@Fathers.com">Contact</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="security.html">Security</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
@@ -124,7 +124,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
       </div>
       <div class="hero-intent-foot">
         <span class="fine">Free. About twenty minutes. Your results are private.</span>
-        <a class="link ash" href="classes.html" style="font-size:13px">Or explore classes first</a>
+        <a class="link ash" href="certificates.html" style="font-size:13px">Or explore classes first</a>
       </div>
     </div>
   </div>
@@ -211,13 +211,34 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 <section class="tight"><div class="container">
   <div class="eyebrow" style="margin-bottom:12px">TRAIN &middot; YOUR PLAN</div>
   <h2 class="d-28" style="margin-bottom:12px">A plan you actually work.</h2>
-  <p style="color:var(--ash);margin:0 0 24px;max-width:56ch">Your Profile becomes a ninety-day plan, one clear step at a time. New classes every month, on the drive or on the couch. The Profile and your plan are always free.</p>
-  <div class="rowscroll" id="homeclasses" data-repeat="3" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html" data-hrefs="class.html|certificates.html#catalog|certificates.html#catalog"
-    data-titles="Dr. Ken Canfield|Steady Under Pressure|Coming Home Present"
-    data-subs="The Fundamentals of Fathering|A father&rsquo;s temper, trained|Presence after time away"
-    data-metas="12 lessons &middot; 2h 10m|8 modules &middot; Verified Certificate|10 modules &middot; Verified Certificate"
-    data-cats="fundamentals|steady|coming-home"></div>
-  <p style="margin-top:20px"><a class="link" href="classes.html">See all classes</a></p>
+  <p style="color:var(--ash);margin:0 0 24px;max-width:56ch">Your Profile becomes a ninety-day plan, one clear step at a time. New films and lessons every month, on the drive or on the couch. The Profile and your plan are always free.</p>
+  <div class="grid-3" id="homeclasses" style="margin-top:6px">
+    <a class="card" href="class.html" style="padding:0;overflow:hidden;text-decoration:none">
+      <div class="slot r-2x3" data-slot="IMG-P1-CAT-1" style="max-height:280px"></div>
+      <div style="padding:20px 22px">
+        <div class="row between" style="margin-bottom:8px"><span class="pill">FREE COURSE</span><span class="fine mono">12 lessons</span></div>
+        <h3 style="margin-bottom:6px">Fathering Fundamentals</h3>
+        <p class="fine" style="color:var(--ash)">The 7 Secrets of Effective Fathers, taught by Dr. Ken Canfield. Free to train; $79 to certify.</p>
+      </div>
+    </a>
+    <a class="card" href="certificates.html#waitlist" style="padding:0;overflow:hidden;text-decoration:none">
+      <div class="slot r-2x3" data-slot="IMG-P1-CAT-2" style="max-height:280px"></div>
+      <div style="padding:20px 22px">
+        <div class="row between" style="margin-bottom:8px"><span class="pill" style="opacity:.75">IN DEVELOPMENT</span><span class="fine mono">Waitlist</span></div>
+        <h3 style="margin-bottom:6px">Steady Under Pressure</h3>
+        <p class="fine" style="color:var(--ash)">A father&rsquo;s temper, trained. Join the waitlist and shape the first cohort.</p>
+      </div>
+    </a>
+    <a class="card" href="certificates.html#waitlist" style="padding:0;overflow:hidden;text-decoration:none">
+      <div class="slot r-2x3" data-slot="IMG-P1-CAT-3" style="max-height:280px"></div>
+      <div style="padding:20px 22px">
+        <div class="row between" style="margin-bottom:8px"><span class="pill" style="opacity:.75">IN DEVELOPMENT</span><span class="fine mono">Waitlist</span></div>
+        <h3 style="margin-bottom:6px">Coming Home Present</h3>
+        <p class="fine" style="color:var(--ash)">Presence after time away. Join the waitlist and shape the first cohort.</p>
+      </div>
+    </a>
+  </div>
+  <p style="margin-top:20px"><a class="link" href="certificates.html">See the certificate tracks</a></p>
 </div></section>
 
 <section class="tight" style="padding:10px 0 34px"><div class="container">
@@ -402,43 +423,17 @@ PAGES['story.html'] = dict(title='From Combat to the Kitchen Table', desc='One f
 ''')
 
 # ================================================== classes.html (P4 catalog)
-PAGES['classes.html'] = dict(title='Classes', desc='Three classes. One standard. Presence, steadiness, and coming home, taught by fathers who lived it.', active='Classes', mode='public', body='''
-<section class="tight" style="padding-top:56px"><div class="container">
-  <div class="row between wrap" style="margin-bottom:14px">
-    <h1 class="d-36">Three classes. One standard.</h1>
-    <button class="input" data-open-search style="max-width:320px;text-align:left;color:var(--ash);cursor:pointer">Search classes and lessons</button>
-  </div>
-  <p style="color:var(--ash);margin:0 0 36px;max-width:62ch">We cut the catalog to the three that matter in every room where fathers are met: the home, the court, the facility, the base. Each one moves your Keystone score. Each one can be earned as a Verified Certificate.</p>
-  <div class="grid-3" id="classgrid">
-    <a class="mediacard" href="class.html"><div class="slot r-2x3" data-slot="IMG-P4-CAT-01"></div><div class="row" style="margin:12px 0 0"><span class="pill pill-new">Flagship</span></div><div class="name">Dr. Ken Canfield</div><div class="sub">The Fundamentals of Fathering</div><div class="meta">12 lessons &middot; 2h 10m &middot; Free</div></a>
-    <a class="mediacard" href="certificates.html#catalog"><div class="slot r-2x3" data-slot="IMG-P4-CAT-02"></div><div class="name" style="margin-top:12px">Steady Under Pressure</div><div class="sub">A father&rsquo;s temper, trained</div><div class="meta">8 modules &middot; Verified Certificate</div></a>
-    <a class="mediacard" href="certificates.html#catalog"><div class="slot r-2x3" data-slot="IMG-P4-CAT-08"></div><div class="name" style="margin-top:12px">Coming Home Present</div><div class="sub">Presence after time away</div><div class="meta">10 modules &middot; Verified Certificate</div></a>
-  </div>
-  <p class="fine" style="margin-top:24px">Presence. Steadiness. Coming home. Start with your free Profile and your plan will put them in order for you. Every class moves a Keystone score; every certificate proves it. <a class="link ash" href="research.html">How the Standard works &rarr;</a></p>
-</div></section>
-
-<div class="searchveil" id="searchveil"><div class="searchpanel">
-  <input class="input" placeholder="Search classes and lessons" value="consistency">
-  <div class="grid-2" style="margin-top:22px;gap:32px">
-    <div><div class="eyebrow" style="margin-bottom:14px">RECENT</div>
-      <p class="small" style="margin-bottom:10px">repair</p><p class="small" style="margin-bottom:10px">temper</p><p class="small">deployment</p></div>
-    <div><div class="eyebrow" style="margin-bottom:14px">RESULTS FOR "CONSISTENCY"</div>
-      <div class="stack-16">
-        <div class="row"><div class="slot r-1x1" data-slot="IMG-P4-SRCH-01" style="width:44px"></div><div><b style="font-size:14px">The Fundamentals of Fathering</b><p class="fine">Class</p></div></div>
-        <div class="row"><div class="slot r-1x1" data-slot="IMG-P4-SRCH-02" style="width:44px"></div><div><b style="font-size:14px">Coming Home Present</b><p class="fine">Class</p></div></div>
-        <div class="row"><div class="slot r-1x1" data-slot="IMG-P4-SRCH-03" style="width:44px"></div><div><b style="font-size:14px">Lesson 3: A Schedule They Can Trust</b><p class="fine">In The Fundamentals of Fathering</p></div></div>
-        <div class="row"><div class="slot r-1x1" data-slot="IMG-P4-SRCH-04" style="width:44px"></div><div><b style="font-size:14px">Lesson 3: The Pause That Saves It</b><p class="fine">In Steady Under Pressure</p></div></div>
-      </div></div>
-  </div>
-</div></div>
+PAGES['classes.html'] = dict(title='Certificates', desc='The certificate tracks.', active='', mode='public', nochrome=True, body='''
+<meta http-equiv="refresh" content="0;url=certificates.html">
+<script>location.replace('certificates.html');</script>
+<p class="center fine" style="padding:60px 0">The classes now live inside the certificate tracks. <a class="link" href="certificates.html">Continue to Certificates &rarr;</a></p>
 ''')
 
-# ================================================== class.html (P4 detail)
 PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flagship class on presence, taught by Dr. Ken Canfield.', active='Classes', mode='public', body='''
 <div class="billboard">
   <div class="slot r-21x9 play-overlay flush" data-slot="IMG-P4-DET-01" style="max-height:64vh"><span class="tri"></span></div>
   <div class="overlay container" style="left:50%;transform:translateX(-50%);max-width:var(--max)">
-    <div class="eyebrow" style="margin-bottom:10px">FLAGSHIP CLASS</div>
+    <div class="eyebrow" style="margin-bottom:10px">THE FREE COURSE &middot; THE 7 SECRETS OF EFFECTIVE FATHERS</div>
     <h1 class="d-48">The Fundamentals of Fathering</h1>
     <p class="small" style="margin-top:10px">Dr. Ken Canfield. Founder, National Center for Fathering. Four decades of research. One standard.</p>
   </div>
@@ -579,22 +574,38 @@ PAGES['player.html'] = dict(title='Lesson 4 &middot; The Fundamentals of Fatheri
 ''')
 
 # ================================================== plan.html (P6)
-PAGES['plan.html'] = dict(title='My Plan', desc='Your ninety-day plan, built from your Keystone Profile.', active='My Plan', mode='app', auth=True, body='''
-<section class="tight" style="padding-top:44px"><div class="container">
-  <div id="planRoot">
-    <!-- states rendered by plan-controller.js -->
-    <div id="planLoading" class="center" style="padding:80px 0">
-      <div class="eyebrow" style="margin-bottom:12px">LOADING YOUR PLAN</div>
-      <p class="ash">One moment.</p>
+PAGES['plan.html'] = dict(title='Home', desc='Your baseline, your plan, your work.', active='Home', mode='app', auth=True, body='''
+<section class="tight" style="padding-top:36px"><div class="container">
+  <div class="home-grid">
+    <aside id="homeRail">
+      <div class="card" style="padding:22px 24px;margin-bottom:16px">
+        <div class="eyebrow" style="margin-bottom:8px" id="railHello">YOUR HOME</div>
+        <div id="railWeek" class="d-28" style="margin-bottom:4px">&nbsp;</div>
+        <p class="fine" id="railNudge" style="color:var(--ash)">One move this week keeps it alive.</p>
+      </div>
+      <div class="card" style="padding:18px 24px;margin-bottom:16px" id="railCounts"></div>
+      <div class="card" style="padding:22px 24px" id="railStats">
+        <div class="eyebrow" style="margin-bottom:14px">YOUR BASELINE</div>
+        <div id="railBars"><p class="fine" style="color:var(--ash)">Loading&hellip;</p></div>
+      </div>
+    </aside>
+    <div>
+      <div id="planRoot">
+        <div id="planLoading" class="center" style="padding:80px 0">
+          <div class="eyebrow" style="margin-bottom:12px">LOADING YOUR PLAN</div>
+          <p class="ash">One moment.</p>
+        </div>
+      </div>
+      <div id="homeFeed"></div>
     </div>
   </div>
 </div></section>
 <script src="assets/js/keystone-data.js"></script>
 <script src="assets/js/plan-engine.js"></script>
 <script src="assets/js/plan-controller.js"></script>
+<script src="assets/js/home.js"></script>
 ''')
 
-# ================================================== circles.html (P7 in-product)
 PAGES['circles.html'] = dict(title='My Circle', desc='Living Hope Men. One film, one discussion, one standard.', active='Circles', mode='app', auth=True, body='''
 <section class="tight" style="padding-top:44px"><div class="container">
   <div class="row between wrap" style="margin-bottom:24px">
@@ -1046,26 +1057,37 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
     <h2 class="d-36">Three certificates. Chosen for the rooms where fathers are met.</h2></div>
     <p class="small" style="max-width:34ch">Open to every man. Presence, steadiness, and coming home: the three credentials courts, programs, and commands actually ask for, built on the Keystone framework.</p>
   </div>
-  <div class="cert-cards">
+  <div class="cert-cards" id="tracks">
     <a class="cert-card" href="enroll.html?cert=fundamentals&amp;title=Fathering%20Fundamentals&amp;hours=10.0" data-cert="fundamentals" data-title="Fathering Fundamentals" data-hours="10.0" data-desc="The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">10.0 hrs</span></div>
       <h3>Fathering Fundamentals</h3>
-      <p>The flagship. The core of engaged, present fatherhood, hardened into proof.</p>
+      <p>The flagship, built on The 7 Secrets of Effective Fathers. The free course, hardened into proof.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
     </a>
-        <a class="cert-card" href="enroll.html?cert=reentry&amp;title=Coming%20Home%20Present&amp;hours=12.0" data-cert="reentry" data-title="Coming Home Present" data-hours="12.0" data-desc="For fathers coming home: after a deployment, after a sentence, after any time away. Rebuilding presence from day one, with identity verification, logged time, checkpoints, and a final assessment a court or command can trust.">
-      <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">12.0 hrs</span></div>
+        <div class="cert-card" style="cursor:default" data-cert="reentry" data-title="Coming Home Present" data-hours="12.0" data-desc="For fathers coming home: after a deployment, after a sentence, after any time away. Rebuilding presence from day one, with identity verification, logged time, checkpoints, and a final assessment a court or command can trust.">
+      <div class="cert-card-top"><span class="pill" style="opacity:.75">In development</span><span class="cert-card-hrs">12.0 hrs</span></div>
       <h3>Coming Home Present</h3>
-      <p>For fathers coming home: after a deployment, after a sentence, after any time away.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
-    </a>
-    <a class="cert-card" href="enroll.html?cert=anger&amp;title=Steady%20Under%20Pressure&amp;hours=8.0" data-cert="anger" data-title="Steady Under Pressure" data-hours="8.0" data-desc="A father&rsquo;s temper, trained. The pause, the repair, and the steadiness your kids can feel. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
-      <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
+      <p>Presence after time away. In development now; waitlist members shape the first cohort and train first.</p>
+      <div class="cert-card-foot"><span class="mono">Waitlist</span><a class="cert-card-go" href="#waitlist">Join the waitlist &rarr;</a></div>
+    </div>
+    <div class="cert-card" style="cursor:default" data-cert="anger" data-title="Steady Under Pressure" data-hours="8.0" data-desc="A father&rsquo;s temper, trained. The pause, the repair, and the steadiness your kids can feel. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
+      <div class="cert-card-top"><span class="pill" style="opacity:.75">In development</span><span class="cert-card-hrs">8.0 hrs</span></div>
       <h3>Steady Under Pressure</h3>
-      <p>A father&rsquo;s temper, trained. The pause, the repair, and the steadiness your kids can feel.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
-    </a>
+      <p>A father&rsquo;s temper, trained. In development now; waitlist members shape the first cohort and train first.</p>
+      <div class="cert-card-foot"><span class="mono">Waitlist</span><a class="cert-card-go" href="#waitlist">Join the waitlist &rarr;</a></div>
+    </div>
       </div>
+
+<section class="tight" id="waitlist"><div class="container" style="max-width:640px">
+  <div class="eyebrow" style="margin-bottom:12px">THE NEXT TRACKS</div>
+  <h2 class="d-28" style="margin-bottom:8px">Two tracks in development. Get in the first cohort.</h2>
+  <p class="small" style="color:var(--ash);margin-bottom:18px">Steady Under Pressure and Coming Home Present are being built now. Waitlist members hear first, train first, and shape the curriculum.</p>
+  <form class="row wrap" data-lead="track-waitlist" data-done="You are on the list. You will hear the moment enrollment opens.">
+    <select class="input" name="track" required style="max-width:240px"><option value="" disabled selected>Which track?</option><option>Steady Under Pressure</option><option>Coming Home Present</option><option>Both</option></select>
+    <input class="input" name="email" type="email" required placeholder="Email address" style="max-width:260px">
+    <button class="btn btn-primary btn-sm">Join the waitlist</button>
+  </form>
+</div></section>
   <p class="fine" style="margin-top:20px">Each certificate is $79. Fathers in a partnered church, group, or program enroll free with their program code.</p>
 </div></section>
 

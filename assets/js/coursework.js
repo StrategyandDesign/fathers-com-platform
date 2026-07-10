@@ -32,9 +32,10 @@
       course = cr.data;
       $('cw-title').textContent = course.title;
       // must be enrolled
-      FC.sb.from('certificate_enrollments').select('id').eq('user_id',uid).eq('course_id',course.id).maybeSingle().then(function(er){
+      FC.sb.from('certificate_enrollments').select('id,state').eq('user_id',uid).eq('course_id',course.id).maybeSingle().then(function(er){
         if(er.error){ stage('<div class="notice brass">'+esc(er.error.message)+'</div>'); return; }
         if(!er.data){ stage('<div class="notice brass">You are not enrolled in this certificate yet. <a class="link" href="enroll.html?cert='+esc(slug)+'">Enroll first</a>.</div>'); return; }
+        enrollId = er.data.id; enrollState = er.data.state || 'enrolled';
         // award status (may already be submitted/approved/signed)
         FC.sb.from('certificate_awards').select('status').eq('user_id',uid).eq('course_id',course.id).maybeSingle().then(function(ar){
           awardStatus = ar.data && ar.data.status;
@@ -206,11 +207,24 @@
     var cont=$('cw-to-debrief'); if(cont) cont.disabled = watched < threshold;
   }
 
+  var enrollId=null, enrollState=null, lastTouch=0;
+  function touchEnrollment(){
+    // Certification P0: hours-of-record heartbeat. Keeps last_activity_at honest and
+    // flips enrolled -> in_progress on first real work. Throttled to once a minute.
+    if(!enrollId) return;
+    var flip = enrollState==='enrolled';
+    if(!flip && Date.now()-lastTouch < 60000) return;
+    lastTouch = Date.now();
+    var patch = { last_activity_at: new Date().toISOString() };
+    if(flip){ patch.state='in_progress'; enrollState='in_progress'; }
+    FC.sb.from('certificate_enrollments').update(patch).eq('id',enrollId).then(function(){},function(){});
+  }
   function saveProgress(done){
     if(!curVideo) return;
     var completed = done || (progress[curVideo.id] && progress[curVideo.id].completed) || false;
     progress[curVideo.id] = { video_id:curVideo.id, watched_seconds:watched, completed:completed };
     FC.sb.from('video_progress').upsert({ user_id:uid, video_id:curVideo.id, watched_seconds:watched, completed:completed, updated_at:new Date().toISOString() }, { onConflict:'user_id,video_id' });
+    touchEnrollment();
   }
 
   // ---------- debrief ----------

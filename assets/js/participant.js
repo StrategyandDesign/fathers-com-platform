@@ -64,7 +64,7 @@
     // Activity counts (best effort; tables may not exist yet).
     var pVoice  = FC.sb.from('voice_recordings').select('id',{count:'exact',head:true}).eq('user_id',uid);
     var pCircle = FC.sb.from('circle_posts').select('id',{count:'exact',head:true}).eq('user_id',uid);
-    var pCourses= FC.sb.from('certificate_courses').select('id,title').eq('published',true);
+    var pCourses= FC.sb.from('certificate_courses').select('id,title');
 
     Promise.all([pBaseline,pEnroll,pAward,pVoice,pCircle,pCourses].map(function(p){return p.then(function(r){return r;},function(e){return {error:e};});}))
     .then(function(res){
@@ -90,15 +90,23 @@
 
       // Certificates
       html += '<div class="eyebrow" style="margin:8px 0 12px">CERTIFICATES</div>';
-      var enr = enrRes.data||[], aw = awRes.data||[];
+      var enrRaw = enrRes.data||[], aw = awRes.data||[];
       var awByCourse={}; aw.forEach(function(a){awByCourse[a.course_id]=a;});
+      // One row per course: prefer an active enrollment, then any; include award-only courses.
+      var byCourse={};
+      enrRaw.forEach(function(e2){
+        var cur=byCourse[e2.course_id];
+        if(!cur || (e2.status==='active' && cur.status!=='active')) byCourse[e2.course_id]=e2;
+      });
+      aw.forEach(function(a){ if(!byCourse[a.course_id]) byCourse[a.course_id]={course_id:a.course_id,status:null}; });
+      var enr = Object.keys(byCourse).map(function(k){return byCourse[k];});
       if(enrRes.error){ html += '<div class="notice brass" style="margin:0 0 20px">'+esc(enrRes.error.message)+'</div>'; }
       else if(!enr.length){ html += '<p class="fine" style="margin-bottom:20px">No certificate enrollments.</p>'; }
       else {
         html += '<table class="dtable" style="margin-bottom:20px"><thead><tr><th>Certificate</th><th>Enrollment</th><th>Award</th><th>Signed</th></tr></thead><tbody>'+
           enr.map(function(e2){
             var a=awByCourse[e2.course_id]||{};
-            return '<tr><td>'+esc(courses[e2.course_id]||'\u2014')+'</td><td><span class="chip">'+esc(e2.status||'\u2014')+'</span></td>'+
+            return '<tr><td>'+esc(courses[e2.course_id]||('Course '+String(e2.course_id).slice(0,8)+' (removed)'))+'</td><td><span class="chip">'+esc(e2.status||'\u2014')+'</span></td>'+
               '<td><span class="chip">'+esc(a.status||'\u2014')+'</span></td>'+
               '<td class="fine">'+(a.envelope_id?'yes':'no')+'</td></tr>';
           }).join('')+'</tbody></table>';

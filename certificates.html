@@ -31,7 +31,7 @@
 <body>
 <nav class="nav"><div class="container nav-inner">
 <a class="brand" href="index.html"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark"><b>Fathers.com</b></a>
-<ul class="nav-links"><li><a href="profile.html" >The Profile</a></li><li><a href="classes.html" >Classes</a></li><li><a href="certificates.html" class="active">Certificates</a></li><li><a href="stories.html" >Stories</a></li><li><a href="organizations.html" >For Organizations</a></li></ul>
+<ul class="nav-links"><li><a href="profile.html" >The Profile</a></li><li><a href="certificates.html" class="active">Certificates</a></li><li><a href="stories.html" >Stories</a></li><li><a href="organizations.html" >For Organizations</a></li></ul>
 <div class="nav-right"><a href="gift.html" class="hide-m">Gifts</a><a href="login.html" class="hide-m">Log in</a><a class="btn btn-yellow btn-sm" href="profile.html">Start your Profile</a><button class="themeswitch" data-themeswitch aria-label="Switch palette" title="Switch palette"><span class="tsw-dot"></span></button><button class="nav-toggle">MENU</button></div>
 </div></nav>
 
@@ -119,26 +119,37 @@
     <h2 class="d-36">Three certificates. Chosen for the rooms where fathers are met.</h2></div>
     <p class="small" style="max-width:34ch">Open to every man. Presence, steadiness, and coming home: the three credentials courts, programs, and commands actually ask for, built on the Keystone framework.</p>
   </div>
-  <div class="cert-cards">
+  <div class="cert-cards" id="tracks">
     <a class="cert-card" href="enroll.html?cert=fundamentals&amp;title=Fathering%20Fundamentals&amp;hours=10.0" data-cert="fundamentals" data-title="Fathering Fundamentals" data-hours="10.0" data-desc="The flagship curriculum, hardened into proof. The same lessons taught by fathers who have lived it, plus identity verification, logged time, checkpoints, and a final assessment.">
       <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">10.0 hrs</span></div>
       <h3>Fathering Fundamentals</h3>
-      <p>The flagship. The core of engaged, present fatherhood, hardened into proof.</p>
+      <p>The flagship, built on The 7 Secrets of Effective Fathers. The free course, hardened into proof.</p>
       <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
     </a>
-        <a class="cert-card" href="enroll.html?cert=reentry&amp;title=Coming%20Home%20Present&amp;hours=12.0" data-cert="reentry" data-title="Coming Home Present" data-hours="12.0" data-desc="For fathers coming home: after a deployment, after a sentence, after any time away. Rebuilding presence from day one, with identity verification, logged time, checkpoints, and a final assessment a court or command can trust.">
-      <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">12.0 hrs</span></div>
+        <div class="cert-card" style="cursor:default" data-cert="reentry" data-title="Coming Home Present" data-hours="12.0" data-desc="For fathers coming home: after a deployment, after a sentence, after any time away. Rebuilding presence from day one, with identity verification, logged time, checkpoints, and a final assessment a court or command can trust.">
+      <div class="cert-card-top"><span class="pill" style="opacity:.75">In development</span><span class="cert-card-hrs">12.0 hrs</span></div>
       <h3>Coming Home Present</h3>
-      <p>For fathers coming home: after a deployment, after a sentence, after any time away.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
-    </a>
-    <a class="cert-card" href="enroll.html?cert=anger&amp;title=Steady%20Under%20Pressure&amp;hours=8.0" data-cert="anger" data-title="Steady Under Pressure" data-hours="8.0" data-desc="A father&rsquo;s temper, trained. The pause, the repair, and the steadiness your kids can feel. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
-      <div class="cert-card-top"><span class="pill pill-court">Court-ready</span><span class="cert-card-hrs">8.0 hrs</span></div>
+      <p>Presence after time away. In development now; waitlist members shape the first cohort and train first.</p>
+      <div class="cert-card-foot"><span class="mono">Waitlist</span><a class="cert-card-go" href="#waitlist">Join the waitlist &rarr;</a></div>
+    </div>
+    <div class="cert-card" style="cursor:default" data-cert="anger" data-title="Steady Under Pressure" data-hours="8.0" data-desc="A father&rsquo;s temper, trained. The pause, the repair, and the steadiness your kids can feel. Verified hours, identity checked, checkpoints, and a final assessment at eighty percent to pass.">
+      <div class="cert-card-top"><span class="pill" style="opacity:.75">In development</span><span class="cert-card-hrs">8.0 hrs</span></div>
       <h3>Steady Under Pressure</h3>
-      <p>A father&rsquo;s temper, trained. The pause, the repair, and the steadiness your kids can feel.</p>
-      <div class="cert-card-foot"><span class="mono">$79</span><span class="cert-card-go">Start this certificate &rarr;</span></div>
-    </a>
+      <p>A father&rsquo;s temper, trained. In development now; waitlist members shape the first cohort and train first.</p>
+      <div class="cert-card-foot"><span class="mono">Waitlist</span><a class="cert-card-go" href="#waitlist">Join the waitlist &rarr;</a></div>
+    </div>
       </div>
+
+<section class="tight" id="waitlist"><div class="container" style="max-width:640px">
+  <div class="eyebrow" style="margin-bottom:12px">THE NEXT TRACKS</div>
+  <h2 class="d-28" style="margin-bottom:8px">Two tracks in development. Get in the first cohort.</h2>
+  <p class="small" style="color:var(--ash);margin-bottom:18px">Steady Under Pressure and Coming Home Present are being built now. Waitlist members hear first, train first, and shape the curriculum.</p>
+  <form class="row wrap" data-lead="track-waitlist" data-done="You are on the list. You will hear the moment enrollment opens.">
+    <select class="input" name="track" required style="max-width:240px"><option value="" disabled selected>Which track?</option><option>Steady Under Pressure</option><option>Coming Home Present</option><option>Both</option></select>
+    <input class="input" name="email" type="email" required placeholder="Email address" style="max-width:260px">
+    <button class="btn btn-primary btn-sm">Join the waitlist</button>
+  </form>
+</div></section>
   <p class="fine" style="margin-top:20px">Each certificate is $79. Fathers in a partnered church, group, or program enroll free with their program code.</p>
 </div></section>
 
@@ -223,7 +234,7 @@
     <p class="small" style="margin-top:14px;max-width:32ch">Presence is a skill. Train it.</p>
     <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
   <div><h4>Measure</h4><ul><li><a href="profile.html">The Keystone Profile</a></li><li><a href="research.html">The Research</a></li></ul></div>
-  <div><h4>Train &amp; Prove</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="certificates.html">Certificates</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
+  <div><h4>Train &amp; Prove</h4><ul><li><a href="stories.html">Stories</a></li><li><a href="certificates.html">Certificates</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
   <div><h4>For Organizations</h4><ul><li><a href="organizations.html">The Standard</a></li><li><a href="groups.html">Groups &amp; Circles</a></li><li><a href="veterans.html">Veteran Programs</a></li><li><a href="employers.html">Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
   <div><h4>Company</h4><ul><li><a href="about.html">About NCF</a></li><li><a href="research.html">Research</a></li><li><a href="gatherings.html">Gatherings</a></li><li><a href="gift.html">Gifts</a></li><li><a href="mailto:Team@Fathers.com">Contact</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="security.html">Security</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>

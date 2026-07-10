@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Plan | Fathers.com</title>
-<meta name="description" content="Your ninety-day plan, built from your Keystone Profile.">
+<title>Home | Fathers.com</title>
+<meta name="description" content="Your baseline, your plan, your work.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,44 +17,61 @@
 <meta name="theme-color" content="#000000">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Fathers.com">
-<meta property="og:title" content="My Plan | Fathers.com">
-<meta property="og:description" content="Your ninety-day plan, built from your Keystone Profile.">
+<meta property="og:title" content="Home | Fathers.com">
+<meta property="og:description" content="Your baseline, your plan, your work.">
 <meta property="og:url" content="https://fathers-com-platform.vercel.app/plan.html">
 <meta property="og:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Fathers.com, know where you stand as a father">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="My Plan | Fathers.com">
-<meta name="twitter:description" content="Your ninety-day plan, built from your Keystone Profile.">
+<meta name="twitter:title" content="Home | Fathers.com">
+<meta name="twitter:description" content="Your baseline, your plan, your work.">
 <meta name="twitter:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
 </head>
 <body data-auth="required">
 <nav class="nav"><div class="container nav-inner">
 <a class="brand" href="index.html"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark"><b>Fathers.com</b></a>
-<ul class="nav-links"><li><a href="plan.html" class="active">My Plan</a></li><li><a href="classes.html" >Classes</a></li><li><a href="stories.html" >Stories</a></li><li><a href="circles.html" >Circles</a></li><li><a href="certificates.html" >Certificates</a></li></ul>
+<ul class="nav-links"><li><a href="plan.html" class="active">Home</a></li><li><a href="certificates.html" >Certificates</a></li><li><a href="stories.html" >Stories</a></li><li><a href="circles.html" >Circles</a></li></ul>
 <div class="nav-right"><a href="#" data-open-search class="hide-m">Search</a><a href="gift.html" class="hide-m">Gifts</a><a href="account.html" class="avatarchip" title="Account" style="text-decoration:none">M</a><button class="themeswitch" data-themeswitch aria-label="Switch palette" title="Switch palette"><span class="tsw-dot"></span></button><button class="nav-toggle">MENU</button></div>
 </div></nav>
 
-<section class="tight" style="padding-top:44px"><div class="container">
-  <div id="planRoot">
-    <!-- states rendered by plan-controller.js -->
-    <div id="planLoading" class="center" style="padding:80px 0">
-      <div class="eyebrow" style="margin-bottom:12px">LOADING YOUR PLAN</div>
-      <p class="ash">One moment.</p>
+<section class="tight" style="padding-top:36px"><div class="container">
+  <div class="home-grid">
+    <aside id="homeRail">
+      <div class="card" style="padding:22px 24px;margin-bottom:16px">
+        <div class="eyebrow" style="margin-bottom:8px" id="railHello">YOUR HOME</div>
+        <div id="railWeek" class="d-28" style="margin-bottom:4px">&nbsp;</div>
+        <p class="fine" id="railNudge" style="color:var(--ash)">One move this week keeps it alive.</p>
+      </div>
+      <div class="card" style="padding:18px 24px;margin-bottom:16px" id="railCounts"></div>
+      <div class="card" style="padding:22px 24px" id="railStats">
+        <div class="eyebrow" style="margin-bottom:14px">YOUR BASELINE</div>
+        <div id="railBars"><p class="fine" style="color:var(--ash)">Loading&hellip;</p></div>
+      </div>
+    </aside>
+    <div>
+      <div id="planRoot">
+        <div id="planLoading" class="center" style="padding:80px 0">
+          <div class="eyebrow" style="margin-bottom:12px">LOADING YOUR PLAN</div>
+          <p class="ash">One moment.</p>
+        </div>
+      </div>
+      <div id="homeFeed"></div>
     </div>
   </div>
 </div></section>
 <script src="assets/js/keystone-data.js"></script>
 <script src="assets/js/plan-engine.js"></script>
 <script src="assets/js/plan-controller.js"></script>
+<script src="assets/js/home.js"></script>
 <footer><div class="container">
 <div class="footgrid">
   <div><a class="brand" href="index.html" style="margin-bottom:16px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="" style="height:34px"><b>Fathers.com</b></a>
     <p class="small" style="margin-top:14px;max-width:32ch">Presence is a skill. Train it.</p>
     <p class="fine" style="margin-top:14px">PO Box 996, Tontitown, AR 72770<br>Team@Fathers.com</p></div>
   <div><h4>Measure</h4><ul><li><a href="profile.html">The Keystone Profile</a></li><li><a href="research.html">The Research</a></li></ul></div>
-  <div><h4>Train &amp; Prove</h4><ul><li><a href="classes.html">Classes</a></li><li><a href="stories.html">Stories</a></li><li><a href="certificates.html">Certificates</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
+  <div><h4>Train &amp; Prove</h4><ul><li><a href="stories.html">Stories</a></li><li><a href="certificates.html">Certificates</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>
   <div><h4>For Organizations</h4><ul><li><a href="organizations.html">The Standard</a></li><li><a href="groups.html">Groups &amp; Circles</a></li><li><a href="veterans.html">Veteran Programs</a></li><li><a href="employers.html">Employers</a></li><li><a href="sponsor.html">Sponsor a Father</a></li></ul></div>
   <div><h4>Company</h4><ul><li><a href="about.html">About NCF</a></li><li><a href="research.html">Research</a></li><li><a href="gatherings.html">Gatherings</a></li><li><a href="gift.html">Gifts</a></li><li><a href="mailto:Team@Fathers.com">Contact</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="terms.html">Terms</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="security.html">Security</a></li><li><a href="verify.html">Verify a certificate</a></li></ul></div>

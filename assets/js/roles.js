@@ -85,8 +85,16 @@ window.FCR = window.FCR || {};
   }
   function ready(){ return window.FC && FC.live && FC.uid && FC.uid(); }
 
+  function zeroStragglers(){
+    // A number that never arrives is a broken promise. After the queries have had
+    // their chance, any glance still showing the placeholder becomes an honest zero.
+    document.querySelectorAll('[data-glance]').forEach(function(el){
+      if(el.textContent.trim()==='--') el.textContent='0';
+    });
+  }
   document.addEventListener('DOMContentLoaded', function(){
-    if(!ready()) return;
+    if(!ready()){ zeroStragglers(); return; }
+    setTimeout(zeroStragglers, 3500);
     var sb = FC.sb;
 
     // ADMIN glance

@@ -721,3 +721,13 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 .cw-status h2{font-family:var(--font-display);font-size:26px;font-weight:600;color:var(--bone);margin-bottom:12px}
 .cw-status p{color:var(--ash);line-height:1.6;margin-bottom:24px}
 .cw-embed{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+
+/* ---------- the father's Home (rail + feed) ---------- */
+.home-grid{display:grid;grid-template-columns:340px 1fr;gap:34px;align-items:start}
+.rail-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--hairline);text-decoration:none;color:var(--bone)}
+.rail-row.last{border-bottom:none}
+.rail-row:hover b{color:var(--ember)}
+.rail-bar{margin-bottom:10px}
+.rail-track{height:6px;border-radius:4px;background:var(--hairline);overflow:hidden;margin-top:5px}
+.rail-track span{display:block;height:100%;background:var(--ember);border-radius:4px;transition:width .5s ease}
+@media(max-width:980px){.home-grid{grid-template-columns:1fr}}

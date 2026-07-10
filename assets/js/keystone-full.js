@@ -70,7 +70,7 @@ window.KS = window.KS || {};
     mode = chosenMode || 'by_section';
     if(!(window.FC && FC.live && FC.uid())) return Promise.resolve({demo:true});
     return FC.sb.from('keystone_sessions').select('*')
-      .eq('user_id', FC.uid()).eq('status','in_progress')
+      .eq('user_id', FC.uid()).eq('status','in_progress').eq('path', path)
       .order('updated_at',{ascending:false}).limit(1).maybeSingle()
       .then(function(r){
         if(r.data){ session = r.data; mode = session.mode; path = session.path || 'father'; return KS.loadAnswers(); }
@@ -128,10 +128,13 @@ window.KS = window.KS || {};
   KS.clearLocal = function(){ try { localStorage.removeItem('fc_inprogress'); } catch(e){} };
 
   KS.markSectionDone = function(secKey, nextKey){
-    if(!(window.FC && FC.live && session)) return Promise.resolve();
+    // Track section completion even without a live session (signed-out demo),
+    // so the runner can terminate and reach the finish screen.
+    if(!session) session = { sections_done: [] };
     var done = (session.sections_done||[]).slice();
     if(done.indexOf(secKey)<0) done.push(secKey);
     session.sections_done = done;
+    if(!(window.FC && FC.live && FC.uid() && session.id)) return Promise.resolve();
     return FC.sb.from('keystone_sessions').update({
       sections_done: done, current_section: nextKey || secKey
     }).eq('id', session.id);
@@ -190,13 +193,15 @@ window.KS = window.KS || {};
       sectionSums[sec.key] = secPcts.length ? Math.round(secPcts.reduce(function(a,b){return a+b;},0)/secPcts.length) : 0;
     });
     var overall = allPcts.length ? Math.round(allPcts.reduce(function(a,b){return a+b;},0)/allPcts.length) : 0;
-    // gap = lowest scale, strength = highest
+    // gap = lowest, strength = highest, chosen only among scales the man actually answered
     var gap=null, gapV=Infinity, str=null, strV=-1;
     Object.keys(scaleScores).forEach(function(k){
+      if(scaleScores[k].raw===0 && scaleScores[k].pct===0 && scaleScores[k].mean==null) return; // unanswered
       var p = scaleScores[k].pct;
       if(p<gapV){gapV=p;gap=k;}
       if(p>strV){strV=p;str=k;}
     });
+    if(!str){ var ks=Object.keys(scaleScores); str=ks[0]; gap=ks[0]; }
     return { overall: overall, sections: sectionSums, scales: scaleScores, gap: gap, strength: str };
   };
 
