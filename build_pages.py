@@ -1619,7 +1619,7 @@ PAGES['veterans-hub.html'] = dict(title='The Homefront', desc='Train for the mis
     <div class="card" style="padding:24px 26px" data-vetstep="film">
       <div class="row between" style="margin-bottom:10px"><span class="pill">STEP 2</span><span class="fine mono" data-state>&nbsp;</span></div>
       <h3 style="margin-bottom:6px">Watch your first film</h3>
-      <p class="small" style="color:var(--ash);margin-bottom:14px">Short and plain, from fathers who walked back through the same door. Pick any one below; the first is twelve minutes.</p>
+      <p class="small" style="color:var(--ash);margin-bottom:14px">Short and plain, from fathers who walked back through the same door. Pick any one below; each is about six minutes.</p>
       <a class="btn btn-secondary btn-sm" href="#fieldguide">Pick a film</a>
     </div>
     <div class="card" style="padding:24px 26px" data-vetstep="voice">
@@ -1638,12 +1638,12 @@ PAGES['veterans-hub.html'] = dict(title='The Homefront', desc='Train for the mis
     <p>Short, plain films and reads on what gets hard when you walk back through the door. Built from what other fathers who served said they needed most.</p>
   </div>
   <div class="vet-stories">
-    <a class="vet-story" href="veterans-module.html?m=reconnecting"><img src="assets/img/photos/hero-01.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">6 min</div><h3>When your kid feels like a stranger</h3><p>Rebuilding closeness after time away</p></div></a>
-    <a class="vet-story" href="veterans-module.html?m=temper"><img src="assets/img/photos/hero-02.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">6 min</div><h3>Staying steady, and the way back</h3><p>Anger, the pause, and the repair</p></div></a>
-    <a class="vet-story" href="veterans-module.html?m=emotion"><img src="assets/img/photos/hero-03.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">5 min</div><h3>Saying what you feel</h3><p>Breaking through the numbness</p></div></a>
-    <a class="vet-story" href="veterans-module.html?m=command"><img src="assets/img/photos/hero-04.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">5 min</div><h3>From command to connection</h3><p>Leading a family is a different job</p></div></a>
-    <a class="vet-story" href="veterans-module.html?m=coparenting"><img src="assets/img/photos/hero-05.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">5 min</div><h3>Fathering across two homes</h3><p>Presence when you are not the only house</p></div></a>
-    <a class="vet-story" href="veterans-module.html?m=nurturing"><img src="assets/img/photos/hero-06.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">4 min</div><h3>Small acts, every day</h3><p>Nurturing is a set of habits</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=reconnecting"><img src="assets/img/photos/hero-01.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">Film &middot; 6 min</div><h3>When your kid feels like a stranger</h3><p>Rebuilding closeness after time away</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=temper"><img src="assets/img/photos/hero-02.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">Film &middot; 6 min</div><h3>Staying steady, and the way back</h3><p>Anger, the pause, and the repair</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=emotion"><img src="assets/img/photos/hero-03.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">Film &middot; 5 min</div><h3>Saying what you feel</h3><p>Breaking through the numbness</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=command"><img src="assets/img/photos/hero-04.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">Read &middot; 5 min</div><h3>From command to connection</h3><p>Leading a family is a different job</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=coparenting"><img src="assets/img/photos/hero-05.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">Read &middot; 5 min</div><h3>Fathering across two homes</h3><p>Presence when you are not the only house</p></div></a>
+    <a class="vet-story" href="veterans-module.html?m=nurturing"><img src="assets/img/photos/hero-06.jpg" alt=""><div class="vet-story-body"><div class="vet-story-min">Read &middot; 4 min</div><h3>Small acts, every day</h3><p>Nurturing is a set of habits</p></div></a>
   </div>
 </section>
 
@@ -1719,7 +1719,7 @@ PAGES['veterans-hub.html'] = dict(title='The Homefront', desc='Train for the mis
 ''')
 
 # ================================================== veterans.html (public: pitch + free films)
-PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who served. Coming all the way home to your kids, on your terms. Three free films, then join for the rest.', active='For Veterans', mode='public', body=VET_TOP + '''
+PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who served. Three films, free forever. Join for the field notes, your plan, and the Legacy Archive.', active='For Veterans', mode='public', body=VET_TOP + '''
 <section class="vet-hero">
   <img class="vet-hero-img" src="assets/img/photos/billboard-home.jpg" alt="">
   <div class="vet-hero-inner">
@@ -1756,8 +1756,8 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who ser
   <div class="vet-lock">
     <div>
       <div class="eyebrow brass" style="margin-bottom:8px">The rest of the field guide</div>
-      <b class="bone" style="font-size:18px">This is three of more than a dozen.</b>
-      <p class="small" style="margin-top:6px">Join free to unlock every film and lesson, save your progress, and record your voice for your kids. No cost, ever, for those who served.</p>
+      <b class="bone" style="font-size:18px">All three films are right here, free.</b>
+      <p class="small" style="margin-top:6px">Join free for the written field notes, your plan, and the Legacy Archive, and to get each new film the day it lands. No cost, ever, for those who served.</p>
     </div>
     <a class="btn btn-yellow" href="login.html?next=veterans-start.html">Join free</a>
   </div>
