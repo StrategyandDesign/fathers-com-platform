@@ -14,6 +14,15 @@
   var PRICE_DISPLAY_CENTS = 7900;   // display only; the server decides the real price
   var coupon = '';
 
+  var DEV = { steady:'Steady Under Pressure', reentry:'Coming Home Present' };
+  if(DEV[slug]){
+    var ep0=$('enrollPanel'), wp=$('waitlistPanel');
+    if(ep0) ep0.style.display='none';
+    if(wp){ wp.hidden=false; setText('wlTitle', DEV[slug]); var t=$('wlTrack'); if(t) t.value=DEV[slug]; }
+    document.title = DEV[slug] + ' | Waitlist | Fathers.com';
+    return;
+  }
+
   setText('certTitle', title);
   setText('certTitleSum', title);
   setText('certHours', hours);

@@ -9,7 +9,7 @@ SITE_URL = "https://fathers-com-platform.vercel.app"
 OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 
 # Private / transactional pages: keep them out of Google's index. Everything else is indexable.
-NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html', 'classes.html'}
+NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html', 'classes.html', 'veterans-resources.html'}
 
 
 def _esc(s):
@@ -1160,7 +1160,13 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
       desc.textContent = c.getAttribute('data-desc');
       eyebrow.textContent = c.getAttribute('data-cert')==='fundamentals' ? 'FLAGSHIP CERTIFICATE' : 'CERTIFICATE';
       var explore = document.getElementById('certExplore');
-      if(explore) explore.setAttribute('href', c.getAttribute('href'));
+      if(explore){
+        var slug = c.getAttribute('data-cert');
+        var href = c.getAttribute('href');
+        if(!href){ href = 'enroll.html?cert=' + encodeURIComponent(slug) + '&title=' + encodeURIComponent(c.getAttribute('data-title')||'') + '&hours=' + encodeURIComponent(c.getAttribute('data-hours')||''); }
+        explore.setAttribute('href', href);
+        explore.textContent = slug==='fundamentals' ? 'Explore this certificate' : 'Join the waitlist';
+      }
       document.getElementById('fundamentals').scrollIntoView({behavior:'smooth'});
     });
   });
@@ -1503,6 +1509,20 @@ PAGES['enroll.html'] = dict(title='Enroll', desc='Enroll in a Fathers.com verifi
     </div>
   </div>
 
+  <div id="waitlistPanel" hidden>
+    <a class="link ash" href="certificates.html" style="font-size:13px;display:inline-block;margin-bottom:20px">&larr; All certificates</a>
+    <div style="max-width:640px">
+      <div class="eyebrow brass" style="margin-bottom:14px">IN DEVELOPMENT</div>
+      <h1 class="d-36" style="margin-bottom:14px"><span id="wlTitle">This certificate</span></h1>
+      <p style="color:var(--ash);margin-bottom:22px">This track is being built now. Waitlist members hear first, train first, and shape the curriculum. Earned the hard way on purpose; that is the kind of proof men respect.</p>
+      <form class="row wrap" data-lead="track-waitlist" data-done="You are on the list. You will hear the moment enrollment opens." style="gap:12px">
+        <input type="hidden" name="track" id="wlTrack" value="">
+        <input class="input" name="email" type="email" required placeholder="Email address" style="max-width:280px">
+        <button class="btn btn-primary">Join the waitlist</button>
+      </form>
+      <p class="fine" style="margin-top:18px">Today, the flagship course, The 7 Secrets of Effective Fathers, is free to every member. <a class="link" href="class.html">Start free &rarr;</a></p>
+    </div>
+  </div>
   <div id="successPanel" style="display:none">
     <div class="center" style="max-width:620px;margin:40px auto">
       <span class="checkmark" style="width:56px;height:56px;font-size:26px;margin:0 auto 22px;display:inline-flex">&check;</span>
@@ -1529,31 +1549,12 @@ VET_TOP = '''<link rel="stylesheet" href="assets/css/veterans.css">
 
 
 # ================================================== veterans-resources.html
-PAGES['veterans-resources.html'] = dict(title='Free support for veterans', desc='Free, confidential support for veterans, service members, and their families. Vet Centers, the crisis line, Military OneSource, VA, and more.', active='For Veterans', mode='public', body=VET_TOP + '''
-<section class="tight"><div class="container" style="max-width:820px">
-  <div class="eyebrow brass" style="margin-bottom:12px">FREE AND CONFIDENTIAL</div>
-  <h1 class="d-36" style="margin-bottom:16px">Support for veterans and their families</h1>
-  <p class="lead">Every resource below is free, and none require you to be enrolled in anything to start. If you are in crisis, use the line at the top of this page.</p>
-</div></section>
-<section><div class="container">
-  <div id="orgSupport" hidden class="card" style="padding:18px 22px;margin-bottom:14px">
-    <div class="eyebrow" style="margin-bottom:6px">YOUR PROGRAM'S SUPPORT</div>
-    <p class="small" id="orgSupportTxt" style="margin:0"></p>
-  </div>
-  <p class="fine" style="margin-bottom:14px">The resources below are United States services. Joined with a unit or program link? Your program's own support contacts appear above when provided.</p>
-  <div id="vetAllResources"><p class="ash">Loading resources&hellip;</p></div>
-</div></section>
-<script src="assets/js/veterans-core.js"></script>
-<script>
-(function(){ if(!window.VET) return; var host=document.getElementById("vetAllResources"); if(!host) return;
-var order=["vet_center","military_onesource","va_mh","samhsa","utr"];
-var html=VET.resourceCardHTML(VET.CRISIS,{full:false});
-html+=order.map(function(k){return VET.resourceCardHTML(VET.RESOURCES[k],{full:true});}).join("");
-host.innerHTML=html; })();
-</script>
+PAGES['veterans-resources.html'] = dict(title='The Homefront', desc='Support, on your terms.', active='', mode='public', nochrome=True, body='''
+<meta http-equiv="refresh" content="0;url=veterans-hub.html#support">
+<script>location.replace('veterans-hub.html#support');</script>
+<p class="center fine" style="padding:60px 0">This now lives inside your hub. <a class="link" href="veterans-hub.html#support">Continue &rarr;</a></p>
 ''')
 
-# ================================================== veterans-checkin.html
 PAGES['veterans-checkin.html'] = dict(title='A private check-in', desc='A private, two-minute check-in that points you to the right support. Not a diagnosis.', active='For Veterans', mode='app', body=VET_TOP + '''
 <section class="tight"><div class="container" style="max-width:760px">
   <div class="eyebrow brass" style="margin-bottom:12px">PRIVATE, ABOUT TWO MINUTES</div>
@@ -1568,7 +1569,7 @@ PAGES['veterans-checkin.html'] = dict(title='A private check-in', desc='A privat
 
 
 # ================================================== veterans-module.html
-PAGES['veterans-module.html'] = dict(title='A skill for returning fathers', desc='A short, plain lesson for returning fathers.', active='For Veterans', mode='public', body=VET_TOP + '''
+PAGES['veterans-module.html'] = dict(title='A skill for returning fathers', desc='A short, plain lesson for returning fathers.', active='For Veterans', mode='app', auth=True, body=VET_TOP + '''
 <section class="tight"><div class="container" style="max-width:760px">
   <a class="link ash" href="veterans-hub.html" style="font-size:13px;display:inline-block;margin-bottom:20px">&larr; Your hub</a>
   <div id="vetModule"><p class="ash">Loading&hellip;</p></div>
@@ -1584,13 +1585,13 @@ PAGES['veterans-module.html'] = dict(title='A skill for returning fathers', desc
 # ================================================== veterans-hub.html (editorial hub, rebuilt)
 
 
-PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit for coming home: films, Voice, a private check-in, and your plan. Built for fathers who served.', active='For Veterans', mode='app', body=VET_TOP + '''
+PAGES['veterans-hub.html'] = dict(title='The Homefront', desc='Train for the mission at home: the field guide, the Legacy Archive, your ground, your record. Built for fathers who served.', active='For Veterans', mode='app', auth=True, body=VET_TOP + '''
 <section class="vet-hero" style="min-height:420px">
   <img class="vet-hero-img" src="assets/img/photos/community-01.jpg" alt="">
   <div class="vet-hero-inner">
     <div class="vet-hero-eyebrow">Fathers.com &middot; For those who served</div>
-    <h1>Your toolkit for the homefront.</h1>
-    <p class="vet-hero-lead" id="vetGreet">You carried the load out there. Here is where you pick up the one that matters most.</p>
+    <h1>The mission continues.</h1>
+    <p class="vet-hero-lead" id="vetGreet">You carried the load out there. This is where you train for the one that matters most, and put it on the record.</p>
   </div>
 </section>
 
@@ -1605,8 +1606,8 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit 
 
 <section class="vet-ed vet-ed-noline" id="startHere">
   <div class="vet-ed-head">
-    <div class="vet-ed-eyebrow">START HERE</div>
-    <h2>Three steps. Fifteen minutes. Then everything below makes sense.</h2>
+    <div class="vet-ed-eyebrow">First fifteen minutes</div>
+    <h2>Three moves. Then everything below makes sense.</h2>
   </div>
   <div class="grid-3" style="margin-top:22px">
     <div class="card" style="padding:24px 26px" data-vetstep="checkin">
@@ -1649,8 +1650,8 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit 
 <section class="vet-ed">
   <div class="vet-split">
     <div>
-      <div class="vet-ed-eyebrow">A new way to be there &middot; Voice</div>
-      <h2>Your voice, in their day.</h2>
+      <div class="vet-ed-eyebrow">The Legacy Archive</div>
+      <h2>Your voice, in their day. Forever theirs.</h2>
       <p>Record a story or a message your kids can replay when they miss you. Private to you, secured, and yours alone. It is the most personal tool here, and it has its own home.</p>
       <a class="btn btn-yellow" href="voice.html">Open Voice</a>
     </div>
@@ -1660,8 +1661,8 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit 
 
 <section class="vet-ed">
   <div class="vet-ed-head">
-    <div class="vet-ed-eyebrow">Your plan</div>
-    <h2>Know your ground, and check it</h2>
+    <div class="vet-ed-eyebrow">Your ground</div>
+    <h2>Know it. Check it. Move it.</h2>
     <p>Two private tools that meet you where you are and point you forward. Yours alone, never shared.</p>
   </div>
   <div class="grid-2" style="gap:24px">
@@ -1678,16 +1679,22 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit 
   </div>
 </section>
 
-<section class="vet-ed">
+<section class="vet-ed" id="credential">
   <div class="vet-ed-head">
-    <div class="vet-ed-eyebrow">In the works</div>
-    <h2>The toolkit is growing</h2>
-    <p>More is coming, built alongside fathers who served. Here is what is next on the bench.</p>
+    <div class="vet-ed-eyebrow">Earned, never given</div>
+    <h2>The certificate is coming. It will cost you effort.</h2>
+    <p>Coming Home Present: identity checked, hours logged, a final passed. Peers respect it because it cannot be bought. Waitlist members train first. Today, the flagship course, The 7 Secrets of Effective Fathers, is already yours, free.</p>
   </div>
-  <div class="vet-soon-grid">
-    <div class="vet-soon"><span class="vet-soon-tag">Coming soon</span><h3>Battle buddy check-ins</h3><p>Pair with another father who gets it, and keep each other honest week to week.</p></div>
-    <div class="vet-soon"><span class="vet-soon-tag">Coming soon</span><h3>The first 90 days home</h3><p>A guided plan for the hardest stretch of the return, one small move at a time.</p></div>
-    <div class="vet-soon"><span class="vet-soon-tag">Coming soon</span><h3>For the ones who wait</h3><p>Tools built for your partner and your kids, so the whole house comes home together.</p></div>
+  <div class="row wrap" style="gap:12px;margin-top:6px">
+    <a class="btn btn-secondary btn-sm" href="enroll.html?cert=reentry&title=Coming%20Home%20Present&hours=12.0">Join the waitlist</a>
+    <a class="btn btn-yellow btn-sm" href="class.html">Start the free course</a>
+  </div>
+</section>
+
+<section class="vet-ed vet-ed-noline" id="support">
+  <div class="vet-ed-head">
+    <div class="vet-ed-eyebrow">Support, on your terms</div>
+    <p>You know the resources; nobody here needs a lecture. When you want one: <b id="vetMatchName">your Vet Center</b> for a conversation, Military OneSource for the practical, and around the clock, <a class="link" href="tel:988">988, press 1</a>.</p>
   </div>
 </section>
 
@@ -1706,18 +1713,7 @@ PAGES['veterans-hub.html'] = dict(title='Your Veterans hub', desc='Your toolkit 
   <div class="vet-quote-by"><img src="assets/img/photos/testimonial-01.jpg" alt=""><span>A father, three deployments</span></div>
 </section>
 
-<section class="vet-ed">
-  <div class="vet-supportline">
-    <div class="vet-supportline-main">
-      <div class="vet-supportline-lbl">Support, if you need it</div>
-      <p>You know these resources, and they are here when you want them. The closest fit for you is <b id="vetMatchName">the Vet Center</b>. In a crisis, call 988 and press 1.</p>
-    </div>
-    <div class="vet-supportline-actions">
-      <a class="btn btn-secondary btn-sm" id="vetMatchCall" href="tel:18779278387">Call</a>
-      <a class="link" href="veterans-resources.html">See all support &rarr;</a>
-    </div>
-  </div>
-</section>
+
 <script src="assets/js/veterans-core.js"></script>
 <script src="assets/js/veterans-hub.js"></script>
 ''')
@@ -1732,7 +1728,7 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who ser
     <p class="vet-hero-lead">You did the hard thing over there. Coming all the way home to your kids is its own kind of hard, and nobody hands you orders for it. Start with three films, free. No account, no email.</p>
     <div class="vet-hero-actions">
       <a class="btn btn-yellow" href="#watch">Watch, free</a>
-      <a class="btn btn-onimg" href="veterans-resources.html">See the free support</a>
+      <a class="btn btn-onimg" href="login.html?next=veterans-start.html">Join free</a>
     </div>
   </div>
 </section>
@@ -1813,10 +1809,7 @@ PAGES['veterans.html'] = dict(title='Present at Home', desc='For fathers who ser
   </div>
 </section>
 
-<div class="vet-support">
-  <span>Support is standing by 24 hours a day, for you or your family. You do not have to be in crisis to call.</span>
-  <a href="tel:988">Call 988, press 1</a>
-</div>
+<p class="fine" style="text-align:center;color:var(--ash);padding:26px 0 8px">Around the clock, if you ever want it: <a class="link" href="tel:988">988, press 1</a>.</p>
 
 <div id="vetVideoModal" class="vet-vmodal" hidden>
   <div class="vet-vmodal-backdrop" data-vclose></div>
@@ -2025,12 +2018,36 @@ PAGES['organizations.html'] = dict(title='The measurable standard for effective 
   <div class="eyebrow" style="margin-bottom:12px">FIND YOUR FIT</div>
   <h2 class="d-28" style="margin-bottom:18px">Every kind of program lands here. Start where you live.</h2>
   <div class="grid-3">
-    <a class="fit-card" href="#walkthrough"><b>Fatherhood programs</b><span>Keep the curriculum you trust. We make it provable.</span><i>&rarr;</i></a>
+    <a class="fit-card" href="#programs"><b>Fatherhood programs</b><span>Keep the curriculum you trust. We make it provable.</span><i>&rarr;</i></a>
     <a class="fit-card" href="#courts"><b>Courts &amp; probation</b><span>Order the class by name. Verify a serial in ten seconds.</span><i>&rarr;</i></a>
-    <a class="fit-card" href="#walkthrough"><b>Corrections &amp; reentry</b><span>Baseline at intake, movement by release. The floor is never nothing.</span><i>&rarr;</i></a>
+    <a class="fit-card" href="#reentry"><b>Corrections &amp; reentry</b><span>Baseline at intake, movement by release. The floor is never nothing.</span><i>&rarr;</i></a>
     <a class="fit-card" href="veterans.html"><b>Veteran units &amp; military</b><span>One join link for the whole unit. Free for those who served.</span><i>&rarr;</i></a>
     <a class="fit-card" href="groups.html"><b>Churches, groups &amp; circles</b><span>Small groups of fathers, measured and moving together.</span><i>&rarr;</i></a>
     <a class="fit-card" href="employers.html"><b>Employers</b><span>A benefit fathers actually use, with proof it worked.</span><i>&rarr;</i></a>
+  </div>
+</div></section>
+
+<section class="tight" id="programs"><div class="container split" style="gap:48px">
+  <div>
+    <div class="eyebrow" style="margin-bottom:12px">FATHERHOOD PROGRAMS</div>
+    <h2 class="d-28" style="margin-bottom:12px">Keep the curriculum you trust. We make it provable.</h2>
+    <p class="small" style="color:var(--ash);max-width:56ch">Your program stays exactly as you run it. We add the measurement spine underneath: every father baselines at intake through your join link, retakes at exit, and your Efficacy Report writes itself, one page per cohort, benchmarked against 9,232 fathers. Concierge-first means we run your first cohort with you: codes minted, men enrolled, the report in your funder&rsquo;s hands.</p>
+  </div>
+  <div class="card" style="padding:26px 28px;align-self:start">
+    <p class="small" style="margin-bottom:16px"><b>Twenty minutes gets you live.</b> Your program, your funder&rsquo;s report, on the call.</p>
+    <div class="row wrap" style="gap:10px"><a class="btn btn-primary btn-sm" href="#walkthrough">Request a walkthrough</a><a class="btn btn-secondary btn-sm" href="mailto:Team@Fathers.com?subject=Our%20fatherhood%20program%20on%20the%20Standard">Write us</a></div>
+  </div>
+</div></section>
+
+<section class="tight" id="reentry"><div class="container split" style="gap:48px">
+  <div>
+    <div class="eyebrow" style="margin-bottom:12px">CORRECTIONS &amp; REENTRY</div>
+    <h2 class="d-28" style="margin-bottom:12px">Baseline at intake. Movement by release. The floor is never nothing.</h2>
+    <p class="small" style="color:var(--ash);max-width:56ch">You already intake fathers; start measuring the day they arrive, program or no program. Cohorts persist across facilities and time, so a man&rsquo;s movement follows him. When your agency links its outcome records, the Recidivism Overlay switches on: Keystone movement set against reoffense, completers versus non-completers, the number a reentry grant lives or dies on.</p>
+  </div>
+  <div class="card" style="padding:26px 28px;align-self:start">
+    <p class="small" style="margin-bottom:16px"><b>Runs inside your intake.</b> No curriculum required to start.</p>
+    <div class="row wrap" style="gap:10px"><a class="btn btn-primary btn-sm" href="#walkthrough">Request a walkthrough</a><a class="btn btn-secondary btn-sm" href="mailto:Team@Fathers.com?subject=Reentry%20measurement%20on%20the%20Standard">Write us</a></div>
   </div>
 </div></section>
 
@@ -2250,7 +2267,7 @@ PAGES['efficacy-report.html'] = dict(title='The Efficacy Report', desc='Cohort m
 if __name__ == '__main__':
     out = os.path.dirname(os.path.abspath(__file__))
     for fname, p in PAGES.items():
-        FORCED_THEME = {'organizations.html': "'light'", 'index.html': "'dark'", 'profile.html': "'dark'", 'stories.html': "'dark'"}
+        FORCED_THEME = {'organizations.html': "'light'", 'index.html': "'dark'", 'profile.html': "'dark'", 'stories.html': "'dark'", 'certificates.html': "'dark'", 'enroll.html': "'dark'", 'class.html': "'dark'", 'course.html': "'dark'", 'player.html': "'dark'", 'checkout.html': "'dark'", 'certificate.html': "'dark'"}
         theme_js = FORCED_THEME.get(fname, 'localStorage.getItem("fc_theme")||"dark"')
         html = HEAD.format(title=p['title'], desc=p['desc'], meta=social_meta(fname, p['title'], p['desc']), THEME=theme_js)
         if p.get('nochrome'):

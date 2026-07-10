@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
+<script>document.documentElement.dataset.theme='dark';</script>
 <link rel="stylesheet" href="assets/css/forge.css">
 <link rel="canonical" href="https://fathers-com-platform.vercel.app/certificates.html">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -222,7 +222,13 @@
       desc.textContent = c.getAttribute('data-desc');
       eyebrow.textContent = c.getAttribute('data-cert')==='fundamentals' ? 'FLAGSHIP CERTIFICATE' : 'CERTIFICATE';
       var explore = document.getElementById('certExplore');
-      if(explore) explore.setAttribute('href', c.getAttribute('href'));
+      if(explore){
+        var slug = c.getAttribute('data-cert');
+        var href = c.getAttribute('href');
+        if(!href){ href = 'enroll.html?cert=' + encodeURIComponent(slug) + '&title=' + encodeURIComponent(c.getAttribute('data-title')||'') + '&hours=' + encodeURIComponent(c.getAttribute('data-hours')||''); }
+        explore.setAttribute('href', href);
+        explore.textContent = slug==='fundamentals' ? 'Explore this certificate' : 'Join the waitlist';
+      }
       document.getElementById('fundamentals').scrollIntoView({behavior:'smooth'});
     });
   });

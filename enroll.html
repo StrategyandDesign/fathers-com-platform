@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script>document.documentElement.dataset.theme=localStorage.getItem("fc_theme")||"dark";</script>
+<script>document.documentElement.dataset.theme='dark';</script>
 <link rel="stylesheet" href="assets/css/forge.css">
 <meta name="robots" content="noindex,follow">
 <link rel="canonical" href="https://fathers-com-platform.vercel.app/enroll.html">
@@ -81,6 +81,20 @@
     </div>
   </div>
 
+  <div id="waitlistPanel" hidden>
+    <a class="link ash" href="certificates.html" style="font-size:13px;display:inline-block;margin-bottom:20px">&larr; All certificates</a>
+    <div style="max-width:640px">
+      <div class="eyebrow brass" style="margin-bottom:14px">IN DEVELOPMENT</div>
+      <h1 class="d-36" style="margin-bottom:14px"><span id="wlTitle">This certificate</span></h1>
+      <p style="color:var(--ash);margin-bottom:22px">This track is being built now. Waitlist members hear first, train first, and shape the curriculum. Earned the hard way on purpose; that is the kind of proof men respect.</p>
+      <form class="row wrap" data-lead="track-waitlist" data-done="You are on the list. You will hear the moment enrollment opens." style="gap:12px">
+        <input type="hidden" name="track" id="wlTrack" value="">
+        <input class="input" name="email" type="email" required placeholder="Email address" style="max-width:280px">
+        <button class="btn btn-primary">Join the waitlist</button>
+      </form>
+      <p class="fine" style="margin-top:18px">Today, the flagship course, The 7 Secrets of Effective Fathers, is free to every member. <a class="link" href="class.html">Start free &rarr;</a></p>
+    </div>
+  </div>
   <div id="successPanel" style="display:none">
     <div class="center" style="max-width:620px;margin:40px auto">
       <span class="checkmark" style="width:56px;height:56px;font-size:26px;margin:0 auto 22px;display:inline-flex">&check;</span>

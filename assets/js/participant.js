@@ -56,7 +56,8 @@
     box.innerHTML = '<h3 style="margin-bottom:6px">'+esc(name)+'</h3><p class="fine" style="margin-bottom:16px">Individual snapshot. Handle with care; this is a man\u2019s private data.</p><p class="fine" id="pt-loading">Loading\u2026</p>';
     box.scrollIntoView({behavior:'smooth'});
 
-    // Latest baseline (four domains + growth focus).
+    // The Keystone Profile, rendered the way the man himself sees it.
+    var pSession = FC.sb.from('keystone_sessions').select('id,completed_at').eq('user_id',uid).eq('status','completed').order('completed_at',{ascending:false}).limit(1);
     var pBaseline = FC.sb.from('baselines').select('*').eq('user_id',uid).order('taken_at',{ascending:false}).limit(1);
     // Certificate enrollments + awards.
     var pEnroll = FC.sb.from('certificate_enrollments').select('id,status,coupon,course_id').eq('user_id',uid);
@@ -66,27 +67,63 @@
     var pCircle = FC.sb.from('circle_posts').select('id',{count:'exact',head:true}).eq('user_id',uid);
     var pCourses= FC.sb.from('certificate_courses').select('id,title');
 
-    Promise.all([pBaseline,pEnroll,pAward,pVoice,pCircle,pCourses].map(function(p){return p.then(function(r){return r;},function(e){return {error:e};});}))
-    .then(function(res){
-      var baseRes=res[0], enrRes=res[1], awRes=res[2], vRes=res[3], cRes=res[4], coRes=res[5];
-      var courses={}; (coRes.data||[]).forEach(function(c){courses[c.id]=c.title;});
-      var html='';
+    function pretty(k){ if(!k) return '\u2014'; return String(k).replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}); }
+    function pbar(label,pct,accent){
+      var v = (pct==null||isNaN(pct)) ? 0 : pct;
+      return '<div class="rail-bar"><div class="row between"><span class="fine"'+(accent?' style="color:'+accent+'"':'')+'>'+esc(label)+'</span><span class="fine mono">'+v+'</span></div>'+
+        '<div class="rail-track"><span style="width:'+v+'%'+(accent?';background:'+accent:'')+'"></span></div></div>';
+    }
 
-      // Baseline
-      var b = (baseRes.data||[])[0];
-      html += '<div class="eyebrow" style="margin:0 0 12px">BASELINE</div>';
-      if(baseRes.error){ html += '<div class="notice brass" style="margin:0 0 20px">Baseline unavailable: '+esc(baseRes.error.message)+'</div>'; }
-      else if(!b){ html += '<p class="fine" style="margin-bottom:20px">No baseline taken yet.</p>'; }
-      else {
-        html += '<div class="glance" style="margin-bottom:20px">'+
-          metric('OVERALL', b.overall!=null?b.overall:'\u2014','out of 100')+
-          metric('INVOLVEMENT', b.involvement!=null?b.involvement:'\u2014','')+
-          metric('CONSISTENCY', b.consistency!=null?b.consistency:'\u2014','')+
-          metric('AWARENESS', b.awareness!=null?b.awareness:'\u2014','')+
-          metric('NURTURANCE', b.nurturance!=null?b.nurturance:'\u2014','')+
-          '<div class="glance-card glance-next"><div class="glance-lbl">GROWTH FOCUS</div><div class="glance-next-txt">'+esc(b.gap_domain||'\u2014')+'</div></div>'+
-        '</div>';
-      }
+    Promise.all([pSession,pBaseline,pEnroll,pAward,pVoice,pCircle,pCourses].map(function(pr){return pr.then(function(r){return r;},function(e2){return {error:e2};});}))
+    .then(function(res){
+      var sesRes=res[0], baseRes=res[1], enrRes=res[2], awRes=res[3], vRes=res[4], cRes=res[5], coRes=res[6];
+      var ses = (sesRes.data||[])[0];
+      var pResult = ses
+        ? FC.sb.from('keystone_results').select('overall_pct,scale_scores,strength_scale,gap_scale').eq('session_id',ses.id).maybeSingle().then(function(r){return r;},function(e2){return {error:e2};})
+        : Promise.resolve({data:null});
+
+      pResult.then(function(rr){
+        var courses={}; (coRes.data||[]).forEach(function(c){courses[c.id]=c.title;});
+        var html='';
+
+        // The Profile
+        html += '<div class="eyebrow" style="margin:0 0 12px">THE KEYSTONE PROFILE</div>';
+        var kr = rr && rr.data;
+        if(kr && kr.scale_scores){
+          var sc = kr.scale_scores;
+          html += '<p class="fine" style="margin-bottom:14px">Taken '+(ses && ses.completed_at ? new Date(ses.completed_at).toLocaleDateString() : '')+'. This is his profile as he sees it.</p>';
+          html += '<div class="row between" style="align-items:baseline;max-width:520px;margin-bottom:14px"><span class="d-36">'+esc(kr.overall_pct!=null?kr.overall_pct:'0')+'</span><span class="fine">overall, of 100</span></div>';
+          html += '<div style="max-width:520px;margin-bottom:18px">';
+          ['involvement','consistency','awareness','nurturance'].forEach(function(k){
+            html += pbar(pretty(k), sc[k]&&sc[k].pct, null);
+          });
+          html += '</div>';
+          html += '<div class="row wrap" style="gap:10px;margin-bottom:20px">'+
+            '<span class="chip" style="border-color:var(--pine-hi)">STRENGTH \u00b7 '+esc(pretty(kr.strength_scale))+'</span>'+
+            '<span class="chip" style="border-color:var(--ember)">GROWTH FOCUS \u00b7 '+esc(pretty(kr.gap_scale))+'</span></div>';
+          var keys = Object.keys(sc).filter(function(k){return sc[k] && sc[k].pct!=null;});
+          keys.sort(function(a,b){return (sc[b].pct||0)-(sc[a].pct||0);});
+          if(keys.length>4){
+            html += '<div class="eyebrow" style="margin:6px 0 12px">ALL '+keys.length+' DIMENSIONS</div>';
+            html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 26px;max-width:760px;margin-bottom:22px">';
+            keys.forEach(function(k){
+              var accent = k===kr.gap_scale ? 'var(--ember)' : (k===kr.strength_scale ? 'var(--pine-hi)' : null);
+              html += pbar(pretty(k), sc[k].pct, accent);
+            });
+            html += '</div>';
+          }
+        } else {
+          var b = (baseRes.data||[])[0];
+          if(kr===null && ses){ html += '<div class="notice brass" style="margin:0 0 20px">Profile scores unavailable for this snapshot.</div>'; }
+          if(b){
+            html += '<div style="max-width:520px;margin-bottom:14px">'+
+              '<div class="row between" style="align-items:baseline;margin-bottom:12px"><span class="d-36">'+esc(b.overall!=null?b.overall:'0')+'</span><span class="fine">overall, of 100</span></div>'+
+              pbar('Involvement', b.involvement, null)+pbar('Consistency', b.consistency, null)+pbar('Awareness', b.awareness, null)+pbar('Nurturance', b.nurturance, null)+
+              '</div><div class="row wrap" style="gap:10px;margin-bottom:20px"><span class="chip" style="border-color:var(--ember)">GROWTH FOCUS \u00b7 '+esc(pretty(b.gap_domain))+'</span></div>';
+          } else {
+            html += '<p class="fine" style="margin-bottom:20px">No Profile taken yet.</p>';
+          }
+        }
 
       // Certificates
       html += '<div class="eyebrow" style="margin:8px 0 12px">CERTIFICATES</div>';
@@ -120,6 +157,7 @@
 
       box.innerHTML = '<h3 style="margin-bottom:6px">'+esc(name)+'</h3><p class="fine" style="margin-bottom:20px">Individual snapshot. Handle with care; this is a man\u2019s private data.</p>' + html + '<div id="pt-voice"></div>';
       loadVoice(uid);
+      });
     });
   }
 

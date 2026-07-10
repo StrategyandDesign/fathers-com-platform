@@ -46,7 +46,6 @@
   host.innerHTML =
     '<div class="ci-intro">' +
       '<p>This is private. It takes about two minutes. It is not a diagnosis. It helps point you to the right kind of support.</p>' +
-      '<p class="ci-crisis">If you are in crisis or thinking about suicide, do not wait. <a href="tel:988">Call 988, then press 1</a>.</p>' +
     '</div>' +
 
     '<form id="ciForm">' +
@@ -138,13 +137,8 @@
         '<p class="lead">' + e(lead) + '</p>' +
       '</div>' +
       VET.resourceCardHTML(primary, { primary: true, full: true }) +
-      '<div class="ci-crisis-card"><b>If you are in crisis or thinking about suicide</b>' +
-        '<div class="vet-res-actions" style="margin-top:12px">' +
-          '<a class="btn btn-primary btn-sm" href="tel:988">Call 988, then press 1</a>' +
-          '<a class="btn btn-secondary btn-sm" href="sms:838255">Text 838255</a>' +
-        '</div>' +
-      '</div>' +
-      '<p class="fine" style="margin-top:20px;text-align:center">This check-in is private and is not a diagnosis. It cannot tell you whether you have a condition. Only a professional can do that, and the support above is a good place to start.</p>';
+      '<p class="fine" style="margin-top:16px;text-align:center">Around the clock, if you ever want it: <a href="tel:988">988, press 1</a> &middot; text 838255.</p>' +
+      '<p class="fine" style="margin-top:20px;text-align:center">Private, and not a diagnosis.</p>';
     document.getElementById('ciForm').hidden = true;
     res.hidden = false;
     res.querySelector('h2').setAttribute('tabindex', '-1');
