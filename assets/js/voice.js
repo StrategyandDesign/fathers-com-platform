@@ -208,7 +208,7 @@
               var when = row.created_at ? new Date(row.created_at).toLocaleDateString() : '';
               return '<div class="voice-item vx-row" data-path="' + e(row.storage_path) + '" data-id="' + e(row.id) + '">' +
                 '<button class="voice-play vx-ic" type="button" aria-label="Play">\u25b6</button>' +
-                '<span class="vx-rowmain"><span class="vx-rowtitle">' + e(row.title || KIND_LABEL[row.kind] || 'Recording') + '</span>' + (when ? '<span class="vx-rowdate">\u00b7 ' + when + '</span>' : '') + '</span>' +
+                '<span class="vx-rowmain"><span class="vx-rowtitle">' + e((row.title || KIND_LABEL[row.kind] || 'Recording').replace(/\.\s*$/,'')) + '</span>' + (when ? '<span class="vx-rowdate">\u00b7 ' + when + '</span>' : '') + '</span>' +
                 '<button class="voice-del" type="button">Delete</button></div>';
             }).join('');
           list.querySelectorAll('.voice-play').forEach(function(b){

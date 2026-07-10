@@ -315,3 +315,11 @@
 .vx-rowdate{font-size:13px;color:#71767b}
 .vx .voice-del{background:none;border:0;color:#71767b;font-size:13px;cursor:pointer;padding:6px 10px;border-radius:9999px}
 .vx .voice-del:hover{color:#f4212e;background:rgba(244,33,46,.1)}
+
+/* vx corrections: unmistakable live state, flush timeline rows */
+.vx-hint{margin-top:10px}
+.vx .vrec.is-rec{background:#f4212e;border:0}
+.vx .vrec.is-rec .vrec-dot{background:#fff;border-radius:3px;width:12px;height:12px;animation:none}
+.vx .vrec.is-rec .vrec-lbl{color:#fff}
+.vx .voice-item{border-top:0;justify-content:flex-start}
+.vx .vrec:focus-visible,.vx .vx-ic:focus-visible,.vx .voice-del:focus-visible,.vx button.link:focus-visible{outline:2px solid var(--ember,#e25a2a);outline-offset:2px}
