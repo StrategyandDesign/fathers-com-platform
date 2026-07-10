@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Legacy Archive | Fathers.com</title>
-<meta name="description" content="Leave them your voice. Sixty seconds tonight outlives almost everything else you will make this week.">
+<title>A message for you | Fathers.com</title>
+<meta name="description" content="A private voice message, recorded on Fathers.com.">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,77 +12,44 @@
 <script>document.documentElement.dataset.theme='dark';</script>
 <link rel="stylesheet" href="assets/css/forge.css">
 <meta name="robots" content="noindex,follow">
-<link rel="canonical" href="https://fathers-com-platform.vercel.app/voice.html">
+<link rel="canonical" href="https://fathers-com-platform.vercel.app/share.html">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <meta name="theme-color" content="#000000">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Fathers.com">
-<meta property="og:title" content="The Legacy Archive | Fathers.com">
-<meta property="og:description" content="Leave them your voice. Sixty seconds tonight outlives almost everything else you will make this week.">
-<meta property="og:url" content="https://fathers-com-platform.vercel.app/voice.html">
+<meta property="og:title" content="A message for you | Fathers.com">
+<meta property="og:description" content="A private voice message, recorded on Fathers.com.">
+<meta property="og:url" content="https://fathers-com-platform.vercel.app/share.html">
 <meta property="og:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Fathers.com, know where you stand as a father">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Legacy Archive | Fathers.com">
-<meta name="twitter:description" content="Leave them your voice. Sixty seconds tonight outlives almost everything else you will make this week.">
+<meta name="twitter:title" content="A message for you | Fathers.com">
+<meta name="twitter:description" content="A private voice message, recorded on Fathers.com.">
 <meta name="twitter:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
 </head>
 <body>
 <nav class="nav"><div class="container nav-inner">
 <a class="brand" href="index.html"><img class="lg-dark" src="assets/img/logomark-light.png" alt="Fathers.com logomark"><img class="lg-light" src="assets/img/logomark-dark.png" alt="Fathers.com logomark"><b>Fathers.com</b></a>
-<ul class="nav-links"><li><a href="plan.html" >Home</a></li><li><a href="certificates.html" >Certificates</a></li><li><a href="stories.html" >Stories</a></li><li><a href="circles.html" >Circles</a></li></ul>
-<div class="nav-right"><a href="#" data-open-search class="hide-m">Search</a><a href="gift.html" class="hide-m">Gifts</a><a href="account.html" class="avatarchip" title="Account" style="text-decoration:none">M</a><button class="themeswitch" data-themeswitch aria-label="Switch palette" title="Switch palette"><span class="tsw-dot"></span></button><button class="nav-toggle">MENU</button></div>
+<ul class="nav-links"><li><a href="profile.html" >The Profile</a></li><li><a href="certificates.html" >Certificates</a></li><li><a href="stories.html" >Stories</a></li><li><a href="organizations.html" class="active">For Organizations</a></li></ul>
+<div class="nav-right"><a href="gift.html" class="hide-m">Gifts</a><a href="login.html" class="hide-m">Log in</a><a class="btn btn-yellow btn-sm" href="profile.html">Start your Profile</a><button class="themeswitch" data-themeswitch aria-label="Switch palette" title="Switch palette"><span class="tsw-dot"></span></button><button class="nav-toggle">MENU</button></div>
 </div></nav>
 <link rel="stylesheet" href="assets/css/veterans.css">
 
-<section class="vx">
-  <div class="vx-col">
-    <h1>Leave them your voice.</h1>
-    <p class="vx-sub">Sixty seconds tonight outlives almost everything else you will make this week.</p>
-
-    <div class="vx-card" id="voiceApp">
-      <div class="vx-lbl">TONIGHT&rsquo;S PROMPT</div>
-      <div class="vx-prompt" id="vPrompt">Say good night the way you always do.</div>
-      <p class="vx-links"><button class="link brass" id="vSwap" type="button">Different prompt</button></p>
-
-      <div class="row" style="align-items:center;gap:14px">
-        <button class="vrec" id="vBtn" type="button" aria-label="Record"><span class="vrec-dot"></span><span class="vrec-lbl" id="vBtnLbl">Record</span></button>
-        <div class="voice-timer" id="voiceTimer">&nbsp;</div>
-      </div>
-      <p class="fine vx-hint">Tap to record. Tap Stop when you are done.</p>
-      <p class="fine" id="voiceMsg" style="margin-top:6px;min-height:16px"></p>
-
-      <div id="vDone" hidden style="margin-top:14px;border-top:1px solid #2f3336;padding-top:16px">
-        <p class="small" id="vDoneTxt" style="margin-bottom:12px;color:#e7e9ea;font-size:15px"></p>
-        <audio id="voicePreview" controls style="width:100%;margin:0 0 14px;display:block"></audio>
-        <div class="row" style="gap:10px;flex-wrap:wrap">
-          <button class="btn btn-secondary btn-sm" id="vUndo" type="button">Undo</button>
-          <button class="btn btn-yellow btn-sm" id="vAgain" type="button">Record another</button>
-          <a class="btn btn-primary btn-sm" id="vKeep" href="login.html?next=voice.html" hidden>Join free to keep it</a>
-        </div>
-      </div>
-
-      <p class="fine" style="margin-top:16px">Encrypted &middot; private to you &middot; never shared &middot; delete anytime</p>
-      <p class="fine" id="vGuest" hidden>Record first. Keeping it takes a free sign-in after, and we will hold this one for you.</p>
+<section class="vx" style="min-height:60vh">
+  <div class="vx-col" style="text-align:center">
+    <div class="vx-lbl" style="margin-top:10px">THE LEGACY ARCHIVE</div>
+    <h1 id="shTitle" style="margin-bottom:6px">Loading&hellip;</h1>
+    <p class="vx-sub">A father recorded this for you.</p>
+    <div class="vx-card">
+      <audio id="shAudio" controls hidden style="width:100%"></audio>
+      <p class="fine" id="shMsg" style="margin-top:12px;min-height:16px"></p>
     </div>
-
-    <details id="vAllWrap" style="margin-top:18px">
-      <summary>The full prompt library</summary>
-      <div class="voice-prompts" style="margin-top:14px">
-        <div id="promptPicker"></div>
-        <p class="fine" id="promptCurrent" hidden style="margin-top:10px"></p>
-      </div>
-    </details>
-
-    <div id="voiceList"></div>
-    <p class="fine" style="margin-top:26px;text-align:center">Kids replay these on their schedule. That is the whole point.</p>
+    <p class="fine" style="margin-top:22px">Private link. No account needed, and nothing is collected from you.</p>
   </div>
 </section>
-<script src="assets/js/veterans-core.js"></script>
-<script src="assets/js/voice-prompts.js"></script>
-<script src="assets/js/voice.js"></script>
+<script src="assets/js/share.js"></script>
 <footer><div class="container">
 <div class="footgrid">
   <div><a class="brand" href="index.html" style="margin-bottom:16px"><img class="lg-dark" src="assets/img/logomark-light.png" alt="" style="height:34px"><img class="lg-light" src="assets/img/logomark-dark.png" alt="" style="height:34px"><b>Fathers.com</b></a>

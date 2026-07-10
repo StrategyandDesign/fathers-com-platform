@@ -323,3 +323,18 @@
 .vx .vrec.is-rec .vrec-lbl{color:#fff}
 .vx .voice-item{border-top:0;justify-content:flex-start}
 .vx .vrec:focus-visible,.vx .vx-ic:focus-visible,.vx .voice-del:focus-visible,.vx button.link:focus-visible{outline:2px solid var(--ember,#e25a2a);outline-offset:2px}
+
+/* vx v2.4: flat timeline rows, share affordance, shared-with ledger */
+.vx-row{border-radius:0}
+.vx .voice-item{padding:13px 6px}
+.vx-rowmain{display:block;min-width:0}
+.vx-rowline{display:flex;align-items:baseline;gap:8px;min-width:0}
+.vx-rowtitle{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vx-rowdate{white-space:nowrap}
+.vx-ic svg{display:block}
+.vx-actions{display:flex;align-items:center;gap:2px;white-space:nowrap}
+.vx-share{background:none;border:0;color:var(--ember,#e25a2a);font-size:13px;font-weight:700;cursor:pointer;padding:6px 10px;border-radius:9999px}
+.vx-share:hover{background:rgba(226,90,42,.1)}
+.vx-shared{display:block;font-size:13px;color:#71767b;margin-top:3px}
+.vx-shared .vx-revoke{background:none;border:0;color:#71767b;font-size:12px;cursor:pointer;padding:1px 6px;text-decoration:underline}
+.vx-shared .vx-revoke:hover{color:#f4212e}

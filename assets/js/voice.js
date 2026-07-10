@@ -83,7 +83,7 @@
       mediaRecorder.start();
       state = 'rec';
       btn.classList.add('is-rec');
-      if (btnLbl) btnLbl.textContent = 'End';
+      if (btnLbl) btnLbl.textContent = 'Stop';
       setMsg('Talking to them now. Tap when you are done; sixty seconds is plenty.');
       if (done) done.hidden = true;
       startTimer();
@@ -206,10 +206,12 @@
           list.innerHTML = '<div class="vx-shelfhead">The Archive \u00b7 ' + rows.length + ' kept</div>' +
             rows.map(function(row){
               var when = row.created_at ? new Date(row.created_at).toLocaleDateString() : '';
-              return '<div class="voice-item vx-row" data-path="' + e(row.storage_path) + '" data-id="' + e(row.id) + '">' +
-                '<button class="voice-play vx-ic" type="button" aria-label="Play">\u25b6</button>' +
-                '<span class="vx-rowmain"><span class="vx-rowtitle">' + e((row.title || KIND_LABEL[row.kind] || 'Recording').replace(/\.\s*$/,'')) + '</span>' + (when ? '<span class="vx-rowdate">\u00b7 ' + when + '</span>' : '') + '</span>' +
-                '<button class="voice-del" type="button">Delete</button></div>';
+              var rTitle = (row.title || KIND_LABEL[row.kind] || 'Recording').replace(/\.\s*$/,'');
+              return '<div class="voice-item vx-row" data-path="' + e(row.storage_path) + '" data-id="' + e(row.id) + '" data-title="' + e(rTitle) + '">' +
+                '<button class="voice-play vx-ic" type="button" aria-label="Play"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>' +
+                '<span class="vx-rowmain"><span class="vx-rowline"><span class="vx-rowtitle">' + e(rTitle) + '</span>' + (when ? '<span class="vx-rowdate">\u00b7 ' + when + '</span>' : '') + '</span><span class="vx-shared" hidden></span></span>' +
+                '<span class="vx-actions"><button class="vx-share" type="button">Share</button>' +
+                '<button class="voice-del" type="button">Delete</button></span></div>';
             }).join('');
           list.querySelectorAll('.voice-play').forEach(function(b){
             b.addEventListener('click', function(){
@@ -218,6 +220,32 @@
                 var url = s2 && s2.data && s2.data.signedUrl;
                 if (url) { var a = new Audio(url); a.play(); }
               });
+            });
+          });
+          list.querySelectorAll('.vx-share').forEach(function(b){
+            b.addEventListener('click', function(){
+              var item = b.closest('.voice-item');
+              var path = item.getAttribute('data-path');
+              var rTitle2 = item.getAttribute('data-title');
+              var label = window.prompt('Who is this for? A name helps you keep track of who has what. Leave blank to skip.');
+              if (label === null) return;
+              label = (label || '').trim() || null;
+              b.disabled = true; b.textContent = 'Making link\u2026';
+              FC.ready.then(function(){
+                var uid2 = FC.uid && FC.uid();
+                if (!uid2) throw new Error('no session');
+                return FC.sb.from('voice_shares').insert({ user_id: uid2, storage_path: path, title: rTitle2, label: label }).select('token').single();
+              }).then(function(r2){
+                var tok = r2 && r2.data && r2.data.token;
+                if (!tok) throw new Error('no token');
+                var url = location.origin + '/share.html?t=' + tok;
+                var copied = navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject();
+                return copied.then(function(){ b.textContent = 'Link copied'; }, function(){ window.prompt('Copy this link:', url); b.textContent = 'Link made'; })
+                  .then(function(){
+                    loadShares(list);
+                    setTimeout(function(){ b.textContent = 'Share'; b.disabled = false; }, 2200);
+                  });
+              }).catch(function(){ b.disabled = false; b.textContent = 'Share'; setMsg('Could not make the link just now.', true); });
             });
           });
           list.querySelectorAll('.voice-del').forEach(function(b){
@@ -229,6 +257,41 @@
               FC.sb.storage.from('voice').remove([path])
                 .then(function(){ return FC.sb.from('voice_recordings').delete().eq('id', id); })
                 .then(function(){ loadList(); }, function(){ b.disabled = false; });
+            });
+          });
+          loadShares(list);
+        });
+    }).catch(function(){});
+  }
+
+  function loadShares(list){
+    if (!window.FC || !FC.live) return;
+    FC.ready.then(function(){
+      var uid = FC.uid && FC.uid();
+      if (!uid) return;
+      return FC.sb.from('voice_shares').select('storage_path,label')
+        .eq('user_id', uid).is('revoked_at', null).gt('expires_at', new Date().toISOString())
+        .then(function(r){
+          var by = {};
+          ((r && r.data) || []).forEach(function(sh){
+            (by[sh.storage_path] = by[sh.storage_path] || []).push(sh.label);
+          });
+          list.querySelectorAll('.voice-item').forEach(function(item){
+            var el = item.querySelector('.vx-shared');
+            if (!el) return;
+            var labels = by[item.getAttribute('data-path')];
+            if (!labels || !labels.length) { el.hidden = true; el.innerHTML = ''; return; }
+            var named = labels.filter(Boolean);
+            var who = named.length ? named.join(', ') : (labels.length + (labels.length > 1 ? ' links' : ' link'));
+            el.innerHTML = 'Shared with ' + e(who) + ' <button class="vx-revoke" type="button">Revoke</button>';
+            el.hidden = false;
+            var rv = el.querySelector('.vx-revoke');
+            rv.addEventListener('click', function(){
+              if (!window.confirm('Turn off every shared link for this recording? People you sent it to will lose access.')) return;
+              rv.disabled = true;
+              FC.sb.from('voice_shares').update({ revoked_at: new Date().toISOString() })
+                .eq('user_id', FC.uid()).eq('storage_path', item.getAttribute('data-path')).is('revoked_at', null)
+                .then(function(){ loadShares(list); }, function(){ rv.disabled = false; });
             });
           });
         });

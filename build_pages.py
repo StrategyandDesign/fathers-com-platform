@@ -9,7 +9,7 @@ SITE_URL = "https://fathers-com-platform.vercel.app"
 OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 
 # Private / transactional pages: keep them out of Google's index. Everything else is indexable.
-NOINDEX = {'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html', 'classes.html', 'veterans-resources.html'}
+NOINDEX = {'share.html', 'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html', 'classes.html', 'veterans-resources.html'}
 
 
 def _esc(s):
@@ -1917,7 +1917,7 @@ PAGES['voice.html'] = dict(title='The Legacy Archive', desc='Leave them your voi
         <button class="vrec" id="vBtn" type="button" aria-label="Record"><span class="vrec-dot"></span><span class="vrec-lbl" id="vBtnLbl">Record</span></button>
         <div class="voice-timer" id="voiceTimer">&nbsp;</div>
       </div>
-      <p class="fine vx-hint">Tap to record. Tap again to finish.</p>
+      <p class="fine vx-hint">Tap to record. Tap Stop when you are done.</p>
       <p class="fine" id="voiceMsg" style="margin-top:6px;min-height:16px"></p>
 
       <div id="vDone" hidden style="margin-top:14px;border-top:1px solid #2f3336;padding-top:16px">
@@ -1950,6 +1950,23 @@ PAGES['voice.html'] = dict(title='The Legacy Archive', desc='Leave them your voi
 <script src="assets/js/voice-prompts.js"></script>
 <script src="assets/js/voice.js"></script>
 ''')
+
+PAGES['share.html'] = dict(title='A message for you', desc='A private voice message, recorded on Fathers.com.', active='For Veterans', mode='public', body=VET_TOP + '''
+<section class="vx" style="min-height:60vh">
+  <div class="vx-col" style="text-align:center">
+    <div class="vx-lbl" style="margin-top:10px">THE LEGACY ARCHIVE</div>
+    <h1 id="shTitle" style="margin-bottom:6px">Loading&hellip;</h1>
+    <p class="vx-sub">A father recorded this for you.</p>
+    <div class="vx-card">
+      <audio id="shAudio" controls hidden style="width:100%"></audio>
+      <p class="fine" id="shMsg" style="margin-top:12px;min-height:16px"></p>
+    </div>
+    <p class="fine" style="margin-top:22px">Private link. No account needed, and nothing is collected from you.</p>
+  </div>
+</section>
+<script src="assets/js/share.js"></script>
+''')
+
 
 PAGES['course.html'] = dict(title='Your Certificate', desc='Watch the lessons, pass each Checkpoint, answer the final Q&A, and submit for approval.', active='Certificates', mode='app', auth=True, body='''
 <section class="cw-wrap" id="cw-root">
@@ -2271,7 +2288,7 @@ PAGES['efficacy-report.html'] = dict(title='The Efficacy Report', desc='Cohort m
 if __name__ == '__main__':
     out = os.path.dirname(os.path.abspath(__file__))
     for fname, p in PAGES.items():
-        FORCED_THEME = {'organizations.html': "'light'", 'index.html': "'dark'", 'profile.html': "'dark'", 'stories.html': "'dark'", 'certificates.html': "'dark'", 'enroll.html': "'dark'", 'class.html': "'dark'", 'course.html': "'dark'", 'player.html': "'dark'", 'checkout.html': "'dark'", 'certificate.html': "'dark'", 'voice.html': "'dark'"}
+        FORCED_THEME = {'organizations.html': "'light'", 'index.html': "'dark'", 'profile.html': "'dark'", 'stories.html': "'dark'", 'certificates.html': "'dark'", 'enroll.html': "'dark'", 'class.html': "'dark'", 'course.html': "'dark'", 'player.html': "'dark'", 'checkout.html': "'dark'", 'certificate.html': "'dark'", 'voice.html': "'dark'", 'share.html': "'dark'"}
         theme_js = FORCED_THEME.get(fname, 'localStorage.getItem("fc_theme")||"dark"')
         html = HEAD.format(title=p['title'], desc=p['desc'], meta=social_meta(fname, p['title'], p['desc']), THEME=theme_js)
         if p.get('nochrome'):
