@@ -164,12 +164,13 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 
 <section class="band"><div class="container split">
   <div>
+    <div class="eyebrow" style="margin-bottom:14px">MEASURE &middot; YOUR BASELINE</div>
     <h2 class="d-36">Four things decide the kind of father you are.</h2>
     <p style="color:var(--ash);margin:18px 0 28px;max-width:52ch">Involvement. Consistency. Awareness. Nurturance. The Keystone Father Profile measures all four, normed against 9,232 fathers. You get a score, an honest read on where you stand, and a ninety-day plan built from your gaps. Free, before you pay for anything.</p>
     <a class="btn btn-primary" href="profile.html">Start your Profile</a>
   </div>
   <div class="card" style="padding:32px">
-    <div class="eyebrow" style="margin-bottom:16px">MEASURE &middot; YOUR BASELINE</div>
+    <div class="eyebrow" style="margin-bottom:16px">THE FOUR DIMENSIONS</div>
     <div class="bigscore" style="font-size:72px;margin-bottom:24px">71</div>
     <div class="domain"><div class="row1"><span>Involvement</span><span class="score">78</span></div><div class="bar"><span style="width:78%"></span></div></div>
     <div class="domain gap"><div class="row1"><span>Consistency</span><span class="score">55</span></div><div class="bar"><span style="width:55%"></span></div></div>
@@ -180,6 +181,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 
 <section class="band tight" id="start-free"><div class="container split" style="align-items:start">
   <div>
+    <div class="eyebrow" style="margin-bottom:12px">START FREE</div>
     <h2 style="font-family:var(--font-ui);font-weight:600;font-size:22px;margin-bottom:22px">Start free. Grow on a plan.</h2>
     <div class="row wrap"><a class="btn btn-primary" href="profile.html">Start your Profile</a><a class="btn btn-secondary" href="gift.html">Give a gift</a></div>
   </div>
@@ -197,7 +199,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   <div class="billboard">
     <div class="slot r-21x9 play-overlay" data-slot="IMG-P1-BILL-01"><span class="tri"></span></div>
     <div class="overlay">
-      <div class="eyebrow" style="margin-bottom:12px">BUILT ON THREE DECADES OF RESEARCH</div>
+      <div class="eyebrow" style="margin-bottom:12px">TRAIN &middot; THE FLAGSHIP CLASS</div>
       <h2 class="d-36" style="margin:0 0 8px">The Fundamentals of Fathering</h2>
       <p class="small" style="margin-bottom:18px">The Keystone Profile grows out of the work of Dr. Ken Canfield, founder of the National Center for Fathering. Start with his flagship class on presence. Free.</p>
       <a class="btn btn-secondary play" href="class.html">Watch The Fundamentals</a>
@@ -241,16 +243,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   </div>
 </div></section>
 
-<section><div class="container split">
-  <div class="slot r-4x3" data-slot="IMG-P1-GRP-01"></div>
-  <div>
-    <h2 class="d-36" style="font-size:32px">Run your fathers on the standard.</h2>
-    <p style="color:var(--ash);margin:16px 0 20px;max-width:50ch">Circles for churches, teams, and crews. One film a week, one guide, one standard. And for programs that serve fathers at scale, measure every father, grow them on a plan, and prove what is working.</p>
-    <p class="small" style="color:var(--ash);margin:0 0 24px;max-width:50ch"><b style="color:var(--bone)">No program yet?</b> Start with the assessment. You already intake fathers. Measure them at the door and hold a baseline you did not have.</p>
-    <a class="btn btn-secondary" href="organizations.html">For organizations</a>
-    <p class="fine" style="margin-top:16px">Also for <a class="link ash" href="employers.html" style="font-size:12px">employers</a> and <a class="link ash" href="veterans.html" style="font-size:12px">veteran programs</a>.</p>
-  </div>
-</div></section>
+
 
 <section class="band"><div class="container split">
   <div>
@@ -261,6 +254,18 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   <div>
     <a class="btn btn-primary" href="find-a-program.html">Find a program</a>
     <p class="fine" style="margin-top:12px">We rate programs against one published standard, including our own.</p>
+  </div>
+</div></section>
+
+<section><div class="container split">
+  <div class="slot r-4x3" data-slot="IMG-P1-GRP-01"></div>
+  <div>
+    <div class="eyebrow" style="margin-bottom:14px">FOR ORGANIZATIONS</div>
+    <h2 class="d-36" style="font-size:32px">Run your fathers on the standard.</h2>
+    <p style="color:var(--ash);margin:16px 0 20px;max-width:50ch">Circles for churches, teams, and crews. One film a week, one guide, one standard. And for programs that serve fathers at scale, measure every father, grow them on a plan, and prove what is working.</p>
+    <p class="small" style="color:var(--ash);margin:0 0 24px;max-width:50ch"><b style="color:var(--bone)">No program yet?</b> Start with the assessment. You already intake fathers. Measure them at the door and hold a baseline you did not have.</p>
+    <a class="btn btn-secondary" href="organizations.html">For organizations</a>
+    <p class="fine" style="margin-top:16px">Also for <a class="link ash" href="employers.html" style="font-size:12px">employers</a> and <a class="link ash" href="veterans.html" style="font-size:12px">veteran programs</a>.</p>
   </div>
 </div></section>
 
@@ -283,6 +288,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 </div></section>
 
 <section><div class="container" style="max-width:820px">
+  <div class="eyebrow" style="margin-bottom:12px">QUESTIONS</div>
   <h2 class="d-28" style="margin-bottom:24px">Frequently asked questions</h2>
   <details open><summary>What is Fathers.com?</summary><div class="body">Fathers.com is the home of the Keystone Standard, from the National Center for Fathering. Measure where you stand as a father, grow with a plan, and prove the work with a verified certificate. Programs and agencies use the same standard to show whether fathers are changing.</div></details>
   <details><summary>How much does it cost?</summary><div class="body">Your Keystone Profile and your ninety-day plan are free, along with Dr. Canfield's Fundamentals of Fathering. Verified Certificates are priced separately. A full class library membership is optional at $120 a year, with a 30-day money-back guarantee.</div></details>
@@ -295,8 +301,26 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 
 # ================================================== profile.html (P2)
 PAGES['profile.html'] = dict(title='The Keystone Father Profile', desc='About twenty minutes. Four scores. One plan.', active='', mode='public', nochrome=True, body='''
-<div class="assess" id="keystone"></div>
+<div id="ksIntro" style="max-width:680px;margin:0 auto;padding:64px 24px 40px;text-align:center">
+  <div class="eyebrow" style="margin-bottom:16px">THE KEYSTONE PROFILE</div>
+  <h1 class="d-36" style="margin-bottom:14px">Twenty minutes that shape the next ninety days.</h1>
+  <p style="color:var(--ash);max-width:52ch;margin:0 auto 28px">One hundred thirty questions, built and validated by the National Center for Fathering. You get your score on the four dimensions that decide the kind of father you are, measured against 9,232 fathers, and a ninety-day plan built from your answers.</p>
+  <div class="row wrap" style="justify-content:center;gap:22px;margin-bottom:30px">
+    <span class="fine">About twenty minutes</span><span class="fine ash">&middot;</span>
+    <span class="fine">Pause anytime, every answer saves</span><span class="fine ash">&middot;</span>
+    <span class="fine">Private. Your answers are never shown to anyone.</span>
+  </div>
+  <button class="btn btn-yellow" id="ksBegin" style="font-size:16px;padding:14px 34px">Begin the Profile</button>
+  <p class="fine" style="margin-top:16px">Already started? It picks up right where you left off.</p>
+</div>
+<div class="assess" id="keystone" hidden></div>
 <p class="center fine" style="padding:0 0 28px"><a class="link ash" href="index.html" style="font-size:12px">Back to Fathers.com</a></p>
+<script>(function(){
+  var intro=document.getElementById('ksIntro'), app=document.getElementById('keystone');
+  function begin(){ intro.hidden=true; app.hidden=false; try{sessionStorage.setItem('ks_intro_done','1')}catch(_){} window.scrollTo(0,0); }
+  var b=document.getElementById('ksBegin'); if(b) b.addEventListener('click', begin);
+  try{ if(sessionStorage.getItem('ks_intro_done')==='1') begin(); }catch(_){}
+})();</script>
 ''')
 
 # ================================================== stories.html (P3)

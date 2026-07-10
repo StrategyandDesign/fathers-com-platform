@@ -30,8 +30,26 @@
 </head>
 <body>
 
-<div class="assess" id="keystone"></div>
+<div id="ksIntro" style="max-width:680px;margin:0 auto;padding:64px 24px 40px;text-align:center">
+  <div class="eyebrow" style="margin-bottom:16px">THE KEYSTONE PROFILE</div>
+  <h1 class="d-36" style="margin-bottom:14px">Twenty minutes that shape the next ninety days.</h1>
+  <p style="color:var(--ash);max-width:52ch;margin:0 auto 28px">One hundred thirty questions, built and validated by the National Center for Fathering. You get your score on the four dimensions that decide the kind of father you are, measured against 9,232 fathers, and a ninety-day plan built from your answers.</p>
+  <div class="row wrap" style="justify-content:center;gap:22px;margin-bottom:30px">
+    <span class="fine">About twenty minutes</span><span class="fine ash">&middot;</span>
+    <span class="fine">Pause anytime, every answer saves</span><span class="fine ash">&middot;</span>
+    <span class="fine">Private. Your answers are never shown to anyone.</span>
+  </div>
+  <button class="btn btn-yellow" id="ksBegin" style="font-size:16px;padding:14px 34px">Begin the Profile</button>
+  <p class="fine" style="margin-top:16px">Already started? It picks up right where you left off.</p>
+</div>
+<div class="assess" id="keystone" hidden></div>
 <p class="center fine" style="padding:0 0 28px"><a class="link ash" href="index.html" style="font-size:12px">Back to Fathers.com</a></p>
+<script>(function(){
+  var intro=document.getElementById('ksIntro'), app=document.getElementById('keystone');
+  function begin(){ intro.hidden=true; app.hidden=false; try{sessionStorage.setItem('ks_intro_done','1')}catch(_){} window.scrollTo(0,0); }
+  var b=document.getElementById('ksBegin'); if(b) b.addEventListener('click', begin);
+  try{ if(sessionStorage.getItem('ks_intro_done')==='1') begin(); }catch(_){}
+})();</script>
 
 <script src="assets/js/config.js"></script>
 <script src="assets/js/supabase-client.js"></script>
