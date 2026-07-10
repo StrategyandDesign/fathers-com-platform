@@ -66,7 +66,7 @@ def nav(active='', mode='public'):
     if mode=='app':
         links = [('My Plan','plan.html'),('Classes','classes.html'),('Stories','stories.html'),('Circles','circles.html'),('Certificates','certificates.html')]
     else:
-        links = [('Your Profile','profile.html'),('Classes','classes.html'),('Certificates','certificates.html'),('Find a Program','find-a-program.html'),('For Organizations','organizations.html'),('Gatherings','gatherings.html')]
+        links = [('The Profile','profile.html'),('Classes','classes.html'),('Certificates','certificates.html'),('Stories','stories.html'),('Find a Program','find-a-program.html'),('For Organizations','organizations.html')]
         # Legacy page actives map onto the new public nav so highlighting stays sane.
         active = {'For Groups':'For Organizations','For Veterans':'For Organizations','Stories':'Classes'}.get(active, active)
     lis = ''.join(f'<li><a href="{h}" {"class=\"active\"" if t==active else ""}>{t}</a></li>' for t,h in links)
@@ -155,6 +155,13 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   </div>
 </div></header>
 
+<section class="tight" style="padding:26px 0"><div class="container">
+  <div class="row between wrap" style="gap:14px;align-items:center;border:1px solid var(--hairline);border-radius:10px;padding:18px 22px">
+    <span class="small" style="color:var(--ash)">Run a program, a church, a unit, or a caseload? Fathers.com is the measurable standard for effective fathering programs.</span>
+    <a class="btn btn-secondary btn-sm" href="organizations.html">For Organizations &rarr;</a>
+  </div>
+</div></section>
+
 <section class="band"><div class="container split">
   <div>
     <h2 class="d-36">Four things decide the kind of father you are.</h2>
@@ -162,7 +169,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
     <a class="btn btn-primary" href="profile.html">Start your Profile</a>
   </div>
   <div class="card" style="padding:32px">
-    <div class="eyebrow" style="margin-bottom:16px">YOUR PRESENCE BASELINE</div>
+    <div class="eyebrow" style="margin-bottom:16px">MEASURE &middot; YOUR BASELINE</div>
     <div class="bigscore" style="font-size:72px;margin-bottom:24px">71</div>
     <div class="domain"><div class="row1"><span>Involvement</span><span class="score">78</span></div><div class="bar"><span style="width:78%"></span></div></div>
     <div class="domain gap"><div class="row1"><span>Consistency</span><span class="score">55</span></div><div class="bar"><span style="width:55%"></span></div></div>
@@ -199,6 +206,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 </div></section>
 
 <section class="tight"><div class="container">
+  <div class="eyebrow" style="margin-bottom:12px">TRAIN &middot; YOUR PLAN</div>
   <h2 class="d-28" style="margin-bottom:12px">A plan you actually work.</h2>
   <p style="color:var(--ash);margin:0 0 24px;max-width:56ch">Your Profile becomes a ninety-day plan, one clear step at a time. New classes every month, on the drive or on the couch. The Profile and your plan are always free.</p>
   <div class="rowscroll" id="homeclasses" data-repeat="3" data-prefix="IMG-P1-CAT-" data-ratio="r-2x3" data-href="class.html" data-hrefs="class.html|certificates.html#catalog|certificates.html#catalog"
@@ -209,9 +217,15 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   <p style="margin-top:20px"><a class="link" href="classes.html">See all classes</a></p>
 </div></section>
 
+<section class="tight" style="padding:10px 0 34px"><div class="container">
+  <div class="row wrap" style="gap:26px;justify-content:center;text-align:center">
+    <span class="fine">Normed on 9,232 fathers</span><span class="fine ash">&middot;</span><span class="fine">Built by the National Center for Fathering, four decades of research</span><span class="fine ash">&middot;</span><span class="fine">Every certificate publicly verifiable</span>
+  </div>
+</div></section>
+
 <section class="band-brass"><div class="container split">
   <div>
-    <div class="eyebrow brass" style="margin-bottom:14px">FATHERS.COM VERIFIED CERTIFICATES</div>
+    <div class="eyebrow brass" style="margin-bottom:14px">PROVE &middot; VERIFIED CERTIFICATES</div>
     <h2 class="d-36" style="font-size:32px">Proof you did the work.</h2>
     <p style="color:var(--ash);margin:16px 0 26px;max-width:50ch">Verified hours, identity-checked, with a serial any court, program, or employer can confirm online. When you finish, you hold something that counts outside this site.</p>
     <a class="btn btn-brass" href="certificates.html">Explore Certificates</a>
@@ -242,7 +256,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   <div>
     <div class="eyebrow" style="margin-bottom:14px">FIND A PROGRAM</div>
     <h2 class="d-36" style="font-size:32px">Looking for a fatherhood program? Find one that works.</h2>
-    <p style="color:var(--ash);margin:16px 0 26px;max-width:52ch">Not every father starts with us. Tell us the situation, a new dad, a return from deployment, a reentry, a divorce, and we will point you to a program that fits. We rate them so you do not have to guess.</p>
+    <p style="color:var(--ash);margin:16px 0 26px;max-width:52ch">Not every father starts with us. Tell us the situation, a new dad, a return from deployment, a reentry, a divorce, and we will point you to a program that fits. Every one of them runs on the same published standard.</p>
   </div>
   <div>
     <a class="btn btn-primary" href="find-a-program.html">Find a program</a>
@@ -280,7 +294,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 ''')
 
 # ================================================== profile.html (P2)
-PAGES['profile.html'] = dict(title='The Keystone Father Profile', desc='Twelve minutes. Four scores. One plan.', active='', mode='public', nochrome=True, body='''
+PAGES['profile.html'] = dict(title='The Keystone Father Profile', desc='About twenty minutes. Four scores. One plan.', active='', mode='public', nochrome=True, body='''
 <div class="assess" id="keystone"></div>
 <p class="center fine" style="padding:0 0 28px"><a class="link ash" href="index.html" style="font-size:12px">Back to Fathers.com</a></p>
 ''')
@@ -288,11 +302,15 @@ PAGES['profile.html'] = dict(title='The Keystone Father Profile', desc='Twelve m
 # ================================================== stories.html (P3)
 PAGES['stories.html'] = dict(title='Stories', desc='Epic fatherhood films. Origin, crisis, the turn, the standard.', active='Stories', mode='public', body='''
 <section class="tight" style="padding-top:48px"><div class="container">
+  <div style="margin-bottom:22px">
+    <h1 class="d-36" style="margin-bottom:6px">Fathers who did the work.</h1>
+    <p class="small" style="color:var(--ash)">Origin, crisis, the turn, the standard. Every story ends with the step you can take.</p>
+  </div>
   <div class="billboard">
     <div class="slot r-21x9 play-overlay" data-slot="IMG-P3-BILL-01"><span class="tri"></span></div>
     <div class="overlay">
       <div class="eyebrow" style="margin-bottom:12px">STORIES</div>
-      <h1 class="d-48" style="margin-bottom:8px">Home by Six</h1>
+      <h2 class="d-48" style="margin-bottom:8px">Home by Six</h2>
       <p class="small" style="margin-bottom:18px">A father who chose to be there, one ordinary evening at a time.</p>
       <div class="row"><a class="btn btn-primary play" href="story.html">Watch</a><a class="btn btn-secondary" href="story.html">Trailer</a><span class="tag">24 min</span></div>
     </div>
@@ -380,7 +398,7 @@ PAGES['classes.html'] = dict(title='Classes', desc='Three classes. One standard.
     <a class="mediacard" href="certificates.html#catalog"><div class="slot r-2x3" data-slot="IMG-P4-CAT-02"></div><div class="name" style="margin-top:12px">Steady Under Pressure</div><div class="sub">A father&rsquo;s temper, trained</div><div class="meta">8 modules &middot; Verified Certificate</div></a>
     <a class="mediacard" href="certificates.html#catalog"><div class="slot r-2x3" data-slot="IMG-P4-CAT-08"></div><div class="name" style="margin-top:12px">Coming Home Present</div><div class="sub">Presence after time away</div><div class="meta">10 modules &middot; Verified Certificate</div></a>
   </div>
-  <p class="fine" style="margin-top:24px">Presence. Steadiness. Coming home. Start with your free Profile and your plan will put them in order for you.</p>
+  <p class="fine" style="margin-top:24px">Presence. Steadiness. Coming home. Start with your free Profile and your plan will put them in order for you. Every class moves a Keystone score; every certificate proves it. <a class="link ash" href="research.html">How the Standard works &rarr;</a></p>
 </div></section>
 
 <div class="searchveil" id="searchveil"><div class="searchpanel">
@@ -450,7 +468,7 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
       <button class="btn btn-secondary btn-sm" style="margin-top:16px;width:100%" onclick="toast('Included with membership.')">Included with membership</button></div>
     <div class="card"><div class="eyebrow" style="margin-bottom:14px">INCLUDED IN YOUR MEMBERSHIP</div>
       <div class="stack-8">
-        <div class="check"><span class="checkmark">&check;</span><span class="small">Every class and workbook</span></div>
+        <div class="check"><span class="checkmark">&check;</span><span class="small">Every film, class, and workbook, new releases monthly</span></div>
         <div class="check"><span class="checkmark">&check;</span><span class="small">Your baseline and plan</span></div>
         <div class="check"><span class="checkmark">&check;</span><span class="small">30-day money-back guarantee</span></div>
       </div></div>
@@ -640,7 +658,7 @@ PAGES['groups.html'] = dict(title='For Groups', desc='Circles for churches, team
   <div>
     <div class="eyebrow" style="margin-bottom:16px">FOR GROUPS</div>
     <h1 class="d-48">Bring your men. We bring the plan.</h1>
-    <p class="lead" style="margin:20px 0 30px">Films, discussion guides, baselines, and a weekly standard. Built for churches, teams, and programs.</p>
+    <p class="lead" style="margin:20px 0 30px">Films, discussion guides, baselines, and a weekly standard. Built for churches, teams, and programs. One link enrolls every man under your group. No rosters, no spreadsheets.</p>
     <a class="btn btn-primary" href="#contact">Talk to us</a>
   </div>
 </div></header>
@@ -715,7 +733,8 @@ PAGES['checkout.html'] = dict(title='Start your membership', desc='One membershi
   <div class="seqpanel">
     <div style="display:grid;grid-template-columns:1.2fr .9fr;gap:48px;align-items:start">
       <div>
-        <h1 class="d-36" style="margin-bottom:28px">Start your membership.</h1>
+        <h1 class="d-36" style="margin-bottom:14px">Start your membership.</h1>
+        <p class="small" style="color:var(--ash);margin-bottom:24px;max-width:50ch">The membership is the library: every film, class, and workbook, the full veterans field guide, new releases monthly. Your Profile, plan, and retakes stay free either way. Verified Certificates are separate, $79 each, free with a program code.</p>
         <div class="stack-16" style="margin-bottom:24px">
           <button class="btn btn-secondary" style="width:100%" onclick="toast('Apple Pay wires at deploy. Card fields work below.')">Apple Pay</button>
           <button class="btn btn-secondary" style="width:100%" onclick="toast('Google Pay wires at deploy. Card fields work below.')">Google Pay</button>
@@ -741,7 +760,7 @@ PAGES['checkout.html'] = dict(title='Start your membership', desc='One membershi
         <div class="row" style="gap:10px;margin-bottom:18px"><span class="checkmark">&check;</span><span class="small">30-day money-back guarantee, no questions</span></div>
         <hr class="hr" style="margin-bottom:18px">
         <div class="stack-8">
-          <div class="check"><span class="checkmark">&check;</span><span class="small">Every class and workbook</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Every film, class, and workbook, new releases monthly</span></div>
           <div class="check"><span class="checkmark">&check;</span><span class="small">Your baseline and ninety-day plan</span></div>
           <div class="check"><span class="checkmark">&check;</span><span class="small">The Daily</span></div>
           <div class="check"><span class="checkmark">&check;</span><span class="small">Audio and downloads</span></div>
@@ -836,7 +855,8 @@ PAGES['sponsor.html'] = dict(title='Sponsor a father', desc='$120 gives one year
       <button class="chip" data-toggle="single">Custom</button>
     </div>
     <label style="display:flex;gap:12px;align-items:center;color:var(--bone);font-size:14px;margin-bottom:18px"><input type="checkbox" class="toggle"> Make it monthly</label>
-    <p class="fine" style="max-width:52ch;margin-bottom:26px">Sponsored seats are assigned through partner facilities and programs. You will get one update when your seat is claimed. No personal details, ever.</p>
+    <p class="fine" style="max-width:52ch;margin-bottom:12px">Sponsored seats are assigned through partner facilities and programs. You will get one update when your seat is claimed. No personal details, ever.</p>
+    <p class="fine" style="max-width:52ch;margin-bottom:26px">Churches and programs: sponsor ten and we set up your join link, one link that enrolls every man under your group.</p>
     <button class="btn btn-primary" onclick="toast('Donation processing wires to Stripe at deploy.')">Sponsor</button>
   </div>
 </div></header>
@@ -1076,7 +1096,7 @@ PAGES['certificates.html'] = dict(title='Verified Certificates', desc='Earned pr
       </div>
       <div class="cert-req-note">
         <b>Issuing for a program?</b>
-        <p class="small" style="margin:6px 0 14px">Bulk seats, rosters, and completion reports for courts, agencies, and ministries.</p>
+        <p class="small" style="margin:6px 0 14px">Bulk seats, rosters, and completion reports for courts, agencies, and ministries. Free for your fathers with a program code, and you see completion in your Efficacy Report.</p>
         <a class="link brass" href="groups.html#contact" style="font-size:14px">Talk to us &rarr;</a>
       </div>
     </aside>
@@ -1253,7 +1273,7 @@ PAGES['verify.html'] = dict(title='Verify a certificate', desc='Enter a serial. 
         <div class="row between"><span class="fine">Identity</span><b class="small">Verified at enrollment</b></div>
         <div class="row between"><span class="fine">Issuer</span><b class="small">National Center for Fathering</b></div>
       </div>
-      <hr class="hr" style="margin:18px 0"><a class="link ash" href="#" data-share="report" style="font-size:13px">Report a concern</a>
+      <hr class="hr" style="margin:18px 0"><p class="small" style="margin-bottom:12px">This certificate was earned through logged hours, identity verification, and a proctored final. <a class="link" href="organizations.html">Issue these in your program &rarr;</a></p><a class="link ash" href="#" data-share="report" style="font-size:13px">Report a concern</a>
     </div>
     <div id="v-no" class="card" style="display:none;border-color:var(--error)">
       <b>NOT FOUND.</b><p class="small" style="margin-top:8px">Check the serial and try again.</p>
@@ -1288,13 +1308,13 @@ PAGES['employers.html'] = dict(title='For Employers', desc='Your parental benefi
   <h2 class="d-28" style="margin-bottom:24px">How it works</h2>
   <div class="steps3" style="margin-bottom:56px">
     <div class="s"><div class="n">01</div><p class="small" style="margin-top:8px">A father activates his seat before or during leave</p></div>
-    <div class="s"><div class="n">02</div><p class="small" style="margin-top:8px">He takes the twelve-minute baseline and gets a leave-fitted plan</p></div>
+    <div class="s"><div class="n">02</div><p class="small" style="margin-top:8px">He takes the twenty-minute baseline and gets a leave-fitted plan</p></div>
     <div class="s"><div class="n">03</div><p class="small" style="margin-top:8px">You see activation and completion. Never his answers.</p></div>
   </div>
   <h2 class="d-28" style="margin-bottom:24px">What's in the seat</h2>
   <div class="grid-2" style="max-width:760px">
     <div class="stack-8">
-      <div class="check"><span class="checkmark">&check;</span><span class="small">Every class and workbook</span></div>
+      <div class="check"><span class="checkmark">&check;</span><span class="small">Every film, class, and workbook, new releases monthly</span></div>
       <div class="check"><span class="checkmark">&check;</span><span class="small">The new-father track</span></div>
       <div class="check"><span class="checkmark">&check;</span><span class="small">The Daily</span></div>
     </div>
@@ -1827,7 +1847,7 @@ PAGES['voice.html'] = dict(title='Voice', desc='Record your voice for your kids.
 <script src="assets/js/voice.js"></script>
 ''')
 
-PAGES['course.html'] = dict(title='Your Certificate', desc='Watch the lessons, pass each Debrief, answer the final Q&A, and submit for approval.', active='Certificates', mode='app', auth=True, body='''
+PAGES['course.html'] = dict(title='Your Certificate', desc='Watch the lessons, pass each Checkpoint, answer the final Q&A, and submit for approval.', active='Certificates', mode='app', auth=True, body='''
 <section class="cw-wrap" id="cw-root">
   <div class="cw-head">
     <a class="link ash" href="certificates.html" style="display:inline-block;margin-bottom:16px">&larr; All certificates</a>
@@ -1841,7 +1861,7 @@ PAGES['course.html'] = dict(title='Your Certificate', desc='Watch the lessons, p
 ''')
 
 # ================================================== find-a-program.html
-PAGES['find-a-program.html'] = dict(title='Find a fatherhood program that works', desc='Tell us the situation and we will point you to a program that fits. We rate them against one published standard.', active='Find a Program', mode='public', body='''
+PAGES['find-a-program.html'] = dict(title='Find a fatherhood program that works', desc='Tell us the situation and we will point you to a program that fits. Every listed program runs on one published standard.', active='Find a Program', mode='public', body='''
 <header class="hero"><div class="container" style="max-width:820px">
   <div class="eyebrow" style="margin-bottom:18px">FIND A PROGRAM</div>
   <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">Find a fatherhood program that works.</h1>
@@ -1873,7 +1893,8 @@ PAGES['find-a-program.html'] = dict(title='Find a fatherhood program that works'
 <section><div class="container split">
   <div>
     <h2 class="d-36" style="font-size:32px">How we rate programs.</h2>
-    <p style="color:var(--ash);margin:16px 0 26px;max-width:52ch">One published standard, measured on the same four dimensions we measure fathers on: involvement, consistency, awareness, nurturance. We rate every program against it, including our own, and we show our method. Programs that meet the bar earn the recommendation.</p>
+    <p style="color:var(--ash);margin:16px 0 26px;max-width:52ch">One published standard, measured on the same four dimensions we measure fathers on: involvement, consistency, awareness, nurturance. Every program listed here runs on the Keystone Standard: the same instrument, the same norms, the same report. Public ratings publish with the first rated cohort.</p>
+    <p style="color:var(--ash);margin:0 0 26px"><a class="link" href="organizations.html#walkthrough">Run a program? Get on the Standard, and in line for the first cohort &rarr;</a></p>
     <p class="fine">The directory is young. While it grows, requests are routed by hand by our team.</p>
   </div>
   <div class="card" style="padding:32px">
@@ -1922,6 +1943,18 @@ PAGES['organizations.html'] = dict(title='The measurable standard for effective 
   </div>
 </div></section>
 
+<section class="band tight"><div class="container split">
+  <div>
+    <div class="eyebrow" style="margin-bottom:14px">FOR COURTS AND PROBATION</div>
+    <h2 class="d-28" style="margin-bottom:8px">Order the class by name. Verify in ten seconds.</h2>
+    <p style="color:var(--ash);max-width:52ch">Coming Home Present and Steady Under Pressure are built for referral: identity checked at enrollment, hours logged not claimed, a final at eighty percent. Completion is confirmed at fathers.com/verify with the serial on the document. No account, no phone call, no paperwork chase.</p>
+  </div>
+  <div class="card" style="padding:32px">
+    <div class="eyebrow" style="margin-bottom:16px">FOR THE MAN YOU REFER</div>
+    <p class="small" style="color:var(--ash)">He starts free with the Keystone Profile, trains the class you name, and leaves with a document that opens doors instead of a checkbox that closes them.</p>
+  </div>
+</div></section>
+
 <section class="band tight"><div class="container">
   <h2 class="d-28" style="margin-bottom:8px">No fatherhood program yet? The floor is never nothing.</h2>
   <p style="color:var(--ash);margin:0 0 32px;max-width:60ch">You already intake fathers. Start measuring today and switch the rest on when you are ready.</p>
@@ -1951,6 +1984,10 @@ PAGES['organizations.html'] = dict(title='The measurable standard for effective 
   </div>
 </div></section>
 
+<section class="tight"><div class="container" style="text-align:center">
+  <p style="font-family:var(--font-display);font-size:24px">Measure your men. Train them on the Standard. Prove it to anyone.</p>
+</div></section>
+
 <section class="band tight"><div class="container">
   <div class="row wrap" style="gap:14px;align-items:center">
     <span class="small" style="color:var(--ash)">Also built for:</span>
@@ -1967,7 +2004,7 @@ PAGES['gatherings.html'] = dict(title='Gatherings', desc='Fathers, in real life.
 <header class="hero"><div class="container" style="max-width:820px">
   <div class="eyebrow" style="margin-bottom:18px">GATHERINGS</div>
   <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">Fathers, in real life.</h1>
-  <p class="lead" style="margin:22px 0 8px">Presence is not only trained on a screen. We gather fathers, mentors, and the people who lead them, to learn, to be sharpened, and to stand together.</p>
+  <p class="lead" style="margin:22px 0 8px">Where the Standard meets in person. Presence is not only trained on a screen. We gather fathers, mentors, and the people who lead them, to learn, to be sharpened, and to stand together.</p>
 </div></header>
 
 <section class="band tight"><div class="container split">
@@ -2021,6 +2058,7 @@ PAGES['research.html'] = dict(title='The research behind the Keystone Profile', 
 <header class="hero"><div class="container" style="max-width:860px">
   <div class="eyebrow" style="margin-bottom:18px">RESEARCH</div>
   <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em">The instrument behind the standard.</h1>
+  <p class="small" style="color:var(--ash);margin-top:14px;max-width:56ch">The instrument is versioned. Norms are published. Methods are shown. Rate us the way we rate programs.</p>
   <p class="lead" style="margin:22px 0 8px">The Keystone Father Profile is a validated, versioned instrument built from Dr. Ken Canfield's research and normed on 9,232 fathers. It is the spine of everything on this platform.</p>
 </div></header>
 
@@ -2064,6 +2102,7 @@ PAGES['efficacy-report.html'] = dict(title='The Efficacy Report', desc='Cohort m
   <p style="color:var(--ash);margin:0 0 28px;max-width:62ch">Movement on the four Keystone dimensions, per cohort, benchmarked against the national norm. This page is the deliverable: print it, attach it, submit it.</p>
   <div id="reportRoot"></div>
   <p class="fine" style="margin-top:22px">Not on the standard yet? <a class="link" href="organizations.html">Start here</a>. Methodology: <a class="link ash" href="research.html">the research</a>.</p>
+  <p class="fine" style="margin-top:10px">Send this page to your funder. It is designed to be forwarded. <a class="link" href="mailto:?subject=Keystone%20Efficacy%20Report%20sample&amp;body=The%20report%20our%20program%20delivers%3A%20https%3A%2F%2Ffathers-com-platform.vercel.app%2Fefficacy-report.html%3Fdemo%3D1">Email the sample &rarr;</a></p>
 </div></section>
 <style>@media print{.nav,footer,.btn,select{display:none!important}body{background:#fff;color:#000}}</style>
 <script src="assets/js/report.js"></script>
