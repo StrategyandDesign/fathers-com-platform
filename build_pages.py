@@ -183,8 +183,8 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   <div>
     <div class="eyebrow" style="margin-bottom:12px">START FREE</div>
     <h2 style="font-family:var(--font-ui);font-weight:600;font-size:22px;margin-bottom:22px">Start free. Grow on a plan.</h2>
-    <div class="row wrap"><a class="btn btn-primary" href="profile.html">Start your Profile</a><a class="btn btn-secondary" href="gift.html">Gift a year</a></div>
-    <p class="fine" style="margin-top:12px">The gift is a year of every film, class, and workbook. His Profile and plan are free for every man. Certificates are earned, never given.</p>
+    <div class="row wrap"><a class="btn btn-primary" href="profile.html">Start your Profile</a><a class="btn btn-secondary" href="gift.html">Gift the courses</a></div>
+    <p class="fine" style="margin-top:12px">The gift is two certificate courses, paid in full. He picks which two. The certificate itself is still earned, never given.</p>
   </div>
   <div class="stack-16">
     <div class="check"><span class="checkmark">&check;</span><span>Your Keystone Profile and ninety-day plan, free</span></div>
@@ -292,7 +292,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   <div class="eyebrow" style="margin-bottom:12px">QUESTIONS</div>
   <h2 class="d-28" style="margin-bottom:24px">Frequently asked questions</h2>
   <details open><summary>What is Fathers.com?</summary><div class="body">Fathers.com is the home of the Keystone Standard, from the National Center for Fathering. Measure where you stand as a father, grow with a plan, and prove the work with a verified certificate. Programs and agencies use the same standard to show whether fathers are changing.</div></details>
-<details><summary>What exactly does a gift include?</summary><div class="body">A year of the library: every film, class, and workbook, plus new releases monthly. His Keystone Profile and ninety-day plan are free for every man, gift or not. The Verified Certificate is separate and can never be gifted; you can cover his $79 fee, and he still earns the document.</div></details>
+<details><summary>What exactly does a gift include?</summary><div class="body">Two Verified Certificate courses, paid in full: he picks any two of the three, and gets every film, workbook, and checkpoint inside them. His Keystone Profile and ninety-day plan are free for every man, gift or not. The certificate itself can never be gifted: identity checked, hours logged, final passed. You pay for the work; he earns the proof.</div></details>
   <details><summary>How much does it cost?</summary><div class="body">Your Keystone Profile and your ninety-day plan are free, along with Dr. Canfield's Fundamentals of Fathering. Verified Certificates are priced separately. A full class library membership is optional at $120 a year, with a 30-day money-back guarantee.</div></details>
   <details><summary>How does the Keystone Profile work?</summary><div class="body">About 40 questions, around twenty minutes. You get four domain scores, an overall baseline, and a plan built from your gaps, normed against 9,232 fathers. Your results are yours. We never share them.</div></details>
   <details><summary>Do you rate other programs?</summary><div class="body">Yes. We publish a standard for whether a father program works and rate programs against it, including our own, so fathers and funders can tell what actually helps. Tell us what you need and we will point you to one that fits.</div></details>
@@ -345,17 +345,17 @@ PAGES['stories.html'] = dict(title='Stories', desc='Epic fatherhood films. Origi
 
 <section class="tight"><div class="container stack-32">
   <div><h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:18px">After the Sentence</h2>
-  <div class="rowscroll" data-repeat="6" data-prefix="IMG-P3-ROW2-" data-ratio="r-16x9" data-href="story.html"
-    data-titles="Visitation Day|Eight Years, Every Letter|The First Pickup|Walking Papers|The Long Way Back|Signed Out"
-    data-metas="22 min|19 min|25 min|20 min|23 min|18 min"></div></div>
+  <div class="rowscroll" data-repeat="4" data-prefix="IMG-P3-ROW2-" data-ratio="r-16x9" data-href="story.html"
+    data-titles="Visitation Day|Eight Years, Every Letter|The First Pickup|Walking Papers"
+    data-metas="22 min|19 min|25 min|20 min"></div></div>
   <div><h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:18px">Starting Over</h2>
-  <div class="rowscroll" data-repeat="6" data-prefix="IMG-P3-ROW3-" data-ratio="r-16x9" data-href="story.html"
-    data-titles="Two Households|The Apology|Sundays at Noon|Step by Step|The New Standard|Full Custody of Tuesday"
-    data-metas="20 min|17 min|23 min|19 min|21 min|24 min"></div></div>
+  <div class="rowscroll" data-repeat="4" data-prefix="IMG-P3-ROW3-" data-ratio="r-16x9" data-href="story.html"
+    data-titles="Two Households|The Apology|Sundays at Noon|Step by Step"
+    data-metas="20 min|17 min|23 min|19 min"></div></div>
   <div><h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:18px">The First Year</h2>
-  <div class="rowscroll" data-repeat="6" data-prefix="IMG-P3-ROW4-" data-ratio="r-16x9" data-href="story.html"
-    data-titles="Night Shift|Three Weeks of Leave|The Carrier|What My Father Did|First Fever|Home by Six"
-    data-metas="16 min|18 min|15 min|22 min|17 min|19 min"></div></div>
+  <div class="rowscroll" data-repeat="4" data-prefix="IMG-P3-ROW4-" data-ratio="r-16x9" data-href="story.html"
+    data-titles="Night Shift|Three Weeks of Leave|The Carrier|What My Father Did"
+    data-metas="16 min|18 min|15 min|22 min"></div></div>
 </div></section>
 
 <section class="band tight"><div class="container row between wrap">
@@ -810,18 +810,18 @@ PAGES['checkout.html'] = dict(title='Start your membership', desc='One membershi
 ''')
 
 # ================================================== gift.html (P8 screens 3-4)
-PAGES['gift.html'] = dict(title='Give a father his plan', desc='One year. Every class. His baseline and his plan.', active='', mode='public', body='''
+PAGES['gift.html'] = dict(title='Give a father the courses', desc='Two Verified Certificate courses, paid in full. The certificate itself is still his to earn.', active='', mode='public', body='''
 <div class="billboard">
   <div class="slot r-21x9 flush" data-slot="IMG-P8-GFT-01" style="max-height:48vh"></div>
   <div class="overlay container" style="left:50%;transform:translateX(-50%);max-width:var(--max)">
-    <h1 class="d-48">Give a father his plan.</h1>
-    <p class="small" style="margin-top:10px;max-width:52ch">One year of the library: every film, class, and workbook, new releases monthly. His Profile and plan are already free for every man; your gift is the training on top. He will know it came from you.</p>
+    <h1 class="d-48">Pay for the work. He earns the proof.</h1>
+    <p class="small" style="margin-top:10px;max-width:52ch">Two Verified Certificate courses, paid in full. He picks any two of the three, and gets every film, workbook, and checkpoint inside them. The certificate itself is still earned, never given. He will know it came from you.</p>
   </div>
 </div>
 <section class="tight"><div class="container split" style="align-items:start">
   <div class="card" style="padding:32px">
-    <div class="row between" style="margin-bottom:10px"><b>1 year of Fathers.com</b><b class="mono">$120</b></div>
-    <p class="fine" style="margin-bottom:22px">Inside: the full film library, all three classes with workbooks, the veterans field guide, and every new release for a year.</p>
+    <div class="row between" style="margin-bottom:10px"><b>Two certificate courses</b><b class="mono">$158</b></div>
+    <p class="fine" style="margin-bottom:22px">He chooses any two of the three: Fathering Fundamentals, Steady Under Pressure, Coming Home Present. Every film, workbook, checkpoint, and the final for each. His Keystone Profile and ninety-day plan are free for every man, gift or not.</p>
     <div class="grid-2" style="gap:16px">
       <div class="field"><label>To</label><input class="input" id="g-to" placeholder="Dad"></div>
       <div class="field"><label>From</label><input class="input" id="g-from" placeholder="Marcus"></div>
@@ -835,14 +835,14 @@ PAGES['gift.html'] = dict(title='Give a father his plan', desc='One year. Every 
     <div class="field"><label>Method</label>
       <div class="chiprow"><button class="chip selected" data-toggle="single">Email</button><button class="chip" data-toggle="single">Printable card</button></div></div>
     <button class="btn btn-primary" style="width:100%" onclick="toast('Gift order wires to Stripe and Resend at deploy.')">Give the gift</button>
-    <p class="fine" style="margin-top:12px"><b class="bone">Certificates are earned, never given.</b> You can cover the $79 fee for his Verified Certificate at checkout; the hours, the identity check, and the final are still his. That is why the document means something.</p>
+    <p class="fine" style="margin-top:12px"><b class="bone">Certificates are earned, never given.</b> You are paying for the work, not the paper: identity checked, hours logged, a final at eighty percent. When he passes, the document is his because he earned it. That is why it means something.</p>
     <p class="fine" style="margin-top:8px">Giving to a man you have not met? <a class="link ash" href="sponsor.html">Sponsor a father &rarr;</a></p>
   </div>
   <div>
     <div class="eyebrow" style="margin-bottom:14px">HE SEES THIS</div>
     <div class="doc" style="padding:40px;max-width:520px;margin:0">
       <img src="assets/img/logomark-dark.png" alt="Fathers.com" style="height:36px;margin-bottom:24px">
-      <p style="font-family:var(--font-mono);font-size:12px;letter-spacing:.2em;color:#6b6257;text-transform:uppercase;margin-bottom:14px">A year of Fathers.com</p>
+      <p style="font-family:var(--font-mono);font-size:12px;letter-spacing:.2em;color:#6b6257;text-transform:uppercase;margin-bottom:14px">Two certificate courses</p>
       <h2 style="font-size:26px;color:#141210;margin-bottom:16px">For <span id="pv-to">Dad</span>, from <span id="pv-from">Marcus</span></h2>
       <p id="pv-msg" style="font-family:var(--font-display);font-size:19px;color:#3a352e;line-height:1.45;margin-bottom:24px">You showed me. Now train it.</p>
       <span style="display:inline-block;background:#E86A3C;color:#0A0A0A;padding:13px 24px;border-radius:6px;font-weight:600;font-size:14px">Claim it and take your baseline</span>
@@ -852,7 +852,7 @@ PAGES['gift.html'] = dict(title='Give a father his plan', desc='One year. Every 
 </div></section>
 <section class="band tight"><div class="container center" style="max-width:620px">
   <div class="eyebrow" style="margin-bottom:16px">REDEMPTION PREVIEW</div>
-  <h2 class="d-28" style="margin-bottom:12px">Marcus sent you a year of Fathers.com.</h2>
+  <h2 class="d-28" style="margin-bottom:12px">Marcus sent you two certificate courses, paid in full.</h2>
   <p class="quote" style="font-size:20px;margin-bottom:26px">"You showed me. Now train it."</p>
   <a class="btn btn-primary" href="profile.html">Claim it and take your baseline</a>
   <p class="fine" style="margin-top:14px">No card required to redeem.</p>
@@ -886,7 +886,7 @@ PAGES['sponsor.html'] = dict(title='Sponsor a father', desc='$120 gives one year
     <label style="display:flex;gap:12px;align-items:center;color:var(--bone);font-size:14px;margin-bottom:18px"><input type="checkbox" class="toggle"> Make it monthly</label>
     <p class="fine" style="max-width:52ch;margin-bottom:12px">Sponsored seats are assigned through partner facilities and programs. You will get one update when your seat is claimed. No personal details, ever.</p>
     <p class="fine" style="max-width:52ch;margin-bottom:12px">Churches and programs: sponsor ten and we set up your join link, one link that enrolls every man under your group.</p>
-    <p class="fine" style="max-width:52ch;margin-bottom:26px">Giving to your own dad or a friend? <a class="link ash" href="gift.html">Gift a year &rarr;</a></p>
+    <p class="fine" style="max-width:52ch;margin-bottom:26px">Giving to your own dad or a friend? <a class="link ash" href="gift.html">Gift the courses &rarr;</a></p>
     <button class="btn btn-primary" onclick="toast('Donation processing wires to Stripe at deploy.')">Sponsor</button>
   </div>
 </div></header>
