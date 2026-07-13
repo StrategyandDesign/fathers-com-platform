@@ -121,8 +121,11 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
           <span class="hio-label">I'm preparing, mentoring, or growing</span>
           <span class="hio-arrow">&rarr;</span>
         </button>
-        <a class="hero-intent-opt" href="veterans.html">
-          <span class="hio-label">I served</span>
+        <a class="hero-intent-opt" href="veterans.html" data-served="1">
+          <span class="hio-text">
+            <span class="hio-label">I served in the military</span>
+            <span class="hio-sub">Free, forever, for those who served.</span>
+          </span>
           <span class="hio-arrow">&rarr;</span>
         </a>
       </div>
@@ -195,7 +198,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 
 <section><div class="container">
   <div class="billboard">
-    <div class="slot r-21x9 play-overlay" data-slot="IMG-P1-BILL-01"><span class="tri"></span></div>
+    <a class="slot r-21x9 play-overlay filled" data-slot="IMG-P1-BILL-01" href="class.html" aria-label="Watch The Fundamentals of Fathering"><img src="assets/img/photos/billboard-home.jpg" alt="A father with his son"><span class="tri"></span></a>
     <div class="overlay">
       <div class="eyebrow" style="margin-bottom:12px">TRAIN &middot; THE FLAGSHIP CLASS</div>
       <h2 class="d-36" style="margin:0 0 8px">The Fundamentals of Fathering</h2>
@@ -211,7 +214,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   <p style="color:var(--ash);margin:0 0 24px;max-width:56ch">Your Profile becomes a ninety-day plan, one clear step at a time. New films and lessons every month, on the drive or on the couch. The Profile and your plan are always free.</p>
   <div class="grid-3" id="homeclasses" style="margin-top:6px">
     <a class="card" href="class.html" style="padding:0;overflow:hidden;text-decoration:none">
-      <div class="slot r-2x3" data-slot="IMG-P1-CAT-1" style="max-height:280px"></div>
+      <div class="slot r-2x3 filled" data-slot="IMG-P1-CAT-1" style="max-height:280px"><img src="assets/img/photos/action-01.jpg" alt="Fathering Fundamentals"></div>
       <div style="padding:20px 22px">
         <div class="row between" style="margin-bottom:8px"><span class="pill">FREE COURSE</span><span class="fine mono">12 lessons</span></div>
         <h3 style="margin-bottom:6px">Fathering Fundamentals</h3>
@@ -219,7 +222,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
       </div>
     </a>
     <a class="card" href="certificates.html#waitlist" style="padding:0;overflow:hidden;text-decoration:none">
-      <div class="slot r-2x3" data-slot="IMG-P1-CAT-2" style="max-height:280px"></div>
+      <div class="slot r-2x3 filled" data-slot="IMG-P1-CAT-2" style="max-height:280px"><img src="assets/img/photos/action-02.jpg" alt="Steady Under Pressure"></div>
       <div style="padding:20px 22px">
         <div class="row between" style="margin-bottom:8px"><span class="pill" style="opacity:.75">IN DEVELOPMENT</span><span class="fine mono">Waitlist</span></div>
         <h3 style="margin-bottom:6px">Steady Under Pressure</h3>
@@ -227,7 +230,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
       </div>
     </a>
     <a class="card" href="certificates.html#waitlist" style="padding:0;overflow:hidden;text-decoration:none">
-      <div class="slot r-2x3" data-slot="IMG-P1-CAT-3" style="max-height:280px"></div>
+      <div class="slot r-2x3 filled" data-slot="IMG-P1-CAT-3" style="max-height:280px"><img src="assets/img/photos/community-01.jpg" alt="Coming Home Present"></div>
       <div style="padding:20px 22px">
         <div class="row between" style="margin-bottom:8px"><span class="pill" style="opacity:.75">IN DEVELOPMENT</span><span class="fine mono">Waitlist</span></div>
         <h3 style="margin-bottom:6px">Coming Home Present</h3>
@@ -254,7 +257,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   </div>
   <div class="card brass-card">
     <div class="row" style="gap:20px">
-      <div class="slot r-1x1" data-slot="IMG-P0-CARD-03" style="flex:0 0 84px"></div>
+      <div class="slot r-1x1 filled" data-slot="IMG-P0-CARD-03" style="flex:0 0 84px"><img src="assets/img/photos/hero-05.jpg" alt="A father"></div>
       <div><h3 style="margin-bottom:6px">Fathering Fundamentals Certificate</h3>
         <div class="mono small">10.0 verified hours</div>
         <div class="mono fine" style="margin-top:8px">FC-2026-000000</div></div>
@@ -329,7 +332,7 @@ PAGES['stories.html'] = dict(title='Stories', desc='Epic fatherhood films. Origi
     <p class="small" style="color:var(--ash)">Origin, crisis, the turn, the standard. Every story ends with the step you can take.</p>
   </div>
   <div class="billboard">
-    <div class="slot r-21x9 play-overlay" data-slot="IMG-P3-BILL-01"><span class="tri"></span></div>
+    <a class="slot r-21x9 play-overlay filled" data-slot="IMG-P3-BILL-01" href="story.html" aria-label="Watch the story"><img src="assets/img/photos/billboard-stories.jpg" alt="A father at the kitchen table"><span class="tri"></span></a>
     <div class="overlay">
       <div class="eyebrow" style="margin-bottom:12px">STORIES</div>
       <h2 class="d-48" style="margin-bottom:8px">Home by Six</h2>
@@ -362,7 +365,7 @@ PAGES['stories.html'] = dict(title='Stories', desc='Epic fatherhood films. Origi
 
 # ================================================== story.html (P3 detail + submission)
 PAGES['story.html'] = dict(title='From Combat to the Kitchen Table', desc='One father. Origin, crisis, the turn, the standard.', active='Stories', mode='public', body='''
-<div class="slot r-21x9 play-overlay flush" data-slot="IMG-P3-DET-01" style="max-height:62vh"><span class="tri"></span></div>
+<div class="slot r-21x9 flush filled" data-slot="IMG-P3-DET-01" style="max-height:62vh"><img src="assets/img/photos/hero-06.jpg" alt="From combat to the kitchen table"></div>
 <section class="tight"><div class="container" style="display:grid;grid-template-columns:1.4fr .9fr;gap:56px">
   <div>
     <h1 class="d-36">From Combat to the Kitchen Table</h1>
@@ -416,7 +419,7 @@ PAGES['classes.html'] = dict(title='Certificates', desc='The certificate tracks.
 
 PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flagship class on presence, taught by Dr. Ken Canfield.', active='Classes', mode='public', body='''
 <div class="billboard">
-  <div class="slot r-21x9 play-overlay flush" data-slot="IMG-P4-DET-01" style="max-height:64vh"><span class="tri"></span></div>
+  <div class="slot r-21x9 flush filled" data-slot="IMG-P4-DET-01" style="max-height:64vh"><img src="assets/img/photos/community-02.jpg" alt="Fathers who took the course"></div>
   <div class="overlay container" style="left:50%;transform:translateX(-50%);max-width:var(--max)">
     <div class="eyebrow" style="margin-bottom:10px">THE FREE COURSE &middot; THE 7 SECRETS OF EFFECTIVE FATHERS</div>
     <h1 class="d-48">The Fundamentals of Fathering</h1>
@@ -491,7 +494,7 @@ PAGES['player.html'] = dict(title='Lesson 4 &middot; The Fundamentals of Fatheri
   <p class="tag" style="margin-bottom:14px">The Fundamentals of Fathering / Lesson 4</p>
   <div style="display:grid;grid-template-columns:1.55fr .75fr;gap:32px;align-items:start">
     <div>
-      <div class="slot r-16x9 play-overlay" data-slot="IMG-P5-PLY-01" id="stage"><span class="tri"></span></div>
+      <div class="slot r-16x9 filled" data-slot="IMG-P5-PLY-01" id="stage"><img src="assets/img/photos/action-01.jpg" alt="Lesson still"></div>
       <div class="card" style="margin-top:14px;padding:14px 18px">
         <div class="row" style="gap:18px">
           <button class="btn btn-secondary btn-sm play" onclick="toast('Resuming at 06:12.')">Play</button>
@@ -612,7 +615,7 @@ PAGES['circles.html'] = dict(title='My Circle', desc='Living Hope Men. One film,
         <div class="card" style="padding:28px;margin-bottom:26px">
           <div class="eyebrow" style="margin-bottom:14px">THIS WEEK IN CIRCLE</div>
           <div class="row" style="gap:18px;align-items:flex-start;margin-bottom:20px">
-            <div class="slot r-16x9 play-overlay" data-slot="IMG-P7-CIR-01" style="flex:0 0 200px"><span class="tri"></span></div>
+            <div class="slot r-16x9 filled" data-slot="IMG-P7-CIR-01" style="flex:0 0 200px"><img src="assets/img/photos/hero-07.jpg" alt="Film still"></div>
             <div><b style="font-size:15px">Watch before Tuesday: After the Sentence &middot; 22 min</b></div>
           </div>
           <p class="quote" style="font-size:20px;margin-bottom:18px">"Where did your father's absence still shape your hand?"</p>

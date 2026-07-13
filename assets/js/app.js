@@ -215,6 +215,13 @@
     });
   });
 
+  // The homepage veteran row is an explicit statement of service. Record it.
+  document.querySelectorAll('a.hero-intent-opt[data-served]').forEach(function(el){
+    el.addEventListener('click', function(){
+      try { localStorage.setItem('fc_served','1'); } catch(e){}
+    });
+  });
+
   // Lead + submission forms
   document.querySelectorAll('form[data-lead]').forEach(function(f){
     f.addEventListener('submit',function(e){

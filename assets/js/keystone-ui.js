@@ -10,13 +10,53 @@
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function pct(a,b){ return b? Math.round((a/b)*100):0; }
 
+  /* ---------- funnel instrumentation ---------- */
+  function ksEv(name, meta){
+    try {
+      if (window.FC && FC.live && FC.sb) {
+        FC.sb.from('funnel_events').insert({ user_id:(FC.uid&&FC.uid())||null, event:name, meta:meta||{} }).then(function(){},function(){});
+      }
+    } catch(e){}
+  }
+  var _ksStarted = false;
+  function ksStart(){ if(_ksStarted) return; _ksStarted = true; ksEv('assessment_start', {}); }
+
+  /* ---------- did he serve? asked once, plainly ---------- */
+  function servedAsked(){ try { return localStorage.getItem('fc_served') !== null; } catch(e){ return false; } }
+  function servedGate(next){
+    if (servedAsked()) { next(); return; }
+    root.innerHTML = shell(
+      '<div class="eyebrow" style="margin-bottom:14px">BEFORE YOU START</div>'+
+      '<h2 style="margin:0 0 10px">Did you serve in the military?</h2>'+
+      '<p class="helper">Everything on Fathers.com is free, forever, for those who served. Nothing here changes your scores.</p>'+
+      '<div class="ks-modes" style="margin-top:28px">'+
+        '<button class="ks-mode" data-served="1"><b>Yes, I served</b>'+
+          '<span>Veteran. The whole platform is yours at no cost, always.</span></button>'+
+        '<button class="ks-mode" data-served="1"><b>I am serving now</b>'+
+          '<span>Active duty, Guard, or Reserve. Free, forever.</span></button>'+
+        '<button class="ks-mode" data-served="0"><b>No, I did not serve</b>'+
+          '<span>Go straight to your Profile.</span></button>'+
+      '</div>');
+    root.querySelectorAll('.ks-mode').forEach(function(b){
+      b.onclick = function(){
+        var yes = b.dataset.served === '1';
+        try { localStorage.setItem('fc_served', yes ? '1' : '0'); } catch(e){}
+        ksEv('served_answered', { served: yes });
+        if (yes && window.FC && FC.live && FC.uid && FC.uid()) {
+          try { FC.sb.from('profiles').update({ served: true }).eq('id', FC.uid()).then(function(){},function(){}); } catch(e){}
+        }
+        next();
+      };
+    });
+  }
+
   // ---------- entry: choose mode, or resume ----------
   function start(){
     // An explicit track choice on the homepage always wins, signed in or not.
     var intent = null;
     try { intent = localStorage.getItem('fc_intent_path'); if(intent) localStorage.removeItem('fc_intent_path'); } catch(e){}
-    if(intent === 'preparing'){ KS.setPath('preparing'); preparingIntro(); return; }
-    if(intent === 'father'){ KS.setPath('father'); chooseMode(); return; }
+    if(intent === 'preparing'){ KS.setPath('preparing'); servedGate(preparingIntro); return; }
+    if(intent === 'father'){ KS.setPath('father'); servedGate(chooseMode); return; }
     if(window.FC && FC.live && FC.uid()){
       // Did he just save-and-signup mid-assessment? Restore his local work into his new account.
       var resuming = false;
@@ -87,14 +127,14 @@
     root.querySelectorAll('.ks-mode').forEach(function(b){
       b.onclick = function(){
         KS.setPath(b.dataset.path);
-        if(b.dataset.path === 'father'){ chooseMode(); }
-        else { preparingIntro(); }
+        servedGate(b.dataset.path === 'father' ? chooseMode : preparingIntro);
       };
     });
   }
 
   // Non-father path: welcoming intro, then the childhood-reflection questions (no mode choice needed, it's short).
   function preparingIntro(){
+    ksStart();
     var items = KS.pathItems();
     if(!items.length){ gate(); return; }
     root.innerHTML = shell(
@@ -128,6 +168,7 @@
   }
 
   function chooseMode(){
+    ksStart();
     var dCount = KS.itemsInSection('dimensions').length,
         pCount = KS.itemsInSection('practices').length,
         sCount = KS.itemsInSection('satisfaction').length,
@@ -321,6 +362,7 @@
   // ---------- results: all 26 scales ----------
   function finish(){
     var scored = KS.score();
+    ksEv('assessment_complete', { preparing: KS.isPreparing() });
     // Preserve the completed result locally so it survives the magic-link round trip.
     try { localStorage.setItem('fc_pending_result', JSON.stringify({
       scored: scored, preparing: KS.isPreparing(), at: Date.now()
