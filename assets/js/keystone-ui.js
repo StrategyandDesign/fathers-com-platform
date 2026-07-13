@@ -372,84 +372,48 @@
     if(signedIn){ KS.saveResult(scored); }
 
     if(KS.isPreparing()){
-      if(!signedIn){ return gateEmail(scored, true); }
       return finishPreparing(scored);
     }
-    if(!signedIn){ return gateEmail(scored, false); }
-
+    // Spool's rule: never wall the value a man just earned. Full results show to everyone;
+    // the email becomes a save action below the results, not a paywall in front of them.
     return showResults(scored);
   }
 
-  // ---------- THE EMAIL GATE: capture at peak motivation ----------
-  // He just finished. Show a real teaser (proof there's value), then require email
-  // to unlock the full profile and plan. Entering email creates his account (magic link).
-  function gateEmail(scored, isPreparing){
-    var strength = scored.scales[scored.strength] || {label:'Your reflection'};
-    if(isPreparing){
-      var csg = scored.scales.childhood_satisfaction || {band:{label:'Reflective'}};
-      strength = {label: csg.band.label};
+  // ---------- SAVE THE PLAN (no paywall) ----------
+  // The full results are already on screen. This only emails the plan and creates the
+  // account via magic link, so he can retake later and track movement. Save, not unlock.
+  function sendPlanLink(email, btn, msg){
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent='Enter a valid email.'; msg.style.color='var(--error)'; return; }
+    btn.disabled=true; btn.textContent='Sending your plan\u2026'; msg.textContent='';
+    ksEv('plan_email_submitted', {});
+    if(window.FC && FC.signIn){
+      FC.signIn(email,'plan.html').then(function(r){
+        if(r && r.error){ msg.textContent='Something went wrong. Try again.'; msg.style.color='var(--error)'; btn.disabled=false; btn.textContent='Email me my plan'; return; }
+        root.innerHTML = shell(
+          '<div class="center" style="padding:40px 0">'+
+            '<div class="ks-check">\u2713</div>'+
+            '<h2 style="margin:8px 0">Check your email.</h2>'+
+            '<p class="helper">We sent your ninety-day plan and a secure link to <b>'+esc(email)+'</b>. Click it to sign in, and your full profile is saved and waiting.</p>'+
+            '<p class="fine" style="margin-top:20px">No password needed. The link signs you in.</p>'+
+          '</div>');
+      });
     }
-    var overall = scored.overall;
-    root.innerHTML = shell(
-      '<div class="ks-gate">'+
-        '<div class="eyebrow brass" style="margin-bottom:14px">YOUR KEYSTONE PROFILE IS READY</div>'+
-        '<h2 style="margin:0 0 6px">You did the honest work. Here\'s your starting point.</h2>'+
-        '<p class="helper" style="margin-bottom:26px">Enter your email to unlock your full profile across all 26 dimensions, plus the personalized ninety-day plan built from your results. We save it to your account so you can pick it back up anytime.</p>'+
-        // teaser: prove value without giving it all away
-        '<div class="ks-gate-teaser">'+
-          '<div class="ks-gate-score"><div class="ks-overall" style="margin:0">'+overall+'</div>'+
-          '<span class="fine">YOUR OVERALL STANDING</span></div>'+
-          '<div class="ks-gate-locked">'+
-            '<div class="ks-gate-row"><span>'+(isPreparing?'Your reflection':'Your strength')+'</span><b class="brass">'+esc(strength.label)+'</b></div>'+
-            (isPreparing
-              ? '<div class="ks-gate-row locked"><span>Your full reflection, kept for you</span><span class="ks-lock">\u25CF Locked</span></div>'+
-                '<div class="ks-gate-row locked"><span>Your starting plan</span><span class="ks-lock">\u25CF Locked</span></div>'
-              : '<div class="ks-gate-row locked"><span>Your growth focus</span><span class="ks-lock">\u25CF Locked</span></div>'+
-                '<div class="ks-gate-row locked"><span>All 26 dimensions scored</span><span class="ks-lock">\u25CF Locked</span></div>'+
-                '<div class="ks-gate-row locked"><span>Your ninety-day plan</span><span class="ks-lock">\u25CF Locked</span></div>')+
-          '</div>'+
-        '</div>'+
-        '<div class="ks-gate-form">'+
-          '<input class="input" type="email" id="ksEmail" placeholder="you@email.com" autocomplete="email">'+
-          '<button class="btn btn-yellow" id="ksUnlock" style="width:100%;margin-top:12px">Unlock my results</button>'+
-          '<p class="ksmsg fine" id="ksMsg" style="margin-top:12px;text-align:center"></p>'+
-        '</div>'+
-        '<p class="fine" style="margin-top:18px;text-align:center">Your results are private. We never share or sell them.</p>'+
-      '</div>');
-
-    var btn = document.getElementById('ksUnlock');
-    var input = document.getElementById('ksEmail');
-    var msg = document.getElementById('ksMsg');
-    function submit(){
-      var email = (input.value||'').trim();
-      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent = 'Enter a valid email.'; msg.style.color='var(--error)'; return; }
-      btn.disabled = true; btn.textContent = 'Sending your link...'; msg.textContent='';
-      if(window.FC && FC.signIn){
-        // send magic link; on return, plan.html will detect the pending result and save it.
-        FC.signIn(email, 'plan.html').then(function(r){
-          if(r && r.error){ msg.textContent = 'Something went wrong. Try again.'; msg.style.color='var(--error)'; btn.disabled=false; btn.textContent='Unlock my results'; return; }
-          root.innerHTML = shell(
-            '<div class="center" style="padding:40px 0">'+
-              '<div class="ks-check">\u2713</div>'+
-              '<h2 style="margin:8px 0">Check your email.</h2>'+
-              '<p class="helper">We sent a secure link to <b>'+esc(email)+'</b>. Click it to unlock your full Keystone Profile and your ninety-day plan. Your results are saved and waiting.</p>'+
-              '<p class="fine" style="margin-top:20px">No password needed. The link signs you in.</p>'+
-            '</div>');
-        });
-      } else {
-        // demo fallback: just show results
-        showResults(scored);
-      }
-    }
-    btn.addEventListener('click', submit);
-    input.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
-    input.focus();
   }
 
-  // ---------- full results (signed in, or after unlock) ----------
+  // ---------- full results: shown free to everyone, all 26 dimensions ----------
   function showResults(scored){
     if(KS.isPreparing()){ return finishPreparing(scored); }
     var gap = scored.scales[scored.gap], strength = scored.scales[scored.strength];
+    var signedIn = window.FC && FC.live && FC.uid();
+    var tail = signedIn
+      ? '<a class="btn btn-yellow" style="width:100%" href="plan.html">See my ninety-day plan</a>'
+      : '<div class="ks-save-card">'+
+          '<h3 class="ks-save-h">Your ninety-day plan is built and waiting.</h3>'+
+          '<p class="helper" style="margin-bottom:18px">Enter your email and we will send it, and save your profile so you can retake it later and see how far you have moved. No password.</p>'+
+          '<input class="input" type="email" id="ksEmail" placeholder="you@email.com" autocomplete="email">'+
+          '<button class="btn btn-yellow" id="ksSavePlan" style="width:100%;margin-top:12px">Email me my plan</button>'+
+          '<p class="ksmsg fine" id="ksMsg" style="margin-top:12px;text-align:center"></p>'+
+        '</div>';
 
     var sectionsHtml = order.map(function(secKey){
       var m = KS.sectionMeta(secKey);
@@ -475,12 +439,17 @@
         '<div><span class="fine">GROWTH FOCUS</span><b>'+esc(gap.label)+'</b></div>'+
       '</div>'+
       sectionsHtml+
-      '<p class="fine" style="margin:20px 0 26px;text-align:center">Your results are yours alone. We never share them.</p>'+
-      '<a class="btn btn-primary" style="width:100%" href="plan.html">See my ninety-day plan</a>',
+      '<p class="fine" style="margin:20px 0 8px;text-align:center">Your results are yours alone. We never share them.</p>'+
+      tail,
       true);
     requestAnimationFrame(function(){ setTimeout(function(){
       root.querySelectorAll('.ks-bar>span').forEach(function(sp){ sp.style.width = sp.dataset.w+'%'; });
     }, 80); });
+    if(!signedIn){
+      var se=document.getElementById('ksEmail'), sb=document.getElementById('ksSavePlan'), sm=document.getElementById('ksMsg');
+      if(sb) sb.addEventListener('click', function(){ sendPlanLink((se.value||'').trim(), sb, sm); });
+      if(se) se.addEventListener('keydown', function(e){ if(e.key==='Enter'){ sendPlanLink((se.value||'').trim(), sb, sm); } });
+    }
   }
 
   // Results for the preparing (non-father) path: reflective, forward-looking, no 26-scale profile.

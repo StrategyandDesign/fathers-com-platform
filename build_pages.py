@@ -54,7 +54,7 @@ HEAD = '''<!DOCTYPE html>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Poppins:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>document.documentElement.dataset.theme={THEME};</script>
 <link rel="stylesheet" href="assets/css/forge.css">
 {meta}
@@ -167,7 +167,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
     <div class="eyebrow" style="margin-bottom:14px">MEASURE &middot; YOUR BASELINE</div>
     <h2 class="d-36">Four things decide the kind of father you are.</h2>
     <p style="color:var(--ash);margin:18px 0 28px;max-width:52ch">Involvement. Consistency. Awareness. Nurturance. The Keystone Father Profile measures all four, normed against 9,232 fathers. You get a score, an honest read on where you stand, and a ninety-day plan built from your gaps. Free, before you pay for anything.</p>
-    <a class="btn btn-primary" href="profile.html">Start your Profile</a>
+    <a class="btn btn-yellow" href="profile.html">Start your Profile</a>
   </div>
   <div class="card" style="padding:32px">
     <div class="eyebrow" style="margin-bottom:16px">THE FOUR DIMENSIONS</div>
@@ -183,7 +183,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
   <div>
     <div class="eyebrow" style="margin-bottom:12px">START FREE</div>
     <h2 style="font-family:var(--font-ui);font-weight:600;font-size:22px;margin-bottom:22px">Start free. Grow on a plan.</h2>
-    <div class="row wrap"><a class="btn btn-primary" href="profile.html">Start your Profile</a><a class="btn btn-secondary" href="gift.html">Gift the courses</a></div>
+    <div class="row wrap"><a class="btn btn-yellow" href="profile.html">Start your Profile</a><a class="btn btn-secondary" href="gift.html">Gift the courses</a></div>
     <p class="fine" style="margin-top:12px">The gift is two certificate courses, paid in full. He picks which two. The certificate itself is still earned, never given.</p>
   </div>
   <div class="stack-16">
@@ -243,7 +243,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 
 <section class="tight" style="padding:10px 0 34px"><div class="container">
   <div class="row wrap" style="gap:26px;justify-content:center;text-align:center">
-    <span class="fine">Normed on 9,232 fathers</span><span class="fine ash">&middot;</span><span class="fine">Built by the National Center for Fathering, four decades of research</span><span class="fine ash">&middot;</span><span class="fine">Every certificate publicly verifiable</span>
+    <span class="fine">Normed on 9,232 fathers</span><span class="fine ash">&middot;</span><span class="fine">Built by the National Center for Fathering since 1990</span><span class="fine ash">&middot;</span><span class="fine">Every certificate publicly verifiable</span>
   </div>
 </div></section>
 
@@ -252,7 +252,7 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
     <div class="eyebrow brass" style="margin-bottom:14px">PROVE &middot; VERIFIED CERTIFICATES</div>
     <h2 class="d-36" style="font-size:32px">Proof you did the work.</h2>
     <p style="color:var(--ash);margin:16px 0 26px;max-width:50ch">Verified hours, identity-checked, with a serial any court, program, or employer can confirm online. When you finish, you hold something that counts outside this site.</p>
-    <a class="btn btn-brass" href="certificates.html">Explore Certificates</a>
+    <a class="btn btn-secondary" href="certificates.html">Explore Certificates</a>
     <p class="fine" style="margin-top:16px">Run a program? Issue Fathers.com certificates to your participants. <a class="link ash" href="groups.html" style="font-size:12px">For organizations</a>.</p>
   </div>
   <div class="card brass-card">
@@ -337,7 +337,7 @@ PAGES['stories.html'] = dict(title='Stories', desc='Epic fatherhood films. Origi
       <div class="eyebrow" style="margin-bottom:12px">STORIES</div>
       <h2 class="d-48" style="margin-bottom:8px">Home by Six</h2>
       <p class="small" style="margin-bottom:18px">A father who chose to be there, one ordinary evening at a time.</p>
-      <div class="row"><a class="btn btn-primary play" href="story.html">Watch</a><a class="btn btn-secondary" href="story.html">Trailer</a><span class="tag">24 min</span></div>
+      <div class="row"><a class="btn btn-secondary play" href="story.html">Watch</a><a class="btn btn-secondary" href="story.html">Trailer</a><span class="tag">24 min</span></div>
     </div>
   </div>
 </div></section>
@@ -359,7 +359,7 @@ PAGES['stories.html'] = dict(title='Stories', desc='Epic fatherhood films. Origi
 
 <section class="band tight"><div class="container row between wrap">
   <h2 class="d-28">Every man in these films took the Profile.</h2>
-  <a class="btn btn-primary" href="profile.html">Get your baseline</a>
+  <a class="btn btn-yellow" href="profile.html">Get your baseline</a>
 </div></section>
 ''')
 
@@ -389,7 +389,7 @@ PAGES['story.html'] = dict(title='From Combat to the Kitchen Table', desc='One f
       <a class="btn btn-secondary btn-sm" href="class.html" style="margin-top:16px">Go to the class</a></div>
     <div class="card"><div class="eyebrow" style="margin-bottom:12px">WHERE HE STARTED</div>
       <p class="small" style="margin-bottom:14px">Ray's first Presence Baseline: <b class="mono bone">43</b></p>
-      <a class="btn btn-primary btn-sm" href="profile.html">Get yours</a></div>
+      <a class="btn btn-yellow btn-sm" href="profile.html">Get yours</a></div>
   </aside>
 </div></section>
 
@@ -405,7 +405,7 @@ PAGES['story.html'] = dict(title='From Combat to the Kitchen Table', desc='One f
     <div class="field"><label>The standard you hold now</label><textarea name="standard" required></textarea></div>
     <div class="field"><label>Contact email</label><input class="input" name="email" type="email" required placeholder="you@example.com"></div>
     <label style="display:flex;gap:10px;align-items:center;color:var(--bone);font-size:14px;margin-bottom:20px"><input type="checkbox" name="consent" required style="accent-color:var(--pine)"> You may contact me about filming.</label>
-    <button class="btn btn-primary">Send it</button>
+    <button class="btn btn-secondary">Send it</button>
   </form>
 </div></section>
 ''')
@@ -423,7 +423,7 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
   <div class="overlay container" style="left:50%;transform:translateX(-50%);max-width:var(--max)">
     <div class="eyebrow" style="margin-bottom:10px">THE FREE COURSE &middot; THE 7 SECRETS OF EFFECTIVE FATHERS</div>
     <h1 class="d-48">The Fundamentals of Fathering</h1>
-    <p class="small" style="margin-top:10px">Dr. Ken Canfield. Founder, National Center for Fathering. Four decades of research. One standard.</p>
+    <p class="small" style="margin-top:10px">Dr. Ken Canfield. Founder, National Center for Fathering, since 1990. One standard.</p>
   </div>
 </div>
 <div class="nav" style="top:72px;z-index:50"><div class="container nav-inner" style="height:60px">
@@ -443,7 +443,7 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
     <h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:8px">Lessons</h2>
     <details open><summary><span><b class="mono ash" style="margin-right:14px">01</b>Why Presence Wins</span><span class="tag">8:12</span></summary>
       <div class="body"><div class="row" style="align-items:flex-start;gap:18px"><div class="slot r-16x9" data-slot="IMG-P4-DET-02" style="flex:0 0 180px"></div>
-      <p style="font-size:14px">The research case for father presence in nine minutes. What forty years of data says your kids get when you show up, and what it costs when you don't.</p></div></div></details>
+      <p style="font-size:14px">The research case for father presence in nine minutes. What the research says your kids get when you show up, and what it costs when you don't.</p></div></div></details>
     <details><summary><span><b class="mono ash" style="margin-right:14px">02</b>Your Baseline, Read Honestly</span><span class="tag">9:04</span></summary><div class="body">Reading your four Keystone scores without flinching.</div></details>
     <details><summary><span><b class="mono ash" style="margin-right:14px">03</b>A Schedule They Can Trust</span><span class="tag">10:31</span></summary><div class="body">Consistency mechanics: standing time, predictability, the calendar as covenant.</div></details>
     <details><summary><span><b class="mono ash" style="margin-right:14px">04</b>Enter Their World</span><span class="tag">9:47</span></summary><div class="body">Awareness training: friends' names, inner weather, questions without fixing.</div></details>
@@ -458,7 +458,7 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
     <div class="row" style="align-items:flex-start;gap:20px;margin-top:44px">
       <div class="slot r-1x1" data-slot="IMG-P4-DET-03" style="flex:0 0 96px;border-radius:50%"></div>
       <div><h3 style="margin-bottom:8px">About Ken</h3>
-      <p class="small" style="max-width:56ch">Dr. Ken Canfield founded the National Center for Fathering and built the research base behind the Keystone framework. Four decades, thousands of fathers studied, one conclusion: presence is a trainable skill. He is a father of five and a grandfather, and he teaches like it.</p></div>
+      <p class="small" style="max-width:56ch">Dr. Ken Canfield founded the National Center for Fathering and built the research base behind the Keystone framework. Since 1990, thousands of fathers studied, one conclusion: presence is a trainable skill. He is a father of five and a grandfather, and he teaches like it.</p></div>
     </div>
   </div>
   <aside class="stack-24" style="position:sticky;top:160px">
@@ -2011,7 +2011,7 @@ PAGES['organizations.html'] = dict(title='The measurable standard for effective 
       <a class="btn btn-primary" href="efficacy-report.html?demo=1">See a sample report</a>
       <a class="btn btn-secondary" href="#walkthrough">Request a walkthrough</a>
     </div>
-    <p class="fine mono" style="color:var(--ash);letter-spacing:.02em">NORMED ON 9,232 FATHERS &nbsp;&middot;&nbsp; NCF, FOUR DECADES &nbsp;&middot;&nbsp; VERIFY A SERIAL IN 10 SECONDS</p>
+    <p class="fine mono" style="color:var(--ash);letter-spacing:.02em">NORMED ON 9,232 FATHERS &nbsp;&middot;&nbsp; NCF, SINCE 1990 &nbsp;&middot;&nbsp; VERIFY A SERIAL IN 10 SECONDS</p>
   </div>
   <div class="artifact">
     <div class="artifact-tab">WHAT YOUR FUNDER RECEIVES</div>
