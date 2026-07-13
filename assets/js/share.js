@@ -10,6 +10,10 @@
     if (msg) msg.textContent = txt || 'It may have expired, or the father who made it turned it off.';
     if (audio) audio.hidden = true;
   }
+  var st = document.getElementById('shStart');
+  if (st) st.addEventListener('click', function(){
+    try { if (window.FC && FC.live) FC.sb.from('funnel_events').insert({ event: 'share_cta_click', meta: {} }).then(function(){}, function(){}); } catch(_){}
+  });
   var t = new URLSearchParams(location.search).get('t');
   if (!t) { fail('No recording was named in this link.'); return; }
   if (!(window.FC && FC.live)) { fail('The player could not start.'); return; }
@@ -24,6 +28,7 @@
         audio.src = URL.createObjectURL(d.data);
         audio.hidden = false;
         if (msg) msg.textContent = 'Recorded on Fathers.com. Yours to replay.';
+        try { FC.sb.rpc('record_share_view', { p_token: t }).then(function(){}, function(){}); } catch(_){}
       });
     });
   }).catch(function(){ fail(); });

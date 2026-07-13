@@ -118,6 +118,7 @@
         if (doneTxt) doneTxt.textContent = 'Recorded: ' + p.title + '. It is held on this device.';
         if (keep) keep.hidden = false;
         if (undo) undo.hidden = true;
+        if (shareNow) shareNow.hidden = true;
         if (done) done.hidden = false;
         if (guest) guest.hidden = false;
         setMsg('');
@@ -126,13 +127,15 @@
       return;
     }
     setMsg('Keeping it\u2026');
+    if (shareNow) shareNow.hidden = true;
     uploadBlob(blob, p.title, kindFor(p.cat)).then(function(saved){
-      lastSaved = saved;
+      lastSaved = { id: saved.id, path: saved.path, title: p.title };
       markDone(p.title);
       state = 'done';
       if (doneTxt) doneTxt.textContent = 'Kept: ' + p.title + ' \u00b7 today. It is waiting for them whenever they want it.';
       if (keep) keep.hidden = true;
       if (undo) undo.hidden = false;
+      if (shareNow) shareNow.hidden = false;
       if (done) done.hidden = false;
       setMsg('');
       loadList();
@@ -163,6 +166,7 @@
   if (undo) undo.addEventListener('click', function(){
     if (!lastSaved) { if (done) done.hidden = true; state = 'idle'; return; }
     undo.disabled = true;
+    if (shareNow) shareNow.hidden = true;
     FC.sb.storage.from('voice').remove([lastSaved.path])
       .then(function(){ return lastSaved.id ? FC.sb.from('voice_recordings').delete().eq('id', lastSaved.id) : null; })
       .then(function(){ undo.disabled = false; lastSaved = null; if (done) done.hidden = true; state = 'idle'; setMsg('Undone. It is gone.'); loadList(); },
@@ -188,6 +192,35 @@
       }).catch(function(){});
     });
   }
+
+  function shareFlow(path, rTitle2, b){
+    var label = window.prompt('Who is this for? A name helps you keep track of who has what. Leave blank to skip.');
+    if (label === null) return;
+    label = (label || '').trim() || null;
+    var orig = b.textContent;
+    b.disabled = true; b.textContent = 'Making link\u2026';
+    FC.ready.then(function(){
+      var uid2 = FC.uid && FC.uid();
+      if (!uid2) throw new Error('no session');
+      return FC.sb.from('voice_shares').insert({ user_id: uid2, storage_path: path, title: rTitle2, label: label }).select('token').single();
+    }).then(function(r2){
+      var tok = r2 && r2.data && r2.data.token;
+      if (!tok) throw new Error('no token');
+      var url = location.origin + '/share.html?t=' + tok;
+      var copied = navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject();
+      return copied.then(function(){ b.textContent = 'Link copied'; }, function(){ window.prompt('Copy this link:', url); b.textContent = 'Link made'; })
+        .then(function(){
+          var list2 = document.getElementById('voiceList');
+          if (list2) loadShares(list2);
+          setTimeout(function(){ b.textContent = orig; b.disabled = false; }, 2200);
+        });
+    }).catch(function(){ b.disabled = false; b.textContent = orig; setMsg('Could not make the link just now.', true); });
+  }
+
+  var shareNow = document.getElementById('vShareNow');
+  if (shareNow) shareNow.addEventListener('click', function(){
+    if (lastSaved && lastSaved.path) shareFlow(lastSaved.path, lastSaved.title || '', shareNow);
+  });
 
   /* ---------- the shelf ---------- */
   var KIND_LABEL = { bedtime_story: 'Bedtime story', message: 'A message', thinking: 'Thinking of you' };
@@ -225,27 +258,7 @@
           list.querySelectorAll('.vx-share').forEach(function(b){
             b.addEventListener('click', function(){
               var item = b.closest('.voice-item');
-              var path = item.getAttribute('data-path');
-              var rTitle2 = item.getAttribute('data-title');
-              var label = window.prompt('Who is this for? A name helps you keep track of who has what. Leave blank to skip.');
-              if (label === null) return;
-              label = (label || '').trim() || null;
-              b.disabled = true; b.textContent = 'Making link\u2026';
-              FC.ready.then(function(){
-                var uid2 = FC.uid && FC.uid();
-                if (!uid2) throw new Error('no session');
-                return FC.sb.from('voice_shares').insert({ user_id: uid2, storage_path: path, title: rTitle2, label: label }).select('token').single();
-              }).then(function(r2){
-                var tok = r2 && r2.data && r2.data.token;
-                if (!tok) throw new Error('no token');
-                var url = location.origin + '/share.html?t=' + tok;
-                var copied = navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject();
-                return copied.then(function(){ b.textContent = 'Link copied'; }, function(){ window.prompt('Copy this link:', url); b.textContent = 'Link made'; })
-                  .then(function(){
-                    loadShares(list);
-                    setTimeout(function(){ b.textContent = 'Share'; b.disabled = false; }, 2200);
-                  });
-              }).catch(function(){ b.disabled = false; b.textContent = 'Share'; setMsg('Could not make the link just now.', true); });
+              shareFlow(item.getAttribute('data-path'), item.getAttribute('data-title'), b);
             });
           });
           list.querySelectorAll('.voice-del').forEach(function(b){
@@ -298,9 +311,25 @@
     }).catch(function(){});
   }
 
+  function showPendingHold(){
+    var raw = null;
+    try { raw = sessionStorage.getItem('fc_voice_pending'); } catch(_){}
+    if (!raw) return;
+    try {
+      var p = JSON.parse(raw);
+      if (doneTxt) doneTxt.textContent = 'Recorded earlier and held on this device: ' + (p.title || 'your message').replace(/\.\s*$/,'') + '. Join free and it keeps itself.';
+      if (preview && p.b64) { fetch(p.b64).then(function(res){ return res.blob(); }).then(function(b2){ preview.src = URL.createObjectURL(b2); }).catch(function(){}); }
+      if (keep) keep.hidden = false;
+      if (undo) undo.hidden = true;
+      if (shareNow) shareNow.hidden = true;
+      if (done) done.hidden = false;
+    } catch(_){}
+  }
+
   function boot(){
-    var signedIn = window.FC && FC.live;
+    var signedIn = window.FC && FC.live && FC.uid && FC.uid();
     if (!signedIn && guest) guest.hidden = false;
+    if (!signedIn) showPendingHold();
     keepPending();
     loadList();
   }

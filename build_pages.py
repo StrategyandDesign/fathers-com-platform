@@ -9,7 +9,7 @@ SITE_URL = "https://fathers-com-platform.vercel.app"
 OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 
 # Private / transactional pages: keep them out of Google's index. Everything else is indexable.
-NOINDEX = {'share.html', 'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html', 'classes.html', 'veterans-resources.html'}
+NOINDEX = {'organizations.html', 'share.html', 'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html', 'classes.html', 'veterans-resources.html'}
 
 
 def _esc(s):
@@ -66,7 +66,7 @@ def nav(active='', mode='public'):
     if mode=='app':
         links = [('Home','plan.html'),('Certificates','certificates.html'),('Stories','stories.html'),('Circles','circles.html')]
     else:
-        links = [('The Profile','profile.html'),('Certificates','certificates.html'),('Stories','stories.html'),('For Organizations','organizations.html')]
+        links = [('The Profile','profile.html'),('Certificates','certificates.html'),('Stories','stories.html')]
         # Legacy page actives map onto the new public nav so highlighting stays sane.
         active = {'For Groups':'For Organizations','For Veterans':'For Organizations','Classes':'Certificates','My Plan':'Home'}.get(active, active)
     lis = ''.join(f'<li><a href="{h}" {"class=\"active\"" if t==active else ""}>{t}</a></li>' for t,h in links)
@@ -121,6 +121,10 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
           <span class="hio-label">I'm preparing, mentoring, or growing</span>
           <span class="hio-arrow">&rarr;</span>
         </button>
+        <a class="hero-intent-opt" href="veterans.html">
+          <span class="hio-label">I served</span>
+          <span class="hio-arrow">&rarr;</span>
+        </a>
       </div>
       <div class="hero-intent-foot">
         <span class="fine">Free. About twenty minutes. Your results are private.</span>
@@ -154,13 +158,6 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
     </div>
   </div>
 </div></header>
-
-<section class="tight" style="padding:26px 0"><div class="container">
-  <div class="row between wrap" style="gap:14px;align-items:center;border:1px solid var(--hairline);border-radius:10px;padding:18px 22px">
-    <span class="small" style="color:var(--ash)">Run a program, a church, a unit, or a caseload? Fathers.com is the measurable standard for effective fathering programs.</span>
-    <a class="btn btn-secondary btn-sm" href="organizations.html">For Organizations &rarr;</a>
-  </div>
-</div></section>
 
 <section class="band"><div class="container split">
   <div>
@@ -268,18 +265,6 @@ PAGES['index.html'] = dict(title='Know where you stand as a father', desc='Take 
 
 
 
-
-<section><div class="container split">
-  <div class="slot r-4x3" data-slot="IMG-P1-GRP-01"></div>
-  <div>
-    <div class="eyebrow" style="margin-bottom:14px">FOR ORGANIZATIONS</div>
-    <h2 class="d-36" style="font-size:32px">Run your fathers on the standard.</h2>
-    <p style="color:var(--ash);margin:16px 0 20px;max-width:50ch">Circles for churches, teams, and crews. One film a week, one guide, one standard. And for programs that serve fathers at scale, measure every father, grow them on a plan, and prove what is working.</p>
-    <p class="small" style="color:var(--ash);margin:0 0 24px;max-width:50ch"><b style="color:var(--bone)">No program yet?</b> Start with the assessment. You already intake fathers. Measure them at the door and hold a baseline you did not have.</p>
-    <a class="btn btn-secondary" href="organizations.html">For organizations</a>
-    <p class="fine" style="margin-top:16px">Also for <a class="link ash" href="employers.html" style="font-size:12px">employers</a> and <a class="link ash" href="veterans.html" style="font-size:12px">veteran programs</a>.</p>
-  </div>
-</div></section>
 
 <section><div class="container split">
   <div>
@@ -603,6 +588,7 @@ PAGES['plan.html'] = dict(title='Home', desc='Your baseline, your plan, your wor
 <script src="assets/js/keystone-data.js"></script>
 <script src="assets/js/plan-engine.js"></script>
 <script src="assets/js/plan-controller.js"></script>
+<script src="assets/js/voice-prompts.js"></script>
 <script src="assets/js/home.js"></script>
 ''')
 
@@ -1926,6 +1912,7 @@ PAGES['voice.html'] = dict(title='The Legacy Archive', desc='Leave them your voi
         <div class="row" style="gap:10px;flex-wrap:wrap">
           <button class="btn btn-secondary btn-sm" id="vUndo" type="button">Undo</button>
           <button class="btn btn-yellow btn-sm" id="vAgain" type="button">Record another</button>
+          <button class="btn btn-primary btn-sm" id="vShareNow" type="button" hidden>Share it</button>
           <a class="btn btn-primary btn-sm" id="vKeep" href="login.html?next=voice.html" hidden>Join free to keep it</a>
         </div>
       </div>
@@ -1962,6 +1949,10 @@ PAGES['share.html'] = dict(title='A message for you', desc='A private voice mess
       <p class="fine" id="shMsg" style="margin-top:12px;min-height:16px"></p>
     </div>
     <p class="fine" style="margin-top:22px">Private link. No account needed, and nothing is collected from you.</p>
+    <div style="margin-top:36px;border-top:1px solid #2f3336;padding-top:28px">
+      <p class="vx-sub" style="margin-bottom:16px">This came from the Legacy Archive on Fathers.com, where a father banks his voice for his kids, forever. Free, forever, for those who served.</p>
+      <a class="btn btn-yellow" id="shStart" href="veterans.html?src=share">Start your own archive</a>
+    </div>
   </div>
 </section>
 <script src="assets/js/share.js"></script>

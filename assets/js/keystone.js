@@ -40,6 +40,7 @@
       var doms=bundle.domains.map(function(d){var v=scored.domScores[d.key]||0;var gap=(d.key===scored.gap);return '<div class="domain '+(gap?'gap':'')+'"><div class="row1"><span>'+esc(d.label)+(gap?' <span class="tag" style="color:var(--ember-hi)">YOUR GAP</span>':'')+'</span><span class="score">'+v+'</span></div><div class="bar"><span style="width:0" data-w="'+v+'"></span></div></div>';}).join('');
       card.innerHTML='<div class="eyebrow">YOUR PRESENCE BASELINE</div><div class="bigscore" style="margin:14px 0 2px">'+scored.overall+'</div><div class="display d-36" style="margin-bottom:34px">'+esc(scored.band?scored.band.label:'')+'</div>'+doms+'<p class="fine" style="margin:18px 0 26px">Your results are yours. We never share them.</p><a class="btn btn-primary" href="plan.html">See my plan</a>';
       requestAnimationFrame(function(){setTimeout(function(){card.querySelectorAll('[data-w]').forEach(function(sp){sp.style.width=sp.dataset.w+'%';});},60);});
+      try{if(window.FC&&FC.live){FC.sb.from('funnel_events').insert({user_id:(FC.uid&&FC.uid())||null,event:'assessment_complete',meta:{flow:'full'}}).then(function(){},function(){});}}catch(_){}
       FCI.saveResponse(bundle,answers,scored).then(function(){ if(window.toast) toast('Baseline saved to your account.'); }).catch(function(e){console.error(e);});
     }
     draw();
@@ -80,6 +81,9 @@
     {id:'faith',section:'BASELINE',q:'Want faith woven into your plan?',helper:'Optional. It changes which classes and actions we recommend. Nothing else.',type:'chips-single',skippable:true,
       why:'A faith lens swaps some recommended classes and weekly actions. It never changes your scores.',
       opts:['Yes, Christian','Yes, Jewish','Not for me','Ask me later']},
+    {id:'served',section:'BASELINE',q:'Did you serve in the military?',helper:'Optional. Everything on Fathers.com is free forever for those who served.',type:'chips-single',skippable:true,
+      why:'It unlocks the veteran track at no cost. It never changes your scores.',
+      opts:['Yes, I served','Serving now','No']},
     {id:'loader',section:'RESULTS',render:s=>`
       <div class="mono ash" id="loadline" style="font-size:15px;letter-spacing:.06em">Scoring involvement…</div>
       <div class="progress-track" style="margin-top:22px"><div class="progress-fill" id="loadbar" style="width:4%"></div></div>`,loader:true},
@@ -120,7 +124,16 @@
     return {inv,con,awa,nur,overall,read};
   }
 
-  function save(){state.idx=idx;localStorage.setItem(KEY,JSON.stringify(state));}
+  function ev(name){try{if(window.FC&&FC.live){FC.sb.from('funnel_events').insert({user_id:(FC.uid&&FC.uid())||null,event:name,meta:{}}).then(function(){},function(){});}}catch(_){}}
+  function save(){
+    try{
+      if(typeof state.answers.served==='number'&&state.answers.served<2){localStorage.setItem('fc_served','1');}
+      if(idx>0&&!state.ev1){state.ev1=1;ev('assessment_start');}
+      var sc=SCREENS[idx];
+      if(sc&&(sc.results||sc.id==='results')&&!state.ev2){state.ev2=1;ev('assessment_complete');}
+    }catch(_){}
+    state.idx=idx;localStorage.setItem(KEY,JSON.stringify(state));
+  }
 
   function bar(){
     const pct=Math.round((idx/(SCREENS.length-1))*100);

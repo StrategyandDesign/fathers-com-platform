@@ -19,10 +19,10 @@
       safe(sb.from('certificate_awards').select('status,course_id').eq('user_id',uid)),
       safe(sb.from('certificate_pursuits').select('course_id,status,state,effective_state').eq('user_id',uid)),
       safe(sb.from('certificate_courses').select('id,slug,title')),
-      safe(sb.from('voice_recordings').select('kind,created_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(1))
+      safe(sb.from('voice_recordings').select('title,kind,created_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(150))
     ]).then(function(res){
       var sess=(res[0].data||[]), vN=res[1].count||0, cN=res[2].count||0,
-          awards=(res[3].data||[]), enr=(res[4].data||[]), courses=(res[5].data||[]), rec=(res[6].data||[])[0];
+          awards=(res[3].data||[]), enr=(res[4].data||[]), courses=(res[5].data||[]), recs=(res[6].data||[]), rec=recs[0];
       var last = sess[sess.length-1] || null;
 
       var sessIds = sess.map(function(s){return s.id;});
@@ -35,7 +35,7 @@
         var firstR=null, lastR=null;
         sess.forEach(function(s){ var x=byS[s.id]; if(!x) return; if(!firstR) firstR=x; lastR=x; });
         renderRail(last, firstR, lastR, vN, cN, awards);
-        renderFeed(enr, awards, courses, rec);
+        renderFeed(enr, awards, courses, rec, recs, sess, vN);
       });
     });
 
@@ -85,7 +85,7 @@
       bars.innerHTML=html;
     }
 
-    function renderFeed(enr, awards, courses, rec){
+    function renderFeed(enr, awards, courses, rec, recs, sess, vN){
       var feed=$('homeFeed'); if(!feed) return;
       var bySlug={}; courses.forEach(function(c){bySlug[c.slug]=c;});
       var fund=bySlug['fundamentals'];
@@ -111,13 +111,46 @@
         'class.html','Start free');
       }
 
-      var recCard = rec
-        ? card('LATEST RECORDING', (rec.kind||'A message')+' \u00b7 '+new Date(rec.created_at).toLocaleDateString(),
-            'Your voice, kept for them. Add one more tonight; two minutes is plenty.',
-            'voice.html','Record another')
-        : card('THE LEGACY ARCHIVE','No recordings yet.',
-            'Sixty seconds of your voice outlasts almost everything else you will make this week.',
-            'voice.html','Record your first');
+      var recCard;
+      var FLATP = [];
+      (window.FC_VOICE_PROMPTS || []).forEach(function(c){ (c.items||[]).forEach(function(t){ FLATP.push(t); }); });
+      if (FLATP.length){
+        var doneT = {};
+        (recs||[]).forEach(function(rr){ if (rr.title) doneT[rr.title] = 1; });
+        var nextP = null;
+        for (var pi=0; pi<FLATP.length; pi++){ if (!doneT[FLATP[pi]]){ nextP = FLATP[pi]; break; } }
+        if (!nextP) nextP = FLATP[(new Date().getDate()) % FLATP.length];
+        recCard = card('TONIGHT\u2019S PROMPT', nextP.replace(/\.\s*$/,''),
+          (vN ? vN + ' kept in the Archive. Sixty seconds adds one more.' : 'Sixty seconds of your voice outlasts almost everything else you will make this week.'),
+          'voice.html', vN ? 'Record it' : 'Record your first');
+      } else {
+        recCard = rec
+          ? card('LATEST RECORDING', (rec.kind||'A message')+' \u00b7 '+new Date(rec.created_at).toLocaleDateString(),
+              'Your voice, kept for them. Add one more tonight; two minutes is plenty.',
+              'voice.html','Record another')
+          : card('THE LEGACY ARCHIVE','No recordings yet.',
+              'Sixty seconds of your voice outlasts almost everything else you will make this week.',
+              'voice.html','Record your first');
+      }
+      var staleCard = '';
+      var lastS = (sess||[])[(sess||[]).length - 1];
+      if (lastS && lastS.completed_at){
+        var days = Math.floor((Date.now() - new Date(lastS.completed_at).getTime()) / 86400000);
+        if (days > 90){
+          staleCard = card('THE NINETY DAYS ARE UP','Retake the Keystone Profile',
+            'Your last measure was ' + new Date(lastS.completed_at).toLocaleDateString() + ', ' + days + ' days ago. Retake it and see the movement since.',
+            'keystone.html','Retake now');
+        }
+      }
+      var vetCard = '';
+      try {
+        if (localStorage.getItem('fc_served') === '1'){
+          vetCard = card('FOR THOSE WHO SERVED','Everything here is free forever for you.',
+            'The films, the field notes, and the Legacy Archive are yours at no cost, always.',
+            'veterans-hub.html','Open your hub');
+          if (window.FC && FC.live && FC.uid && FC.uid()){ FC.sb.from('profiles').update({ served: true }).eq('id', FC.uid()).then(function(){},function(){}); }
+        }
+      } catch(_){}
 
       var tiles =
         '<div class="eyebrow" style="margin:26px 0 12px">THE TRACKS</div><div class="grid-3">'+
@@ -126,7 +159,7 @@
         tile('Coming Home Present','IN DEVELOPMENT','certificates.html#waitlist')+
         '</div>';
 
-      feed.innerHTML = '<div class="eyebrow" style="margin:30px 0 12px">YOUR WORK</div>'+
+      feed.innerHTML = '<div class="eyebrow" style="margin:30px 0 12px">YOUR WORK</div>'+staleCard+vetCard+
         '<div class="grid-2" style="align-items:stretch">'+courseCard+recCard+'</div>'+tiles;
 
       function card(eyebrow,h,p,href,cta){
