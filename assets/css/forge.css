@@ -85,6 +85,10 @@ html[data-theme="light"] .lg-dark{display:none}
 html[data-theme="light"] .lg-light{display:inline-block}
 
 /* ---------- type ---------- */
+/* The hidden attribute must always win. Author rules (e.g. .assess{display:flex})
+   otherwise beat the browser's [hidden] rule and leak hidden UI onto the page. */
+[hidden]{display:none!important}
+
 h1,h2,h3,.display{font-family:var(--font-display);font-weight:600;line-height:1.12;letter-spacing:-.011em}
 .d-64{font-size:clamp(38px,4.6vw,58px)}
 .d-56{font-size:clamp(34px,4.2vw,52px)}

@@ -21,9 +21,20 @@
   var _ksStarted = false;
   function ksStart(){ if(_ksStarted) return; _ksStarted = true; ksEv('assessment_start', {}); }
 
+  /* Once the Profile has begun, the intro invitation must be gone. Any screen the
+     assessment paints means he is in it, so the hero comes down and the app comes up.
+     Driven from here, not from sessionStorage, so it survives a new tab and a resume. */
+  function enterAssessment(){
+    var intro = document.getElementById('ksIntro');
+    if (intro && !intro.hidden) intro.hidden = true;
+    if (root && root.hidden) root.hidden = false;
+    try { sessionStorage.setItem('ks_intro_done','1'); } catch(e){}
+  }
+
   /* ---------- did he serve? asked once, plainly ---------- */
   function servedAsked(){ try { return localStorage.getItem('fc_served') !== null; } catch(e){ return false; } }
   function servedGate(next){
+    enterAssessment();
     if (servedAsked()) { next(); return; }
     root.innerHTML = shell(
       '<div class="eyebrow" style="margin-bottom:14px">BEFORE YOU START</div>'+
@@ -87,6 +98,7 @@
 
   // Resume the assessment at the first unanswered question of the current path.
   function resumeInPlace(){
+    enterAssessment();
     var pathOrder = KS.pathSectionKeys();
     var ans = KS.getAnswers();
     // find the first section with an unanswered item
@@ -102,6 +114,7 @@
 
   // If the man already chose his path on the homepage hero, honor it and skip the gate.
   function startFresh(){
+    enterAssessment();
     var pre = null;
     try { pre = localStorage.getItem('fc_intent_path'); localStorage.removeItem('fc_intent_path'); } catch(e){}
     if(pre === 'father'){ KS.setPath('father'); chooseMode(); return; }
@@ -134,6 +147,7 @@
 
   // Non-father path: welcoming intro, then the childhood-reflection questions (no mode choice needed, it's short).
   function preparingIntro(){
+    enterAssessment();
     ksStart();
     var items = KS.pathItems();
     if(!items.length){ gate(); return; }
@@ -149,6 +163,7 @@
   }
 
   function offerResume(sess){
+    enterAssessment();
     KS.resumeOrStart(sess.mode).then(function(){
       var done = KS.sectionsDone().length, total = order.length;
       var answered = KS.answeredCount(), all = KS.totalCount();
@@ -168,6 +183,7 @@
   }
 
   function chooseMode(){
+    enterAssessment();
     ksStart();
     var dCount = KS.itemsInSection('dimensions').length,
         pCount = KS.itemsInSection('practices').length,
@@ -205,6 +221,7 @@
   }
 
   function sectionIntro(secKey){
+    enterAssessment();
     var meta = KS.sectionMeta(secKey);
     var idx = KS.pathSectionKeys().indexOf(secKey)+1;
     root.innerHTML = shell(
@@ -230,6 +247,7 @@
   }
 
   function drawItem(){
+    enterAssessment();
     if(curIndex>=curItems.length) return endSection();
     var it = curItems[curIndex];
     var ans = KS.getAnswers();
@@ -402,6 +420,7 @@
 
   // ---------- full results: shown free to everyone, all 26 dimensions ----------
   function showResults(scored){
+    enterAssessment();
     if(KS.isPreparing()){ return finishPreparing(scored); }
     var gap = scored.scales[scored.gap], strength = scored.scales[scored.strength];
     var signedIn = window.FC && FC.live && FC.uid();
@@ -454,6 +473,7 @@
 
   // Results for the preparing (non-father) path: reflective, forward-looking, no 26-scale profile.
   function finishPreparing(scored){
+    enterAssessment();
     var cs = scored.scales.childhood_satisfaction || {pct:50, band:{label:'Reflective'}};
     var warm = cs.pct >= 60
       ? "You carry a good foundation. The chance now is to build on it, and to become for others what was given to you."
