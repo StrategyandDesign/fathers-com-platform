@@ -2305,7 +2305,7 @@ var qrcode = function() {
   // Based on the QR spec; kept minimal for a verify URL payload.
   function makeQR(text, size){
     // We use a lightweight approach: encode as byte mode, low ECC, pick smallest version.
-    // For robustness with short strings we implement QR model 2 up to version 4.
+    // Short payloads only: QR model 2, versions 1 through 4.
     var qr = qrcode(0, 'M');
     qr.addData(text);
     qr.make();

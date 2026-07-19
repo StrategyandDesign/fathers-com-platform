@@ -397,8 +397,8 @@
     if(KS.isPreparing()){
       return finishPreparing(scored);
     }
-    // Spool's rule: never wall the value a man just earned. Full results show to everyone;
-    // the email becomes a save action below the results, not a paywall in front of them.
+    // Full results show to everyone. Account creation is a save action below
+    // the results, not a gate in front of them.
     return showResults(scored);
   }
 

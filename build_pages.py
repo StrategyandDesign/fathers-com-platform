@@ -632,7 +632,6 @@ PAGES['plan.html'] = dict(title='Home', desc='Your baseline, your plan, your wor
 <script src="assets/js/keystone-data.js"></script>
 <script src="assets/js/plan-engine.js"></script>
 <script src="assets/js/plan-controller.js"></script>
-<script src="assets/js/voice-prompts.js"></script>
 <script src="assets/js/home.js"></script>
 ''')
 
@@ -1980,7 +1979,6 @@ PAGES['voice.html'] = dict(title='The Legacy Archive', desc='Leave them your voi
   </div>
 </section>
 <script src="assets/js/veterans-core.js"></script>
-<script src="assets/js/voice-prompts.js"></script>
 <script src="assets/js/voice.js"></script>
 ''')
 

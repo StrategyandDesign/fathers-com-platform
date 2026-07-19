@@ -4,7 +4,7 @@
    12-week plan whose actions target that specific dimension, with
    supporting work on the two next-lowest scales.
 
-   Design: every one of the 26 scales has a "track" — a name, a plain
+   Design: every one of the 26 scales has a "track": a name, a plain
    description of what growth looks like, and 12 weeks of concrete
    actions grouped into three 4-week phases (Establish, Deepen, Sustain).
    Requires: FC (supabase-client), window.KEYSTONE
