@@ -1,4 +1,4 @@
-# POSITIONING.md — v4.0 Reposition (FC-POS-002)
+# POSITIONING.md: v4.0 Reposition (FC-POS-002)
 
 Decision record for the July 2026 reposition. This file is the authority for copy
 and pricing questions. Facts are labeled facts. Hypotheses are labeled hypotheses.
@@ -118,7 +118,7 @@ One migration: `supabase/migrations/20260718090000_keystone_v4_0_reposition.sql`
 
 What it does: zeroes participant course prices and sets the default to 0
 (the checkout function reads price truth from the database); creates
-`participant_claims`, the only door into a course; adds `claim_id` to
+`participant_claims`, the sole enrollment path; adds `claim_id` to
 `certificate_enrollments`; updates the flagship film-library entry to five
 sessions; creates the certification registry (organization_certifications,
 facilitator_credentials) with public verification views that mirror

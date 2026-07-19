@@ -24,9 +24,8 @@
 --
 --   3. THE CERTIFICATION REGISTRY GETS ITS TABLES. organization_certifications
 --      and facilitator_credentials, with public verification views that mirror
---      the public_certificates contract. A registry only means something if
---      names can come off it, so suspended and revoked rows stay VISIBLE in
---      the public views with their status. Serial conventions:
+--      the public_certificates contract. Suspended and revoked rows stay
+--      visible in the public views with their status. Serial conventions:
 --      NCF-O-2026-#### (organizations), NCF-F-2026-#### (facilitators).
 --      Certificates of Completion keep FC-2026-######.
 --
@@ -37,7 +36,7 @@
 alter table public.certificate_courses alter column price_cents set default 0;
 update public.certificate_courses set price_cents = 0;
 
--- 2. PARTICIPANT CLAIMS (the only door into a course) ---------------------------
+-- 2. PARTICIPANT CLAIMS (the sole enrollment path) ------------------------------
 create table if not exists public.participant_claims (
   id                   uuid primary key default gen_random_uuid(),
   participant_email    text not null,
@@ -134,7 +133,7 @@ create policy facilitator_own_read on public.facilitator_credentials
   for select using (auth.uid() = user_id);
 
 -- Public registry views: same contract as public_certificates. Status is
--- always exposed. Revocation hidden is revocation theater.
+-- always exposed, including suspended and revoked.
 create or replace view public.public_facilitators as
   select serial, display_name, status, issued_at, renews_at
   from public.facilitator_credentials;

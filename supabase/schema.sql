@@ -1,3 +1,7 @@
+-- Canonical from-scratch schema for a fresh environment. Production truth is
+-- supabase/migrations/ applied in order; supabase/sql-archive/ is the frozen
+-- record of pre-baseline hand-applied SQL. Keep this file aligned with the
+-- migration chain so a fresh environment matches production policy.
 -- ============================================================
 -- Fathers.com : Supabase schema v1
 -- Run in the Supabase SQL editor or via `supabase db push`.

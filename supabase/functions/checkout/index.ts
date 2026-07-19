@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
     .select("id").eq("user_id", userId).eq("course_id", course.id).maybeSingle();
   if (already) return json({ ok: true, enrolled: true, already: true, course: course.slug });
 
-  // ---- 3) The claim check: the only door into a course ----
+  // ---- 3) The claim check: the sole enrollment path ----
   const email = (userData.user.email ?? "").toLowerCase();
   const { data: claims } = await admin
     .from("participant_claims")

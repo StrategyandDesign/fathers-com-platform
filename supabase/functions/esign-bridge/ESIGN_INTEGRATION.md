@@ -1,4 +1,4 @@
-# E-sign integration bridge — for the e-sign team
+# E-sign integration bridge: for the e-sign team
 
 This is the integration surface between Fathers.com and the RecordMade e-sign
 API. It is prepped for you to review, confirm against the live contract, and
@@ -11,10 +11,10 @@ The e-sign API token is a secret. It must never reach the browser. So the
 browser calls a single server-side function, and that function holds the token
 and proxies to your API. Two files:
 
-- `supabase/functions/esign-bridge/index.ts` — the server bridge you own.
+- `supabase/functions/esign-bridge/index.ts`: the server bridge you own.
   Holds the credentials, authenticates the father, authorizes the request
   against the award record, then calls your API.
-- `assets/js/esign-client.js` — the browser side. Calls the bridge only.
+- Browser side: not yet wired. Invocation lands in the admin approval flow; until then the bridge is exercised server side.
   No credentials, no direct API calls.
 
 ## The one flow it covers today
@@ -43,7 +43,7 @@ OpenAPI. Confirm each and edit the marked block in `index.ts`:
 
 Confirm the exact field names for `SelfSignCreate` (signer identity, assurance
 level, signature method, metadata) and how the signable certificate document is
-supplied — inline, by reference, or generated on your side from the metadata we
+supplied inline, by reference, or generated on your side from the metadata we
 pass (course, hours, father's name, award id).
 
 ## Deploy
@@ -61,9 +61,9 @@ certificate flow shows "signing is being set up," so nothing half-works.
 
 From `certificate_accountability.sql`:
 
-- `certificate_awards` — the record of approval and signature. The bridge reads
+- `certificate_awards`: the record of approval and signature. The bridge reads
   it to authorize, and writes `envelope_id` / `signed_at` / `status` after.
-- `certificate_courses` — title and hours for the certificate subject line.
+- `certificate_courses`: title and hours for the certificate subject line.
 
 ## Security notes for your review
 

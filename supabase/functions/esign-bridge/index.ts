@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
   const signerName = userData.user.user_metadata?.name || userData.user.email || "Fathers.com member";
 
   // ========================================================================
-  // 4) CALL THE E-SIGN API  —  e-sign team: confirm paths + payloads here.
+  // 4) CALL THE E-SIGN API. E-sign team: confirm paths and payloads here.
   //    Inferred from the OpenAPI: SelfSignCreate -> SelfSignResult, then
   //    VerifyBundleResult, then a LedgerEventCreate for the audit trail.
   // ========================================================================
@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
     method: "POST",
     body: JSON.stringify({
       // SelfSignCreate  (confirm field names against your schema)
-      subject: `Fathers.com Certificate — ${course?.title ?? "Certificate"}`,
+      subject: `Fathers.com Certificate: ${course?.title ?? "Certificate"}`,
       signer: { name: signerName, email: userData.user.email, external_id: userId },
       assurance_level: "self_attested",
       signature_method: "typed",
