@@ -53,8 +53,7 @@
       }
 
       counts.innerHTML =
-        row('Recordings', vN, 'voice.html') +
-        row('Certificates earned', earned, 'certificates.html') +
+        row('Completions', earned, 'certificates.html') +
         row('Circle posts', cN, 'circles.html', true);
       function row(label,n,href,lastRow){
         return '<a class="rail-row'+(lastRow?' last':'')+'" href="'+href+'"><span class="small">'+label+'</span><b class="mono">'+n+'</b></a>';
@@ -94,8 +93,8 @@
 
       var courseCard;
       if(fundAw && (fundAw.status==='signed'||fundAw.status==='awarded')){
-        courseCard = card('YOUR CERTIFICATE','Fathering Fundamentals: earned.',
-          'Verified, serialed, and publicly checkable. The next tracks are in development.',
+        courseCard = card('YOUR CERTIFICATE OF COMPLETION','Fathering Fundamentals: complete.',
+          'Verified, serialed, and publicly checkable. The next courses are in development.',
           'verify.html','See how verification works');
       } else if(fundEnr && fundEnr.effective_state==='stalled'){
         courseCard = card('PICK IT BACK UP','Fathering Fundamentals',
@@ -107,31 +106,14 @@
           'course.html?cert=fundamentals','Continue the course');
       } else {
         courseCard = card('THE FREE COURSE','The 7 Secrets of Effective Fathers',
-        'Dr. Ken Canfield\u2019s flagship, free to train. Certify it later for $79 if you want the proof.',
+        'Dr. Ken Canfield\u2019s flagship, free to train. Finish it and your Certificate of Completion is issued at no cost.',
         'class.html','Start free');
       }
 
-      var recCard;
-      var FLATP = [];
-      (window.FC_VOICE_PROMPTS || []).forEach(function(c){ (c.items||[]).forEach(function(t){ FLATP.push(t); }); });
-      if (FLATP.length){
-        var doneT = {};
-        (recs||[]).forEach(function(rr){ if (rr.title) doneT[rr.title] = 1; });
-        var nextP = null;
-        for (var pi=0; pi<FLATP.length; pi++){ if (!doneT[FLATP[pi]]){ nextP = FLATP[pi]; break; } }
-        if (!nextP) nextP = FLATP[(new Date().getDate()) % FLATP.length];
-        recCard = card('TONIGHT\u2019S PROMPT', nextP.replace(/\.\s*$/,''),
-          (vN ? vN + ' kept in the Archive. Sixty seconds adds one more.' : 'Sixty seconds of your voice outlasts almost everything else you will make this week.'),
-          'voice.html', vN ? 'Record it' : 'Record your first');
-      } else {
-        recCard = rec
-          ? card('LATEST RECORDING', (rec.kind||'A message')+' \u00b7 '+new Date(rec.created_at).toLocaleDateString(),
-              'Your voice, kept for them. Add one more tonight; two minutes is plenty.',
-              'voice.html','Record another')
-          : card('THE LEGACY ARCHIVE','No recordings yet.',
-              'Sixty seconds of your voice outlasts almost everything else you will make this week.',
-              'voice.html','Record your first');
-      }
+      var recCard = card('THE PROOF','The Certificate of Completion',
+        'Hours logged, checkpoints passed, a final at eighty percent. Serialed, signed, and publicly verifiable. Free to the man who earns it.',
+        'certificates.html','See how it works');
+
       var staleCard = '';
       var lastS = (sess||[])[(sess||[]).length - 1];
       if (lastS && lastS.completed_at){
@@ -143,17 +125,9 @@
         }
       }
       var vetCard = '';
-      try {
-        if (localStorage.getItem('fc_served') === '1'){
-          vetCard = card('FOR THOSE WHO SERVED','Everything here is free forever for you.',
-            'The films, the field notes, and the Legacy Archive are yours at no cost, always.',
-            'veterans-hub.html','Open your hub');
-          if (window.FC && FC.live && FC.uid && FC.uid()){ FC.sb.from('profiles').update({ served: true }).eq('id', FC.uid()).then(function(){},function(){}); }
-        }
-      } catch(_){}
 
       var tiles =
-        '<div class="eyebrow" style="margin:26px 0 12px">THE TRACKS</div><div class="grid-3">'+
+        '<div class="eyebrow" style="margin:26px 0 12px">THE THREE COURSES</div><div class="grid-3">'+
         tile('Fathering Fundamentals', fundAw?'EARNED':(fundEnr?'IN PROGRESS':'FREE'), fundEnr||fundAw?'course.html?cert=fundamentals':'class.html')+
         tile('Steady Under Pressure','IN DEVELOPMENT','certificates.html#waitlist')+
         tile('Coming Home Present','IN DEVELOPMENT','certificates.html#waitlist')+

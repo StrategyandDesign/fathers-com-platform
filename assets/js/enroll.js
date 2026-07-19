@@ -11,7 +11,9 @@
   var slug  = (qs('cert') || 'fundamentals').toLowerCase();
   var title = qs('title') || 'Fathering Fundamentals';
   var hours = qs('hours') || '10.0';
-  var PRICE_DISPLAY_CENTS = 7900;   // display only; the server decides the real price
+  // v4.0: courses and the Certificate of Completion are free to the man, always.
+  // The program code links a completion to a cohort; it is not a discount.
+  // The server-side checkout function remains the authority on enrollment.
   var coupon = '';
 
   var DEV = { steady:'Steady Under Pressure', reentry:'Coming Home Present' };
@@ -26,8 +28,8 @@
   setText('certTitle', title);
   setText('certTitleSum', title);
   setText('certHours', hours);
-  setText('priceLine', money(PRICE_DISPLAY_CENTS));
-  setText('totalLine', money(PRICE_DISPLAY_CENTS));
+  setText('priceLine', 'Free');
+  setText('totalLine', 'Free');
 
   // ---- coupon: capture the code; the server judges it ----
   function applyCode(){
@@ -35,7 +37,7 @@
     var raw = (input && input.value || '').trim().toLowerCase();
     if(!raw){ if(msg){ msg.textContent='Enter your program code.'; msg.className='fine cpn-err'; } return; }
     coupon = raw;
-    if(msg){ msg.textContent='Code will be applied at checkout.'; msg.className='fine cpn-ok'; }
+    if(msg){ msg.textContent='Your completion will count in this cohort.'; msg.className='fine cpn-ok'; }
     var btn = $('enrollBtn'); if(btn){ btn.textContent='Enroll with code'; }
   }
 
@@ -76,12 +78,12 @@
 
         if(d && d.enrolled){
           var dl = $('discountLine'); if(dl && coupon) dl.style.display='';
-          if(coupon){ setText('discountAmt', '\u2212' + money(PRICE_DISPLAY_CENTS)); setText('totalLine', money(0)); }
+          if(coupon){ setText('discountAmt', 'Cohort linked'); setText('totalLine', 'Free'); }
           showSuccess(); return;
         }
         if(d && d.checkout_url){ location.href = d.checkout_url; return; }   // Stripe, when live
         if(d && d.requires_payment){
-          note(d.message || 'Card payment activates soon. Enter your program code above for free access now.', 'cpn-err');
+          note(d.message || 'Direct enrollment is being switched to free access now. Enter your program code above to enroll through your cohort today.', 'cpn-err');
           var ci = $('couponInput'); if(ci) ci.focus();
           return;
         }

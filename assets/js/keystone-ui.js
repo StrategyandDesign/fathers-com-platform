@@ -34,6 +34,9 @@
   /* ---------- did he serve? asked once, plainly ---------- */
   function servedAsked(){ try { return localStorage.getItem('fc_served') !== null; } catch(e){ return false; } }
   function servedGate(next){
+    // v4.0: the military surface is dark (SHOW_MILITARY=false in build_pages.py).
+    // The gate passes straight through; profiles.served stays dormant in the schema.
+    next(); return;
     enterAssessment();
     if (servedAsked()) { next(); return; }
     root.innerHTML = shell(
@@ -132,10 +135,10 @@
       '<div class="ks-modes" style="margin-top:32px">'+
         '<button class="ks-mode" data-path="father">'+
           '<b>I\'m raising children now</b>'+
-          '<span>You\'ll take the full Keystone Father Profile: the complete validated inventory of how you father today.</span></button>'+
+          '<span>The Fatherhood Track. You\'ll take the full Keystone Father Profile: the complete inventory of how you father today.</span></button>'+
         '<button class="ks-mode" data-path="preparing">'+
           '<b>I\'m preparing, mentoring, or growing</b>'+
-          '<span>Expectant fathers, future fathers, mentors, and men breaking a cycle. You\'ll start by reflecting on your own upbringing, then explore the path.</span></button>'+
+          '<span>The Manhood Track. Expectant fathers, future fathers, mentors, and men rebuilding. You\'ll start by reflecting on your own upbringing, then explore the path.</span></button>'+
       '</div>');
     root.querySelectorAll('.ks-mode').forEach(function(b){
       b.onclick = function(){
@@ -156,7 +159,7 @@
       '<h2 style="margin:0 0 8px">Start with the father you had.</h2>'+
       '<p class="helper">Before a man fathers well, it helps to understand how he was fathered. These '+items.length+' questions are about your own upbringing. There are no wrong answers, and your reflections are private.</p>'+
       '<button class="btn btn-yellow" style="width:100%;margin-top:28px" id="ks-prep-begin">Begin</button>'+
-      '<p class="fine" style="margin-top:16px;text-align:center"><a href="certificates.html" class="link ash" style="font-size:12px">Or browse the certificate paths first</a></p>');
+      '<p class="fine" style="margin-top:16px;text-align:center"><a href="certificates.html" class="link ash" style="font-size:12px">Or browse the three courses first</a></p>');
     document.getElementById('ks-prep-begin').onclick = function(){
       KS.resumeOrStart('all_at_once').then(function(){ runSection(KS.pathSectionKeys()[0]); });
     };

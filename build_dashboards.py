@@ -55,7 +55,7 @@ HEAD = '''<!DOCTYPE html>
 <li><a href="participant.html" data-role="admin">Participant</a></li>
 <li><a href="studio.html" data-role="author">Studio</a></li>
 <li><a href="org.html" data-role="org">Org</a></li>
-<li><a href="lead.html" data-role="leader">Lead</a></li>
+<li><a href="lead.html" data-role="leader">Facilitate</a></li>
 </ul>
 <div class="nav-right">
 <a href="plan.html">My Plan</a>
@@ -178,7 +178,7 @@ PAGES = {
 
     <div class="card">
       <h3 style="margin-bottom:6px">Completions to approve</h3>
-      <p class="fine" style="margin-bottom:14px">Fathers who finished. Approve to let a man sign his own certificate.</p>
+      <p class="fine" style="margin-bottom:14px">Men who finished. Approve to issue the Certificate of Completion, signed and serialed.</p>
       <div id="cert-approvals" class="fine">Loading&hellip;</div>
     </div>
   </div>
@@ -190,10 +190,10 @@ PAGES = {
 <div class="grid-3">
   <a class="card" href="org.html" style="padding:18px 22px;text-decoration:none"><h3 style="margin-bottom:4px">Organization</h3><p class="fine" style="color:var(--ash)">The service window: join link, movement, cohorts, roster.</p></a>
   <a class="card" href="studio.html" style="padding:18px 22px;text-decoration:none"><h3 style="margin-bottom:4px">Studio</h3><p class="fine" style="color:var(--ash)">Courses, films, and publishing.</p></a>
-  <a class="card" href="lead.html" style="padding:18px 22px;text-decoration:none"><h3 style="margin-bottom:4px">Circle leader</h3><p class="fine" style="color:var(--ash)">Circles, members, and group life.</p></a>
+  <a class="card" href="lead.html" style="padding:18px 22px;text-decoration:none"><h3 style="margin-bottom:4px">Facilitator Desk</h3><p class="fine" style="color:var(--ash)">Cohorts, members, and group life.</p></a>
   <a class="card" href="participant.html" style="padding:18px 22px;text-decoration:none"><h3 style="margin-bottom:4px">Participant snapshot</h3><p class="fine" style="color:var(--ash)">One man at a time, handled with care.</p></a>
   <a class="card" href="plan.html" style="padding:18px 22px;text-decoration:none"><h3 style="margin-bottom:4px">Father&rsquo;s Home</h3><p class="fine" style="color:var(--ash)">What every father sees: his baseline, plan, and feed.</p></a>
-  <a class="card" href="veterans-hub.html" style="padding:18px 22px;text-decoration:none"><h3 style="margin-bottom:4px">Veterans hub</h3><p class="fine" style="color:var(--ash)">The veteran path: check-in, films, and the archive.</p></a>
+
   <a class="card" href="efficacy-report.html" style="padding:18px 22px;text-decoration:none"><h3 style="margin-bottom:4px">The Efficacy Report</h3><p class="fine" style="color:var(--ash)">What a funder sees: cohort movement, never a man.</p></a>
 </div>
 '''),
@@ -262,8 +262,8 @@ PAGES = {
 </div>
 '''),
 
-'lead': ('Lead a Circle', '''
-<div class="dash-head"><h1 class="d-36">Lead a Circle</h1><p class="lead">Plan the weeks, post to your men, keep the standard.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men in your Circle</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">watched the film</div></div><div class="glance-card"><div class="glance-lbl">NEXT MEETING</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">stay ready</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Post this week's question, and check who hasn't watched yet.</div></div></div>
+'lead': ('Facilitator Desk', '''
+<div class="dash-head"><h1 class="d-36">Facilitator Desk</h1><p class="lead">Plan the weeks, post to your men, keep the standard. Your Certified Facilitator status lives in the public registry.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men in your Circle</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">watched the film</div></div><div class="glance-card"><div class="glance-lbl">NEXT MEETING</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">stay ready</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Post this week's question, and check who hasn't watched yet.</div></div></div>
 <div id="circle-picker" class="row" style="margin-bottom:24px"></div>
 <div id="lead-body" data-tabs>
   <div class="tabs"><button class="active">This week</button><button>Plan weeks</button><button>Announce</button><button>Roster</button></div>
