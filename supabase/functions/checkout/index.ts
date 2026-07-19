@@ -1,29 +1,25 @@
 // ============================================================================
-// checkout  ·  Fathers.com certificate checkout protocol
+// checkout  ·  Fathers.com course enrollment protocol (v4.0)
 // ----------------------------------------------------------------------------
-// The single server-side authority for certificate purchase and enrollment.
-// The browser sends intent (course + optional coupon). This function decides
-// the price from the database, validates the coupon, and fulfills. The client
-// never computes money.
+// The single server-side authority for course enrollment. The browser sends
+// intent (the course). This function checks the claim, reads the price from
+// the database (participant courses are $0 by policy), and fulfills. The
+// client never computes money and never decides eligibility.
 //
-// TODAY (live path)
-//   Valid 100%-off coupon (e.g. father26)  ->  total $0  ->  enroll + award.
-//   No coupon / partial coupon             ->  respond requires_payment
-//                                              (payments not yet enabled).
+// v4.0 RULE (POSITIONING.md 3): a participant can only enroll when an active
+// claim exists for him, placed by a Certified Facilitator or a Certified
+// Organization. Claims live in participant_claims and match on user_id or on
+// the sign-in email. No claim -> claim_required, no enrollment.
 //
-// STRIPE (drop-in, pre-shaped)
-//   The block marked [STRIPE] below is where the paid path activates:
-//     supabase secrets set STRIPE_SECRET_KEY="sk_live_..."
-//     supabase secrets set CHECKOUT_SUCCESS_URL="https://<host>/enroll.html?paid=1"
-//     supabase secrets set CHECKOUT_CANCEL_URL="https://<host>/enroll.html"
-//   Fulfillment for paid sessions arrives via the checkout-webhook function,
-//   which calls the same fulfill() used by the free path, so free and paid
-//   enrollments are identical records.
+// PAID ROWS (later): the facilitator course may ship as a priced row in
+// certificate_courses. The [STRIPE] block below activates for any row with a
+// nonzero price once STRIPE_SECRET_KEY is set; fulfillment arrives via
+// checkout-webhook, which calls the same fulfill() as the free path.
 //
 // DEPLOY
 //   supabase functions deploy checkout
-//   (No secrets needed for the free path; SUPABASE_URL / SERVICE_ROLE are
-//   injected automatically.)
+//   (No secrets needed for the participant path; SUPABASE_URL / SERVICE_ROLE
+//   are injected automatically.)
 // ============================================================================
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -47,7 +43,7 @@ function json(body: unknown, status = 200) {
 // Fulfillment is one function so free-now and Stripe-later produce identical
 // records: enrollment (active) + certificate award (in_progress).
 async function fulfill(admin: ReturnType<typeof createClient>, args: {
-  userId: string; courseId: string; coupon: string | null;
+  userId: string; courseId: string; claimId: string | null;
   amountPaidCents: number; checkoutRef: string | null;
 }) {
   const { data: existing } = await admin
@@ -57,7 +53,7 @@ async function fulfill(admin: ReturnType<typeof createClient>, args: {
   if (!existing) {
     const ins = await admin.from("certificate_enrollments").insert({
       user_id: args.userId, course_id: args.courseId, status: "active",
-      coupon: args.coupon, amount_paid_cents: args.amountPaidCents,
+      claim_id: args.claimId, amount_paid_cents: args.amountPaidCents,
       checkout_ref: args.checkoutRef,
     });
     if (ins.error) throw ins.error;
@@ -81,7 +77,7 @@ Deno.serve(async (req) => {
   if (userErr || !userData?.user) return json({ error: "invalid session" }, 401);
   const userId = userData.user.id;
 
-  let body: { action?: string; course_slug?: string; coupon?: string } = {};
+  let body: { action?: string; course_slug?: string } = {};
   try { body = await req.json(); } catch { /* empty */ }
   if (body.action !== "create_checkout") return json({ error: "unsupported action" }, 400);
   if (!body.course_slug) return json({ error: "course_slug required" }, 400);
@@ -99,44 +95,34 @@ Deno.serve(async (req) => {
     .select("id").eq("user_id", userId).eq("course_id", course.id).maybeSingle();
   if (already) return json({ ok: true, enrolled: true, already: true, course: course.slug });
 
-  // ---- 3) Coupon validation, server-side only ----
-  let percentOff = 0;
-  let couponId: string | null = null;
-  let couponCode: string | null = null;
-  if (body.coupon && body.coupon.trim()) {
-    const code = body.coupon.trim().toLowerCase();
-    const { data: c } = await admin
-      .from("coupons")
-      .select("id,code,percent_off,active,expires_at,max_redemptions")
-      .eq("code", code).maybeSingle();
-    const expired = c?.expires_at ? new Date(c.expires_at) < new Date() : false;
-    let exhausted = false;
-    if (c && c.max_redemptions != null) {
-      const { count } = await admin
-        .from("coupon_redemptions")
-        .select("id", { count: "exact", head: true }).eq("coupon_id", c.id);
-      exhausted = (count ?? 0) >= c.max_redemptions;
-    }
-    if (!c || !c.active || expired || exhausted) {
-      return json({ error: "invalid_coupon", message: "That code was not recognized." }, 400);
-    }
-    percentOff = c.percent_off; couponId = c.id; couponCode = c.code;
+  // ---- 3) The claim check: the only door into a course ----
+  const email = (userData.user.email ?? "").toLowerCase();
+  const { data: claims } = await admin
+    .from("participant_claims")
+    .select("id,user_id,participant_email,status")
+    .eq("status", "active")
+    .or(`user_id.eq.${userId},participant_email.eq.${email}`);
+  const claim = (claims ?? [])[0] ?? null;
+  if (!claim) {
+    return json({
+      claim_required: true,
+      message: "No active claim found. Ask your facilitator or organization to claim your seat, then enroll again.",
+    }, 403);
+  }
+  // Attach the account to an email-only claim so future checks are direct.
+  if (!claim.user_id) {
+    await admin.from("participant_claims").update({ user_id: userId }).eq("id", claim.id);
   }
 
-  const totalCents = Math.round(course.price_cents * (100 - percentOff) / 100);
+  const totalCents = course.price_cents;
 
-  // ---- 4) Free path: fulfill now ----
+  // ---- 4) Participant path ($0 by policy): fulfill now ----
   if (totalCents <= 0) {
     try {
       await fulfill(admin, {
-        userId, courseId: course.id, coupon: couponCode,
+        userId, courseId: course.id, claimId: claim.id,
         amountPaidCents: 0, checkoutRef: null,
       });
-      if (couponId) {
-        await admin.from("coupon_redemptions")
-          .upsert({ coupon_id: couponId, user_id: userId, course_id: course.id },
-                  { onConflict: "coupon_id,user_id,course_id", ignoreDuplicates: true });
-      }
       return json({ ok: true, enrolled: true, course: course.slug, total_cents: 0 });
     } catch (e) {
       return json({ error: "enrollment failed", detail: String(e) }, 500);
@@ -148,7 +134,7 @@ Deno.serve(async (req) => {
     return json({
       requires_payment: true,
       total_cents: totalCents,
-      message: "Card payment activates soon. Enter your program code for free access now.",
+      message: "This is a priced credential and card payment is not yet enabled.",
     }, 402);
   }
   // When STRIPE_SECRET_KEY is set, create a Checkout Session and return its URL.
@@ -165,7 +151,7 @@ Deno.serve(async (req) => {
     "metadata[user_id]": userId,
     "metadata[course_id]": course.id,
     "metadata[course_slug]": course.slug,
-    "metadata[coupon]": couponCode ?? "",
+    "metadata[claim_id]": claim.id,
   });
   const resp = await fetch("https://api.stripe.com/v1/checkout/sessions", {
     method: "POST",

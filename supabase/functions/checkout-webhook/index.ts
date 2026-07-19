@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
   if (!existing) {
     const ins = await admin.from("certificate_enrollments").insert({
       user_id: userId, course_id: courseId, status: "active",
-      coupon: s.metadata?.coupon || null,
+      claim_id: s.metadata?.claim_id || null,
       amount_paid_cents: s.amount_total ?? 0,
       checkout_ref: s.id,
     });

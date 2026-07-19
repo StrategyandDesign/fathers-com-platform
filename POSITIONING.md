@@ -111,3 +111,75 @@ DB role keys are unchanged. Display names reposition: member → Participant,
 circle_leader → Certified Facilitator (Facilitator Desk), org_admin → Certified
 Organization admin, instructor → NCF curriculum staff, admin → NCF Registrar.
 See ROLES.md.
+
+## 12. Supabase changes (v4.0, revised in the claims pass)
+
+One migration: `supabase/migrations/20260718090000_keystone_v4_0_reposition.sql`.
+
+What it does: zeroes participant course prices and sets the default to 0
+(the checkout function reads price truth from the database); creates
+`participant_claims`, the only door into a course; adds `claim_id` to
+`certificate_enrollments`; updates the flagship film-library entry to five
+sessions; creates the certification registry (organization_certifications,
+facilitator_credentials) with public verification views that mirror
+public_certificates and always expose status, including suspended and revoked.
+
+Coupons are gone. The migration does not create them, the checkout function
+no longer reads them, and no UI offers them. Hand-made coupon tables in
+production can sit inert or be dropped at the owner's discretion.
+
+Edge function redeploys ARE required this pass: `supabase functions deploy
+checkout` and `supabase functions deploy checkout-webhook`, after `supabase
+db push`. The soft-launch "self enroll" RLS policy from
+sql-archive/seed_certificate_courses.sql should be DROPPED when convenient:
+with claims as the gate, a client-side insert path around the checkout
+function is a hole, not a convenience.
+
+Serial conventions: FC-2026-###### for Certificates of Completion,
+NCF-F-2026-#### for facilitators, NCF-O-2026-#### for organizations.
+
+## 13. Claims (the enrollment gate)
+
+A participant can only participate in a course when an active claim exists
+for him, placed by a Certified Facilitator or a Certified Organization. The
+claim is by the email he signs in with (or his user id once attached).
+Facilitators place and release claims from the Facilitator Desk. The free
+film library, the Keystone Profile, and the ninety-day plan remain open to
+every man; the three courses and the Certificate of Completion flow through
+claims. Enrollment records carry claim_id so completions roll up to cohorts.
+
+## 14. Course structure
+
+Five videos per course, each ending in a Checkpoint, closing with the
+written Final Q&A the man submits and his facilitator reads at approval. The
+admin console states the standard and warns on publishing a course that is
+not at five videos. Session films run roughly fifteen to twenty minutes so a
+session fits a working man's evening; verified hours on the certificate
+cover film, workbook, checkpoints, and the final.
+
+## 15. Auth coherence and the dashboard reveal
+
+One auth model: email and password, everywhere. The login card has two modes,
+Sign in and Create account; the create link toggles the card instead of
+dropping a man into the assessment. Account creation routes to the Profile as
+an invitation, with the account already existing. Both mid-assessment save
+and post-results save create the account with a password; the magic link is
+retired platform-wide (signInWithOtp removed from the client). If Supabase
+Auth has Confirm email enabled, the flows say so and results persist locally
+until the first sign-in attaches them (FC.syncKeystone).
+
+Signed-in state is legible: the nav shows My Plan plus Sign out, and the
+account page has a visible Sign out button. Dashboards keep their own.
+
+The completion moment celebrates before it reports: a finish header, the
+overall counting up, then the full 26 scales, then one primary action: Open
+your dashboard. plan.html opens with the Keystone Dashboard: the overall as
+a drawn ring, the four dimensions (Involvement, Consistency, Awareness,
+Nurturance) animating in, strength and growth chips, movement since run one,
+the retake date, and a single next action chosen from where he actually is
+(start free course, continue, or see the certificate). Arriving with
+reveal=1 shows the congratulations band once, then the URL cleans itself.
+The rail's baseline card hides when the hero renders so numbers appear once.
+
+Orphans removed this pass: the superseded keystone.js controller and the
+magic-link helper it used.

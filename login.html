@@ -67,9 +67,13 @@
     <span>Fathers.com</span>
   </a>
   <div class="auth-card">
-    <h1 class="auth-title">Sign in</h1>
-    <p class="auth-sub">Welcome back. Pick up your plan where you left off.</p>
+    <h1 class="auth-title" id="authTitle">Sign in</h1>
+    <p class="auth-sub" id="authSub">Welcome back. Pick up your plan where you left off.</p>
     <form id="authForm" novalidate>
+      <div class="auth-field" id="authNameField" style="display:none">
+        <label for="authName">Your name</label>
+        <input id="authName" class="input" type="text" autocomplete="name" placeholder="First name is fine">
+      </div>
       <div class="auth-field">
         <label for="authEmail">Email</label>
         <input id="authEmail" class="input" type="email" autocomplete="username" placeholder="you@example.com" required>
@@ -81,10 +85,8 @@
       <button class="btn btn-primary auth-btn" id="authSignin" type="submit">Sign in</button>
       <p class="auth-msg" id="authMsg" role="status" aria-live="polite"></p>
     </form>
-    <div class="auth-or"><span>or</span></div>
-    <button class="btn btn-secondary auth-btn" id="authMagic" type="button">Email me a sign-in link</button>
   </div>
-  <p class="auth-alt">New here? <a href="profile.html">Create an account</a></p>
+  <p class="auth-alt"><span id="authAltTxt">New here? </span><a href="#" id="authAltLink">Create an account</a></p>
   <div class="auth-legal">
     <a href="terms.html">Terms</a><span aria-hidden="true">&middot;</span>
     <a href="privacy.html">Privacy</a><span aria-hidden="true">&middot;</span>

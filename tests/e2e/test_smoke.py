@@ -70,9 +70,55 @@ def test_circles_is_live_not_demo(page, server):
 def test_enrollment_is_free(page, server):
     # v4.0: the man never pays. No dollar price on the enroll summary.
     html = _fetch(server, "enroll.html")
-    assert 'id="priceLine">Free<' in html
     assert 'id="totalLine">Free<' in html
     assert "$79" not in html
+
+def test_no_dead_buttons(page, server):
+    # The audit rule: no placeholder toasts that promise wiring later, and no
+    # magic-link path on sign-in. Structural greps across the shipped pages.
+    import glob, os
+    for f in glob.glob(os.path.join(os.path.dirname(__file__), "..", "..", "*.html")):
+        html = open(f).read()
+        assert "wires at deploy" not in html, f
+        assert "wires to Supabase" not in html, f
+        assert "wires to Stripe" not in html, f
+    login = _fetch(server, "login.html")
+    assert "authMagic" not in login and "sign-in link" not in login
+
+def test_login_has_account_creation(page, server):
+    # One card, two modes: the create-account link toggles the form, it does
+    # not dump a man into the assessment. Password only, no magic link.
+    html = _fetch(server, "login.html")
+    for hook in ('id="authTitle"', 'id="authAltLink"', 'id="authNameField"', 'id="authName"'):
+        assert hook in html
+    assert 'href="profile.html">Create an account' not in html
+    js = _fetch(server, "assets/js/app.js")
+    assert "signUpPassword" in js and "navSignout" in js
+    client = _fetch(server, "assets/js/supabase-client.js")
+    assert "signInWithOtp" not in client                 # magic link fully retired
+
+def test_plan_has_keystone_dashboard(page, server):
+    html = _fetch(server, "plan.html")
+    for hook in ('id="kdHero"', 'id="kdRing"', 'id="kdBars"', 'id="kdCongrats"'):
+        assert hook in html
+    js = _fetch(server, "assets/js/home.js")
+    assert "renderHero" in js and "reveal" in js
+
+def test_account_has_visible_signout(page, server):
+    html = _fetch(server, "account.html")
+    assert 'data-signout>Sign out</a>' in html
+
+def test_facilitator_desk_has_claims(page, server):
+    html = _fetch(server, "lead.html")
+    for hook in ('id="claim-email"', 'id="claim-add"', 'id="claim-list"'):
+        assert hook in html
+    js = _fetch(server, "assets/js/lead.js")
+    assert "participant_claims" in js
+
+def test_admin_console_builds_courses(page, server):
+    html = _fetch(server, "admin.html")
+    assert "Build a course" in html
+    assert "Five videos per course" in html
 
 def test_admin_certificate_console_present(page, server):
     # admin.html is auth-gated; assert the shipped console structure via raw fetch.
@@ -80,15 +126,17 @@ def test_admin_certificate_console_present(page, server):
     for hook in ['id="cert-course-select"', 'id="cert-videos"', 'id="cert-approvals"', "admin-certs.js"]:
         assert hook in html
 
-def test_enroll_sends_intent_not_money(page, server):
-    # The enroll page must reference the server-side checkout and carry no
-    # client-side coupon verdict. Structural check on the shipped script.
+def test_enroll_is_claim_gated_not_coded(page, server):
+    # v4.0 (POSITIONING.md 3): no coupon UI, no client-side eligibility. The
+    # server-side checkout owns the claim check; the page explains the claim.
     js = _fetch(server, "assets/js/enroll.js")
     assert "create_checkout" in js                      # calls the server protocol
     assert "functions.invoke('checkout'" in js
-    assert "raw === CODE" not in js                     # old client-side verdict is gone
+    assert "coupon" not in js                           # the code path is gone entirely
+    assert "claim_required" in js                       # and the claim path is handled
     page.goto(f"{server}/enroll.html?cert=fundamentals", wait_until="load"); page.wait_for_timeout(500)
-    assert page.query_selector("#couponInput") is not None
+    assert page.query_selector("#couponInput") is None
+    assert page.query_selector("#claimStatus") is not None
     assert page.query_selector("#enrollBtn") is not None
 
 def test_participant_dashboard_present(page, server):

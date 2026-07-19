@@ -192,7 +192,7 @@ create table certificate_courses (
   slug text unique not null,
   title text not null,
   hours numeric(4,1) not null,
-  price_cents int not null                 -- placeholder pricing pending jurisdiction interviews
+  price_cents int not null default 0        -- v4.0: participant courses are $0 by policy (POSITIONING.md)
 );
 
 create table certificate_enrollments (
@@ -341,7 +341,7 @@ grant select on public_certificates to anon, authenticated;
 -- Seed : launch catalog + demo certificates (match verify.html)
 -- ============================================================
 insert into classes (slug, title, instructor, lesson_count, runtime_minutes, is_new) values
- ('fundamentals','The Fundamentals of Fathering','Dr. Ken Canfield',12,130,true),
+ ('fundamentals','The Fundamentals of Fathering','Dr. Ken Canfield',5,85,true),
  ('daughters','Fathering Daughters','TBD instructor',12,118,false),
  ('sons','Fathering Sons','TBD instructor',11,109,false),
  ('teens','Raising Teens','TBD instructor',13,126,false),
@@ -352,10 +352,10 @@ insert into classes (slug, title, instructor, lesson_count, runtime_minutes, is_
  ('grandfathering','Grandfathering','Dr. Ken Canfield',9,82,false);
 
 insert into certificate_courses (slug, title, hours, price_cents) values
- ('fundamentals-cert','Fathering Fundamentals Certificate',10.0,7900),
- ('coparenting-cert','Co-Parenting After Divorce Certificate',8.0,7900),
- ('reentry-cert','Reentry Fatherhood Certificate',12.0,7900),
- ('anger-repair-cert','Anger and Repair Certificate',8.0,7900);
+ ('fundamentals-cert','Fathering Fundamentals Certificate',10.0,0),
+ ('coparenting-cert','Co-Parenting After Divorce Certificate',8.0,0),
+ ('reentry-cert','Reentry Fatherhood Certificate',12.0,0),
+ ('anger-repair-cert','Anger and Repair Certificate',8.0,0);
 
 insert into certificates (serial, recipient_display, course_title, hours, issued_at) values
  ('FC-2026-004317','Marcus T.','Fathering Fundamentals Certificate',10.0,'2026-06-02'),
