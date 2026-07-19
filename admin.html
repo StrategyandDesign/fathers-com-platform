@@ -86,7 +86,7 @@
   <div class="tabpanel">
     <div class="card" style="margin-bottom:20px">
       <div class="row between wrap" style="margin-bottom:18px;gap:12px">
-        <h3>Build a certificate</h3>
+        <h3>Build a course</h3>
         <div class="row" style="gap:10px;align-items:center">
           <select class="input" id="cert-course-select" style="min-width:200px"></select>
           <span class="chip" id="cert-publish-state">Draft</span>
@@ -94,6 +94,7 @@
         </div>
       </div>
       <div id="certs-build">
+        <p class="fine" style="margin:0 0 14px">Five videos per course. Each video ends in a Checkpoint; the course closes with the Final Q&amp;A. Completion issues the Certificate of Completion, signed by Dr. Canfield and the leading Certified Facilitator, at no cost to the man.</p>
         <div class="eyebrow" style="margin:0 0 12px">VIDEOS, WITH LENGTH SO WE KNOW IF THEY WATCHED</div>
         <div id="cert-videos" class="fine">Loading&hellip;</div>
         <div class="row wrap" style="gap:10px;margin-top:16px;align-items:end">
@@ -118,7 +119,7 @@
 
     <div class="card" style="margin-bottom:20px">
       <h3 style="margin-bottom:6px">Final Q&amp;A</h3>
-      <p class="fine" style="margin-bottom:14px">Longform prompts after the last video. A man writes his answers; you read them at approval.</p>
+      <p class="fine" style="margin-bottom:14px">Longform prompts after the fifth video. A man writes his answers and submits them; his facilitator reads them at approval.</p>
       <div id="cert-qa" class="fine">Loading&hellip;</div>
       <div class="row" style="gap:10px;margin-top:14px;align-items:end"><div class="field" style="margin:0;flex:1"><label>Prompt</label><input class="input" id="qa-prompt"></div><button class="btn btn-primary btn-sm" id="qa-add">Add prompt</button></div>
     </div>

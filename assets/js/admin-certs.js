@@ -21,7 +21,7 @@
   }
 
   function setupNeeded(err){
-    var m = '<div class="notice brass" style="margin:0">The certificate tables are not set up yet. Run <code>certificate_accountability.sql</code> in your Supabase SQL editor, then reload this page.' +
+    var m = '<div class="notice brass" style="margin:0">The course tables are not set up yet. Apply the database migrations (<code>supabase db push</code>), then reload this page.' +
       '<br><span class="fine">' + esc((err && err.message) || '') + '</span></div>';
     ['cert-videos','cert-qa','cert-approvals'].forEach(function(id){ var e = el(id); if (e) e.innerHTML = m; });
     var sel = el('cert-course-select'); if (sel) sel.innerHTML = '';
@@ -44,7 +44,7 @@
       if (r.error) { fail('cert-videos', r.error); return; }
       courses = r.data || [];
       var sel = el('cert-course-select');
-      if (!courses.length) { sel.innerHTML=''; el('cert-videos').innerHTML='<div class="notice brass" style="margin:0">No certificate courses yet. Run <code>seed_certificate_courses.sql</code> first, then reload.</div>'; return; }
+      if (!courses.length) { sel.innerHTML=''; el('cert-videos').innerHTML='<div class="notice brass" style="margin:0">No courses yet. Apply the migrations in <code>supabase/migrations/</code> (supabase db push), then reload.</div>'; return; }
       sel.innerHTML = courses.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.title)+'</option>'; }).join('');
       sel.value = courses[0].id;
       selectCourse();
@@ -65,6 +65,7 @@
 
   function togglePublish(){
     var c = courseObj(); if (!c) return;
+    if (!c.published && videos.length !== 5 && !window.confirm('The standard is five videos per course. This course has ' + videos.length + '. Publish anyway?')) return;
     FC.sb.from('certificate_courses').update({ published: !c.published }).eq('id', curCourse).then(function(r){
       if (r.error) { note('Failed: ' + r.error.message); return; }
       c.published = !c.published; selectCourse(); note(c.published ? 'Published.' : 'Moved to draft.');
@@ -78,7 +79,7 @@
     FC.sb.from('course_videos').select('*').eq('course_id', curCourse).order('ord').then(function(r){
       if (r.error) { fail('cert-videos', r.error); return; }
       videos = r.data || [];
-      if (!videos.length) { el('cert-videos').innerHTML = '<p class="fine">No videos yet. Add the first below.</p>'; return; }
+      if (!videos.length) { el('cert-videos').innerHTML = '<p class="fine">No videos yet. Add the first below. The standard is five per course.</p>'; return; }
       var html = '<table class="dtable"><thead><tr><th>#</th><th>Title</th><th>Length</th><th>Debrief</th><th></th></tr></thead><tbody>';
       videos.forEach(function(v){
         html += '<tr><td>' + v.ord + '</td><td>' + esc(v.title) + '</td><td class="fine">' + fmtLen(v.duration_seconds) + '</td>' +

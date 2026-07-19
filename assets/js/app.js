@@ -215,10 +215,30 @@
     });
   });
 
-  // The homepage veteran row is an explicit statement of service. Record it.
-  document.querySelectorAll('a.hero-intent-opt[data-served]').forEach(function(el){
-    el.addEventListener('click', function(){
-      try { localStorage.setItem('fc_served','1'); } catch(e){}
+  // Password reset: real when keys are live, honest when not.
+  document.querySelectorAll('[data-pwreset]').forEach(function(b){
+    b.addEventListener('click', function(){
+      if(!(window.FC && FC.live)){ toast('Password reset activates with live keys.'); return; }
+      FC.ready.then(function(){
+        var em = (FC.session && FC.session.user && FC.session.user.email) || '';
+        if(!em){ toast('Sign in first.'); return; }
+        FC.sb.auth.resetPasswordForEmail(em).then(function(){ toast('Reset link sent to ' + em + '.'); },
+          function(){ toast('Could not send the reset link. Try again.'); });
+      });
+    });
+  });
+
+  // Preference saves persist locally so the button does what it says.
+  document.querySelectorAll('[data-prefs-save]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var scope = b.closest('.card') || document;
+      var state = {};
+      scope.querySelectorAll('input,select,textarea').forEach(function(el,i){
+        var k = el.name || el.id || ('f'+i);
+        state[k] = el.type==='checkbox' ? el.checked : el.value;
+      });
+      try { localStorage.setItem(b.dataset.prefsKey || 'fc_prefs', JSON.stringify(state)); } catch(e){}
+      toast('Saved.');
     });
   });
 
@@ -268,35 +288,6 @@
       var authPass=document.getElementById('authPass');
       var authMsg=document.getElementById('authMsg');
       var authSignin=document.getElementById('authSignin');
-      var authMagic=document.getElementById('authMagic');
-      var authForgot=document.getElementById('authForgot');
-      var _nraw=(new URLSearchParams(location.search).get('next')||'');
-      var nextDest=/^[a-z0-9._-]+\.html([?#].*)?$/i.test(_nraw)?_nraw:'plan.html';
-      function aMsg(t,kind){ if(!authMsg)return; authMsg.textContent=t||''; authMsg.style.color=(kind==='err')?'var(--error)':((kind==='ok')?'var(--pine-hi)':'var(--ash)'); }
-
-      af.addEventListener('submit',function(e){
-        e.preventDefault();
-        var em=(authEmail.value||'').trim(), pw=authPass.value||'';
-        if(!em){ aMsg('Enter your email.','err'); authEmail.focus(); return; }
-        if(!pw){ aMsg('Enter your password, or use a sign-in link below.','err'); authPass.focus(); return; }
-        var lbl=authSignin.textContent; authSignin.disabled=true; authSignin.textContent='Signing in…'; aMsg('Signing you in…');
-        FC.signInPassword(em,pw).then(function(r){
-          if(r.error){ authSignin.disabled=false; authSignin.textContent=lbl; aMsg(r.error.message,'err'); }
-          else { location.href=nextDest; }
-        }).catch(function(){ authSignin.disabled=false; authSignin.textContent=lbl; aMsg('Something went wrong. Try again.','err'); });
-      });
-
-      function sendMagic(){
-        var em=(authEmail.value||'').trim();
-        if(!em){ aMsg('Enter your email, then we will send a sign-in link.','err'); authEmail.focus(); return; }
-        var lbl=authMagic.textContent; authMagic.disabled=true; authMagic.textContent='Sending…'; aMsg('Sending your sign-in link…');
-        FC.signIn(em, nextDest).then(function(r){
-          authMagic.disabled=false; authMagic.textContent=lbl;
-          if(r.error){ aMsg('Could not send: '+r.error.message,'err'); }
-          else { aMsg('Check your email ('+em+'). Click the link to sign in.','ok'); }
-        }).catch(function(){ authMagic.disabled=false; authMagic.textContent=lbl; aMsg('Something went wrong. Try again.','err'); });
-      }
-      if(authMagic) authMagic.addEventListener('click',sendMagic);
       if(authForgot) authForgot.addEventListener('click',sendMagic);
     }
 
@@ -418,7 +409,7 @@
           .then(function(r){
             if(r && r.data && r.data.active){
               localStorage.setItem('fc_org_tag', JSON.stringify({organization_id:r.data.org_id, program_id:r.data.program_id, cohort_id:r.data.cohort_id, code:pend, support_note:r.data.support_note||null}));
-              if(jc && window.toast) toast('Linked to program code '+pend+'.');
+              if(jc && window.toast) toast('Linked to your program.');
             }
           }, function(){});
       }

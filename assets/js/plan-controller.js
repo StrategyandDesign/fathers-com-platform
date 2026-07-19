@@ -187,7 +187,7 @@
           '<div style="max-width:58ch">'+
             '<div class="eyebrow brass" style="margin-bottom:8px">EARN A CERTIFICATE</div>'+
             '<b style="font-size:16px">Ready for proof you did the work?</b>'+
-            '<p class="small" style="margin-top:6px">Turn your plan into a court-ready, verified certificate. Identity checked, hours logged, a serial anyone can confirm. Free with your program code.</p>'+
+            '<p class="small" style="margin-top:6px">Turn your plan into a court-ready, verified certificate. Identity checked, hours logged, a serial anyone can confirm. Free through your program.</p>'+
           '</div>'+
           '<a class="btn btn-yellow" href="certificates.html" style="white-space:nowrap">See certificates</a>'+
         '</div>'+

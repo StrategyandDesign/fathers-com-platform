@@ -139,7 +139,7 @@ PAGES = {
   <div class="tabpanel">
     <div class="card" style="margin-bottom:20px">
       <div class="row between wrap" style="margin-bottom:18px;gap:12px">
-        <h3>Build a certificate</h3>
+        <h3>Build a course</h3>
         <div class="row" style="gap:10px;align-items:center">
           <select class="input" id="cert-course-select" style="min-width:200px"></select>
           <span class="chip" id="cert-publish-state">Draft</span>
@@ -147,6 +147,7 @@ PAGES = {
         </div>
       </div>
       <div id="certs-build">
+        <p class="fine" style="margin:0 0 14px">Five videos per course. Each video ends in a Checkpoint; the course closes with the Final Q&amp;A. Completion issues the Certificate of Completion, signed by Dr. Canfield and the leading Certified Facilitator, at no cost to the man.</p>
         <div class="eyebrow" style="margin:0 0 12px">VIDEOS, WITH LENGTH SO WE KNOW IF THEY WATCHED</div>
         <div id="cert-videos" class="fine">Loading&hellip;</div>
         <div class="row wrap" style="gap:10px;margin-top:16px;align-items:end">
@@ -171,7 +172,7 @@ PAGES = {
 
     <div class="card" style="margin-bottom:20px">
       <h3 style="margin-bottom:6px">Final Q&amp;A</h3>
-      <p class="fine" style="margin-bottom:14px">Longform prompts after the last video. A man writes his answers; you read them at approval.</p>
+      <p class="fine" style="margin-bottom:14px">Longform prompts after the fifth video. A man writes his answers and submits them; his facilitator reads them at approval.</p>
       <div id="cert-qa" class="fine">Loading&hellip;</div>
       <div class="row" style="gap:10px;margin-top:14px;align-items:end"><div class="field" style="margin:0;flex:1"><label>Prompt</label><input class="input" id="qa-prompt"></div><button class="btn btn-primary btn-sm" id="qa-add">Add prompt</button></div>
     </div>
@@ -266,7 +267,7 @@ PAGES = {
 <div class="dash-head"><h1 class="d-36">Facilitator Desk</h1><p class="lead">Plan the weeks, post to your men, keep the standard. Your Certified Facilitator status lives in the public registry.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men in your Circle</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">watched the film</div></div><div class="glance-card"><div class="glance-lbl">NEXT MEETING</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">stay ready</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Post this week's question, and check who hasn't watched yet.</div></div></div>
 <div id="circle-picker" class="row" style="margin-bottom:24px"></div>
 <div id="lead-body" data-tabs>
-  <div class="tabs"><button class="active">This week</button><button>Plan weeks</button><button>Announce</button><button>Roster</button></div>
+  <div class="tabs"><button class="active">This week</button><button>Plan weeks</button><button>Announce</button><button>Roster</button><button>Claims</button></div>
   <div class="tabpanel active"><div id="lead-thisweek">Pick a Circle…</div></div>
   <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Set a week</h3>
     <div class="grid-4" style="gap:12px;align-items:end">
@@ -286,6 +287,16 @@ PAGES = {
     <div id="ann-list" style="margin-top:20px"></div>
   </div></div>
   <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Members</h3><div id="lead-roster"></div></div></div>
+  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:6px">Claim a participant</h3>
+    <p class="fine" style="margin-bottom:14px">A man can only enroll in the courses once you claim him. Enter the email he signs in with. He pays nothing; his completion counts in your cohort.</p>
+    <div class="row wrap" style="gap:10px;align-items:end">
+      <div class="field" style="margin:0;flex:2;min-width:220px"><label>Participant email</label><input class="input" id="claim-email" type="email" placeholder="him@example.com"></div>
+      <button class="btn btn-primary btn-sm" id="claim-add">Claim</button>
+    </div>
+    <p class="fine" id="claim-msg" style="margin-top:10px;min-height:16px"></p>
+    <div class="eyebrow" style="margin:20px 0 10px">YOUR ACTIVE CLAIMS</div>
+    <div id="claim-list" class="fine">Loading&hellip;</div>
+  </div></div>
 </div>
 '''),
 }

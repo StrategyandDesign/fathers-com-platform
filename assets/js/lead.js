@@ -1,4 +1,4 @@
-/* Circle leader dashboard: weekly plan, announcements, roster. */
+/* Facilitator Desk: weekly plan, announcements, roster, participant claims. */
 (function(){
   var demo=!(window.FC&&FC.live); var circleId=null;
   function el(id){return document.getElementById(id);}
@@ -25,7 +25,7 @@
       select(rows[0].circles.id);
     });
   }
-  function select(id){ circleId=id; thisWeek(); weeks(); announcements(); roster(); }
+  function select(id){ circleId=id; thisWeek(); weeks(); announcements(); roster(); claims(); }
 
   function thisWeek(){
     FC.sb.from('circle_weeks').select('*').eq('circle_id',circleId).order('week',{ascending:false}).limit(1).then(function(r){
@@ -73,9 +73,39 @@
         rows.map(function(m){return '<tr><td>'+esc(m.profiles&&m.profiles.name||'—')+'</td><td class="fine">'+esc(m.profiles&&m.profiles.email||'')+'</td><td class="fine">'+m.role+'</td></tr>';}).join('')+'</tbody></table>'):'<p class="fine">No members yet.</p>';
     });
   }
+  // ---- Claims: the gate on course enrollment (POSITIONING 3 / v4.0) ----
+  function claims(){
+    var box=el('claim-list'); if(!box) return;
+    FC.sb.from('participant_claims').select('id,participant_email,status,created_at')
+      .eq('facilitator_user_id',FC.uid()).eq('status','active').order('created_at',{ascending:false})
+      .then(function(r){
+        if(r.error){ box.innerHTML='<p class="fine">Claims load with the v4.0 migration applied.</p>'; return; }
+        var rows=r.data||[];
+        box.innerHTML=rows.length?('<table class="dtable"><thead><tr><th>Email</th><th>Claimed</th><th></th></tr></thead><tbody>'+
+          rows.map(function(c){return '<tr><td class="fine">'+esc(c.participant_email)+'</td><td class="fine">'+new Date(c.created_at).toLocaleDateString()+'</td><td><button class="btn btn-secondary mini" data-crel="'+c.id+'">Release</button></td></tr>';}).join('')+'</tbody></table>')
+          :'<p class="fine">No active claims yet. Claim a man above and he can enroll.</p>';
+        box.querySelectorAll('[data-crel]').forEach(function(b){b.addEventListener('click',function(){
+          FC.sb.from('participant_claims').update({status:'released'}).eq('id',b.dataset.crel).then(claims);
+        });});
+      });
+  }
+  function addClaim(){
+    var em=(el('claim-email').value||'').trim().toLowerCase();
+    var msg=el('claim-msg');
+    if(!em || em.indexOf('@')<0){ if(msg){msg.textContent='Enter the email he signs in with.';msg.className='fine cpn-err';} return; }
+    var row={facilitator_user_id:FC.uid(), participant_email:em, status:'active'};
+    if(circleId) row.circle_id=circleId;
+    FC.sb.from('participant_claims').insert(row).then(function(r){
+      if(r.error){ if(msg){msg.textContent='Failed: '+r.error.message;msg.className='fine cpn-err';} return; }
+      if(msg){msg.textContent='Claimed. He can enroll now, at no cost.';msg.className='fine cpn-ok';}
+      el('claim-email').value=''; claims();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded',function(){
     boot();
     var a=el('cw-go'); if(a) a.addEventListener('click',saveWeek);
     var b=el('ann-go'); if(b) b.addEventListener('click',announce);
+    var c=el('claim-add'); if(c) c.addEventListener('click',addClaim);
   });
 })();

@@ -82,8 +82,8 @@
   </div>
   <div class="card pad-0">
     <div class="row between" style="padding:18px 20px;border-bottom:1px solid var(--hairline)">
-      <div class="row" style="flex:1;max-width:480px"><input class="input" readonly value="fathers.com/join/living-hope-4F7K"><button class="btn btn-secondary btn-sm" onclick="toast('Invite link copied.')">Copy</button></div>
-      <button class="btn btn-secondary btn-sm" onclick="toast('CSV upload wires to Supabase.')">Upload CSV</button>
+      <div class="row" style="flex:1;max-width:480px"><input class="input" readonly id="joinLinkField" value="fathers.com/join/living-hope-4F7K"><button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('joinLinkField').value).then(function(){toast('Invite link copied.')})">Copy</button></div>
+      <a class="btn btn-secondary btn-sm" href="mailto:Team@Fathers.com?subject=Roster%20import">Send us your roster</a>
     </div>
     <table><thead><tr><th>Name</th><th>Email</th><th>Baseline</th><th>Last active</th><th>Circle</th></tr></thead><tbody>
       <tr><td>Marcus T.</td><td class="fine">m.t@…</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">&check;</span></td><td class="fine">Today</td><td class="fine">Tuesday 0600</td></tr>

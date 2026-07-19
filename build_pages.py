@@ -226,9 +226,9 @@ PAGES['index.html'] = dict(title='Know where you stand', desc='Take the free Key
     <a class="card" href="class.html" style="padding:0;overflow:hidden;text-decoration:none">
       <div class="slot r-2x3 filled" data-slot="IMG-P1-CAT-1" style="max-height:280px"><img src="assets/img/photos/action-01.jpg" alt="Fathering Fundamentals"></div>
       <div style="padding:20px 22px">
-        <div class="row between" style="margin-bottom:8px"><span class="pill">FREE COURSE</span><span class="fine mono">12 lessons</span></div>
+        <div class="row between" style="margin-bottom:8px"><span class="pill">FREE COURSE</span><span class="fine mono">5 sessions</span></div>
         <h3 style="margin-bottom:6px">Fathering Fundamentals</h3>
-        <p class="fine" style="color:var(--ash)">The 7 Secrets of Effective Fathers, taught by Dr. Ken Canfield. Free to train. Completion recognized.</p>
+        <p class="fine" style="color:var(--ash)">The 7 Secrets of Effective Fathers, taught by Dr. Ken Canfield. Five sessions, usable the same night. Free to train; completion recognized.</p>
       </div>
     </a>
     <a class="card" href="certificates.html#waitlist" style="padding:0;overflow:hidden;text-decoration:none">
@@ -395,7 +395,7 @@ PAGES['story.html'] = dict(title='Back to the Kitchen Table', desc='One father. 
       <p class="quote" style="font-size:19px">"Repair beats explain. Every time."</p></div>
     <div class="card"><div class="eyebrow" style="margin-bottom:14px">WHAT HE TRAINS NOW</div>
       <div class="row" style="gap:16px"><div class="slot r-2x3" data-slot="IMG-P3-DET-02" style="flex:0 0 72px"></div>
-      <div><b style="font-size:15px">Watch Ray's class: Coming Home Present</b><p class="small" style="margin-top:6px">10 lessons &middot; 1h 44m</p></div></div>
+      <div><b style="font-size:15px">Watch Ray's class: Coming Home Present</b><p class="small" style="margin-top:6px">5 sessions &middot; 1h 25m</p></div></div>
       <a class="btn btn-secondary btn-sm" href="class.html" style="margin-top:16px">Go to the class</a></div>
     <div class="card"><div class="eyebrow" style="margin-bottom:12px">WHERE HE STARTED</div>
       <p class="small" style="margin-bottom:14px">Ray's first Presence Baseline: <b class="mono bone">43</b></p>
@@ -450,21 +450,15 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
       <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Say what you stand for out loud.</div></div>
       <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Repair fast when you blow it.</div></div>
     </div>
-    <h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:8px">Lessons</h2>
-    <details open><summary><span><b class="mono ash" style="margin-right:14px">01</b>Why Presence Wins</span><span class="tag">8:12</span></summary>
+    <h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:8px">The five sessions</h2>
+    <p class="fine" style="margin-bottom:14px">Five filmed sessions. Each ends in a checkpoint, and the course closes with the written Final Q&amp;A your facilitator reads.</p>
+    <details open><summary><span><b class="mono ash" style="margin-right:14px">01</b>Why Presence Wins</span><span class="tag">17:16</span></summary>
       <div class="body"><div class="row" style="align-items:flex-start;gap:18px"><div class="slot r-16x9" data-slot="IMG-P4-DET-02" style="flex:0 0 180px"></div>
-      <p style="font-size:14px">The research case for father presence in nine minutes. What the research says your kids get when you show up, and what it costs when you don't.</p></div></div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">02</b>Your Baseline, Read Honestly</span><span class="tag">9:04</span></summary><div class="body">Reading your four Keystone scores without flinching.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">03</b>A Schedule They Can Trust</span><span class="tag">10:31</span></summary><div class="body">Consistency mechanics: standing time, predictability, the calendar as covenant.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">04</b>Enter Their World</span><span class="tag">9:47</span></summary><div class="body">Awareness training: friends' names, inner weather, questions without fixing.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">05</b>Repair Fast</span><span class="tag">9:12</span></summary><div class="body">The 24-hour repair standard.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">06</b>Say What You Stand For</span><span class="tag">8:58</span></summary><div class="body">Values out loud, not just rules enforced.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">07</b>The Distracted Father</span><span class="tag">8:20</span></summary><div class="body">Phones, work, and the attention your kids can feel.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">08</b>Discipline That Builds</span><span class="tag">10:05</span></summary><div class="body">Standards without fear.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">09</b>Fathering Under Pressure</span><span class="tag">9:33</span></summary><div class="body">Money, conflict, exhaustion, and presence anyway.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">10</b>Your Own Father</span><span class="tag">11:02</span></summary><div class="body">What you inherited, what you keep, what stops with you.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">11</b>The Brotherhood Requirement</span><span class="tag">8:44</span></summary><div class="body">Why no man holds a standard alone.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">12</b>The Ninety-Day Standard</span><span class="tag">9:26</span></summary><div class="body">Locking the plan and the retake.</div></details>
+      <p style="font-size:14px">The research case for father presence, and your four Keystone scores read honestly. What your kids get when you show up, what it costs when you don't, and where you actually stand today.</p></div></div></details>
+    <details><summary><span><b class="mono ash" style="margin-right:14px">02</b>A Schedule They Can Trust</span><span class="tag">18:51</span></summary><div class="body">Consistency mechanics: standing time, the calendar as covenant, and the distracted father. Attention your kids can feel.</div></details>
+    <details><summary><span><b class="mono ash" style="margin-right:14px">03</b>Enter Their World</span><span class="tag">17:07</span></summary><div class="body">Awareness training: friends' names, inner weather, questions without fixing.</div></details>
+    <details><summary><span><b class="mono ash" style="margin-right:14px">04</b>Repair Fast, Stand for Something</span><span class="tag">18:15</span></summary><div class="body">The 24-hour repair standard, values out loud, and discipline that builds instead of frightens.</div></details>
+    <details><summary><span><b class="mono ash" style="margin-right:14px">05</b>Your Own Father, Your Ninety Days</span><span class="tag">19:12</span></summary><div class="body">What you inherited and what stops with you. Why no man holds a standard alone. Locking the plan and the retake.</div></details>
     <div class="row" style="align-items:flex-start;gap:20px;margin-top:44px">
       <div class="slot r-1x1" data-slot="IMG-P4-DET-03" style="flex:0 0 96px;border-radius:50%"></div>
       <div><h3 style="margin-bottom:8px">About Ken</h3>
@@ -474,7 +468,7 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
   <aside class="stack-24" style="position:sticky;top:160px">
     <div class="card"><div class="row" style="gap:16px"><span style="font-size:28px">▤</span>
       <div><b style="font-size:15px">The Fundamentals Workbook</b><p class="fine" style="margin-top:4px">28 pages</p></div></div>
-      <button class="btn btn-secondary btn-sm" style="margin-top:16px;width:100%" onclick="toast('Included with membership.')">Included with membership</button></div>
+      <a class="btn btn-secondary btn-sm" style="margin-top:16px;width:100%" href="checkout.html">Included with membership &rarr;</a></div>
     <div class="card"><div class="eyebrow" style="margin-bottom:14px">INCLUDED IN YOUR MEMBERSHIP</div>
       <div class="stack-8">
         <div class="check"><span class="checkmark">&check;</span><span class="small">Every film, class, and workbook, new releases monthly</span></div>
@@ -493,13 +487,13 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
   <div class="rowscroll" data-repeat="2" data-prefix="IMG-P4-REL-" data-ratio="r-2x3" data-href="certificates.html#catalog"
     data-titles="Steady Under Pressure|Coming Home Present"
     data-subs="A man&rsquo;s temper, trained|Presence after time away"
-    data-metas="8 modules &middot; Certificate of Completion|10 modules &middot; Certificate of Completion"></div>
+    data-metas="5 sessions &middot; Certificate of Completion|5 sessions &middot; Certificate of Completion"></div>
 </div></section>
 <script src="assets/js/cert-preview.js"></script>
 ''')
 
 # ================================================== player.html (P5)
-PAGES['player.html'] = dict(title='Lesson 4 &middot; The Fundamentals of Fathering', desc='Lesson player.', active='Classes', mode='app', body='''
+PAGES['player.html'] = dict(title='Session 4 &middot; The Fundamentals of Fathering', desc='Session player.', active='Classes', mode='app', body='''
 <section class="tight" style="padding-top:36px"><div class="container">
   <p class="tag" style="margin-bottom:14px">The Fundamentals of Fathering / Lesson 4</p>
   <div style="display:grid;grid-template-columns:1.55fr .75fr;gap:32px;align-items:start">
@@ -507,17 +501,14 @@ PAGES['player.html'] = dict(title='Lesson 4 &middot; The Fundamentals of Fatheri
       <div class="slot r-16x9 filled" data-slot="IMG-P5-PLY-01" id="stage"><img src="assets/img/photos/action-01.jpg" alt="Lesson still"></div>
       <div class="card" style="margin-top:14px;padding:14px 18px">
         <div class="row" style="gap:18px">
-          <button class="btn btn-secondary btn-sm play" onclick="toast('Resuming at 06:12.')">Play</button>
-          <span class="mono small">06:12 / 09:47</span>
-          <div class="progress-track" style="flex:1"><div class="progress-fill" style="width:62%"></div></div>
-          <span class="chip" style="padding:4px 12px;font-size:12px" onclick="toast('Speeds: 0.75, 1, 1.25, 1.5')">1x</span>
-          <span class="chip" style="padding:4px 12px;font-size:12px" onclick="toast('Captions on.')">CC</span>
-          <span class="chip" style="padding:4px 12px;font-size:12px" onclick="document.getElementById('audiobar').style.display='flex';toast('Audio mode. Keep your eyes on the road.')">Audio</span>
+          <span class="mono small">06:12 / 18:15</span>
+          <div class="progress-track" style="flex:1"><div class="progress-fill" style="width:36%"></div></div>
+          <span class="chip" style="padding:4px 12px;font-size:12px" onclick="document.getElementById('audiobar').style.display='flex'">Audio</span>
         </div>
       </div>
       <div id="audiobar" class="card" style="display:none;margin-top:10px;padding:12px 16px;align-items:center;gap:14px">
         <div class="slot r-1x1" data-slot="IMG-P5-AUD-01" style="width:44px"></div>
-        <b style="font-size:14px">Lesson 4 &middot; Enter Their World</b>
+        <b style="font-size:14px">Session 4 &middot; Repair Fast, Stand for Something</b>
         <span class="mono fine" style="margin-left:auto">Audio mode</span>
       </div>
       <div data-tabs style="margin-top:28px">
@@ -527,23 +518,22 @@ PAGES['player.html'] = dict(title='Lesson 4 &middot; The Fundamentals of Fatheri
           <p class="quote" style="font-size:22px">"Consistency is love the kids can set a clock by."</p>
         </div>
         <div class="tabpanel">
-          <div class="card" style="max-width:420px"><b style="font-size:15px">The Fundamentals Workbook</b><p class="fine" style="margin:6px 0 14px">Pages 12-15 pair with this lesson.</p>
-          <button class="btn btn-secondary btn-sm" onclick="toast('PDF delivery wires to Supabase storage.')">Download PDF</button></div>
+          <div class="card" style="max-width:420px"><b style="font-size:15px">The Fundamentals Workbook</b><p class="fine" style="margin:6px 0 14px">Pages 12-15 pair with this session. Print them for the week.</p>
+          <button class="btn btn-secondary btn-sm" data-print>Print the pages</button></div>
         </div>
         <div class="tabpanel">
           <div class="stack-16" style="max-width:560px">
-            <div class="card" style="padding:16px"><span class="chip" style="padding:2px 10px;font-size:11px;margin-bottom:8px" onclick="toast('Seek to 06:12.')">06:12</span><p class="small">Names of their three closest friends. I know one. One.</p></div>
-            <div class="card" style="padding:16px"><span class="chip" style="padding:2px 10px;font-size:11px;margin-bottom:8px" onclick="toast('Seek to 07:48.')">07:48</span><p class="small">Ask about the bus ride, not the grades.</p></div>
-            <div class="row"><input class="input" placeholder="Add a note at 08:40"><button class="btn btn-secondary btn-sm" onclick="toast('Saved to your plan.')">Save</button></div>
+            <div class="card" style="padding:16px"><span class="mono fine" style="display:inline-block;margin-bottom:8px">06:12</span><p class="small">Names of their three closest friends. I know one. One.</p></div>
+            <div class="card" style="padding:16px"><span class="mono fine" style="display:inline-block;margin-bottom:8px">07:48</span><p class="small">Ask about the bus ride, not the grades.</p></div>
             <p class="fine">Notes save to your plan. Write like nobody's grading it.</p>
           </div>
         </div>
       </div>
       <div class="card" style="margin-top:30px;padding:28px">
         <div class="row between wrap">
-          <div><div class="row" style="gap:10px;margin-bottom:8px"><span class="checkmark">&check;</span><b>Lesson 4 complete</b></div>
-            <p class="small">Up next: Lesson 5, Repair Fast &middot; playing in <b id="countdown" style="font-family:var(--font-mono)"><b>5</b></b>s</p></div>
-          <div class="row"><button class="btn btn-primary btn-sm">Play now</button><button class="btn btn-secondary btn-sm" onclick="toast('Autoplay canceled.')">Not now</button></div>
+          <div><div class="row" style="gap:10px;margin-bottom:8px"><span class="checkmark">&check;</span><b>Session 4 complete</b></div>
+            <p class="small">Up next: Session 5, Your Own Father, Your Ninety Days</p></div>
+          <div class="row"><button class="btn btn-primary btn-sm">Play now</button><button class="btn btn-secondary btn-sm" onclick="this.closest('.card').style.display='none'">Not now</button></div>
         </div>
         <hr class="hr" style="margin:20px 0">
         <p class="small">This week's action from your plan: <b class="bone">Eat breakfast with your kids twice.</b> Mark it done in My Plan. <a class="link ash" href="plan.html" style="font-size:13px">Go to My Plan</a></p>
@@ -551,20 +541,13 @@ PAGES['player.html'] = dict(title='Lesson 4 &middot; The Fundamentals of Fatheri
     </div>
     <aside class="card" style="padding:20px">
       <b style="font-size:15px">The Fundamentals of Fathering</b>
-      <div class="row" style="margin:12px 0 20px"><div class="progress-track" style="flex:1"><div class="progress-fill pine" style="width:33%"></div></div><span class="mono fine">4 of 12</span></div>
+      <div class="row" style="margin:12px 0 20px"><div class="progress-track" style="flex:1"><div class="progress-fill pine" style="width:70%"></div></div><span class="mono fine">4 of 5</span></div>
       <div class="stack-8" style="font-size:14px">
-        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 01 Why Presence Wins</span><span class="tag">8:12</span></div>
-        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 02 Your Baseline</span><span class="tag">9:04</span></div>
-        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 03 A Schedule They Can Trust</span><span class="tag">10:31</span></div>
-        <div class="row between" style="padding:10px 12px;border-left:3px solid var(--ember);border-radius:6px;background:var(--coal-2)"><b>04 Enter Their World</b><span class="tag">9:47</span></div>
-        <div class="row between" style="padding:10px 12px"><span class="ash">05 Repair Fast</span><span class="tag" onclick="toast('Downloading… saved for offline.')" style="cursor:pointer">⬇ 9:12</span></div>
-        <div class="row between" style="padding:10px 12px"><span class="ash">06 Say What You Stand For</span><span class="tag">8:58</span></div>
-        <div class="row between" style="padding:10px 12px"><span class="ash">07 The Distracted Father</span><span class="tag">8:20</span></div>
-        <div class="row between" style="padding:10px 12px"><span class="ash">08 Discipline That Builds</span><span class="tag">10:05</span></div>
-        <div class="row between" style="padding:10px 12px"><span class="ash">09 Fathering Under Pressure</span><span class="tag">9:33</span></div>
-        <div class="row between" style="padding:10px 12px"><span class="ash">10 Your Own Father</span><span class="tag">11:02</span></div>
-        <div class="row between" style="padding:10px 12px"><span class="ash">11 The Brotherhood Requirement</span><span class="tag">8:44</span></div>
-        <div class="row between" style="padding:10px 12px"><span class="ash">12 The Ninety-Day Standard</span><span class="tag">9:26</span></div>
+        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 01 Why Presence Wins</span><span class="tag">17:16</span></div>
+        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 02 A Schedule They Can Trust</span><span class="tag">18:51</span></div>
+        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 03 Enter Their World</span><span class="tag">17:07</span></div>
+        <div class="row between" style="padding:10px 12px;border-left:3px solid var(--ember);border-radius:6px;background:var(--coal-2)"><b>04 Repair Fast, Stand for Something</b><span class="tag">18:15</span></div>
+        <div class="row between" style="padding:10px 12px"><span class="ash">05 Your Own Father, Your Ninety Days</span><span class="tag">19:12</span></div>
       </div>
     </aside>
   </div>
@@ -659,9 +642,7 @@ PAGES['circles.html'] = dict(title='My Circle', desc='Living Hope Men. One film,
     <div class="tabpanel">
       <div class="grid-2" style="gap:24px">
         <div class="card"><b style="font-size:15px">Session guide</b><p class="fine" style="margin:6px 0 16px">After the Sentence &middot; 6 pages</p>
-          <button class="btn btn-secondary btn-sm" onclick="toast('PDF wires to Supabase storage.')">Download PDF</button></div>
-        <div class="card"><b style="font-size:15px">Start a meeting</b><p class="fine" style="margin:6px 0 16px">Projector-friendly mode: film, question, action on one screen.</p>
-          <button class="btn btn-secondary btn-sm" onclick="toast('Opens the projector view.')">Start</button></div>
+          <button class="btn btn-secondary btn-sm" data-print>Print the guide</button></div>
         <div class="card" style="grid-column:1/-1"><b style="font-size:15px">Plan the next 4 weeks</b>
           <div class="grid-4" style="margin-top:16px">
             <div class="slot r-16x9" data-slot="IMG-P7-KIT-01"></div>
@@ -726,8 +707,8 @@ PAGES['groups.html'] = dict(title='For Groups', desc='Circles for churches, team
   </div>
   <div class="card pad-0">
     <div class="row between" style="padding:18px 20px;border-bottom:1px solid var(--hairline)">
-      <div class="row" style="flex:1;max-width:480px"><input class="input" readonly value="fathers.com/join/living-hope-4F7K"><button class="btn btn-secondary btn-sm" onclick="toast('Invite link copied.')">Copy</button></div>
-      <button class="btn btn-secondary btn-sm" onclick="toast('CSV upload wires to Supabase.')">Upload CSV</button>
+      <div class="row" style="flex:1;max-width:480px"><input class="input" readonly id="joinLinkField" value="fathers.com/join/living-hope-4F7K"><button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('joinLinkField').value).then(function(){toast('Invite link copied.')})">Copy</button></div>
+      <a class="btn btn-secondary btn-sm" href="mailto:Team@Fathers.com?subject=Roster%20import">Send us your roster</a>
     </div>
     <table><thead><tr><th>Name</th><th>Email</th><th>Baseline</th><th>Last active</th><th>Circle</th></tr></thead><tbody>
       <tr><td>Marcus T.</td><td class="fine">m.t@…</td><td><span class="checkmark" style="width:16px;height:16px;font-size:9px">&check;</span></td><td class="fine">Today</td><td class="fine">Tuesday 0600</td></tr>
@@ -761,11 +742,7 @@ PAGES['checkout.html'] = dict(title='Start your membership', desc='One membershi
       <div>
         <h1 class="d-36" style="margin-bottom:14px">Start your membership.</h1>
         <p class="small" style="color:var(--ash);margin-bottom:24px;max-width:50ch">The membership is the library: every film, class, and workbook, new releases monthly. Your Profile, plan, retakes, the courses, and your Certificate of Completion stay free either way. The membership funds the work; it never gates it.</p>
-        <div class="stack-16" style="margin-bottom:24px">
-          <button class="btn btn-secondary" style="width:100%" onclick="toast('Apple Pay wires at deploy. Card fields work below.')">Apple Pay</button>
-          <button class="btn btn-secondary" style="width:100%" onclick="toast('Google Pay wires at deploy. Card fields work below.')">Google Pay</button>
-        </div>
-        <div class="row" style="margin-bottom:24px"><hr class="hr" style="flex:1"><span class="fine">or pay with card</span><hr class="hr" style="flex:1"></div>
+
         <div class="field"><label>Card number</label><input class="input" inputmode="numeric" placeholder="4242 4242 4242 4242"></div>
         <div class="grid-2" style="gap:16px">
           <div class="field"><label>Expiry</label><input class="input" placeholder="MM / YY"></div>
@@ -834,7 +811,11 @@ PAGES['gift.html'] = dict(title='Give a man the work', desc='Fund a year of full
     </div>
     <div class="field"><label>Method</label>
       <div class="chiprow"><button class="chip selected" data-toggle="single">Email</button><button class="chip" data-toggle="single">Printable card</button></div></div>
-    <button class="btn btn-primary" style="width:100%" onclick="toast('Gift order wires to Stripe and Resend at deploy.')">Give the gift</button>
+    <form class="row" data-lead="gift-interest" data-done="You are on the list. We will email you the moment giving opens." style="gap:10px">
+      <input class="input" name="email" type="email" required placeholder="Your email" style="flex:1">
+      <button class="btn btn-primary">Reserve this gift</button>
+    </form>
+    <p class="fine" style="margin-top:8px">Gift checkout opens shortly. Reserve it now and we will email you first.</p>
     <p class="fine" style="margin-top:12px"><b class="bone">Completions are earned, never given.</b> You are backing the work, not buying the paper: identity confirmed, hours logged, a final at eighty percent. When he passes, the document is his because he earned it. That is why it means something.</p>
     <p class="fine" style="margin-top:8px">Giving to a man you have not met? <a class="link ash" href="sponsor.html">Sponsor a man &rarr;</a></p>
   </div>
@@ -887,7 +868,11 @@ PAGES['sponsor.html'] = dict(title='Sponsor a man', desc='$120 funds one man&rsq
     <p class="fine" style="max-width:52ch;margin-bottom:12px">Sponsored seats are assigned through Certified Organizations. You will get one update when your seat is claimed. No personal details, no program names, ever.</p>
     <p class="fine" style="max-width:52ch;margin-bottom:12px">Churches and programs: sponsor ten and we set up your join link, one link that enrolls every man under your group.</p>
     <p class="fine" style="max-width:52ch;margin-bottom:26px">Giving to your own dad or a friend? <a class="link ash" href="gift.html">Give a man the work &rarr;</a></p>
-    <button class="btn btn-primary" onclick="toast('Donation processing wires to Stripe at deploy.')">Sponsor</button>
+    <form class="row" data-lead="sponsor-interest" data-done="Received. We will email you when sponsorship checkout opens." style="gap:10px;max-width:440px">
+      <input class="input" name="email" type="email" required placeholder="Your email" style="flex:1">
+      <button class="btn btn-primary">Sponsor</button>
+    </form>
+    <p class="fine" style="margin-top:8px;max-width:52ch">Sponsorship checkout opens shortly. Leave your email and we will set up your seats first.</p>
   </div>
 </div></header>
 ''')
@@ -905,7 +890,7 @@ PAGES['account.html'] = dict(title='Account', desc='Settings, membership, notifi
         <div class="field"><label>Name</label><input class="input" value="Marcus T."></div>
         <div class="field"><label>Email</label><input class="input" value="m.t@example.com"></div>
       </div>
-      <div class="field"><label>Password</label><div class="row"><input class="input" type="password" value="••••••••••" readonly><button class="btn btn-secondary btn-sm" onclick="toast('Password reset wires to Supabase Auth.')">Change</button></div></div>
+      <div class="field"><label>Password</label><div class="row"><input class="input" type="password" value="••••••••••" readonly><button class="btn btn-secondary btn-sm" data-pwreset>Change</button></div></div>
       <div class="field"><label>Kids' age ranges</label>
         <div class="chiprow"><button class="chip selected" data-toggle>6-9</button><button class="chip selected" data-toggle>13-15</button><button class="chip" data-toggle>0-2</button><button class="chip" data-toggle>Teens</button></div>
         <p class="fine" style="margin-top:8px">Sets your plan. Never shown to anyone.</p></div>
@@ -913,13 +898,13 @@ PAGES['account.html'] = dict(title='Account', desc='Settings, membership, notifi
         <div class="field"><label>Faith lens</label><select class="input"><option>Not for me</option><option selected>Yes, Christian</option><option>Yes, Jewish</option></select></div>
         <div class="field"><label>Time zone</label><select class="input"><option selected>Central (CT)</option><option>Eastern (ET)</option><option>Mountain (MT)</option><option>Pacific (PT)</option></select></div>
       </div>
-      <button class="btn btn-primary" onclick="toast('Saved.')">Save changes</button>
+      <button class="btn btn-primary" data-prefs-save data-prefs-key="fc_account_profile">Save changes</button>
     </div>
 
     <div class="tabpanel">
       <div class="card" style="margin-bottom:20px"><div class="row between wrap">
         <div><b>Fathers.com Annual</b><p class="small" style="margin-top:6px">Renews March 4, 2027 &middot; $120</p></div>
-        <button class="btn btn-secondary btn-sm" onclick="toast('Card update wires to Stripe at deploy.')">Update payment</button></div>
+        <a class="btn btn-secondary btn-sm" href="mailto:Team@Fathers.com?subject=Update%20my%20payment%20method">Update payment</a></div>
         <hr class="hr" style="margin:18px 0">
         <div class="row between"><span class="small">Visa ending 4242</span><a class="link ash" href="mailto:Team@Fathers.com?subject=Update%20my%20payment%20method" style="font-size:13px">Update</a></div></div>
       <div class="card" style="margin-bottom:20px"><div class="eyebrow" style="margin-bottom:14px">RECEIPTS</div>
@@ -950,7 +935,7 @@ PAGES['account.html'] = dict(title='Account', desc='Settings, membership, notifi
       <div class="seqpanel">
         <h3 class="display d-28" style="margin-bottom:18px">Before you go: pause instead?</h3>
         <div class="card" style="margin-bottom:18px"><b>Pause 3 months</b><p class="small" style="margin:6px 0 16px">Keep your plan and progress. $0.</p>
-          <button class="btn btn-primary btn-sm" onclick="toast('Paused. You resume October 5. Everything stays saved.')">Pause instead</button></div>
+          <a class="btn btn-primary btn-sm" href="mailto:Team@Fathers.com?subject=Pause%20my%20membership%20for%20three%20months">Request a pause</a></div>
         <a class="link ash" href="#" style="font-size:14px" data-next onclick="event.preventDefault()">Continue to cancel</a>
       </div>
       <div class="seqpanel">
@@ -963,7 +948,7 @@ PAGES['account.html'] = dict(title='Account', desc='Settings, membership, notifi
       <div class="seqpanel">
         <h3 class="display d-28" style="margin-bottom:12px">You're set through March 4, 2027.</h3>
         <p class="small" style="margin-bottom:22px">Your baseline, plan, and notes stay saved. Come back any time.</p>
-        <button class="btn btn-secondary" onclick="toast('Done.')">Done</button>
+        <a class="btn btn-secondary" href="plan.html">Back to your plan</a>
       </div>
     </div></div>
   </div>
@@ -1041,11 +1026,11 @@ PAGES['certificates.html'] = dict(title='The Courses and the Certificate of Comp
   <div class="center" style="max-width:640px;margin:0 auto 40px">
     <div class="eyebrow brass" style="margin-bottom:12px">HOW TO EARN ONE</div>
     <h2 class="d-36">Three steps to your certificate.</h2>
-    <p class="small" style="margin-top:10px;color:var(--ash)">Every course is free. So is the certificate. In a certified program it is presented at completion, in front of the men you did the work with.</p>
+    <p class="small" style="margin-top:10px;color:var(--ash)">Every course is free. So is the certificate. Five sessions, fifteen to twenty minutes of film each plus the work, built for a working man&rsquo;s week. In a certified program the certificate is presented at completion, in front of the men you did the work with.</p>
   </div>
   <div class="grid-3">
-    <div class="card" style="padding:24px"><div class="mono ash" style="margin-bottom:10px">STEP 1</div><b>Enroll</b><p class="small" style="margin-top:8px">Pick a course and enroll free, on your own or through your program code.</p></div>
-    <div class="card" style="padding:24px"><div class="mono ash" style="margin-bottom:10px">STEP 2</div><b>Do the work</b><p class="small" style="margin-top:8px">Complete the instructional hours and pass the checkpoints. Time on task is measured.</p></div>
+    <div class="card" style="padding:24px"><div class="mono ash" style="margin-bottom:10px">STEP 1</div><b>Get claimed</b><p class="small" style="margin-top:8px">Your Certified Facilitator or organization claims your seat. Everything is free to you.</p></div>
+    <div class="card" style="padding:24px"><div class="mono ash" style="margin-bottom:10px">STEP 2</div><b>Do the work</b><p class="small" style="margin-top:8px">Five sessions. Pass the checkpoint after each, then write your Final Q&amp;A answers. Time on task is measured.</p></div>
     <div class="card" style="padding:24px"><div class="mono ash" style="margin-bottom:10px">STEP 3</div><b>Receive your certificate</b><p class="small" style="margin-top:8px">Pass the final and receive a serialed Certificate of Completion a court or employer can confirm.</p></div>
   </div>
 </div></section>
@@ -1178,8 +1163,8 @@ PAGES['certificates.html'] = dict(title='The Courses and the Certificate of Comp
 PAGES['certificate.html'] = dict(title='Certificate FC-2026-004317', desc='Certificate of Completion, National Center for Fathering.', active='Certificates', mode='app', body='''
 <section class="tight" style="padding-top:44px"><div class="container">
   <div class="row wrap" style="margin-bottom:28px;justify-content:center">
-    <button class="btn btn-primary btn-sm" onclick="toast('PDF issuance runs server side. See supabase/schema.sql.')">Download PDF</button>
-    <button class="btn btn-secondary btn-sm" onclick="toast('Opens a to-field modal. Sends via the send-email function.')">Email to my officer or program</button>
+    <button class="btn btn-primary btn-sm" data-print>Print or save as PDF</button>
+    <button class="btn btn-secondary btn-sm" data-share="email">Email to my officer or program</button>
     <button class="btn btn-secondary btn-sm" onclick="window.print()">Print</button>
   </div>
   <div class="doc">
@@ -1449,8 +1434,6 @@ PAGES['login.html'] = dict(title='Sign in', desc='Sign in to Fathers.com to pick
       <button class="btn btn-primary auth-btn" id="authSignin" type="submit">Sign in</button>
       <p class="auth-msg" id="authMsg" role="status" aria-live="polite"></p>
     </form>
-    <div class="auth-or"><span>or</span></div>
-    <button class="btn btn-secondary auth-btn" id="authMagic" type="button">Email me a sign-in link</button>
   </div>
   <p class="auth-alt">New here? <a href="profile.html">Create an account</a></p>
   <div class="auth-legal">
@@ -1462,7 +1445,7 @@ PAGES['login.html'] = dict(title='Sign in', desc='Sign in to Fathers.com to pick
 </div></div>
 """)
 
-# ================================================== enroll.html (certificate enrollment + coupon)
+# ================================================== enroll.html (claim-gated enrollment)
 PAGES['enroll.html'] = dict(title='Enroll', desc='Enroll free. Finish the work and receive your Certificate of Completion.', active='Certificates', mode='app', body='''
 <style>
 .cpn-ok{color:var(--pine-hi)!important}
@@ -1485,26 +1468,20 @@ PAGES['enroll.html'] = dict(title='Enroll', desc='Enroll free. Finish the work a
           <div class="check"><span class="checkmark">&check;</span><span class="small">Pass the checkpoints and a final assessment at eighty percent.</span></div>
           <div class="check"><span class="checkmark">&check;</span><span class="small">Receive a unique serial with a public verification page.</span></div>
         </div>
-        <p class="fine" style="margin-top:24px">Have a program code from your church, group, or organization? Enter it in the box and your completion counts in your cohort&rsquo;s report. Enrollment is free either way.</p>
+        <p class="fine" style="margin-top:24px">Seats come through people, not codes. A Certified Facilitator or Certified Organization claims your seat; your completion then counts in your cohort&rsquo;s report, and everything stays free to you.</p>
       </div>
       <aside class="card" style="padding:28px">
         <div class="row between" style="margin-bottom:4px"><b id="certTitleSum">This course</b><b class="mono" id="priceLine">Free</b></div>
         <p class="small" style="margin-bottom:20px"><span id="certHours">10.0</span> verified instructional hours &middot; no cost to you</p>
 
-        <div class="field" style="margin-bottom:6px"><label>Program code</label>
-          <div class="enroll-code">
-            <input class="input" id="couponInput" placeholder="Enter code" autocomplete="off" autocapitalize="none" spellcheck="false">
-            <button class="btn btn-secondary" id="couponApply">Apply</button>
-          </div>
+        <div class="card" style="padding:16px 18px;margin-bottom:16px;background:var(--coal-2);border:1px solid var(--hairline)">
+          <div class="eyebrow" style="margin-bottom:8px">YOUR SEAT</div>
+          <p class="small" id="claimStatus" style="margin:0">Your seat is claimed by your program&rsquo;s Certified Facilitator or Certified Organization. Signed in and claimed, this button enrolls you at no cost.</p>
         </div>
-        <p class="fine" id="couponMsg" style="margin:0 0 16px;min-height:16px"></p>
-
-        <hr class="hr" style="margin-bottom:14px">
-        <div class="row between" id="discountLine" style="display:none;margin-bottom:8px"><span class="small">Program code</span><span class="mono small cpn-ok" id="discountAmt">Cohort linked</span></div>
         <div class="row between" style="margin-bottom:20px"><b>Total</b><b class="mono" id="totalLine">Free</b></div>
 
-        <button class="btn btn-primary" id="enrollBtn" style="width:100%">Continue</button>
-        <p class="fine" id="enrollNote" style="margin-top:14px">Enrollment is free. A program code links your completion to your cohort&rsquo;s Efficacy Report.</p>
+        <button class="btn btn-primary" id="enrollBtn" style="width:100%">Enroll</button>
+        <p class="fine" id="enrollNote" style="margin-top:14px">Not in a program yet? <a class="link ash" href="find-a-program.html">Find a certified program</a> or ask your organization to <a class="link ash" href="organizations.html">get certified</a>.</p>
       </aside>
     </div>
   </div>

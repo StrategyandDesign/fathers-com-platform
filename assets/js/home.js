@@ -14,15 +14,13 @@
 
     Promise.all([
       safe(sb.from('keystone_sessions').select('id,completed_at').eq('user_id',uid).eq('status','completed').order('completed_at',{ascending:true})),
-      safe(sb.from('voice_recordings').select('id',{count:'exact',head:true}).eq('user_id',uid)),
       safe(sb.from('circle_posts').select('id',{count:'exact',head:true}).eq('user_id',uid)),
       safe(sb.from('certificate_awards').select('status,course_id').eq('user_id',uid)),
       safe(sb.from('certificate_pursuits').select('course_id,status,state,effective_state').eq('user_id',uid)),
-      safe(sb.from('certificate_courses').select('id,slug,title')),
-      safe(sb.from('voice_recordings').select('title,kind,created_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(150))
+      safe(sb.from('certificate_courses').select('id,slug,title'))
     ]).then(function(res){
-      var sess=(res[0].data||[]), vN=res[1].count||0, cN=res[2].count||0,
-          awards=(res[3].data||[]), enr=(res[4].data||[]), courses=(res[5].data||[]), recs=(res[6].data||[]), rec=recs[0];
+      var sess=(res[0].data||[]), cN=res[1].count||0,
+          awards=(res[2].data||[]), enr=(res[3].data||[]), courses=(res[4].data||[]);
       var last = sess[sess.length-1] || null;
 
       var sessIds = sess.map(function(s){return s.id;});
@@ -34,12 +32,12 @@
         var byS={}; (rr.data||[]).forEach(function(x){ byS[x.session_id]=x; });
         var firstR=null, lastR=null;
         sess.forEach(function(s){ var x=byS[s.id]; if(!x) return; if(!firstR) firstR=x; lastR=x; });
-        renderRail(last, firstR, lastR, vN, cN, awards);
-        renderFeed(enr, awards, courses, rec, recs, sess, vN);
+        renderRail(last, firstR, lastR, cN, awards);
+        renderFeed(enr, awards, courses, sess);
       });
     });
 
-    function renderRail(last, firstR, lastR, vN, cN, awards){
+    function renderRail(last, firstR, lastR, cN, awards){
       var week=$('railWeek'), nudge=$('railNudge'), counts=$('railCounts'), bars=$('railBars');
       var earned = awards.filter(function(a){return a.status==='signed'||a.status==='awarded';}).length;
 
@@ -84,7 +82,7 @@
       bars.innerHTML=html;
     }
 
-    function renderFeed(enr, awards, courses, rec, recs, sess, vN){
+    function renderFeed(enr, awards, courses, sess){
       var feed=$('homeFeed'); if(!feed) return;
       var bySlug={}; courses.forEach(function(c){bySlug[c.slug]=c;});
       var fund=bySlug['fundamentals'];
@@ -121,7 +119,7 @@
         if (days > 90){
           staleCard = card('THE NINETY DAYS ARE UP','Retake the Keystone Profile',
             'Your last measure was ' + new Date(lastS.completed_at).toLocaleDateString() + ', ' + days + ' days ago. Retake it and see the movement since.',
-            'keystone.html','Retake now');
+            'profile.html','Retake now');
         }
       }
       var vetCard = '';

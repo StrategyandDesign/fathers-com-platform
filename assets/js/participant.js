@@ -60,10 +60,9 @@
     var pSession = FC.sb.from('keystone_sessions').select('id,completed_at').eq('user_id',uid).eq('status','completed').order('completed_at',{ascending:false}).limit(1);
     var pBaseline = FC.sb.from('baselines').select('*').eq('user_id',uid).order('taken_at',{ascending:false}).limit(1);
     // Certificate enrollments + awards.
-    var pEnroll = FC.sb.from('certificate_enrollments').select('id,status,coupon,course_id').eq('user_id',uid);
+    var pEnroll = FC.sb.from('certificate_enrollments').select('id,status,claim_id,course_id').eq('user_id',uid);
     var pAward  = FC.sb.from('certificate_awards').select('status,course_id,envelope_id').eq('user_id',uid);
     // Activity counts (best effort; tables may not exist yet).
-    var pVoice  = FC.sb.from('voice_recordings').select('id',{count:'exact',head:true}).eq('user_id',uid);
     var pCircle = FC.sb.from('circle_posts').select('id',{count:'exact',head:true}).eq('user_id',uid);
     var pCourses= FC.sb.from('certificate_courses').select('id,title');
 
@@ -74,9 +73,9 @@
         '<div class="rail-track"><span style="width:'+v+'%'+(accent?';background:'+accent:'')+'"></span></div></div>';
     }
 
-    Promise.all([pSession,pBaseline,pEnroll,pAward,pVoice,pCircle,pCourses].map(function(pr){return pr.then(function(r){return r;},function(e2){return {error:e2};});}))
+    Promise.all([pSession,pBaseline,pEnroll,pAward,pCircle,pCourses].map(function(pr){return pr.then(function(r){return r;},function(e2){return {error:e2};});}))
     .then(function(res){
-      var sesRes=res[0], baseRes=res[1], enrRes=res[2], awRes=res[3], vRes=res[4], cRes=res[5], coRes=res[6];
+      var sesRes=res[0], baseRes=res[1], enrRes=res[2], awRes=res[3], cRes=res[4], coRes=res[5];
       var ses = (sesRes.data||[])[0];
       var pResult = ses
         ? FC.sb.from('keystone_results').select('overall_pct,scale_scores,strength_scale,gap_scale').eq('session_id',ses.id).maybeSingle().then(function(r){return r;},function(e2){return {error:e2};})
@@ -151,43 +150,12 @@
 
       // Activity
       html += '<div class="eyebrow" style="margin:8px 0 12px">ACTIVITY</div><div class="glance">'+
-        metric('VOICE', (vRes.count!=null?vRes.count:'\u2014'),'recordings')+
         metric('CIRCLE', (cRes.count!=null?cRes.count:'\u2014'),'posts')+
       '</div>';
 
-      box.innerHTML = '<h3 style="margin-bottom:6px">'+esc(name)+'</h3><p class="fine" style="margin-bottom:20px">Individual snapshot. Handle with care; this is a man\u2019s private data.</p>' + html + '<div id="pt-voice"></div>';
-      loadVoice(uid);
+      box.innerHTML = '<h3 style="margin-bottom:6px">'+esc(name)+'</h3><p class="fine" style="margin-bottom:20px">Individual snapshot. Handle with care; this is a man\u2019s private data.</p>' + html;
       });
     });
-  }
-
-  // Recordings with playback. Admin-only view; streams via a signed URL.
-  var VKIND = { bedtime_story:'Bedtime story', message:'A message', thinking:'Thinking of you' };
-  function loadVoice(uid){
-    var host = document.getElementById('pt-voice'); if(!host) return;
-    FC.sb.from('voice_recordings').select('id,kind,storage_path,created_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(20)
-      .then(function(r){
-        if(r.error){ return; }                    // table may not exist; activity card already handled it
-        var rows=r.data||[]; if(!rows.length) return;
-        host.innerHTML = '<div class="eyebrow" style="margin:24px 0 12px">RECORDINGS</div>'+
-          rows.map(function(row){
-            var when = new Date(row.created_at).toLocaleDateString();
-            return '<div class="voice-item" data-path="'+esc(row.storage_path)+'">'+
-              '<span>'+esc(VKIND[row.kind]||'Recording')+' <span class="fine">\u00b7 '+esc(when)+'</span></span>'+
-              '<button class="link brass pt-play" type="button">Play</button></div>';
-          }).join('');
-        host.querySelectorAll('.pt-play').forEach(function(b){
-          b.addEventListener('click', function(){
-            var path=b.closest('.voice-item').getAttribute('data-path');
-            b.textContent='Loading\u2026'; b.disabled=true;
-            FC.sb.storage.from('voice').createSignedUrl(path,3600).then(function(s){
-              var url=s&&s.data&&s.data.signedUrl;
-              if(url){ var a=new Audio(url); a.onended=function(){b.textContent='Play';b.disabled=false;}; a.onerror=function(){b.textContent='No audio file';b.disabled=false;}; a.play().then(function(){b.textContent='Playing\u2026';},function(){b.textContent='Play';b.disabled=false;}); }
-              else { b.textContent='Unavailable'; b.disabled=false; }
-            }, function(){ b.textContent='Unavailable'; b.disabled=false; });
-          });
-        });
-      });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();

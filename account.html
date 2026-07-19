@@ -47,7 +47,7 @@
         <div class="field"><label>Name</label><input class="input" value="Marcus T."></div>
         <div class="field"><label>Email</label><input class="input" value="m.t@example.com"></div>
       </div>
-      <div class="field"><label>Password</label><div class="row"><input class="input" type="password" value="••••••••••" readonly><button class="btn btn-secondary btn-sm" onclick="toast('Password reset wires to Supabase Auth.')">Change</button></div></div>
+      <div class="field"><label>Password</label><div class="row"><input class="input" type="password" value="••••••••••" readonly><button class="btn btn-secondary btn-sm" data-pwreset>Change</button></div></div>
       <div class="field"><label>Kids' age ranges</label>
         <div class="chiprow"><button class="chip selected" data-toggle>6-9</button><button class="chip selected" data-toggle>13-15</button><button class="chip" data-toggle>0-2</button><button class="chip" data-toggle>Teens</button></div>
         <p class="fine" style="margin-top:8px">Sets your plan. Never shown to anyone.</p></div>
@@ -55,13 +55,13 @@
         <div class="field"><label>Faith lens</label><select class="input"><option>Not for me</option><option selected>Yes, Christian</option><option>Yes, Jewish</option></select></div>
         <div class="field"><label>Time zone</label><select class="input"><option selected>Central (CT)</option><option>Eastern (ET)</option><option>Mountain (MT)</option><option>Pacific (PT)</option></select></div>
       </div>
-      <button class="btn btn-primary" onclick="toast('Saved.')">Save changes</button>
+      <button class="btn btn-primary" data-prefs-save data-prefs-key="fc_account_profile">Save changes</button>
     </div>
 
     <div class="tabpanel">
       <div class="card" style="margin-bottom:20px"><div class="row between wrap">
         <div><b>Fathers.com Annual</b><p class="small" style="margin-top:6px">Renews March 4, 2027 &middot; $120</p></div>
-        <button class="btn btn-secondary btn-sm" onclick="toast('Card update wires to Stripe at deploy.')">Update payment</button></div>
+        <a class="btn btn-secondary btn-sm" href="mailto:Team@Fathers.com?subject=Update%20my%20payment%20method">Update payment</a></div>
         <hr class="hr" style="margin:18px 0">
         <div class="row between"><span class="small">Visa ending 4242</span><a class="link ash" href="mailto:Team@Fathers.com?subject=Update%20my%20payment%20method" style="font-size:13px">Update</a></div></div>
       <div class="card" style="margin-bottom:20px"><div class="eyebrow" style="margin-bottom:14px">RECEIPTS</div>
@@ -92,7 +92,7 @@
       <div class="seqpanel">
         <h3 class="display d-28" style="margin-bottom:18px">Before you go: pause instead?</h3>
         <div class="card" style="margin-bottom:18px"><b>Pause 3 months</b><p class="small" style="margin:6px 0 16px">Keep your plan and progress. $0.</p>
-          <button class="btn btn-primary btn-sm" onclick="toast('Paused. You resume October 5. Everything stays saved.')">Pause instead</button></div>
+          <a class="btn btn-primary btn-sm" href="mailto:Team@Fathers.com?subject=Pause%20my%20membership%20for%20three%20months">Request a pause</a></div>
         <a class="link ash" href="#" style="font-size:14px" data-next onclick="event.preventDefault()">Continue to cancel</a>
       </div>
       <div class="seqpanel">
@@ -105,7 +105,7 @@
       <div class="seqpanel">
         <h3 class="display d-28" style="margin-bottom:12px">You're set through March 4, 2027.</h3>
         <p class="small" style="margin-bottom:22px">Your baseline, plan, and notes stay saved. Come back any time.</p>
-        <button class="btn btn-secondary" onclick="toast('Done.')">Done</button>
+        <a class="btn btn-secondary" href="plan.html">Back to your plan</a>
       </div>
     </div></div>
   </div>
