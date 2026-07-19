@@ -20,15 +20,27 @@ window.FC = window.FC || {};
     .catch(function(err){ console.error('Supabase load failed', err); FC.live = false; return null; });
 
   // ---------- auth ----------
-  FC.signIn = function(email, next){
+  FC.signOut = function(){ return FC.ready.then(function(){ return FC.sb.auth.signOut(); }); };
+  // Account creation: password, one model everywhere. If the project requires
+  // email confirmation, data.session comes back null and the caller says so.
+  FC.signUpPassword = function(email, password, name, next){
     return FC.ready.then(function(){
-      return FC.sb.auth.signInWithOtp({
-        email: email,
-        options: { emailRedirectTo: location.origin + location.pathname.replace(/[^/]*$/, '') + (next || 'plan.html') }
+      return FC.sb.auth.signUp({
+        email: email, password: password,
+        options: {
+          data: { name: name || null },
+          emailRedirectTo: location.origin + location.pathname.replace(/[^/]*$/, '') + (next || 'plan.html')
+        }
       });
     });
   };
-  FC.signOut = function(){ return FC.ready.then(function(){ return FC.sb.auth.signOut(); }); };
+  FC.resetPassword = function(email){
+    return FC.ready.then(function(){
+      return FC.sb.auth.resetPasswordForEmail(email, {
+        redirectTo: location.origin + location.pathname.replace(/[^/]*$/, '') + 'account.html'
+      });
+    });
+  };
   FC.signInPassword = function(email, password){
     return FC.ready.then(function(){
       return FC.sb.auth.signInWithPassword({ email: email, password: password });

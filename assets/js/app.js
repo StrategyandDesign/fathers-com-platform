@@ -277,18 +277,90 @@
       location.href='login.html';return;
     }
 
-    // Nav state
+    // Nav state: signed in shows My Plan and an explicit Sign out.
     var loginLink=document.querySelector('.nav-right a[href="login.html"]');
-    if(loginLink&&session){loginLink.textContent='My Plan';loginLink.href='plan.html';}
+    if(loginLink&&session){
+      loginLink.textContent='My Plan'; loginLink.href='plan.html';
+      if(!document.getElementById('navSignout')){
+        var so=document.createElement('a');
+        so.id='navSignout'; so.href='#'; so.textContent='Sign out';
+        so.className=loginLink.className;
+        so.style.cssText='font-size:13px;color:var(--ash)';
+        so.addEventListener('click',function(e){
+          e.preventDefault();
+          FC.signOut().then(function(){ location.href='index.html'; });
+        });
+        loginLink.parentNode.insertBefore(so, loginLink.nextSibling);
+      }
+    }
 
-    // Auth page: enterprise sign-in. Password primary, magic link as passwordless fallback.
+    // Auth page: one card, two modes. Password only.
     var af=document.getElementById('authForm');
     if(af){
       var authEmail=document.getElementById('authEmail');
       var authPass=document.getElementById('authPass');
       var authMsg=document.getElementById('authMsg');
       var authSignin=document.getElementById('authSignin');
-      if(authForgot) authForgot.addEventListener('click',sendMagic);
+      var authTitle=document.getElementById('authTitle');
+      var authSub=document.getElementById('authSub');
+      var authAltTxt=document.getElementById('authAltTxt');
+      var authAltLink=document.getElementById('authAltLink');
+      var authNameField=document.getElementById('authNameField');
+      var authName=document.getElementById('authName');
+      var authForgot=document.getElementById('authForgot');
+      var qs=new URLSearchParams(location.search);
+      var mode=qs.get('mode')==='signup'?'signup':'signin';
+      var nextPage=/^[a-z\-]+\.html$/.test(qs.get('next')||'')?qs.get('next'):null;
+
+      function aMsg(t,kind){ authMsg.textContent=t||''; authMsg.style.color=kind==='err'?'var(--error)':'var(--ash)'; }
+      function setMode(m){
+        mode=m; aMsg('');
+        var up=(m==='signup');
+        if(authTitle) authTitle.textContent=up?'Create your account':'Sign in';
+        if(authSub) authSub.textContent=up
+          ? 'Free, always. Your Profile, your plan, and your progress live here.'
+          : 'Welcome back. Pick up your plan where you left off.';
+        if(authNameField) authNameField.style.display=up?'':'none';
+        if(authSignin) authSignin.textContent=up?'Create account':'Sign in';
+        if(authAltTxt) authAltTxt.textContent=up?'Already have an account? ':'New here? ';
+        if(authAltLink) authAltLink.textContent=up?'Sign in':'Create an account';
+        if(authForgot) authForgot.style.display=up?'none':'';
+        if(authPass) authPass.setAttribute('autocomplete', up?'new-password':'current-password');
+      }
+      setMode(mode);
+      if(authAltLink) authAltLink.addEventListener('click',function(e){ e.preventDefault(); setMode(mode==='signup'?'signin':'signup'); });
+
+      af.addEventListener('submit',function(e){
+        e.preventDefault();
+        var email=(authEmail.value||'').trim(), pass=authPass.value||'';
+        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ aMsg('Enter a valid email.','err'); return; }
+        if(mode==='signup' && pass.length<8){ aMsg('Password needs at least 8 characters.','err'); return; }
+        if(!pass){ aMsg('Enter your password.','err'); return; }
+        var lbl=authSignin.textContent; authSignin.disabled=true; authSignin.textContent=mode==='signup'?'Creating\u2026':'Signing in\u2026';
+        var done=function(){ authSignin.disabled=false; authSignin.textContent=lbl; };
+        if(mode==='signup'){
+          FC.signUpPassword(email, pass, (authName&&authName.value||'').trim(), 'plan.html').then(function(r){
+            done();
+            if(r.error){ aMsg(r.error.message||'Could not create the account.','err'); return; }
+            if(r.data && r.data.session){ location.href = nextPage || 'profile.html'; return; }
+            aMsg('Account created. Check your email to confirm it, then sign in here.');
+            setMode('signin');
+          }, function(){ done(); aMsg('Could not create the account. Try again.','err'); });
+        } else {
+          FC.signInPassword(email, pass).then(function(r){
+            done();
+            if(r.error){ aMsg('Wrong email or password.','err'); return; }
+            location.href = nextPage || 'plan.html';
+          }, function(){ done(); aMsg('Could not sign in. Try again.','err'); });
+        }
+      });
+
+      if(authForgot) authForgot.addEventListener('click',function(){
+        var email=(authEmail.value||'').trim();
+        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ aMsg('Enter your email above first, then tap Forgot.','err'); return; }
+        FC.resetPassword(email).then(function(){ aMsg('Reset link sent to '+email+'.'); },
+          function(){ aMsg('Could not send the reset link.','err'); });
+      });
     }
 
     if(!session) return;

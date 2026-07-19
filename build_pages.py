@@ -557,6 +557,54 @@ PAGES['player.html'] = dict(title='Session 4 &middot; The Fundamentals of Father
 # ================================================== plan.html (P6)
 PAGES['plan.html'] = dict(title='Home', desc='Your baseline, your plan, your work.', active='Home', mode='app', auth=True, body='''
 <section class="tight" style="padding-top:36px"><div class="container">
+<style>
+.kd-hero{display:none;background:var(--coal);border:1px solid var(--hairline);border-radius:16px;padding:28px;margin-bottom:26px;box-shadow:var(--shadow)}
+.kd-congrats{display:none;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:20px;padding:14px 18px;border:1px solid var(--brass);border-radius:10px;background:color-mix(in srgb, var(--brass) 8%, transparent)}
+.kd-congrats b{font-family:var(--font-display);font-weight:500;font-size:17px}
+.kd-grid{display:grid;grid-template-columns:210px 1fr;gap:34px;align-items:center}
+.kd-dial-wrap{position:relative;width:210px;height:210px}
+.kd-dial{width:100%;height:100%;transform:rotate(-90deg)}
+.kd-ring-bg{fill:none;stroke:var(--coal-2);stroke-width:9}
+.kd-ring{fill:none;stroke:var(--ember);stroke-width:9;stroke-linecap:round;stroke-dasharray:327;stroke-dashoffset:327;transition:stroke-dashoffset 1.2s cubic-bezier(.22,1,.36,1)}
+.kd-dial-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center}
+.kd-bar{margin-bottom:12px}
+.kd-bar .kd-track{height:7px;border-radius:4px;background:var(--coal-2);overflow:hidden;margin-top:6px}
+.kd-bar .kd-track>span{display:block;height:100%;width:0;border-radius:4px;background:var(--brass);transition:width 1s cubic-bezier(.22,1,.36,1)}
+.kd-hero .chip{cursor:default}
+@media(max-width:760px){.kd-grid{grid-template-columns:1fr;gap:22px}.kd-dial-wrap{margin:0 auto}}
+</style>
+  <div id="kdHero" class="kd-hero">
+    <div id="kdCongrats" class="kd-congrats">
+      <span class="eyebrow brass" style="margin:0">PROFILE COMPLETE</span>
+      <b>Well done. This dashboard is yours now, and it moves when you do.</b>
+    </div>
+    <div class="kd-grid">
+      <div class="kd-dial-wrap">
+        <svg class="kd-dial" viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="kd-ring-bg" cx="60" cy="60" r="52"></circle>
+          <circle class="kd-ring" id="kdRing" cx="60" cy="60" r="52"></circle>
+        </svg>
+        <div class="kd-dial-num">
+          <span class="d-48 mono" id="kdOverall">0</span>
+          <span class="fine" style="letter-spacing:.08em">KEYSTONE OVERALL</span>
+          <span class="fine mono" id="kdDelta" style="color:var(--brass)"></span>
+        </div>
+      </div>
+      <div class="kd-dims">
+        <div class="eyebrow" style="margin-bottom:14px">THE FOUR DIMENSIONS</div>
+        <div id="kdBars"></div>
+        <div class="row wrap" style="gap:10px;margin-top:6px">
+          <span class="chip" id="kdStrength" style="display:none"></span>
+          <span class="chip" id="kdGrowth" style="display:none"></span>
+        </div>
+        <div class="row wrap" style="gap:10px;margin-top:20px;align-items:center">
+          <a class="btn btn-primary btn-sm" id="kdCta" href="class.html">Start the free course</a>
+          <a class="btn btn-secondary btn-sm" href="#planRoot">This week&rsquo;s actions</a>
+          <span class="fine" id="kdRetake" style="margin-left:auto"></span>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="home-grid">
     <aside id="homeRail">
       <div class="card" style="padding:22px 24px;margin-bottom:16px">
@@ -880,7 +928,10 @@ PAGES['sponsor.html'] = dict(title='Sponsor a man', desc='$120 funds one man&rsq
 # ================================================== account.html (P9)
 PAGES['account.html'] = dict(title='Account', desc='Settings, membership, notifications.', active='', mode='app', auth=True, body='''
 <section class="tight" style="padding-top:44px"><div class="container" style="max-width:880px">
-  <h1 class="d-36" style="margin-bottom:30px">Account</h1>
+  <div class="row between" style="margin-bottom:30px;align-items:center">
+    <h1 class="d-36" style="margin:0">Account</h1>
+    <a class="btn btn-secondary btn-sm" href="#" data-signout>Sign out</a>
+  </div>
   <div data-tabs>
     <div class="tabs"><button class="active">Profile</button><button>Membership</button><button>Notifications</button><button>Cancel path</button></div>
 
@@ -1420,9 +1471,13 @@ PAGES['login.html'] = dict(title='Sign in', desc='Sign in to Fathers.com to pick
     <span>Fathers.com</span>
   </a>
   <div class="auth-card">
-    <h1 class="auth-title">Sign in</h1>
-    <p class="auth-sub">Welcome back. Pick up your plan where you left off.</p>
+    <h1 class="auth-title" id="authTitle">Sign in</h1>
+    <p class="auth-sub" id="authSub">Welcome back. Pick up your plan where you left off.</p>
     <form id="authForm" novalidate>
+      <div class="auth-field" id="authNameField" style="display:none">
+        <label for="authName">Your name</label>
+        <input id="authName" class="input" type="text" autocomplete="name" placeholder="First name is fine">
+      </div>
       <div class="auth-field">
         <label for="authEmail">Email</label>
         <input id="authEmail" class="input" type="email" autocomplete="username" placeholder="you@example.com" required>
@@ -1435,7 +1490,7 @@ PAGES['login.html'] = dict(title='Sign in', desc='Sign in to Fathers.com to pick
       <p class="auth-msg" id="authMsg" role="status" aria-live="polite"></p>
     </form>
   </div>
-  <p class="auth-alt">New here? <a href="profile.html">Create an account</a></p>
+  <p class="auth-alt"><span id="authAltTxt">New here? </span><a href="#" id="authAltLink">Create an account</a></p>
   <div class="auth-legal">
     <a href="terms.html">Terms</a><span aria-hidden="true">&middot;</span>
     <a href="privacy.html">Privacy</a><span aria-hidden="true">&middot;</span>

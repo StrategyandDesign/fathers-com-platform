@@ -32,10 +32,93 @@
         var byS={}; (rr.data||[]).forEach(function(x){ byS[x.session_id]=x; });
         var firstR=null, lastR=null;
         sess.forEach(function(s){ var x=byS[s.id]; if(!x) return; if(!firstR) firstR=x; lastR=x; });
+        renderHero(last, firstR, lastR, enr, awards, courses);
         renderRail(last, firstR, lastR, cN, awards);
         renderFeed(enr, awards, courses, sess);
       });
     });
+
+    // The Keystone Dashboard: the first thing a man sees once his numbers exist.
+    var DIMS = [
+      ['involvement','Involvement'], ['consistency','Consistency'],
+      ['awareness','Awareness'], ['nurturance','Nurturance']
+    ];
+    function renderHero(last, firstR, lastR, enr, awards, courses){
+      var hero=$('kdHero'); if(!hero || !lastR) return;
+      hero.style.display='block';
+      var stats=$('railStats'); if(stats) stats.style.display='none'; // no duplicate bars
+
+      // Reveal mode: he just finished. Congratulate once, then calm.
+      var qs=new URLSearchParams(location.search);
+      var reveal=qs.get('reveal')==='1';
+      if(reveal){
+        var cg=$('kdCongrats'); if(cg) cg.style.display='flex';
+        try{ history.replaceState(null,'',location.pathname); }catch(e){}
+        window.scrollTo(0,0);
+      }
+
+      // Overall: ring + count-up. Circumference 2*pi*52 = 326.7.
+      var overall=(lastR.overall_pct!=null)?lastR.overall_pct:0;
+      var ring=$('kdRing'), num=$('kdOverall');
+      requestAnimationFrame(function(){ setTimeout(function(){
+        if(ring) ring.style.strokeDashoffset=String(327*(1-overall/100));
+        if(num){
+          var t0=null;
+          function step(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/1100);
+            num.textContent=Math.round(overall*(1-Math.pow(1-p,3)));
+            if(p<1) requestAnimationFrame(step); }
+          requestAnimationFrame(step);
+        }
+      }, reveal?350:80); });
+
+      // Movement since the first run.
+      if(firstR && lastR!==firstR && firstR.overall_pct!=null && lastR.overall_pct!=null){
+        var mv=lastR.overall_pct-firstR.overall_pct;
+        $('kdDelta').textContent=(mv>=0?'+':'')+mv+' since run one';
+      }
+
+      // The four dimensions, animated in.
+      var sc=lastR.scale_scores||{}, barsHtml='', best=null, worst=null;
+      DIMS.forEach(function(d){
+        var p=(sc[d[0]]&&sc[d[0]].pct!=null)?sc[d[0]].pct:0;
+        if(!best||p>best[1]) best=[d[1],p];
+        if(!worst||p<worst[1]) worst=[d[1],p];
+        barsHtml+='<div class="kd-bar"><div class="row between"><span class="small">'+d[1]+'</span><span class="fine mono">'+p+'</span></div>'+
+          '<div class="kd-track"><span data-w="'+p+'"></span></div></div>';
+      });
+      $('kdBars').innerHTML=barsHtml;
+      requestAnimationFrame(function(){ setTimeout(function(){
+        hero.querySelectorAll('.kd-track>span').forEach(function(spn){ spn.style.width=spn.dataset.w+'%'; });
+      }, reveal?550:120); });
+      if(best && worst && best[0]!==worst[0]){
+        var st=$('kdStrength'); st.style.display=''; st.textContent='Strength: '+best[0];
+        var gr=$('kdGrowth'); gr.style.display=''; gr.textContent='This ninety days: '+worst[0];
+      }
+
+      // One next action, chosen from where he actually is.
+      var bySlug={}; (courses||[]).forEach(function(c){bySlug[c.slug]=c;});
+      var fund=bySlug['fundamentals'];
+      var fundEnr=fund?(enr||[]).filter(function(e){return e.course_id===fund.id;})[0]:null;
+      var fundAw=fund?(awards||[]).filter(function(a){return a.course_id===fund.id;})[0]:null;
+      var cta=$('kdCta');
+      if(cta){
+        if(fundAw && (fundAw.status==='signed'||fundAw.status==='awarded')){
+          cta.textContent='See your certificate'; cta.href='certificate.html';
+        } else if(fundEnr){
+          cta.textContent='Continue the course'; cta.href='course.html?cert=fundamentals';
+        } else {
+          cta.textContent='Start the free course'; cta.href='class.html';
+        }
+      }
+
+      // The retake rhythm.
+      if(last && last.completed_at){
+        var due=new Date(new Date(last.completed_at).getTime()+90*86400000);
+        $('kdRetake').innerHTML = (due < new Date())
+          ? '<a class="link" href="profile.html">Ninety days are up. Retake &rarr;</a>'
+          : 'Baseline again '+fmtDate(due);
+      }
+    }
 
     function renderRail(last, firstR, lastR, cN, awards){
       var week=$('railWeek'), nudge=$('railNudge'), counts=$('railCounts'), bars=$('railBars');

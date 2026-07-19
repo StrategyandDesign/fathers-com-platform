@@ -317,45 +317,47 @@
         '</div>');
       return;
     }
-    // signed out: email capture to save + create account
+    // signed out: create the account (password) so his progress lives on it
     var answered = KS.answeredCount();
     root.innerHTML = shell(
       '<div class="ks-gate" style="max-width:480px">'+
         '<div class="eyebrow brass" style="margin-bottom:14px">SAVE YOUR PROGRESS</div>'+
         '<h2 style="margin:0 0 6px">Keep your place. Finish when you have time.</h2>'+
-        '<p class="helper" style="margin-bottom:22px">You\'ve answered '+answered+' question'+(answered===1?'':'s')+' so far. Enter your email and we\'ll save your progress and send you a link to pick up exactly where you left off, on any device.</p>'+
+        '<p class="helper" style="margin-bottom:22px">You\'ve answered '+answered+' question'+(answered===1?'':'s')+' so far. Create your free account and your progress is saved to it, on any device.</p>'+
         '<div class="ks-gate-form">'+
           '<input class="input" type="email" id="ksSaveEmail" placeholder="you@email.com" autocomplete="email">'+
-          '<button class="btn btn-yellow" id="ksSaveGo" style="width:100%;margin-top:12px">Save my progress</button>'+
+          '<input class="input" type="password" id="ksSavePass" placeholder="Choose a password (8+ characters)" autocomplete="new-password" style="margin-top:10px">'+
+          '<button class="btn btn-yellow" id="ksSaveGo" style="width:100%;margin-top:12px">Create my account and save</button>'+
           '<p class="ksmsg fine" id="ksSaveMsg" style="margin-top:12px;text-align:center"></p>'+
         '</div>'+
-        '<p class="fine" style="margin-top:16px;text-align:center"><button class="ks-save-btn" id="ksSaveBack">Not now, keep going</button></p>'+
+        '<p class="fine" style="margin-top:14px;text-align:center">Already have an account? <a class="link ash" href="login.html?next=profile.html" style="font-size:12px">Sign in</a></p>'+
+        '<p class="fine" style="margin-top:10px;text-align:center"><button class="ks-save-btn" id="ksSaveBack">Not now, keep going</button></p>'+
       '</div>');
     var input = document.getElementById('ksSaveEmail');
+    var pass = document.getElementById('ksSavePass');
     var go = document.getElementById('ksSaveGo');
     var msg = document.getElementById('ksSaveMsg');
     var backBtn = document.getElementById('ksSaveBack');
     function submit(){
       var email = (input.value||'').trim();
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent='Enter a valid email.'; msg.style.color='var(--error)'; return; }
+      if((pass.value||'').length < 8){ msg.textContent='Password needs at least 8 characters.'; msg.style.color='var(--error)'; return; }
       go.disabled = true; go.textContent = 'Saving...'; msg.textContent='';
       // flag that this is a resume (not a completed result) so return lands back in the assessment
       try { localStorage.setItem('fc_resume_intent','1'); } catch(e){}
-      if(window.FC && FC.signIn){
-        FC.signIn(email, 'profile.html').then(function(r){
-          if(r && r.error){ msg.textContent='Something went wrong. Try again.'; msg.style.color='var(--error)'; go.disabled=false; go.textContent='Save my progress'; return; }
-          root.innerHTML = shell(
-            '<div class="center" style="padding:44px 0">'+
-              '<div class="ks-check">\u2713</div>'+
-              '<h2 style="margin:8px 0">Check your email.</h2>'+
-              '<p class="helper">We saved your progress and sent a link to <b>'+esc(email)+'</b>. Click it to sign in and pick up right where you left off.</p>'+
-              '<p class="fine" style="margin-top:20px">No password needed. Your answers are waiting.</p>'+
-            '</div>');
-        });
-      }
+      FC.signUpPassword(email, pass.value, null, 'profile.html').then(function(r){
+        if(r && r.error){ msg.textContent=r.error.message||'Something went wrong. Try again.'; msg.style.color='var(--error)'; go.disabled=false; go.textContent='Create my account and save'; return; }
+        if(r.data && r.data.session){ location.href='profile.html'; return; }
+        root.innerHTML = shell(
+          '<div class="center" style="padding:44px 0">'+
+            '<div class="ks-check">\u2713</div>'+
+            '<h2 style="margin:8px 0">One step left.</h2>'+
+            '<p class="helper">Your account is created and your answers are saved on this device. Confirm the email we sent to <b>'+esc(email)+'</b>, sign in, and everything attaches to your account.</p>'+
+          '</div>');
+      });
     }
     go.addEventListener('click', submit);
-    input.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
+    pass.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
     if(backBtn) backBtn.onclick = function(){ drawItem(); };
     input.focus();
   }
@@ -384,7 +386,7 @@
   function finish(){
     var scored = KS.score();
     ksEv('assessment_complete', { preparing: KS.isPreparing() });
-    // Preserve the completed result locally so it survives the magic-link round trip.
+    // Preserve the completed result locally so it survives the sign-up round trip.
     try { localStorage.setItem('fc_pending_result', JSON.stringify({
       scored: scored, preparing: KS.isPreparing(), at: Date.now()
     })); } catch(e){}
@@ -401,21 +403,25 @@
   }
 
   // ---------- SAVE THE PLAN (no paywall) ----------
-  // The full results are already on screen. This only emails the plan and creates the
-  // account via magic link, so he can retake later and track movement. Save, not unlock.
-  function sendPlanLink(email, btn, msg){
+  // The full results are already on screen. This creates his account (password)
+  // so the result saves and he can retake later and track movement. Save, not unlock.
+  function sendPlanLink(email, pw, btn, msg){
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent='Enter a valid email.'; msg.style.color='var(--error)'; return; }
-    btn.disabled=true; btn.textContent='Sending your plan\u2026'; msg.textContent='';
+    if((pw||'').length < 8){ msg.textContent='Password needs at least 8 characters.'; msg.style.color='var(--error)'; return; }
+    btn.disabled=true; btn.textContent='Creating your account\u2026'; msg.textContent='';
     ksEv('plan_email_submitted', {});
-    if(window.FC && FC.signIn){
-      FC.signIn(email,'plan.html').then(function(r){
-        if(r && r.error){ msg.textContent='Something went wrong. Try again.'; msg.style.color='var(--error)'; btn.disabled=false; btn.textContent='Email me my plan'; return; }
+    if(window.FC && FC.signUpPassword){
+      FC.signUpPassword(email, pw, null, 'plan.html?reveal=1').then(function(r){
+        if(r && r.error){ msg.textContent=r.error.message||'Something went wrong. Try again.'; msg.style.color='var(--error)'; btn.disabled=false; btn.textContent='Create my account'; return; }
+        if(r.data && r.data.session){
+          try { KS.saveResult(KS.score()); } catch(e){}
+          location.href='plan.html?reveal=1'; return;
+        }
         root.innerHTML = shell(
           '<div class="center" style="padding:40px 0">'+
             '<div class="ks-check">\u2713</div>'+
-            '<h2 style="margin:8px 0">Check your email.</h2>'+
-            '<p class="helper">We sent your ninety-day plan and a secure link to <b>'+esc(email)+'</b>. Click it to sign in, and your full profile is saved and waiting.</p>'+
-            '<p class="fine" style="margin-top:20px">No password needed. The link signs you in.</p>'+
+            '<h2 style="margin:8px 0">One step left.</h2>'+
+            '<p class="helper">Your account is created and your full profile is saved on this device. Confirm the email we sent to <b>'+esc(email)+'</b>, then sign in. Your dashboard will be waiting.</p>'+
           '</div>');
       });
     }
@@ -428,12 +434,13 @@
     var gap = scored.scales[scored.gap], strength = scored.scales[scored.strength];
     var signedIn = window.FC && FC.live && FC.uid();
     var tail = signedIn
-      ? '<a class="btn btn-yellow" style="width:100%" href="plan.html">See my ninety-day plan</a>'
+      ? '<a class="btn btn-yellow" style="width:100%" href="plan.html?reveal=1">Open your dashboard</a>'
       : '<div class="ks-save-card">'+
-          '<h3 class="ks-save-h">Your ninety-day plan is built and waiting.</h3>'+
-          '<p class="helper" style="margin-bottom:18px">Enter your email and we will send it, and save your profile so you can retake it later and see how far you have moved. No password.</p>'+
+          '<h3 class="ks-save-h">Your dashboard is built and waiting.</h3>'+
+          '<p class="helper" style="margin-bottom:18px">Create your free account and this profile saves to it: your dashboard, your ninety-day plan, and the retake that shows your movement.</p>'+
           '<input class="input" type="email" id="ksEmail" placeholder="you@email.com" autocomplete="email">'+
-          '<button class="btn btn-yellow" id="ksSavePlan" style="width:100%;margin-top:12px">Email me my plan</button>'+
+          '<input class="input" type="password" id="ksPass" placeholder="Choose a password (8+ characters)" autocomplete="new-password" style="margin-top:10px">'+
+          '<button class="btn btn-yellow" id="ksSavePlan" style="width:100%;margin-top:12px">Create my account, open my dashboard</button>'+
           '<p class="ksmsg fine" id="ksMsg" style="margin-top:12px;text-align:center"></p>'+
         '</div>';
 
@@ -453,8 +460,14 @@
     }).join('');
 
     root.innerHTML = shell(
+      '<div class="center" style="margin-bottom:26px">'+
+        '<div class="ks-check" style="margin-bottom:10px">\u2713</div>'+
+        '<div class="eyebrow brass" style="margin-bottom:10px">ALL 128 ITEMS. DONE.</div>'+
+        '<h2 style="margin:0 0 6px">You just did what most men never do.</h2>'+
+        '<p class="helper" style="margin:0">You looked at how you father, honestly, all the way through. Here is where you stand, and where you move next.</p>'+
+      '</div>'+
       '<div class="eyebrow">YOUR KEYSTONE FATHER PROFILE</div>'+
-      '<div class="ks-overall">'+scored.overall+'</div>'+
+      '<div class="ks-overall" id="ksOverallNum" data-n="'+scored.overall+'">0</div>'+
       '<p class="helper" style="text-align:center;margin-bottom:8px">Overall standing across 26 dimensions, relative to 2,066 fathers.</p>'+
       '<div class="ks-summary">'+
         '<div><span class="fine">STRENGTH</span><b>'+esc(strength.label)+'</b></div>'+
@@ -466,11 +479,19 @@
       true);
     requestAnimationFrame(function(){ setTimeout(function(){
       root.querySelectorAll('.ks-bar>span').forEach(function(sp){ sp.style.width = sp.dataset.w+'%'; });
+      var on=document.getElementById('ksOverallNum');
+      if(on){
+        var target=parseInt(on.dataset.n,10)||0, t0=null;
+        function step(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/900);
+          on.textContent=Math.round(target*(1-Math.pow(1-p,3)));
+          if(p<1) requestAnimationFrame(step); }
+        requestAnimationFrame(step);
+      }
     }, 80); });
     if(!signedIn){
-      var se=document.getElementById('ksEmail'), sb=document.getElementById('ksSavePlan'), sm=document.getElementById('ksMsg');
-      if(sb) sb.addEventListener('click', function(){ sendPlanLink((se.value||'').trim(), sb, sm); });
-      if(se) se.addEventListener('keydown', function(e){ if(e.key==='Enter'){ sendPlanLink((se.value||'').trim(), sb, sm); } });
+      var se=document.getElementById('ksEmail'), sp=document.getElementById('ksPass'), sb=document.getElementById('ksSavePlan'), sm=document.getElementById('ksMsg');
+      if(sb) sb.addEventListener('click', function(){ sendPlanLink((se.value||'').trim(), sp.value||'', sb, sm); });
+      if(sp) sp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ sendPlanLink((se.value||'').trim(), sp.value||'', sb, sm); } });
     }
   }
 
