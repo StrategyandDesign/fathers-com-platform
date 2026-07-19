@@ -3,16 +3,18 @@
 Permissions are enforced in the database (Postgres RLS), not the UI. If someone bypasses the interface and calls the API directly, the same rules apply. The dashboards only shape what each role sees.
 
 ## Roles
-| Role | Can do | Dashboard |
-|---|---|---|
-| admin | Everything: grant/revoke roles, create orgs, see all people and content, read the audit log, issue certificates | admin.html |
-| instructor | Build and publish courses (lessons + Vimeo + workbooks + drip), build and publish assessment instruments, issue certificates | studio.html |
-| content_reviewer | Read drafts before publish (review workflow hook; same read scope as authors) | studio.html (read) |
-| org_admin | Manage their organization's seats, invite men, see participation counts (never individual answers or scores) | org.html |
-| circle_leader | Plan a Circle's weeks, post announcements, moderate posts, see their roster | lead.html |
-| member | Take assessments, work a plan, watch lessons, post in their Circle | plan.html (default) |
+DB role keys are stable; display names carry the v4.0 certification positioning (see POSITIONING.md §11).
 
-Every signed-in user is a member by default. Roles are additive and, for org_admin and circle_leader, scoped to a specific org.
+| Role (DB key) | Positioned as | Can do | Dashboard |
+|---|---|---|---|
+| admin | NCF Registrar | Everything: grant/revoke roles, create orgs, see all people and content, read the audit log, issue Certificates of Completion, maintain the registry | admin.html |
+| instructor | NCF curriculum staff | Build and publish courses (lessons + Vimeo + workbooks + drip), build and publish assessment instruments, issue certificates | studio.html |
+| content_reviewer | NCF reviewer | Read drafts before publish (review workflow hook; same read scope as authors) | studio.html (read) |
+| org_admin | Certified Organization admin | Manage their organization's seats, invite men, see participation counts (never individual answers or scores) | org.html |
+| circle_leader | Certified Facilitator | Run cohorts from the Facilitator Desk: plan the weeks, post announcements, moderate, see their roster. Public credential status lives in the registry | lead.html |
+| member | Participant | Take assessments, work a plan, watch lessons, post in their Circle. Pays nothing, ever | plan.html (default) |
+
+Every signed-in user is a member (Participant) by default. Roles are additive and, for org_admin and circle_leader (Certified Organization admin and Certified Facilitator), scoped to a specific org. The Certified Facilitator credential itself belongs to the person and follows them across organizations; the circle_leader grant is the per-org operating permission.
 
 ## Who can build what
 - Courses, lessons, videos (Vimeo), workbooks, drip schedules: instructor or admin, in Studio.

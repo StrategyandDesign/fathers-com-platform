@@ -1,6 +1,8 @@
 # Fathers.com Platform
 
-Static HTML prototype of the full platform, prepped for GitHub, Supabase, and Resend. Built to the fourteen-prompt series (P0-P13) and the FORGE design system. Nineteen pages, nine email templates, one schema.
+Static HTML prototype of the full platform, prepped for GitHub, Supabase, and Resend. Built to the fourteen-prompt series (P0-P13) and the FORGE design system.
+
+**v4.0 reposition (July 2026):** NCF certifies organizations and facilitators; participants complete free and receive a Certificate of Completion at no cost. Two tracks (Fatherhood, Manhood). The military surface is dark behind `SHOW_MILITARY` in `build_pages.py`. Decisions, research basis, pricing, and gates live in `POSITIONING.md`. The draft Keystone Manhood Profile (KMP-0.1) is in `assets/js/keystone-manhood-data.js`, deployment gated on psychometric sign-off.
 
 ## Preview locally
 ```

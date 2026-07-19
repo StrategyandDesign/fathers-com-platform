@@ -13,20 +13,31 @@ def test_homepage_renders(page, server):
     assert "twelve minutes" not in page.inner_text("body")   # copy-accuracy regression
     assert _no_app_errors(page)
 
-def test_veterans_front_door(page, server):
-    page.goto(f"{server}/veterans.html", wait_until="load"); page.wait_for_timeout(500)
-    films = page.query_selector_all(".vet-film")
-    assert len(films) == 3                                    # three free lead-gen films
-    assert page.query_selector("#vetVideoModal") is not None
-    films[0].click(); page.wait_for_timeout(300)
-    assert page.is_visible("#vetVideoModal")                  # modal opens
-    assert page.query_selector(".vet-crisis") is None         # no crisis banner on the door
+def test_military_surface_is_dark(page, server):
+    # v4.0 (POSITIONING.md 5): SHOW_MILITARY=False. The veteran pages are not
+    # generated, and no live page links to them.
+    import urllib.request, urllib.error
+    for dead in ("veterans.html", "veterans-hub.html", "voice.html", "share.html"):
+        try:
+            urllib.request.urlopen(f"{server}/{dead}")
+            assert False, f"{dead} should not be generated while SHOW_MILITARY is off"
+        except urllib.error.HTTPError as e:
+            assert e.code == 404
+    for live in ("index.html", "organizations.html", "certificates.html"):
+        html = _fetch(server, live)
+        assert "veterans" not in html and "voice.html" not in html
+
+def test_facilitators_page_renders(page, server):
+    page.goto(f"{server}/facilitators.html", wait_until="load"); page.wait_for_timeout(400)
+    body = page.inner_text("body")
+    assert "Certified Facilitator" in body
+    assert "supervised first cohort" in body.lower()
     assert _no_app_errors(page)
 
 def test_certificates_explore_is_cert_specific(page, server):
     page.goto(f"{server}/certificates.html", wait_until="load"); page.wait_for_timeout(500)
     cards = page.query_selector_all(".cert-card")
-    assert len(cards) >= 5
+    assert len(cards) == 3          # the three courses, locked in v4.0
     explore = page.query_selector("#certExplore")
     assert explore is not None
     target = page.query_selector('.cert-card[data-cert="coparenting"]')
@@ -56,12 +67,12 @@ def test_circles_is_live_not_demo(page, server):
         page.wait_for_timeout(200)
     assert "login.html" in page.url                            # the gate works
 
-def test_voice_page_identity(page, server):
-    page.goto(f"{server}/voice.html", wait_until="load"); page.wait_for_timeout(500)
-    assert page.query_selector(".voice-hero") is not None
-    assert page.query_selector("#voiceApp") is not None
-    assert page.query_selector(".voice-secure") is not None    # the security promise section
-    assert _no_app_errors(page)
+def test_enrollment_is_free(page, server):
+    # v4.0: the man never pays. No dollar price on the enroll summary.
+    html = _fetch(server, "enroll.html")
+    assert 'id="priceLine">Free<' in html
+    assert 'id="totalLine">Free<' in html
+    assert "$79" not in html
 
 def test_admin_certificate_console_present(page, server):
     # admin.html is auth-gated; assert the shipped console structure via raw fetch.
