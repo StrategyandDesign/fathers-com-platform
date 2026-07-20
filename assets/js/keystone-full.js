@@ -167,6 +167,7 @@ window.KS = window.KS || {};
     if(pct>=15) return {key:'building', label:'Building'};
     return {key:'starting', label:'A starting point'};
   }
+  KS.bandFor = bandFor;
 
   KS.score = function(){
     var scaleScores = {}, sectionSums = {}, allPcts = [];

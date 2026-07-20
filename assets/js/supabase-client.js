@@ -46,6 +46,19 @@ window.FC = window.FC || {};
       return FC.sb.auth.signInWithPassword({ email: email, password: password });
     });
   };
+  // Passwordless: creates the account if new and emails a secure sign-in link.
+  // One field, no password. The link returns the man signed in to `next`.
+  FC.signInMagic = function(email, next){
+    return FC.ready.then(function(){
+      return FC.sb.auth.signInWithOtp({
+        email: email,
+        options: {
+          shouldCreateUser: true,
+          emailRedirectTo: location.origin + location.pathname.replace(/[^/]*$/, '') + (next || 'plan.html')
+        }
+      });
+    });
+  };
   FC.uid = function(){ return FC.session && FC.session.user ? FC.session.user.id : null; };
 
   // ---------- 12-week plan template (personalization TODO: reorder by gap) ----------

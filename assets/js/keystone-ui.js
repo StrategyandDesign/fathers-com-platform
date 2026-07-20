@@ -64,6 +64,38 @@
     });
   }
 
+  // Per-dimension copy. Strength lines affirm behavior. Growth lines name a changeable
+  // behavior in a situation (guilt-adaptive, never "you are a bad father"). First moves
+  // are if-then implementation intentions. Brand voice: blunt, short, no clinical language.
+  var SCALE_COPY = {
+    involvement:{s:"You are in it. You do not father from the sidelines.",g:"Being there is the whole game, and it is the thing to build first.",m:["When you walk in the door, your phone stays in your pocket for ten minutes.","Put one standing time with each kid on the calendar this week.","Before you talk about your day, ask about theirs."]},
+    consistency:{s:"Your kids can count on you. You show up when you say you will.",g:"Kids trust what repeats. The fix is the same time, kept, again and again.",m:["Tell each kid the next time they will see you, and keep it.","When something threatens the standing time, you move the other thing.","Say what you will do this week, then do exactly that."]},
+    awareness:{s:"You pay attention. You notice what is going on with your kids.",g:"You cannot lead a child you do not know. Start by learning their world.",m:["Learn the names of their three closest friends this week.","When they talk, you ask one more question before you respond.","Notice one thing they cared about today and bring it up tomorrow."]},
+    nurturance:{s:"You are warm. Your kids know you are safe to come to.",g:"Warmth is a habit you can grow. It starts with how you greet them.",m:["When they come to you, you stop and turn toward them fully.","Say one specific thing you are proud of before the day ends.","When they are upset, you sit with it before you try to fix it."]},
+    commitment:{s:"You are all in. You do not quit on your family.",g:"Commitment shows in the small kept promises, not the big speeches.",m:["Make one promise this week that is small enough to keep for certain.","When it gets hard, you stay in the room.","Tell them, out loud, that you are not going anywhere."]},
+    active_listening:{s:"You listen. Your kids feel heard when they talk to you.",g:"Most men jump to fixing. The move is to hear it all the way first.",m:["When they tell you something, you say it back before you answer.","Hold one whole conversation where you give no advice at all.","When you want to interrupt, you count to three and let them finish."]},
+    job_satisfaction:{s:"You carry your work well, and it does not swallow your home.",g:"The line between work and home is a thing you can guard on purpose.",m:["Set a hard stop time twice this week and honor it.","When you get home, take five minutes alone, then you are fully theirs.","Leave one work problem at the door tonight."]},
+    emotional_regulation:{s:"You hold steady. Your kids are not braced around your moods.",g:"Your temper is a behavior in a moment, and moments can be caught.",m:["When you feel heat rising, you name it and step away for two minutes.","Before you react, you take one full breath.","When you get it wrong, you go back and repair it out loud."]},
+    legacy_planning:{s:"You think past today. You are building something that lasts.",g:"A legacy is built on purpose, one recorded thing at a time.",m:["Write down one thing you want your kids to remember about you.","Tell one story from your life at the table this week.","Record sixty seconds of your voice for them to keep."]},
+    flourishing:{s:"You are steady in yourself, and your kids feel that ground.",g:"You cannot pour from empty. Your own health is theirs too.",m:["Protect one hour this week that is only yours.","When you are running low, you say so instead of going cold.","Do one thing that resets you, and do it without guilt."]},
+    modeling:{s:"You lead by example. Your kids learn from how you live.",g:"They copy what you do, not what you say. Show them the thing.",m:["Do one hard right thing this week where they can see it.","When you make a mistake, you own it in front of them.","Name one value out loud as you live it today."]},
+    freedom_expression:{s:"You let your kids be themselves around you.",g:"A kid who can speak freely at home comes home. Make room for it.",m:["When they disagree, you thank them for saying it.","Let one small choice this week be fully theirs.","Ask what they think before you tell them what you think."]},
+    knowing_my_child:{s:"You know your kids as they really are, not as you imagine them.",g:"Every child is specific. Learn the one in front of you.",m:["Ask each kid what they are into right now, and remember it.","Spend twenty minutes doing the thing they love, on their terms.","Name one thing each kid is good at that no one else notices."]},
+    financial_provision:{s:"You provide. Your family is covered because you carry it.",g:"Provision is more than money. It is presence they can bank on too.",m:["Show them once how you plan, so money is not a mystery.","Pair one provided thing this week with time, not just the thing.","Tell them what you are working toward and why."]},
+    education_involvement:{s:"You are in their learning. School is not something you outsource.",g:"Kids rise when a father shows up for the mind, not just the report card.",m:["Ask about one specific thing they learned today, not just grades.","Show up for one school thing this month.","When they struggle, you sit beside the work with them."]},
+    parental_discussion:{s:"You and their other parent talk. Your kids see a united front.",g:"Kids feel the seams. Line up with their other parent behind the scenes.",m:["Agree on one rule this week before it comes up with the kids.","When you disagree, you take it away from the kids first.","Say one good thing about their other parent in front of them."]},
+    family_crises:{s:"You hold the line when things go hard. Your family leans on you.",g:"Crisis is where kids learn if they are safe. Be the calm on purpose.",m:["When the next hard thing hits, you name the plan out loud.","Tell them the truth at their level instead of hiding it.","Be the steady voice in one hard moment this week."]},
+    showing_affection:{s:"You show love plainly. Your kids do not have to guess.",g:"Affection is a muscle. Say it and show it until it is normal.",m:["Tell each kid you love them today, in words.","Give one hug that you do not rush.","Write one short note and leave it where they will find it."]},
+    spiritual_moral:{s:"You are equipping your kids with something to stand on.",g:"Kids need a why for right and wrong. Hand them yours on purpose.",m:["Talk through one right-and-wrong choice at the table this week.","Tell them one thing you believe and why you believe it.","When you fall short of your own values, you say so."]},
+    time_commitment:{s:"You give your kids real time, not just leftovers.",g:"Time is the currency kids read as love. Spend it deliberately.",m:["Block one hour this week that belongs only to them.","Put the phone in another room for one full activity.","Say yes to one thing they ask you to do with them."]},
+    giving_guidance:{s:"You guide. Your kids get direction from you, not just rules.",g:"Kids want a map, not a fence. Teach the why behind the rule.",m:["When you set a rule this week, you give the reason with it.","Ask what they would do before you tell them what to do.","Share one lesson you learned the hard way."]},
+    marital_relationship:{s:"You invest in your marriage, and your kids stand on that ground.",g:"The strongest thing you give your kids is loving their other parent well.",m:["Do one thing for your spouse this week with no scoreboard.","Let the kids catch you being kind to their other parent.","Protect one hour for the marriage, on the calendar."]},
+    childhood_satisfaction:{s:"You have looked honestly at how you were fathered. That takes guts.",g:"What you did not get, you can still choose to give. That choice starts now.",m:["Name one thing you will do differently than was done for you.","Give your kid one thing this week you wish you had received.","Forgive one thing this month, for your sake and theirs."]},
+    fathering_satisfaction:{s:"You care how you are doing as a father. That care is the engine.",g:"Confidence grows from small wins. Stack a few and it climbs.",m:["Notice one thing you did well as a father today.","Ask your kid what they like about time with you.","Keep one small fathering promise and let it count."]},
+    leadership_satisfaction:{s:"You are learning to lead your home with a steady hand.",g:"Leadership at home is quiet consistency, not control. Build the habit.",m:["Make one household decision this week clearly and calmly.","When you are unsure, you say the plan anyway and adjust.","Own one thing that went wrong without blaming."]},
+    satisfaction_child_rel:{s:"You want a real relationship with your kids, and you are chasing it.",g:"Closeness is built in small moments. Make more of them on purpose.",m:["Start one conversation this week that is not about a task.","Do one thing they love with them, their way.","Tell them one specific reason you like being their dad."]}
+  };
+
   // ---------- entry: choose mode, or resume ----------
   function start(){
     // An explicit track choice on the homepage always wins, signed in or not.
@@ -326,38 +358,34 @@
         '<p class="helper" style="margin-bottom:22px">You\'ve answered '+answered+' question'+(answered===1?'':'s')+' so far. Create your free account and your progress is saved to it, on any device.</p>'+
         '<div class="ks-gate-form">'+
           '<input class="input" type="email" id="ksSaveEmail" placeholder="you@email.com" autocomplete="email">'+
-          '<input class="input" type="password" id="ksSavePass" placeholder="Choose a password (8+ characters)" autocomplete="new-password" style="margin-top:10px">'+
-          '<button class="btn btn-yellow" id="ksSaveGo" style="width:100%;margin-top:12px">Create my account and save</button>'+
+          '<button class="btn btn-yellow" id="ksSaveGo" style="width:100%;margin-top:12px">Email me a link to save</button>'+
           '<p class="ksmsg fine" id="ksSaveMsg" style="margin-top:12px;text-align:center"></p>'+
         '</div>'+
         '<p class="fine" style="margin-top:14px;text-align:center">Already have an account? <a class="link ash" href="login.html?next=profile.html" style="font-size:12px">Sign in</a></p>'+
         '<p class="fine" style="margin-top:10px;text-align:center"><button class="ks-save-btn" id="ksSaveBack">Not now, keep going</button></p>'+
       '</div>');
     var input = document.getElementById('ksSaveEmail');
-    var pass = document.getElementById('ksSavePass');
     var go = document.getElementById('ksSaveGo');
     var msg = document.getElementById('ksSaveMsg');
     var backBtn = document.getElementById('ksSaveBack');
     function submit(){
       var email = (input.value||'').trim();
-      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent='Enter a valid email.'; msg.style.color='var(--error)'; return; }
-      if((pass.value||'').length < 8){ msg.textContent='Password needs at least 8 characters.'; msg.style.color='var(--error)'; return; }
-      go.disabled = true; go.textContent = 'Saving...'; msg.textContent='';
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent='Enter your email so we can send the link.'; msg.style.color='var(--error)'; return; }
+      go.disabled = true; go.textContent = 'Sending...'; msg.textContent='';
       // flag that this is a resume (not a completed result) so return lands back in the assessment
       try { localStorage.setItem('fc_resume_intent','1'); } catch(e){}
-      FC.signUpPassword(email, pass.value, null, 'profile.html').then(function(r){
-        if(r && r.error){ msg.textContent=r.error.message||'Something went wrong. Try again.'; msg.style.color='var(--error)'; go.disabled=false; go.textContent='Create my account and save'; return; }
-        if(r.data && r.data.session){ location.href='profile.html'; return; }
+      FC.signInMagic(email, 'profile.html').then(function(r){
+        if(r && r.error){ msg.textContent=r.error.message||'Something went wrong. Try again.'; msg.style.color='var(--error)'; go.disabled=false; go.textContent='Email me a link to save'; return; }
         root.innerHTML = shell(
           '<div class="center" style="padding:44px 0">'+
             '<div class="ks-check">\u2713</div>'+
-            '<h2 style="margin:8px 0">One step left.</h2>'+
-            '<p class="helper">Your account is created and your answers are saved on this device. Confirm the email we sent to <b>'+esc(email)+'</b>, sign in, and everything attaches to your account.</p>'+
+            '<h2 style="margin:8px 0">Check your email.</h2>'+
+            '<p class="helper">We saved your place and sent a link to <b>'+esc(email)+'</b>. Click it to sign in and pick up right where you left off. No password.</p>'+
           '</div>');
       });
     }
     go.addEventListener('click', submit);
-    pass.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
+    input.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
     if(backBtn) backBtn.onclick = function(){ drawItem(); };
     input.focus();
   }
@@ -402,26 +430,22 @@
     return showResults(scored);
   }
 
-  // ---------- SAVE THE PLAN (no paywall) ----------
-  // The full results are already on screen. This creates his account (password)
-  // so the result saves and he can retake later and track movement. Save, not unlock.
-  function sendPlanLink(email, pw, btn, msg){
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent='Enter a valid email.'; msg.style.color='var(--error)'; return; }
-    if((pw||'').length < 8){ msg.textContent='Password needs at least 8 characters.'; msg.style.color='var(--error)'; return; }
-    btn.disabled=true; btn.textContent='Creating your account\u2026'; msg.textContent='';
+  // ---------- SAVE THE PLAN (no paywall, no password) ----------
+  // The full results are already on screen. One email field, a magic link creates the
+  // account and signs him in on return. Save, not unlock.
+  function sendPlanLink(email, btn, msg){
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent='Enter your email so we can send your plan.'; msg.style.color='var(--error)'; return; }
+    btn.disabled=true; btn.textContent='Sending your plan\u2026'; msg.textContent='';
     ksEv('plan_email_submitted', {});
-    if(window.FC && FC.signUpPassword){
-      FC.signUpPassword(email, pw, null, 'plan.html?reveal=1').then(function(r){
-        if(r && r.error){ msg.textContent=r.error.message||'Something went wrong. Try again.'; msg.style.color='var(--error)'; btn.disabled=false; btn.textContent='Create my account'; return; }
-        if(r.data && r.data.session){
-          try { KS.saveResult(KS.score()); } catch(e){}
-          location.href='plan.html?reveal=1'; return;
-        }
+    if(window.FC && FC.signInMagic){
+      FC.signInMagic(email, 'plan.html?reveal=1').then(function(r){
+        if(r && r.error){ msg.textContent=r.error.message||'Something went wrong. Try again.'; msg.style.color='var(--error)'; btn.disabled=false; btn.textContent='Send me my plan'; return; }
         root.innerHTML = shell(
-          '<div class="center" style="padding:40px 0">'+
+          '<div class="center" style="padding:44px 0">'+
             '<div class="ks-check">\u2713</div>'+
-            '<h2 style="margin:8px 0">One step left.</h2>'+
-            '<p class="helper">Your account is created and your full profile is saved on this device. Confirm the email we sent to <b>'+esc(email)+'</b>, then sign in. Your dashboard will be waiting.</p>'+
+            '<h2 style="margin:8px 0">Check your email.</h2>'+
+            '<p class="helper">Your plan is on its way to <b>'+esc(email)+'</b>. Click the link in that email to open your dashboard. Your full profile is saved and waiting.</p>'+
+            '<p class="fine" style="margin-top:20px">No password. The link signs you in. If it is not there in a minute, check spam.</p>'+
           '</div>');
       });
     }
@@ -431,67 +455,97 @@
   function showResults(scored){
     enterAssessment();
     if(KS.isPreparing()){ return finishPreparing(scored); }
-    var gap = scored.scales[scored.gap], strength = scored.scales[scored.strength];
+    var strK = scored.strength, gapK = scored.gap;
+    var strength = scored.scales[strK], gap = scored.scales[gapK];
+    var sCopy = SCALE_COPY[strK] || {s:'You showed up and did the honest work.',g:'',m:[]};
+    var gCopy = SCALE_COPY[gapK] || {s:'',g:'This is the one to build first.',m:[]};
+    var band = (KS.bandFor ? KS.bandFor(scored.overall) : {label:'A starting point'});
+    var bandLine = {
+      'Strong':'You are on strong ground. The work now is to hold it.',
+      'Solid':'You have a solid base. Now you sharpen it.',
+      'Developing':'You are on your way, and the next moves compound.',
+      'Building':'You are building. Every small habit from here counts.',
+      'A starting point':'A starting point is still a start, and starting is the part most men skip.'
+    }[band.label] || 'Here is where you stand, and where you move next.';
+    var sameScale = (strK === gapK);
     var signedIn = window.FC && FC.live && FC.uid();
-    var tail = signedIn
-      ? '<a class="btn btn-yellow" style="width:100%" href="plan.html?reveal=1">Open your dashboard</a>'
-      : '<div class="ks-save-card">'+
-          '<h3 class="ks-save-h">Your dashboard is built and waiting.</h3>'+
-          '<p class="helper" style="margin-bottom:18px">Create your free account and this profile saves to it: your dashboard, your ninety-day plan, and the retake that shows your movement.</p>'+
-          '<input class="input" type="email" id="ksEmail" placeholder="you@email.com" autocomplete="email">'+
-          '<input class="input" type="password" id="ksPass" placeholder="Choose a password (8+ characters)" autocomplete="new-password" style="margin-top:10px">'+
-          '<button class="btn btn-yellow" id="ksSavePlan" style="width:100%;margin-top:12px">Create my account, open my dashboard</button>'+
-          '<p class="ksmsg fine" id="ksMsg" style="margin-top:12px;text-align:center"></p>'+
-        '</div>';
+
+    var sp = strength ? strength.pct : 0;
+    var strengthStanding = sp>=60 ? ('Stronger than about '+sp+' out of 100 fathers here.')
+                          : 'This is your strongest ground to build from.';
 
     var sectionsHtml = order.map(function(secKey){
       var m = KS.sectionMeta(secKey);
       var scalesInSec = Object.keys(scored.scales).filter(function(k){return scored.scales[k].section===secKey;});
       var rows = scalesInSec.map(function(k){
-        var s = scored.scales[k];
-        var isGap = k===scored.gap;
+        var s2 = scored.scales[k], isGap = k===gapK, isStr = k===strK;
         return '<div class="ks-rslt'+(isGap?' gap':'')+'">'+
-          '<div class="ks-rslt-top"><span>'+esc(s.label)+(isGap?' <em>growth focus</em>':'')+'</span>'+
-          '<span class="ks-rslt-band">'+s.band.label+'</span></div>'+
-          '<div class="ks-bar"><span style="width:0" data-w="'+s.pct+'"></span></div></div>';
+          '<div class="ks-rslt-top"><span>'+esc(s2.label)+(isGap?' <em>next move</em>':(isStr?' <em class="str">strength</em>':''))+'</span>'+
+          '<span class="ks-rslt-band">'+s2.band.label+'</span></div>'+
+          '<div class="ks-bar"><span style="width:0" data-w="'+s2.pct+'"></span></div></div>';
       }).join('');
-      return '<div class="ks-section-block"><div class="ks-section-head">'+esc(m.title)+
-        ' <span class="mono">'+scored.sections[secKey]+'</span></div>'+rows+'</div>';
+      return '<div class="ks-section-block"><div class="ks-section-head">'+esc(m.title)+'</div>'+rows+'</div>';
     }).join('');
 
+    var moves = (gCopy.m||[]).map(function(mv,i){
+      return '<div class="ks-move"><span class="ks-move-n">'+(i+1)+'</span><span class="ks-move-t">'+esc(mv)+'</span></div>';
+    }).join('');
+
+    var accountCard = signedIn
+      ? '<a class="btn btn-yellow" style="width:100%" href="plan.html?reveal=1">Open your full plan</a>'
+      : '<div class="ks-save-card">'+
+          '<div class="ks-built"><div class="ks-built-track"><span id="ksBuilt" style="width:0"></span></div><span class="ks-built-n">Your profile is 90% built</span></div>'+
+          '<h3 class="ks-save-h">Finish it. Save your plan.</h3>'+
+          '<p class="helper" style="margin-bottom:16px">You did the work. Enter your email and we send your ninety-day plan and save your profile, so you can retake it later and watch yourself move.</p>'+
+          '<input class="input" type="email" id="ksEmail" placeholder="you@email.com" autocomplete="email">'+
+          '<button class="btn btn-yellow" id="ksSavePlan" style="width:100%;margin-top:10px">Send me my plan</button>'+
+          '<p class="ksmsg fine" id="ksMsg" style="margin-top:10px;text-align:center"></p>'+
+          '<p class="fine" style="margin-top:8px;text-align:center">No password. We send a secure link. We never share your email.</p>'+
+        '</div>';
+
     root.innerHTML = shell(
-      '<div class="center" style="margin-bottom:26px">'+
+      '<div class="center" style="margin-bottom:30px">'+
         '<div class="ks-check" style="margin-bottom:10px">\u2713</div>'+
         '<div class="eyebrow brass" style="margin-bottom:10px">ALL 128 ITEMS. DONE.</div>'+
         '<h2 style="margin:0 0 6px">You just did what most men never do.</h2>'+
-        '<p class="helper" style="margin:0">You looked at how you father, honestly, all the way through. Here is where you stand, and where you move next.</p>'+
+        '<p class="helper" style="margin:0">You looked at how you father, honestly, all the way through.</p>'+
       '</div>'+
-      '<div class="eyebrow">YOUR KEYSTONE FATHER PROFILE</div>'+
-      '<div class="ks-overall" id="ksOverallNum" data-n="'+scored.overall+'">0</div>'+
-      '<p class="helper" style="text-align:center;margin-bottom:8px">Overall standing across 26 dimensions, relative to 2,066 fathers.</p>'+
-      '<div class="ks-summary">'+
-        '<div><span class="fine">STRENGTH</span><b>'+esc(strength.label)+'</b></div>'+
-        '<div><span class="fine">GROWTH FOCUS</span><b>'+esc(gap.label)+'</b></div>'+
+      '<div class="ks-strength-hero">'+
+        '<div class="eyebrow" style="margin-bottom:12px">YOUR STRONGEST GROUND</div>'+
+        '<div class="ks-strength-name">'+esc(strength ? strength.label : 'You showed up')+'</div>'+
+        (sCopy.s ? '<p class="ks-strength-line">'+esc(sCopy.s)+'</p>' : '')+
+        '<div class="ks-band-chip">'+strengthStanding+'</div>'+
       '</div>'+
-      sectionsHtml+
-      '<p class="fine" style="margin:20px 0 8px;text-align:center">Your results are yours alone. We never share them.</p>'+
-      tail,
+      '<div class="ks-overall-band">'+
+        '<span class="ks-ob-label">OVERALL</span>'+
+        '<span class="ks-ob-value">'+band.label+'</span>'+
+        '<span class="ks-ob-line">'+bandLine+'</span>'+
+      '</div>'+
+      (sameScale ? '' :
+        '<div class="ks-next">'+
+          '<div class="eyebrow" style="margin-bottom:10px">YOUR NEXT MOVE</div>'+
+          '<div class="ks-next-name">'+esc(gap ? gap.label : '')+'</div>'+
+          (gCopy.g ? '<p class="ks-next-line">'+esc(gCopy.g)+'</p>' : '')+
+        '</div>')+
+      (moves ? '<div class="ks-moves"><div class="ks-moves-h">Your first three moves</div>'+moves+
+        '<p class="fine" style="margin-top:14px">These are day one. Your full ninety-day plan builds from here.</p></div>' : '')+
+      accountCard+
+      '<details class="ks-fullprofile"><summary>See your full profile, all 26 dimensions</summary>'+
+        '<p class="fine" style="margin:12px 0 18px">Relative to 2,066 fathers. Your strength and your next move are marked.</p>'+
+        sectionsHtml+
+      '</details>'+
+      '<p class="ks-end">You were never broken. Now you build.</p>',
       true);
+
     requestAnimationFrame(function(){ setTimeout(function(){
-      root.querySelectorAll('.ks-bar>span').forEach(function(sp){ sp.style.width = sp.dataset.w+'%'; });
-      var on=document.getElementById('ksOverallNum');
-      if(on){
-        var target=parseInt(on.dataset.n,10)||0, t0=null;
-        function step(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/900);
-          on.textContent=Math.round(target*(1-Math.pow(1-p,3)));
-          if(p<1) requestAnimationFrame(step); }
-        requestAnimationFrame(step);
-      }
+      root.querySelectorAll('.ks-bar>span').forEach(function(sp2){ sp2.style.width = sp2.dataset.w+'%'; });
+      var bt=document.getElementById('ksBuilt'); if(bt) bt.style.width='90%';
     }, 80); });
+
     if(!signedIn){
-      var se=document.getElementById('ksEmail'), sp=document.getElementById('ksPass'), sb=document.getElementById('ksSavePlan'), sm=document.getElementById('ksMsg');
-      if(sb) sb.addEventListener('click', function(){ sendPlanLink((se.value||'').trim(), sp.value||'', sb, sm); });
-      if(sp) sp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ sendPlanLink((se.value||'').trim(), sp.value||'', sb, sm); } });
+      var se=document.getElementById('ksEmail'), sb=document.getElementById('ksSavePlan'), sm=document.getElementById('ksMsg');
+      if(sb) sb.addEventListener('click', function(){ sendPlanLink((se.value||'').trim(), sb, sm); });
+      if(se) se.addEventListener('keydown', function(e){ if(e.key==='Enter'){ sendPlanLink((se.value||'').trim(), sb, sm); } });
     }
   }
 

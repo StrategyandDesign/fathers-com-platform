@@ -470,6 +470,37 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 .ks-bar{height:8px;background:var(--hairline);border-radius:4px;overflow:hidden}
 .ks-bar>span{display:block;height:100%;background:var(--pine-hi);border-radius:4px;transition:width .8s cubic-bezier(.2,.7,.2,1)}
 .ks-rslt.gap .ks-bar>span{background:var(--ember)}
+
+/* ===== Redesigned results: strength-first, band not number ===== */
+.ks-strength-hero{text-align:center;padding:30px 20px 26px;margin-bottom:22px;border:1px solid var(--hairline);border-radius:var(--r-card);background:linear-gradient(180deg,rgba(232,232,74,.05),rgba(232,232,74,0) 70%)}
+.ks-strength-name{font-family:var(--font-display);font-weight:600;font-size:clamp(32px,5vw,50px);line-height:1.05;letter-spacing:-.015em;color:var(--bone)}
+.ks-strength-line{color:var(--ash);font-size:16px;max-width:44ch;margin:12px auto 0;line-height:1.5}
+.ks-band-chip{display:inline-block;margin-top:16px;padding:6px 14px;border:1px solid var(--hairline-strong);border-radius:var(--r-pill);font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ash)}
+.ks-overall-band{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:16px 18px;margin-bottom:26px;border-left:2px solid var(--brass);background:var(--coal)}
+.ks-ob-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;color:var(--ash)}
+.ks-ob-value{font-family:var(--font-display);font-weight:600;font-size:20px;color:var(--bone)}
+.ks-ob-line{font-size:14px;color:var(--ash);flex:1;min-width:200px}
+.ks-next{margin-bottom:24px}
+.ks-next-name{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--bone);letter-spacing:-.01em}
+.ks-next-line{color:var(--ash);font-size:15.5px;margin-top:8px;max-width:52ch;line-height:1.5}
+.ks-moves{margin-bottom:26px}
+.ks-moves-h{font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--bone);margin-bottom:14px}
+.ks-move{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border:1px solid var(--hairline);border-radius:var(--r-btn);margin-bottom:10px}
+.ks-move-n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--yellow);color:#0A0A0A;font-family:var(--font-mono);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center}
+.ks-move-t{font-size:15px;color:var(--bone);line-height:1.45;padding-top:3px}
+.ks-built{margin-bottom:16px}
+.ks-built-track{height:6px;background:var(--hairline);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.ks-built-track>span{display:block;height:100%;background:var(--yellow);border-radius:3px;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+.ks-built-n{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--brass);text-transform:uppercase}
+.ks-fullprofile{margin:8px 0 24px;border-top:1px solid var(--hairline);padding-top:14px}
+.ks-fullprofile>summary{cursor:pointer;font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ash);list-style:none;padding:6px 0}
+.ks-fullprofile>summary::-webkit-details-marker{display:none}
+.ks-fullprofile>summary::before{content:"+ ";color:var(--brass)}
+.ks-fullprofile[open]>summary::before{content:"\2212 "}
+.ks-fullprofile>summary:hover{color:var(--bone)}
+.ks-rslt-top em.str{font-style:normal;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--pine-hi);text-transform:uppercase}
+.ks-end{text-align:center;font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--bone);margin:28px 0 8px;letter-spacing:-.01em}
+@media(max-width:680px){ .ks-strength-name{font-size:34px} .ks-overall-band{flex-direction:column;gap:6px} }
 @media(max-width:680px){ .ks-summary{grid-template-columns:1fr} .ks-wrap{padding:32px 16px} }
 
 /* ============================================================
