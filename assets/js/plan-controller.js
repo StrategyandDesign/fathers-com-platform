@@ -12,6 +12,7 @@
   if(!root || !window.PLAN_ENGINE) return;
 
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function firstSentence(t){ t=String(t||''); var i=t.indexOf('. '); return i>0? t.slice(0,i+1) : t; }
 
   // ---------- entry ----------
   function load(){
@@ -72,136 +73,110 @@
     var wk = plan.weeks[week-1] || plan.weeks[0];
     var overall = Math.round(result.overall_pct || plan.overall || 0);
 
-    // header
+    var m = computeProgress(plan, week);
+
+    // 1. Compact header. The question a returning man asks: what week am I on, what do I do.
     var html =
-      '<div class="row between wrap" style="margin-bottom:32px">'+
-        '<div><h1 class="d-36">Your ninety-day plan.</h1>'+
-        '<p class="lead" style="margin-top:8px;max-width:52ch">Built from your Keystone Profile. Your focus: <b class="brass">'+esc(plan.focusLabel)+'</b>.</p></div>'+
-        '<div class="row" style="align-items:center;gap:10px">'+
-          '<span class="chip" style="cursor:default">Baseline <b class="mono" style="margin-left:8px">'+overall+'</b></span>'+
-          '<span class="chip" style="cursor:default">Week '+week+' of 12</span>'+
-        '</div>'+
+      '<div class="pl-head">'+
+        '<div><div class="eyebrow" style="margin-bottom:8px">YOUR NINETY-DAY PLAN</div>'+
+        '<h1 class="d-36" style="margin-bottom:8px">Week '+week+'. One move at a time.</h1>'+
+        '<p class="lead" style="max-width:52ch;margin:0">Built from your Keystone Profile. Your focus is <b class="brass">'+esc(plan.focusLabel)+'</b>.</p></div>'+
+        '<span class="chip" style="cursor:default;align-self:flex-start">Baseline <b class="mono" style="margin-left:8px">'+overall+'</b></span>'+
       '</div>';
 
     if(isDemo){
-      html += '<div class="notice brass" style="margin-bottom:28px">This is a sample plan. <a class="link" href="login.html">Sign in</a> and take your baseline to get yours.</div>';
+      html += '<div class="notice brass" style="margin:0 0 26px">This is a sample plan. <a class="link" href="profile.html">Take your baseline</a> and this becomes yours, free.</div>';
     }
 
-    // ---- MOMENTUM BAND: the retention engine (streak, actions done, achievements) ----
-    var m = computeMomentum(plan, week);
+    // 2. THE FOCAL POINT: this week's action, marked done. First thing he sees, answers
+    //    "what do I do right now." Fresh-start framing so a missed week never shames him.
     html +=
-      '<div class="mo-band">'+
-        '<div class="mo-stat">'+
-          '<div class="mo-num">'+m.streak+'</div>'+
-          '<div class="mo-lbl">week'+(m.streak===1?'':'s')+' with action</div>'+
-        '</div>'+
-        '<div class="mo-stat">'+
-          '<div class="mo-num">'+m.actionsDone+'</div>'+
-          '<div class="mo-lbl">actions completed</div>'+
-        '</div>'+
-        '<div class="mo-stat">'+
-          '<div class="mo-num">'+m.pctThroughPlan+'%</div>'+
-          '<div class="mo-lbl">through your ninety days</div>'+
-        '</div>'+
-        '<div class="mo-stat mo-next">'+
-          '<div class="mo-lbl" style="margin-bottom:4px">DO NEXT</div>'+
-          '<div class="mo-next-txt">'+esc(m.doNext)+'</div>'+
-        '</div>'+
-      '</div>';
-
-    // achievements earned so far
-    if(m.achievements.length){
-      html += '<div class="mo-achievements">'+
-        m.achievements.map(function(a){
-          return '<div class="mo-badge'+(a.earned?' earned':'')+'" title="'+esc(a.desc)+'">'+
-            '<span class="mo-badge-icon">'+(a.earned?'\u2713':'\u25CB')+'</span>'+
-            '<span>'+esc(a.label)+'</span></div>';
-        }).join('')+
-      '</div>';
-    }
-
-    // focus card: what this plan is about
-    html +=
-      '<div class="card brass-card" style="padding:28px;margin-bottom:28px">'+
-        '<div class="eyebrow brass" style="margin-bottom:10px">YOUR GROWTH FOCUS</div>'+
-        '<h2 class="d-28" style="margin-bottom:8px">'+esc(plan.focusLabel)+'</h2>'+
-        '<p class="ash" style="max-width:60ch">'+esc(plan.focusText)+' This is where your next ninety days concentrate. Not because you are failing here, but because growth here changes the most.</p>'+
-      '</div>';
-
-    // this week's actions
-    html +=
-      '<div class="card" style="padding:32px;margin-bottom:28px">'+
-        '<div class="row between" style="margin-bottom:8px"><div class="eyebrow">THIS WEEK</div>'+
+      '<div class="card pl-focal">'+
+        '<div class="row between" style="margin-bottom:8px"><div class="eyebrow brass" style="margin:0">DO THIS WEEK</div>'+
         '<span class="tag">'+esc(wk.phaseLabel).toUpperCase()+' &middot; PHASE '+(wk.phase+1)+'</span></div>'+
-        '<h2 class="d-28" style="margin-bottom:22px">Week '+week+'</h2>'+
+        '<h2 class="d-28" style="margin-bottom:6px">'+esc(plan.focusLabel)+'</h2>'+
+        '<p class="ash" style="margin-bottom:22px;max-width:58ch">'+esc(firstSentence(plan.focusText))+'</p>'+
         '<div class="stack-16">'+
           wk.actions.map(function(a, i){
             var key = 'fc_plan_w'+week+'_a'+i;
             return '<label class="actionrow"><input type="checkbox" data-persist="'+key+'">'+
-              '<div style="flex:1"><div class="txt">'+esc(a)+'</div>'+
-              '<div class="meta">'+esc(plan.focusLabel)+'</div></div></label>';
+              '<div style="flex:1"><div class="txt">'+esc(a)+'</div></div></label>';
           }).join('')+
         '</div>'+
-        '<p class="fine" style="margin-top:16px">Mark them when they happen. Honest beats perfect.</p>'+
+        '<div class="pl-cheer" id="plCheer" hidden></div>'+
+        '<p class="fine" style="margin-top:16px">Mark them when they happen. Honest beats perfect. Miss a day and the week still counts.</p>'+
       '</div>';
 
-    // the 12-week arc
+    // 3. Calm progress. Goal-gradient and endowed progress, never a punitive streak.
+    //    "Weeks you showed up" is cumulative, not a chain that breaks.
     html +=
-      '<div class="card" style="padding:28px;margin-bottom:28px">'+
-        '<div class="eyebrow" style="margin-bottom:16px">YOUR NINETY DAYS</div>'+
+      '<div class="card pl-progress">'+
+        '<div class="row between" style="margin-bottom:14px"><div class="eyebrow" style="margin:0">YOUR NINETY DAYS</div>'+
+        '<span class="fine mono">'+m.pctThroughPlan+'% through</span></div>'+
         '<div class="weeks">'+
           plan.weeks.map(function(w){
             var cls = w.week < week ? 'done' : (w.week === week ? 'now' : '');
             return '<span class="'+cls+'"></span>';
           }).join('')+
         '</div>'+
-        '<div class="phaselabels"><span>WKS 1-4 &middot; ESTABLISH</span><span>5-8 &middot; DEEPEN</span><span>9-12 &middot; SUSTAIN</span></div>'+
+        '<div class="phaselabels"><span>WKS 1-4 ESTABLISH</span><span>5-8 DEEPEN</span><span>9-12 SUSTAIN</span></div>'+
+        '<div class="pl-prog-foot"><span>'+m.actionsDone+' action'+(m.actionsDone===1?'':'s')+' done</span>'+
+          '<span>'+m.weeksWithAction+' week'+(m.weeksWithAction===1?'':'s')+' you showed up</span></div>'+
       '</div>';
 
-    // strengths + supporting focus
-    html += '<div class="grid-2" style="gap:20px;margin-bottom:20px">';
+    // 4. Secondary: lead-from-strength and the areas also worth tending.
+    html += '<div class="grid-2" style="gap:16px;margin-bottom:22px">';
     if(plan.strengthLabel){
       html +=
         '<div class="card" style="padding:24px">'+
-          '<div class="eyebrow" style="margin-bottom:10px">YOUR STRENGTH</div>'+
-          '<b style="font-family:var(--font-display);font-size:20px;font-weight:500">'+esc(plan.strengthLabel)+'</b>'+
-          '<p class="small ash" style="margin-top:8px">Lead from here. This is working, keep it working.</p>'+
+          '<div class="eyebrow" style="margin-bottom:10px">LEAD FROM YOUR STRENGTH</div>'+
+          '<b style="font-family:var(--font-display);font-size:20px;font-weight:600">'+esc(plan.strengthLabel)+'</b>'+
+          '<p class="small ash" style="margin-top:8px">This is working. Keep it working while you build the rest.</p>'+
         '</div>';
     }
     if(plan.supporting && plan.supporting.length){
       html +=
         '<div class="card" style="padding:24px">'+
           '<div class="eyebrow" style="margin-bottom:10px">ALSO WORTH TENDING</div>'+
-          plan.supporting.map(function(s){
-            return '<div class="row between" style="margin-bottom:8px"><span class="small">'+esc(s.label)+'</span>'+
-              '<span class="mono small ash">'+Math.round(s.pct)+'</span></div>';
+          plan.supporting.map(function(sp){
+            return '<div class="row between" style="margin-bottom:8px"><span class="small">'+esc(sp.label)+'</span>'+
+              '<span class="mono small ash">'+Math.round(sp.pct)+'</span></div>';
           }).join('')+
         '</div>';
     }
     html += '</div>';
 
-    // earn a certificate: the obvious next step from the plan
+    // 5. The certificate as the EARNED OUTCOME of finishing, not a competing upsell.
+    //    Demoted: ghost button, end of page, framed as something he earns.
     html +=
-      '<div class="card" style="padding:24px;margin-top:8px;border:1px solid var(--brass)">'+
-        '<div class="row between wrap" style="gap:16px;align-items:center">'+
-          '<div style="max-width:58ch">'+
-            '<div class="eyebrow brass" style="margin-bottom:8px">EARN A CERTIFICATE</div>'+
-            '<b style="font-size:16px">Ready for proof you did the work?</b>'+
-            '<p class="small" style="margin-top:6px">Turn your plan into a court-ready, verified certificate. Identity checked, hours logged, a serial anyone can confirm. Free through your program.</p>'+
-          '</div>'+
-          '<a class="btn btn-yellow" href="certificates.html" style="white-space:nowrap">See certificates</a>'+
-        '</div>'+
+      '<div class="card pl-cert">'+
+        '<div class="eyebrow" style="margin-bottom:8px">WHEN YOU FINISH</div>'+
+        '<b style="font-size:16px">These ninety days end in proof.</b>'+
+        '<p class="small ash" style="margin:6px 0 14px;max-width:60ch">Finish your plan and the course and you earn a verified Certificate of Completion. Identity checked, hours logged, a serial anyone can confirm, recognized where it counts. You do not buy it. You earn it.</p>'+
+        '<a class="btn btn-secondary btn-sm" href="certificates.html">See how the certificate works</a>'+
       '</div>';
 
-    // retake + link to full results
+    // 6. Tertiary, quiet.
     html +=
-      '<div class="row wrap" style="gap:14px;margin-top:8px">'+
-        '<a class="btn btn-secondary" href="profile.html">Retake the Profile</a>'+
-        '<a class="link ash" href="classes.html" style="align-self:center">Browse classes for this focus &rarr;</a>'+
+      '<div class="row wrap" style="gap:12px;margin-top:20px;align-items:center">'+
+        '<a class="link ash" href="profile.html">Retake the Profile</a>'+
+        '<span class="fine ash">&middot;</span>'+
+        '<a class="link ash" href="classes.html">Browse classes for this focus &rarr;</a>'+
       '</div>';
 
     root.innerHTML = html;
     restoreChecks();
+  }
+
+  // A small, varied affirmation when he marks an action done. Variable reinforcement,
+  // in the brand's voice. Not a badge, not points. Just a man being told it mattered.
+  var CHEERS = ['That is the work.', 'Your kid felt that.', 'One more brick laid.',
+    'That is presence, not theory.', 'Small and real beats big and never.', 'Kept your word. That is everything.'];
+  function cheer(){
+    var el = document.getElementById('plCheer'); if(!el) return;
+    el.textContent = CHEERS[Math.floor(Math.random()*CHEERS.length)];
+    el.hidden = false; el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+    clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove('show'); }, 2600);
   }
 
   // ---------- persistence for the weekly checkboxes ----------
@@ -212,6 +187,7 @@
       cb.addEventListener('change', function(){
         try { localStorage.setItem(key, cb.checked?'1':'0'); } catch(e){}
         var row = cb.closest('.actionrow'); if(row) row.classList.toggle('done', cb.checked);
+        if(cb.checked) cheer();
         // if live, also persist to the account so it syncs across devices
         if(window.FC && FC.live && FC.uid()){
           FC.sb.from('plan_checkins').upsert({
@@ -224,9 +200,10 @@
     });
   }
 
-  // Compute the retention mechanics: streak, actions completed, plan progress, next action, achievements.
-  function computeMomentum(plan, week){
-    var answers = {}; // read completed checkboxes from localStorage
+  // Calm progress only. Cumulative actions and weeks-shown-up, and how far through the
+  // ninety days he is (goal-gradient). No consecutive streak, because a broken streak
+  // shames the exact users who miss weeks for real reasons. No badge theater.
+  function computeProgress(plan, week){
     var actionsDone = 0, weeksWithAction = 0;
     for(var w=1; w<=12; w++){
       var wkDone = 0;
@@ -235,34 +212,8 @@
       }
       if(wkDone>0) weeksWithAction++;
     }
-    // streak = consecutive recent weeks (through current) with at least one action
-    var streak = 0;
-    for(var w2=week; w2>=1; w2--){
-      var any=false;
-      for(var a2=0;a2<2;a2++){ try { if(localStorage.getItem('fc_plan_w'+w2+'_a'+a2)==='1') any=true; } catch(e){} }
-      if(any) streak++; else break;
-    }
     var pctThroughPlan = Math.min(100, Math.round((week/12)*100));
-
-    // do-next: the first uncompleted action in the current week, else next week's first
-    var doNext = plan.weeks[week-1] ? plan.weeks[week-1].actions[0] : 'Keep going.';
-    for(var a3=0;a3<2;a3++){
-      var k = 'fc_plan_w'+week+'_a'+a3;
-      var done=false; try { done = localStorage.getItem(k)==='1'; } catch(e){}
-      if(!done && plan.weeks[week-1]){ doNext = plan.weeks[week-1].actions[a3]; break; }
-    }
-
-    // achievements: concrete, earnable milestones
-    var achievements = [
-      {label:'Baseline set', desc:'You took your Keystone Profile.', earned:true},
-      {label:'First action', desc:'Complete your first plan action.', earned: actionsDone>=1},
-      {label:'One week in', desc:'Act on your plan for a full week.', earned: weeksWithAction>=1},
-      {label:'Phase one', desc:'Finish the first four weeks.', earned: week>4 && weeksWithAction>=3},
-      {label:'Halfway', desc:'Reach week six.', earned: week>=6},
-      {label:'Ten actions', desc:'Complete ten plan actions.', earned: actionsDone>=10},
-      {label:'Ninety days', desc:'Complete your plan and retake.', earned: week>=12 && actionsDone>=15}
-    ];
-    return { streak: streak, actionsDone: actionsDone, pctThroughPlan: pctThroughPlan, doNext: doNext, achievements: achievements };
+    return { actionsDone: actionsDone, weeksWithAction: weeksWithAction, pctThroughPlan: pctThroughPlan };
   }
 
   // ---------- a representative demo result (signed-out preview) ----------
