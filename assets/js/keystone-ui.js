@@ -492,7 +492,8 @@
     }).join('');
 
     var accountCard = signedIn
-      ? '<a class="btn btn-yellow" style="width:100%" href="plan.html?reveal=1">Open your full plan</a>'
+      ? '<a class="btn btn-yellow" style="width:100%" href="plan.html?reveal=1">Open your full plan</a>'+
+        '<p class="fine" style="text-align:center;margin-top:12px"><a class="link ash" href="report.html">Read your full written report &rarr;</a></p>'
       : '<div class="ks-save-card">'+
           '<div class="ks-built"><div class="ks-built-track"><span id="ksBuilt" style="width:0"></span></div><span class="ks-built-n">Your profile is 90% built</span></div>'+
           '<h3 class="ks-save-h">Finish it. Save your plan.</h3>'+
@@ -501,7 +502,8 @@
           '<button class="btn btn-yellow" id="ksSavePlan" style="width:100%;margin-top:10px">Send me my plan</button>'+
           '<p class="ksmsg fine" id="ksMsg" style="margin-top:10px;text-align:center"></p>'+
           '<p class="fine" style="margin-top:8px;text-align:center">No password. We send a secure link. We never share your email.</p>'+
-        '</div>';
+        '</div>'+
+        '<p class="fine" style="text-align:center;margin-top:14px"><a class="link ash" href="report.html">Read your full written report &rarr;</a></p>';
 
     root.innerHTML = shell(
       '<div class="center" style="margin-bottom:30px">'+

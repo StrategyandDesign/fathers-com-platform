@@ -87,7 +87,10 @@
         tile('Coming Home Present','IN DEVELOPMENT','certificates.html#waitlist')+
         '</div>';
 
-      feed.innerHTML = '<div class="eyebrow" style="margin:30px 0 12px">YOUR WORK</div>'+staleCard+vetCard+
+      var reportCard = card('YOUR WRITTEN REPORT','The Keystone report',
+        'Every dimension: what it measures, where you stand, and your first moves. Read it, print it as a PDF, or email it to yourself.',
+        'report.html','Open the report');
+      feed.innerHTML = '<div class="eyebrow" style="margin:30px 0 12px">YOUR WORK</div>'+staleCard+vetCard+reportCard+
         '<div class="grid-2" style="align-items:stretch">'+courseCard+recCard+'</div>'+tiles;
 
       function card(eyebrow,h,p,href,cta){

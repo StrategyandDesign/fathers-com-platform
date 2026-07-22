@@ -8,10 +8,67 @@
     if(demo){ el('demo-note').style.display=''; el('app').style.display='';
       el('course-list').innerHTML='<p class="fine">Live data loads with Supabase keys. The New buttons open the real builder.</p>';
       el('instr-list').innerHTML='<p class="fine">Same here. Build an instrument to see items, scales, domains, and weights.</p>';
+      brandingInit(true);
       return; }
     FCR.guard(['instructor','admin']).then(function(ok){
       if(!ok){ el('denied').style.display=''; return; }
-      el('app').style.display=''; loadCourses(); loadInstruments();
+      el('app').style.display=''; loadCourses(); loadInstruments(); brandingInit(false);
+    });
+  }
+
+  /* ------------- REPORT BRANDING -------------
+     The whole creator surface for the participant report: two logos and the
+     highlight colors. Nothing else is editable, by design. RLS enforces the
+     same boundary server-side (instructor/admin only). */
+  function brandingInit(isDemo){
+    var card = el('rb-card'); if(!card) return;
+    var prev = {1:el('rb-prev1'), 2:el('rb-prev2')};
+    var empty = {1:el('rb-empty1'), 2:el('rb-empty2')};
+    var files = {1:el('rb-logo1'), 2:el('rb-logo2')};
+    var clears = {1:el('rb-clear1'), 2:el('rb-clear2')};
+    var accent = el('rb-accent'), accent2 = el('rb-accent2');
+    var save = el('rb-save'), msg = el('rb-msg');
+    var state = { logo_primary:null, logo_secondary:null };
+
+    function show(n, dataUrl){
+      if(dataUrl){ prev[n].src = dataUrl; prev[n].style.display=''; empty[n].style.display='none'; }
+      else { prev[n].removeAttribute('src'); prev[n].style.display='none'; empty[n].style.display=''; }
+    }
+    function wire(n, field){
+      files[n].addEventListener('change', function(){
+        var f = files[n].files && files[n].files[0]; if(!f) return;
+        if(f.size > 300*1024){ msg.textContent='That file is over 300 KB. Export it smaller and try again.'; files[n].value=''; return; }
+        var rd = new FileReader();
+        rd.onload = function(){ state[field] = rd.result; show(n, rd.result); msg.textContent=''; };
+        rd.readAsDataURL(f);
+      });
+      clears[n].addEventListener('click', function(){ state[field]=''; files[n].value=''; show(n, null); });
+    }
+    wire(1,'logo_primary'); wire(2,'logo_secondary');
+
+    if(isDemo){
+      save.disabled = true;
+      msg.textContent = 'Demo mode. Connect Supabase keys and branding saves live.';
+      return;
+    }
+    FC.sb.from('report_branding').select('*').eq('id',1).maybeSingle().then(function(r){
+      var b = r.data || {};
+      if(b.logo_primary){ state.logo_primary=b.logo_primary; show(1,b.logo_primary); }
+      if(b.logo_secondary){ state.logo_secondary=b.logo_secondary; show(2,b.logo_secondary); }
+      if(b.accent) accent.value = b.accent;
+      if(b.accent2) accent2.value = b.accent2;
+    }, function(){});
+    save.addEventListener('click', function(){
+      save.disabled = true; save.textContent='Saving\u2026'; msg.textContent='';
+      var row = { id:1, accent:accent.value, accent2:accent2.value,
+        updated_at:new Date().toISOString(), updated_by:(FC.uid&&FC.uid())||null };
+      if(state.logo_primary!==null) row.logo_primary = state.logo_primary;
+      if(state.logo_secondary!==null) row.logo_secondary = state.logo_secondary;
+      FC.sb.from('report_branding').upsert(row, {onConflict:'id'}).then(function(r2){
+        save.disabled=false; save.textContent='Save branding';
+        if(r2.error){ msg.textContent = r2.error.message || 'Could not save. Are you an instructor or admin?'; return; }
+        msg.textContent = 'Saved. Every report now carries it.';
+      });
     });
   }
 

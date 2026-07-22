@@ -19,7 +19,7 @@ MILITARY_PAGES = {
 }
 
 # Private / transactional pages: keep them out of Google's index. Everything else is indexable.
-NOINDEX = {'organizations.html', 'share.html', 'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html', 'classes.html', 'veterans-resources.html'}
+NOINDEX = {'report.html', 'organizations.html', 'share.html', 'account.html', 'plan.html', 'circles.html', 'player.html', 'checkout.html', 'enroll.html', 'login.html', 'veterans-hub.html', 'veterans-start.html', 'veterans-checkin.html', 'voice.html', 'find-a-program.html', 'classes.html', 'veterans-resources.html'}
 
 
 def _esc(s):
@@ -311,6 +311,20 @@ PAGES['index.html'] = dict(title='Know where you stand', desc='Take the free Key
 ''')
 
 # ================================================== profile.html (P2)
+PAGES['report.html'] = dict(title='Your Written Report', desc='Every dimension: what it measures, where you stand, and your first moves.', active='', mode='public', body='''
+<section class="tight" style="padding-top:36px"><div class="container">
+  <div id="rpRoot">
+    <div class="center" style="padding:80px 0">
+      <div class="eyebrow" style="margin-bottom:12px">PREPARING YOUR REPORT</div>
+      <p class="ash">One moment.</p>
+    </div>
+  </div>
+</div></section>
+<script src="assets/js/keystone-data.js"></script>
+<script src="assets/js/keystone-full.js"></script>
+<script src="assets/js/keystone-report.js"></script>
+''')
+
 PAGES['profile.html'] = dict(title='The Keystone Father Profile', desc='About twenty minutes. Four scores. One plan.', active='', mode='public', nochrome=True, body='''
 <div id="ksIntro" style="max-width:680px;margin:0 auto;padding:64px 24px 40px;text-align:center">
   <div class="eyebrow" style="margin-bottom:16px">THE KEYSTONE PROFILE</div>

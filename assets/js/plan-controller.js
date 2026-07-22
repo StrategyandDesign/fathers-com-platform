@@ -161,6 +161,8 @@
       '<div class="row wrap" style="gap:12px;margin-top:20px;align-items:center">'+
         '<a class="link ash" href="profile.html">Retake the Profile</a>'+
         '<span class="fine ash">&middot;</span>'+
+        '<a class="link ash" href="report.html">Your full report</a>'+
+        '<span class="fine ash">&middot;</span>'+
         '<a class="link ash" href="classes.html">Browse classes for this focus &rarr;</a>'+
       '</div>';
 
