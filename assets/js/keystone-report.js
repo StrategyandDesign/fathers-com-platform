@@ -143,7 +143,7 @@
   function bgPhoto(url){
     if(!url) return '';
     var clean = esc(String(url).replace(/["\\]/g,''));
-    return ' style="background-image:linear-gradient(180deg,rgba(15,32,24,.6),rgba(15,32,24,.86)),url(&quot;'+clean+'&quot;);background-size:cover;background-position:center"';
+    return ' style="background-image:linear-gradient(180deg,rgba(11,24,18,.74),rgba(11,24,18,.92)),url(&quot;'+clean+'&quot;);background-size:cover;background-position:center"';
   }
 
   function stripSvg(result){
@@ -216,7 +216,7 @@
         '<a class="rp-practical-link rp-noprint" href="class.html">Train this section &rarr;</a>'+
       '</aside>';
     var photo=brand['photo_'+sec.key];
-    var pStyle=photo ? ' style="background-image:linear-gradient(180deg,rgba(15,32,24,.28),rgba(15,32,24,.72)),url(&quot;'+esc(String(photo).replace(/["\\\\]/g,''))+'&quot;);background-size:cover;background-position:center"' : '';
+    var pStyle=photo ? ' style="background-image:linear-gradient(180deg,rgba(11,24,18,.5),rgba(11,24,18,.85)),url(&quot;'+esc(String(photo).replace(/["\\\\]/g,''))+'&quot;);background-size:cover;background-position:center"' : '';
     return '<section id="rp-sec-'+sec.key+'" class="rp-chapter '+meta.cls+'">'+
       '<div class="rp-opener '+meta.cls+'">'+
         '<div class="rp-opener-copy"><div class="rp-opener-num">'+('0'+(idx+1)).slice(-2)+'</div>'+
