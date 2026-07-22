@@ -114,6 +114,7 @@
     var fallback = { accent:'', accent2:'', logo_primary:'', logo_secondary:'', photo_dimensions:'', photo_practices:'', photo_satisfaction:'' };
     var done=false, go=function(v){ if(!done){ done=true; then(v); } };
     if(!(window.FC && FC.live && FC.ready)){ go(fallback); return; }
+    setTimeout(function(){ go(fallback); }, 2500);
     FC.ready.then(function(){
       if(!FC.sb){ return go(fallback); }
       FC.sb.from('report_branding').select('*').eq('id',1).maybeSingle().then(function(r){
@@ -353,5 +354,26 @@
   }
 
 
-  load();
+  /* Run the render only after the Supabase client has initialized. config.js and
+     supabase-client.js are loaded after this file in report.html, so window.FC
+     does not exist at parse time. Rendering synchronously here would evaluate the
+     branding gate before FC is defined and lock the report to the unbranded
+     fallback with no re-render. Deferring to DOMContentLoaded, then to FC.ready,
+     guarantees the saved branding is present on the first and only render. If the
+     client never appears (demo, no keys) or stalls, the report still renders. */
+  function boot(){
+    var started = false, run = function(){ if(!started){ started = true; load(); } };
+    if(window.FC && FC.ready && typeof FC.ready.then === 'function'){
+      FC.ready.then(run, run);
+      setTimeout(run, 2500);
+      return;
+    }
+    var tries = 0, iv = setInterval(function(){
+      if(window.FC && FC.ready && typeof FC.ready.then === 'function'){
+        clearInterval(iv); FC.ready.then(run, run); setTimeout(run, 2500);
+      } else if(++tries >= 40){ clearInterval(iv); run(); }
+    }, 50);
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', boot); }
+  else { boot(); }
 })();
