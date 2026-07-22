@@ -111,13 +111,15 @@
 
   /* ---------- branding: two logos and the highlight colors. That is it. ---------- */
   function applyBranding(then){
-    var fallback = { accent:'', accent2:'', logo_primary:'', logo_secondary:'' };
-    if(!(window.FC && FC.live)){ then(fallback); return; }
+    var fallback = { accent:'', accent2:'', logo_primary:'', logo_secondary:'', photo_dimensions:'', photo_practices:'', photo_satisfaction:'' };
+    var done=false, go=function(v){ if(!done){ done=true; then(v); } };
+    if(!(window.FC && FC.live && FC.ready)){ go(fallback); return; }
     FC.ready.then(function(){
+      if(!FC.sb){ return go(fallback); }
       FC.sb.from('report_branding').select('*').eq('id',1).maybeSingle().then(function(r){
-        then(r.data || fallback);
-      }, function(){ then(fallback); });
-    });
+        go(r && r.data ? r.data : fallback);
+      }, function(){ go(fallback); });
+    }, function(){ go(fallback); });
   }
 
   /* ---------- render ---------- */
