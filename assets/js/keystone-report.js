@@ -149,8 +149,9 @@
     return ' style="background-image:'+layers+';background-size:cover;background-position:center"';
   }
 
-  /* Scale each section opener title so it fills the width of its band instead of
-     sitting left-justified. Runs after render, after fonts load, and on resize. */
+  /* Scale each section photo caption so it sits on one line and spans the width of
+     its band instead of wrapping in a narrow left column. Capped so it stays a
+     caption, not a headline. Runs after render, after fonts load, and on resize. */
   function fitOne(el){
     el.style.whiteSpace='nowrap';
     el.style.fontSize='';
@@ -159,14 +160,14 @@
     var avail=el.clientWidth, textW=el.scrollWidth;
     if(!avail||!textW){ el.style.whiteSpace=''; el.style.fontSize=''; return; }
     var size=probe*avail/textW;
-    if(size>112) size=112;
-    if(size<30){ size=30; el.style.whiteSpace='normal'; }
+    if(size>46) size=46;
+    if(size<18){ size=18; el.style.whiteSpace='normal'; }
     el.style.fontSize=size.toFixed(1)+'px';
-    el.style.lineHeight='1.0';
+    el.style.lineHeight='1.1';
   }
-  function fitTitles(scope){
+  function fitCaptions(scope){
     var root=scope||document;
-    var t=root.querySelectorAll('.rp-opener-title');
+    var t=root.querySelectorAll('.rp-photo-theme');
     for(var i=0;i<t.length;i++) fitOne(t[i]);
   }
   var fitBound=false, fitTimer=null;
@@ -174,9 +175,9 @@
     if(fitBound) return; fitBound=true;
     window.addEventListener('resize', function(){
       if(fitTimer) clearTimeout(fitTimer);
-      fitTimer=setTimeout(function(){ fitTitles(document); }, 150);
+      fitTimer=setTimeout(function(){ fitCaptions(document); }, 150);
     });
-    if(document.fonts && document.fonts.ready){ document.fonts.ready.then(function(){ fitTitles(document); }); }
+    if(document.fonts && document.fonts.ready){ document.fonts.ready.then(function(){ fitCaptions(document); }); }
   }
 
   function stripSvg(result){
@@ -358,7 +359,7 @@
         chapters+next90+closing+
       '</div>';
 
-      fitTitles(root); bindFitHooks();
+      fitCaptions(root); bindFitHooks();
 
       var pb=document.getElementById('rpPrint');
       if(pb) pb.addEventListener('click', function(){ window.print(); });

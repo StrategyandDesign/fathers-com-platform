@@ -680,7 +680,7 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
   font-family:var(--font-body,"Poppins",system-ui,sans-serif);font-size:16px;line-height:1.58}
 
 /* dark grey page frame behind the white report (report page only) */
-section.tight:has(#rpRoot){background:#383838;padding-bottom:64px}
+section.tight:has(#rpRoot){background:#555555;padding-bottom:64px}
 .container:has(#rpRoot){position:relative}
 .rp-doc *{box-sizing:border-box}
 .rp-doc h1,.rp-doc h2,.rp-doc h3{font-family:var(--font-display);font-weight:600;line-height:1.06;letter-spacing:-.014em;margin:0}
@@ -776,11 +776,11 @@ section.tight:has(#rpRoot){background:#383838;padding-bottom:64px}
 .rp-opener{position:relative;background:var(--rp-acc-deep);color:#FFFFFF;overflow:hidden}
 .rp-opener-copy{padding:clamp(40px,5.5vw,64px) clamp(24px,5.5vw,64px) clamp(28px,3.5vw,38px)}
 .rp-opener-num{font-family:var(--font-mono);font-size:12px;letter-spacing:.2em;color:rgba(255,255,255,.75);margin-bottom:16px}
-.rp-opener-title{font-size:clamp(38px,7vw,68px);font-weight:600;color:#FFFFFF;letter-spacing:-.022em;line-height:1.0;text-wrap:balance}
+.rp-opener-title{font-size:clamp(34px,4.6vw,54px);font-weight:600;color:#FFFFFF;letter-spacing:-.022em;line-height:1.02;text-wrap:balance}
 .rp-opener-intro{margin-top:18px;max-width:60ch;color:rgba(255,255,255,.9);font-size:16px;line-height:1.55}
-.rp-photo{position:relative;margin:0;min-height:190px;background:linear-gradient(140deg,var(--rp-acc) 0%,var(--rp-acc-deep) 96%);overflow:hidden;display:flex;align-items:flex-end}
+.rp-photo{position:relative;margin:0;min-height:190px;background:linear-gradient(140deg,var(--rp-acc) 0%,var(--rp-acc-deep) 96%);overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
 .rp-photo::before{content:"";position:absolute;inset:0;background:radial-gradient(90% 120% at 12% 0%,rgba(255,255,255,.14),transparent 55%)}
-.rp-photo-theme{position:relative;z-index:2;font-family:var(--font-display);font-weight:500;font-size:clamp(20px,2.6vw,27px);line-height:1.2;color:#FFFFFF;padding:clamp(22px,4vw,34px);max-width:22ch;letter-spacing:-.01em;text-shadow:0 1px 12px rgba(0,0,0,.35)}
+.rp-photo-theme{position:relative;z-index:2;font-family:var(--font-display);font-weight:500;font-size:clamp(24px,3.5vw,40px);line-height:1.1;color:#FFFFFF;padding:clamp(22px,4vw,34px);letter-spacing:-.01em;text-shadow:0 1px 12px rgba(0,0,0,.35)}
 .rp-photo-slot{position:absolute;top:14px;right:14px;z-index:3;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82);background:rgba(0,0,0,.28);padding:5px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.28)}
 
 /* practical */
@@ -873,10 +873,10 @@ section.tight:has(#rpRoot){background:#383838;padding-bottom:64px}
   .rp-chapter{margin-top:5mm}
   .rp-opener{border-radius:10px;margin-bottom:4mm;break-inside:avoid}
   .rp-opener-copy{padding:4mm 8mm 3mm}
-  .rp-opener-title{font-size:25px!important;white-space:normal!important}
+  .rp-opener-title{font-size:25px}
   .rp-opener-intro{margin-top:2mm;font-size:10.5pt}
   .rp-photo{min-height:15mm}
-  .rp-photo-theme{padding:5mm 8mm;font-size:15pt}
+  .rp-photo-theme{padding:5mm 8mm;font-size:15pt!important;white-space:normal!important}
   .rp-practical{margin:3.5mm 0 0;padding:4mm 6mm}
   .rp-glance,.rp-stats{margin:3.5mm 0 0;gap:3mm;grid-template-columns:repeat(3,1fr)}
   .rp-cover-main{grid-template-columns:1fr}
