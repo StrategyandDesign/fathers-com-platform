@@ -864,24 +864,50 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 @media print{
   nav.nav, footer, .rp-noprint, .themeswitch, .toast{display:none!important}
   html, body{background:#fff!important}
-  body{font-size:11pt}
+  body{font-size:10.5pt;line-height:1.5}
   .tight:has(#rpRoot), section:has(#rpRoot){padding:0!important}
   .container:has(#rpRoot){max-width:none!important;padding:0!important;width:100%!important}
   .rp-doc{--rp-paper:#fff;max-width:none;margin:0;border-radius:0;box-shadow:none}
   .rp-doc *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .rp-cover{border-radius:12px;margin-bottom:7mm;padding:15mm 13mm}
+  .rp-cover{border-radius:10px;margin-bottom:4mm;padding:7mm 12mm;break-inside:avoid}
+  .rp-cover-title{font-size:33px}
+  .rp-cover-thesis{margin-top:3mm;font-size:13pt}
   .rp-contents{display:none!important}
   .rp-inner{padding:0}
-  .rp-chapter{margin-top:0;break-before:page}
-  .rp-opener{border-radius:12px;margin-bottom:6mm}
-  .rp-next90{margin:8mm 0 0;break-inside:avoid}
-  .rp-closing{margin-top:8mm;border-radius:12px;break-inside:avoid}
-  .rp-colophon{padding:6mm 0 0}
+  /* chapters flow continuously; do NOT force each onto a fresh page */
+  .rp-chapter{margin-top:5mm}
+  .rp-opener{border-radius:10px;margin-bottom:4mm;break-inside:avoid}
+  .rp-opener-copy{padding:4mm 8mm 3mm}
+  .rp-opener-title{font-size:25px}
+  .rp-opener-intro{margin-top:2mm;font-size:10.5pt}
+  .rp-photo{min-height:15mm}
+  .rp-photo-theme{padding:5mm 8mm;font-size:15pt}
+  .rp-practical{margin:3.5mm 0 0;padding:4mm 6mm}
+  .rp-glance,.rp-stats{margin:3.5mm 0 0;gap:3mm;grid-template-columns:repeat(3,1fr)}
+  .rp-cover-main{grid-template-columns:1fr auto}
+  .rp-gcard{padding:3.5mm 4.5mm}
+  .rp-gbig{font-size:20px}
+  .rp-gline{margin-top:2mm;font-size:9.5pt;line-height:1.4}
+  .rp-stat{padding:4mm 4.5mm}
+  .rp-stat-n{font-size:30px}
+  .rp-shape{margin:4mm 0 0}
+  .rp-howto{margin:3.5mm 0 0;padding:3.5mm 5mm}
+  .rp-scale{padding:2.6mm 0}
+  .rp-read{margin-top:2mm;font-size:11pt}
+  .rp-about{margin-top:1.5mm}
+  .rp-moves{margin-top:2.5mm;padding:3mm 4.5mm}
+  .rp-firstmove{margin-top:2.5mm;padding:3mm 4mm}
+  .rp-move{padding:1mm 0}
+  .rp-resources{margin-top:4mm;padding-top:3mm}
+  .rp-next90{margin:5mm 0 0;padding:7mm 8mm}
+  .rp-closing{margin-top:5mm;border-radius:10px;min-height:auto;padding:9mm 10mm}
+  .rp-colophon{padding:5mm 0 0}
+  /* keep small units whole; let the document flow across pages */
   .rp-scale,.rp-gcard,.rp-stat,.rp-moves,.rp-firstmove,.rp-howto,.rp-shape,.rp-practical{break-inside:avoid}
   .rp-glance,.rp-stats{break-inside:avoid}
-  .rp-opener{break-after:avoid}
+  .rp-next90,.rp-closing,.rp-colophon{break-inside:avoid}
   .rp-printonly{display:block}
-  @page{size:Letter;margin:13mm 14mm}
+  @page{size:Letter;margin:12mm 13mm}
 }
 
 @media(max-width:820px){

@@ -49,7 +49,7 @@
 
 <div class="dash-head"><h1 class="d-36">Studio</h1><p class="lead">Build courses and assessments. Publish when ready.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="studio-courses">--</div><div class="glance-sub">courses you own</div></div><div class="glance-card"><div class="glance-lbl">PUBLISHED</div><div class="glance-big" data-glance="studio-live">--</div><div class="glance-sub">live to members</div></div><div class="glance-card"><div class="glance-lbl">IN DRAFT</div><div class="glance-big" data-glance="studio-draft">--</div><div class="glance-sub">not yet published</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="studio-next">Finish a draft, or add lessons to a published course to keep it fresh.</div></div></div>
 <div data-tabs>
-  <div class="tabs"><button class="active">Courses</button><button>Assessments</button></div>
+  <div class="tabs"><button class="active">Courses</button><button>Assessments</button><button>Report</button></div>
 
   <div class="tabpanel active">
     <div class="row between" style="margin-bottom:16px">
@@ -68,9 +68,9 @@
     <div id="instr-list">Loading…</div>
     <div id="instr-editor" class="card" style="display:none;margin-top:20px"></div>
   </div>
-</div>
 
-<div class="card" id="rb-card" style="margin-top:28px;padding:26px">
+  <div class="tabpanel">
+<div class="card" id="rb-card" style="padding:26px">
   <div class="eyebrow" style="margin-bottom:6px">REPORT BRANDING</div>
   <h3 style="margin-bottom:6px">The written report, in your program&rsquo;s colors</h3>
   <p class="fine" style="color:var(--ash);margin-bottom:20px;max-width:64ch">This is what a course creator can change on the participant report: two logos, the highlight colors, and one photo per section. Changes apply to every report the moment you save.</p>
@@ -133,6 +133,8 @@
   <div class="row" style="gap:14px;margin-top:24px;align-items:center">
     <button class="btn btn-yellow btn-sm" id="rb-save">Save branding</button>
     <span class="fine" id="rb-msg"></span>
+  </div>
+</div>
   </div>
 </div>
 </main>
