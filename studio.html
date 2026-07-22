@@ -73,7 +73,7 @@
 <div class="card" id="rb-card" style="margin-top:28px;padding:26px">
   <div class="eyebrow" style="margin-bottom:6px">REPORT BRANDING</div>
   <h3 style="margin-bottom:6px">The written report, in your program&rsquo;s colors</h3>
-  <p class="fine" style="color:var(--ash);margin-bottom:20px;max-width:64ch">This is everything a course creator can change on the participant report: two logos and the highlight colors. Nothing else moves. Changes apply to every report the moment you save.</p>
+  <p class="fine" style="color:var(--ash);margin-bottom:20px;max-width:64ch">This is what a course creator can change on the participant report: two logos, the highlight colors, and one photo per section. Changes apply to every report the moment you save.</p>
   <div class="grid-2" style="gap:20px;align-items:start">
     <div>
       <div class="eyebrow" style="font-size:10px;margin-bottom:8px">PRIMARY LOGO</div>
@@ -99,7 +99,38 @@
     <label class="fine" style="display:flex;align-items:center;gap:10px">SECOND HIGHLIGHT <input type="color" id="rb-accent2" value="#B08D57" style="width:44px;height:30px;border:1px solid var(--hairline-strong);border-radius:6px;background:none;padding:2px"></label>
     <a class="link" href="report.html" target="_blank" rel="noopener">Preview the report &rarr;</a>
   </div>
-  <div class="row" style="gap:14px;margin-top:20px;align-items:center">
+  <div class="eyebrow" style="font-size:10px;margin:26px 0 8px">SECTION PHOTOS (OPTIONAL)</div>
+  <p class="fine" style="color:var(--ash);margin-bottom:14px;max-width:64ch">One image across the top of each chapter. A blank slot shows a designed default, so you can add these anytime. Use web-optimized images. Max 500 KB each.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px">
+    <div>
+      <div class="eyebrow" style="font-size:10px;margin-bottom:8px">DIMENSIONS</div>
+      <div style="border:1px dashed var(--hairline-strong);border-radius:8px;min-height:92px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:8px;background:var(--coal)">
+        <img id="rb-pprev-dim" alt="" style="display:none;width:100%;height:92px;object-fit:cover">
+        <span id="rb-pempty-dim" class="fine" style="color:var(--ash);padding:12px;text-align:center">JPG, PNG, or WebP. Max 500 KB.</span>
+      </div>
+      <input type="file" id="rb-photo-dim" accept="image/png,image/jpeg,image/webp" class="fine">
+      <button class="link ash fine" id="rb-pclear-dim" type="button" style="margin-left:8px;background:none;border:0;cursor:pointer">Remove</button>
+    </div>
+    <div>
+      <div class="eyebrow" style="font-size:10px;margin-bottom:8px">PRACTICES</div>
+      <div style="border:1px dashed var(--hairline-strong);border-radius:8px;min-height:92px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:8px;background:var(--coal)">
+        <img id="rb-pprev-prac" alt="" style="display:none;width:100%;height:92px;object-fit:cover">
+        <span id="rb-pempty-prac" class="fine" style="color:var(--ash);padding:12px;text-align:center">JPG, PNG, or WebP. Max 500 KB.</span>
+      </div>
+      <input type="file" id="rb-photo-prac" accept="image/png,image/jpeg,image/webp" class="fine">
+      <button class="link ash fine" id="rb-pclear-prac" type="button" style="margin-left:8px;background:none;border:0;cursor:pointer">Remove</button>
+    </div>
+    <div>
+      <div class="eyebrow" style="font-size:10px;margin-bottom:8px">SATISFACTION</div>
+      <div style="border:1px dashed var(--hairline-strong);border-radius:8px;min-height:92px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:8px;background:var(--coal)">
+        <img id="rb-pprev-sat" alt="" style="display:none;width:100%;height:92px;object-fit:cover">
+        <span id="rb-pempty-sat" class="fine" style="color:var(--ash);padding:12px;text-align:center">JPG, PNG, or WebP. Max 500 KB.</span>
+      </div>
+      <input type="file" id="rb-photo-sat" accept="image/png,image/jpeg,image/webp" class="fine">
+      <button class="link ash fine" id="rb-pclear-sat" type="button" style="margin-left:8px;background:none;border:0;cursor:pointer">Remove</button>
+    </div>
+  </div>
+  <div class="row" style="gap:14px;margin-top:24px;align-items:center">
     <button class="btn btn-yellow btn-sm" id="rb-save">Save branding</button>
     <span class="fine" id="rb-msg"></span>
   </div>
