@@ -137,13 +137,46 @@
   };
   var BAND_TIER = {'Strong':4,'Solid':3,'Developing':2,'Building':1,'A starting point':0};
 
-  /* Optional full-bleed background photo for the cover and the closing panel. A
-     dark scrim keeps the display type readable. Empty returns no inline style, so
+  /* Optional full-bleed background photo for the cover and the closing panel.
+     scrim defaults on (a dark gradient keeps the display type readable); pass
+     false to use the raw image with no overlay. Empty returns no inline style, so
      the panel keeps its solid pine background. */
-  function bgPhoto(url){
+  function bgPhoto(url, scrim){
     if(!url) return '';
     var clean = esc(String(url).replace(/["\\]/g,''));
-    return ' style="background-image:linear-gradient(180deg,rgba(11,24,18,.74),rgba(11,24,18,.92)),url(&quot;'+clean+'&quot;);background-size:cover;background-position:center"';
+    var img = 'url(&quot;'+clean+'&quot;)';
+    var layers = (scrim===false) ? img : 'linear-gradient(180deg,rgba(11,24,18,.74),rgba(11,24,18,.92)),'+img;
+    return ' style="background-image:'+layers+';background-size:cover;background-position:center"';
+  }
+
+  /* Scale each section opener title so it fills the width of its band instead of
+     sitting left-justified. Runs after render, after fonts load, and on resize. */
+  function fitOne(el){
+    el.style.whiteSpace='nowrap';
+    el.style.fontSize='';
+    var probe=200;
+    el.style.fontSize=probe+'px';
+    var avail=el.clientWidth, textW=el.scrollWidth;
+    if(!avail||!textW){ el.style.whiteSpace=''; el.style.fontSize=''; return; }
+    var size=probe*avail/textW;
+    if(size>112) size=112;
+    if(size<30){ size=30; el.style.whiteSpace='normal'; }
+    el.style.fontSize=size.toFixed(1)+'px';
+    el.style.lineHeight='1.0';
+  }
+  function fitTitles(scope){
+    var root=scope||document;
+    var t=root.querySelectorAll('.rp-opener-title');
+    for(var i=0;i<t.length;i++) fitOne(t[i]);
+  }
+  var fitBound=false, fitTimer=null;
+  function bindFitHooks(){
+    if(fitBound) return; fitBound=true;
+    window.addEventListener('resize', function(){
+      if(fitTimer) clearTimeout(fitTimer);
+      fitTimer=setTimeout(function(){ fitTitles(document); }, 150);
+    });
+    if(document.fonts && document.fonts.ready){ document.fonts.ready.then(function(){ fitTitles(document); }); }
   }
 
   function stripSvg(result){
@@ -313,7 +346,7 @@
         '<div class="rp-colo-lines">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit, since 1990.<br>Your results are yours alone. We never share them.</div></footer>';
 
       root.innerHTML = '<div class="rp-doc">'+
-        '<header class="rp-cover"'+bgPhoto(brand.photo_cover)+'>'+cobrand+
+        '<header class="rp-cover"'+bgPhoto(brand.photo_cover, false)+'>'+cobrand+
           '<div class="rp-cover-main"><div>'+
             '<div class="rp-eyebrow rp-cover-eyebrow">Your written report</div>'+
             '<h1 class="rp-cover-title">'+esc(title)+'</h1>'+
@@ -324,6 +357,8 @@
         '<div class="rp-inner">'+stateLine+actions+glance+stats+shape+howto+'</div>'+
         chapters+next90+closing+
       '</div>';
+
+      fitTitles(root); bindFitHooks();
 
       var pb=document.getElementById('rpPrint');
       if(pb) pb.addEventListener('click', function(){ window.print(); });
