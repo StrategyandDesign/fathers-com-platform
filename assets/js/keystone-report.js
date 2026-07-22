@@ -137,21 +137,13 @@
   };
   var BAND_TIER = {'Strong':4,'Solid':3,'Developing':2,'Building':1,'A starting point':0};
 
-  function archSvg(variant){
-    var cx=150,cy=150,Ro=120,Ri=78,pierH=40;
-    function pt(R,d){var r=d*Math.PI/180;return [cx+R*Math.cos(r), cy-R*Math.sin(r)];}
-    var o0=pt(Ro,180),o1=pt(Ro,0),i1=pt(Ri,0),i0=pt(Ri,180);
-    var band='M '+o0[0].toFixed(1)+' '+o0[1].toFixed(1)+' A '+Ro+' '+Ro+' 0 0 0 '+o1[0].toFixed(1)+' '+o1[1].toFixed(1)+
-             ' L '+i1[0].toFixed(1)+' '+i1[1].toFixed(1)+' A '+Ri+' '+Ri+' 0 0 1 '+i0[0].toFixed(1)+' '+i0[1].toFixed(1)+' Z';
-    var rad='';
-    for(var d=20; d<180; d+=20){var pi=pt(Ri,d),po=pt(Ro,d);
-      rad+='<line x1="'+pi[0].toFixed(1)+'" y1="'+pi[1].toFixed(1)+'" x2="'+po[0].toFixed(1)+'" y2="'+po[1].toFixed(1)+'" class="rp-ka-line"/>';}
-    var ka=pt(Ri,100),kb=pt(Ri,80),kc=pt(Ro,80),kd=pt(Ro,100);
-    var kp=[ka,kb,kc,kd].map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1);}).join(' ');
-    var piers='<rect x="'+(cx-Ro).toFixed(1)+'" y="'+cy+'" width="'+(Ro-Ri).toFixed(1)+'" height="'+pierH+'" class="rp-ka-pier"/>'+
-              '<rect x="'+(cx+Ri).toFixed(1)+'" y="'+cy+'" width="'+(Ro-Ri).toFixed(1)+'" height="'+pierH+'" class="rp-ka-pier"/>';
-    var ground='<line x1="'+(cx-Ro-14).toFixed(1)+'" y1="'+(cy+pierH)+'" x2="'+(cx+Ro+14).toFixed(1)+'" y2="'+(cy+pierH)+'" class="rp-ka-ground"/>';
-    return '<svg class="rp-ka rp-ka-'+variant+'" viewBox="0 0 300 210" fill="none" aria-hidden="true"><path d="'+band+'" class="rp-ka-band"/>'+rad+'<polygon points="'+kp+'" class="rp-ka-key"/>'+piers+ground+'</svg>';
+  /* Optional full-bleed background photo for the cover and the closing panel. A
+     dark scrim keeps the display type readable. Empty returns no inline style, so
+     the panel keeps its solid pine background. */
+  function bgPhoto(url){
+    if(!url) return '';
+    var clean = esc(String(url).replace(/["\\]/g,''));
+    return ' style="background-image:linear-gradient(180deg,rgba(15,32,24,.6),rgba(15,32,24,.86)),url(&quot;'+clean+'&quot;);background-size:cover;background-position:center"';
   }
 
   function stripSvg(result){
@@ -230,7 +222,7 @@
         '<div class="rp-opener-copy"><div class="rp-opener-num">'+('0'+(idx+1)).slice(-2)+'</div>'+
           '<h2 class="rp-opener-title">'+esc(sec.title)+'</h2>'+
           '<p class="rp-opener-intro">'+esc(SEC_INTRO[sec.key]||'')+'</p></div>'+
-        '<figure class="rp-photo '+meta.cls+'"'+pStyle+'>'+archSvg('ghost')+
+        '<figure class="rp-photo '+meta.cls+'"'+pStyle+'>'+
           '<figcaption class="rp-photo-theme">'+esc(meta.theme)+'</figcaption>'+
           '<span class="rp-photo-slot rp-noprint">Photo slot &middot; set in Studio</span></figure>'+
       '</div>'+
@@ -314,20 +306,20 @@
         '<p class="rp-noprint" style="margin:24px 0 0"><a class="rp-btn rp-btn-yellow" href="'+(state==='sample'?'profile.html':'plan.html')+'">'+(state==='sample'?'Start your ninety-day plan':'Open my ninety-day plan')+'</a></p>'+
         '<p class="rp-printonly rp-plan-url">Your live plan: fathers-com-platform.vercel.app/plan.html</p></section>';
 
-      var closing='<section class="rp-closing">'+archSvg('ghost')+
+      var closing='<section class="rp-closing"'+bgPhoto(brand.photo_footer)+'>'+
         '<p class="rp-closing-line">You were never the problem to solve. You are the keystone. Now you build.</p></section>'+
         '<footer class="rp-colophon"><div class="rp-colo-brand"><span class="rp-colo-word">Fathers.com</span>'+
           (brand.logo_secondary?'<span class="rp-colo-div"></span><img class="rp-logo rp-colo-logo" src="'+esc(brand.logo_secondary)+'" alt="Partner logo">':'')+'</div>'+
         '<div class="rp-colo-lines">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit, since 1990.<br>Your results are yours alone. We never share them.</div></footer>';
 
       root.innerHTML = '<div class="rp-doc">'+
-        '<header class="rp-cover">'+cobrand+
+        '<header class="rp-cover"'+bgPhoto(brand.photo_cover)+'>'+cobrand+
           '<div class="rp-cover-main"><div>'+
             '<div class="rp-eyebrow rp-cover-eyebrow">Your written report</div>'+
             '<h1 class="rp-cover-title">'+esc(title)+'</h1>'+
             '<p class="rp-cover-sub">Prepared from your answers &middot; completed '+esc(fmtDate(result.completed_at))+'</p>'+
             '<p class="rp-cover-thesis">A mirror of how you father, and the one move that changes the most.</p>'+
-          '</div>'+archSvg('cover')+'</div></header>'+
+          '</div></div></header>'+
         contents+
         '<div class="rp-inner">'+stateLine+actions+glance+stats+shape+howto+'</div>'+
         chapters+next90+closing+

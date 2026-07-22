@@ -28,7 +28,7 @@
     var clears = {1:el('rb-clear1'), 2:el('rb-clear2')};
     var accent = el('rb-accent'), accent2 = el('rb-accent2');
     var save = el('rb-save'), msg = el('rb-msg');
-    var state = { logo_primary:null, logo_secondary:null, photo_dimensions:null, photo_practices:null, photo_satisfaction:null };
+    var state = { logo_primary:null, logo_secondary:null, photo_dimensions:null, photo_practices:null, photo_satisfaction:null, photo_cover:null, photo_footer:null };
 
     function show(n, dataUrl){
       if(dataUrl){ prev[n].src = dataUrl; prev[n].style.display=''; empty[n].style.display='none'; }
@@ -46,11 +46,11 @@
     }
     wire(1,'logo_primary'); wire(2,'logo_secondary');
 
-    var pmap = {dim:'photo_dimensions', prac:'photo_practices', sat:'photo_satisfaction'};
-    var pprev = {dim:el('rb-pprev-dim'), prac:el('rb-pprev-prac'), sat:el('rb-pprev-sat')};
-    var pempty = {dim:el('rb-pempty-dim'), prac:el('rb-pempty-prac'), sat:el('rb-pempty-sat')};
-    var pfiles = {dim:el('rb-photo-dim'), prac:el('rb-photo-prac'), sat:el('rb-photo-sat')};
-    var pclear = {dim:el('rb-pclear-dim'), prac:el('rb-pclear-prac'), sat:el('rb-pclear-sat')};
+    var pmap = {dim:'photo_dimensions', prac:'photo_practices', sat:'photo_satisfaction', cover:'photo_cover', footer:'photo_footer'};
+    var pprev = {dim:el('rb-pprev-dim'), prac:el('rb-pprev-prac'), sat:el('rb-pprev-sat'), cover:el('rb-pprev-cover'), footer:el('rb-pprev-footer')};
+    var pempty = {dim:el('rb-pempty-dim'), prac:el('rb-pempty-prac'), sat:el('rb-pempty-sat'), cover:el('rb-pempty-cover'), footer:el('rb-pempty-footer')};
+    var pfiles = {dim:el('rb-photo-dim'), prac:el('rb-photo-prac'), sat:el('rb-photo-sat'), cover:el('rb-photo-cover'), footer:el('rb-photo-footer')};
+    var pclear = {dim:el('rb-pclear-dim'), prac:el('rb-pclear-prac'), sat:el('rb-pclear-sat'), cover:el('rb-pclear-cover'), footer:el('rb-pclear-footer')};
     function showP(k, url){
       if(!pprev[k]) return;
       if(url){ pprev[k].src=url; pprev[k].style.display=''; pempty[k].style.display='none'; }
@@ -67,7 +67,7 @@
       });
       pclear[k].addEventListener('click', function(){ state[pmap[k]]=''; pfiles[k].value=''; showP(k, null); });
     }
-    wireP('dim'); wireP('prac'); wireP('sat');
+    wireP('dim'); wireP('prac'); wireP('sat'); wireP('cover'); wireP('footer');
 
     if(isDemo){
       save.disabled = true;
@@ -83,6 +83,8 @@
       if(b.photo_dimensions){ state.photo_dimensions=b.photo_dimensions; showP('dim', b.photo_dimensions); }
       if(b.photo_practices){ state.photo_practices=b.photo_practices; showP('prac', b.photo_practices); }
       if(b.photo_satisfaction){ state.photo_satisfaction=b.photo_satisfaction; showP('sat', b.photo_satisfaction); }
+      if(b.photo_cover){ state.photo_cover=b.photo_cover; showP('cover', b.photo_cover); }
+      if(b.photo_footer){ state.photo_footer=b.photo_footer; showP('footer', b.photo_footer); }
     }, function(){});
     save.addEventListener('click', function(){
       save.disabled = true; save.textContent='Saving\u2026'; msg.textContent='';
@@ -93,6 +95,8 @@
       if(state.photo_dimensions!==null) row.photo_dimensions = state.photo_dimensions;
       if(state.photo_practices!==null) row.photo_practices = state.photo_practices;
       if(state.photo_satisfaction!==null) row.photo_satisfaction = state.photo_satisfaction;
+      if(state.photo_cover!==null) row.photo_cover = state.photo_cover;
+      if(state.photo_footer!==null) row.photo_footer = state.photo_footer;
       FC.sb.from('report_branding').upsert(row, {onConflict:'id'}).then(function(r2){
         save.disabled=false; save.textContent='Save branding';
         if(r2.error){ msg.textContent = r2.error.message || 'Could not save. Are you an instructor or admin?'; return; }
