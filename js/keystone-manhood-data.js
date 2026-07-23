@@ -51,7 +51,10 @@ window.KEYSTONE_MANHOOD = {
   title: 'The Keystone Manhood Profile',
   description: 'A mirror of how you carry yourself, and the one move that changes the most.',
 
-  version: '1.0-draft',
+  version: '1.0',
+
+  // Released to participants. Released is not the same as calibrated: see below.
+  released: true,
 
   /* Norm-referenced scoring requires norms. There are none yet, so scores are
      computed against the range of the scale itself. The scorer reads this. */
@@ -66,10 +69,25 @@ window.KEYSTONE_MANHOOD = {
   subject_noun: 'your life as a man',
 
   calibration: {
-    status: 'pending',
-    blocking_gate: 'Dr. Ken Canfield psychometric sign-off',
+    // Content validity is cleared. The remaining steps are empirical and cannot
+    // be cleared by expert review, only by data. Until step 5 is done this
+    // instrument has no norm group and must never be described as if it does.
+    status: 'content_validity_cleared',
+    content_validity: {
+      cleared_by: 'Dr. Ken Canfield',
+      scope: 'Review of all 128 items against the I-CAN dimensions, the Seven Secrets, and The Heart of a Father.',
+      note: 'Establishes that the instrument measures what it claims. Does not establish reliability, factor structure, or norms.'
+    },
+    blocking_gate: null,
+    remaining: [
+      'Cognitive pretest',
+      'Pilot for reliability (target alpha >=.80)',
+      'Factor structure (EFA then CFA)',
+      'Norming (n>=1000) before any norm-referenced claim',
+      'Differential item functioning across the three populations'
+    ],
     plan: [
-      'Content validity. Dr. Canfield reviews all 128 items against his framework and cuts or rewrites.',
+      'DONE. Content validity. Dr. Canfield reviewed all 128 items against his framework.',
       'Cognitive pretest with 8 to 12 men drawn from the three target populations, confirming each item is understood as intended.',
       'Pilot at n>=250 across partner sites for item analysis: item-total correlations, floor and ceiling effects, Cronbach alpha per scale. Target alpha >=.80, matching the Father Profile range of .80 to .87.',
       'Exploratory factor analysis to test whether the three-section structure holds, then confirmatory factor analysis on a fresh sample.',
@@ -362,4 +380,39 @@ window.KEYSTONE_MANHOOD = {
       ]
     }
   ]
+};
+
+/* Per-scale results copy for THIS instrument. The runner used to read a single
+   father-specific library keyed by scale name. Because this instrument shares
+   several scale keys with the Father Profile, a man taking the Manhood Profile
+   was shown copy about his kids. Every instrument now carries its own copy.
+   Voice matches the father set: blunt, short, no clinical language, no shame,
+   and no assumption that he has children, a wife, or a job. */
+window.KEYSTONE_MANHOOD.scale_copy = {
+  presence:{s:"You show up. People know you are actually there.",g:"Being present is the whole game, and it is the thing to build first.",m:["When you walk in, your phone stays in your pocket for ten minutes.","Put one standing time with someone who matters on the calendar this week.","Before you talk about your day, ask about theirs."]},
+  consistency:{s:"You are the same man twice. People can plan around you.",g:"People trust what repeats. The fix is the same thing, kept, again and again.",m:["Tell one person the next time they will see you, and keep it.","Pick one promise this week and do not renegotiate it.","If your mood is bad, say so out loud instead of letting it set the tone."]},
+  awareness:{s:"You know yourself, and you notice other people.",g:"Awareness is a habit, not a talent. It grows by asking.",m:["Name what you are feeling once a day, even just to yourself.","Ask one person how they are actually doing, then wait.","When something sets you off, write down what happened right before."]},
+  nurturance:{s:"You are warm. People come to you when it is hard.",g:"Warmth is a practice. Say the thing you assume people already know.",m:["Tell one person what you appreciate about them, out loud.","When someone brings you bad news, thank them for telling you.","Do one small thing that makes someone's day easier, without mentioning it."]},
+  commitment:{s:"You stay. The people who depend on you know it.",g:"Commitment shows up on ordinary days, not big ones.",m:["Do one thing you said you would do, today, before anything else.","Call the person you have been meaning to call.","When you want to quit on someone, wait a day before deciding."]},
+  active_listening:{s:"You listen. People feel heard when they talk to you.",g:"Listening is not waiting. Let people finish before you answer.",m:["In your next hard conversation, ask a question before you give an opinion.","Let one silence sit for three seconds before you fill it.","Repeat back what you heard before you respond to it."]},
+  work_contribution:{s:"Your work matters to you, and you carry your load.",g:"Work you respect changes how you carry everything else.",m:["Finish one thing you have been avoiding.","Own one mistake out loud this week, without explaining it away.","Name what your work is actually for."]},
+  emotional_regulation:{s:"You keep your head. Your anger does not run the room.",g:"Regulation is a skill you can drill. Buy yourself a few seconds.",m:["When you feel it rise, take one breath before speaking.","Leave the room instead of raising your voice.","Name the feeling to yourself before you act on it."]},
+  legacy_and_planning:{s:"You think past this week. You are building something.",g:"A long view turns good intentions into a direction.",m:["Write down one thing you want to be true in five years.","Tell someone what you are building and why.","Take one step this week that only pays off later."]},
+  flourishing:{s:"You are growing, and you have people you can be honest with.",g:"You cannot pour from empty. Tending yourself is part of the job.",m:["Do one thing this week that is only for your own health.","Tell one person something true that you have been carrying.","Read, train, or learn one thing on purpose."]},
+  modeling:{s:"You live what you say. Someone could pattern himself after you.",g:"The example is the message. Close one gap between what you say and do.",m:["Pick one value you claim and act on it visibly this week.","Apologize where you fell short of your own standard.","Do the right thing once when no one would know."]},
+  freedom_of_expression:{s:"People can disagree with you without paying for it.",g:"Safety to speak is built by how you take the first hard thing.",m:["Ask someone what you are getting wrong, and just listen.","Say I was wrong once this week without adding but.","When criticized, ask a question instead of defending."]},
+  knowing_my_people:{s:"You know what the people close to you are carrying.",g:"Knowing people is upkeep, not a one-time thing.",m:["Ask one person what they are hoping for right now.","Learn the name of someone important in their life.","Notice one thing that changed for them and mention it."]},
+  financial_provision:{s:"You meet what you owe. People can count on that.",g:"Money handled openly builds trust faster than money handled well.",m:["Pay one obligation before it is due.","Tell the person it affects where things actually stand.","Write down what next month looks like."]},
+  learning_growth:{s:"You are still learning on purpose.",g:"Staying teachable is what keeps a man useful.",m:["Ask for help with one thing you do not know how to do.","Take one piece of correction and act on it this week.","Learn one skill that makes you more useful to someone."]},
+  seeking_counsel:{s:"You talk decisions through before you make them.",g:"Counsel costs nothing and catches what you cannot see.",m:["Run one decision past someone you trust before you commit.","Ask someone who will disagree with you.","Work out one disagreement instead of going quiet."]},
+  handling_crises:{s:"You are steady when things go wrong. People turn to you.",g:"Steadiness is decided before the crisis, not during it.",m:["Decide now what you do first when something goes wrong.","In the next setback, say out loud what you know and what you do not.","Help one person feel safe before you fix anything."]},
+  showing_affection:{s:"People know they matter to you, because you tell them.",g:"Warmth said out loud lands differently than warmth assumed.",m:["Tell one person you are glad they are in your life.","Say thank you for something small and specific.","Be warm before you are useful, once this week."]},
+  spiritual_moral_grounding:{s:"You live by something you could explain, and you practice it.",g:"A code you can name is a code you can keep.",m:["Say out loud what you believe and why, to one person.","Face one thing you have been avoiding about yourself.","Give ten minutes to whatever steadies you."]},
+  time_commitment:{s:"You give your time to the people who need it.",g:"Time is the one thing you cannot fake giving.",m:["Put one person on the calendar and protect it.","Be unhurried with someone for fifteen minutes.","Say no to one thing so you can say yes to someone."]},
+  giving_receiving_guidance:{s:"You guide without controlling, and you let others guide you.",g:"Being mentored is as telling as mentoring.",m:["Ask an older or wiser man one real question.","Correct someone this week without shaming him.","Offer one hour to someone coming up behind you."]},
+  closest_relationship:{s:"You tend your closest relationship instead of coasting on it.",g:"The closest relationship gets the leftovers unless you decide otherwise.",m:["Speak well of that person when they are not in the room.","Settle one thing you have been letting sit.","Give them your full attention for one conversation."]},
+  childhood_satisfaction:{s:"You have looked honestly at how you were raised.",g:"Your upbringing had gifts and gaps, like most. Naming them is the first real step.",m:["Write down one thing you want to keep from how you were raised.","Write down one thing you intend to do differently.","Tell one person what you are still carrying from back then."]},
+  manhood_satisfaction:{s:"You are at peace with the man you are becoming.",g:"Confidence grows from small wins. Stack a few and it climbs.",m:["Notice one thing you handled well this week.","Ask someone who knows you what you are good at.","Keep one small promise to yourself and let it count."]},
+  leadership_satisfaction:{s:"People follow you because you have earned it.",g:"Influence is trust spent well. It is rebuilt in small keeps.",m:["Make one decision clearly instead of leaving it open.","Give credit publicly for something that was not yours.","Ask the people you lead what you should stop doing."]},
+  relationship_satisfaction:{s:"The people close to you actually know you.",g:"Being known takes telling. Let someone further in.",m:["Tell one person something true you usually keep back.","Ask a friend how they are, then ask again.","Reach out to someone you have let drift."]},
 };
