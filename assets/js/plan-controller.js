@@ -75,32 +75,49 @@
 
     var m = computeProgress(plan, week);
 
-    // 1. Compact header. The question a returning man asks: what week am I on, what do I do.
+    // 1. THE HERO. The week number carries the page the way a chapter number
+    //    carries the report. Answers "where am I" before he reads a word.
     var html =
-      '<div class="pl-head">'+
-        '<div><div class="eyebrow" style="margin-bottom:8px">YOUR NINETY-DAY PLAN</div>'+
-        '<h1 class="d-36" style="margin-bottom:8px">Week '+week+'. One move at a time.</h1>'+
-        '<p class="lead" style="max-width:52ch;margin:0">Built from your Keystone Profile. Your focus is <b class="brass">'+esc(plan.focusLabel)+'</b>.</p></div>'+
-        '<span class="chip" style="cursor:default;align-self:flex-start">Baseline <b class="mono" style="margin-left:8px">'+overall+'</b></span>'+
+      '<div class="pl-hero">'+
+        '<div class="pl-hero-top">'+
+          '<div class="pl-hero-eyebrow">Your ninety-day plan</div>'+
+          '<span class="pl-hero-base">Baseline <b>'+overall+'</b></span>'+
+        '</div>'+
+        '<div class="pl-hero-row">'+
+          '<div><span class="pl-hero-numlbl">Week</span><span class="pl-hero-num">'+week+'</span></div>'+
+          '<div class="pl-hero-say">One move<br>at a time.</div>'+
+        '</div>'+
+        '<div class="pl-hero-focus">Built from your Keystone Profile. Your focus is <b>'+esc(plan.focusLabel)+'</b>.</div>'+
       '</div>';
 
     if(isDemo){
-      html += '<div class="notice brass" style="margin:0 0 26px">This is a sample plan. <a class="link" href="profile.html">Take your baseline</a> and this becomes yours, free.</div>';
+      html += '<div class="notice brass" style="margin:0 0 20px">This is a sample plan. <a class="link" href="profile.html">Take your baseline</a> and this becomes yours, free.</div>';
     }
 
-    // 2. THE FOCAL POINT: this week's action, marked done. First thing he sees, answers
-    //    "what do I do right now." Fresh-start framing so a missed week never shames him.
+    // 2. THIS WEEK'S MOVE. Each action can carry a cue in his own words: when and
+    //    where he will do it. A goal intention becomes an implementation intention,
+    //    which is the difference between meaning to and doing it.
     html +=
       '<div class="card pl-focal">'+
-        '<div class="row between" style="margin-bottom:8px"><div class="eyebrow brass" style="margin:0">DO THIS WEEK</div>'+
+        '<div class="row between" style="margin-bottom:12px"><div class="eyebrow brass" style="margin:0">DO THIS WEEK</div>'+
         '<span class="tag">'+esc(wk.phaseLabel).toUpperCase()+' &middot; PHASE '+(wk.phase+1)+'</span></div>'+
-        '<h2 class="d-28" style="margin-bottom:6px">'+esc(plan.focusLabel)+'</h2>'+
-        '<p class="ash" style="margin-bottom:22px;max-width:58ch">'+esc(firstSentence(plan.focusText))+'</p>'+
+        '<h2 class="pl-focal-name">'+esc(plan.focusLabel)+'</h2>'+
+        '<p class="pl-focal-sub">'+esc(firstSentence(plan.focusText))+'</p>'+
         '<div class="stack-16">'+
           wk.actions.map(function(a, i){
             var key = 'fc_plan_w'+week+'_a'+i;
-            return '<label class="actionrow"><input type="checkbox" data-persist="'+key+'">'+
-              '<div style="flex:1"><div class="txt">'+esc(a)+'</div></div></label>';
+            return '<div class="pl-act">'+
+              '<label class="actionrow"><input type="checkbox" data-persist="'+key+'">'+
+                '<div style="flex:1"><div class="txt">'+esc(a)+'</div></div></label>'+
+              '<div class="pl-when">'+
+                '<div class="pl-when-said" data-said="'+key+'"><span class="k">Your cue</span><span data-saidtxt="'+key+'"></span></div>'+
+                '<button type="button" class="pl-when-set" data-whenbtn="'+key+'"><span>+</span> Set when and where</button>'+
+                '<div class="pl-when-edit" data-whenedit="'+key+'">'+
+                  '<input class="input" data-wheninput="'+key+'" placeholder="Tuesday at 7pm, from the truck">'+
+                  '<button type="button" class="btn btn-secondary btn-sm" data-whensave="'+key+'">Save</button>'+
+                '</div>'+
+              '</div>'+
+            '</div>';
           }).join('')+
         '</div>'+
         '<div class="pl-cheer" id="plCheer" hidden></div>'+
@@ -113,15 +130,18 @@
       '<div class="card pl-progress">'+
         '<div class="row between" style="margin-bottom:14px"><div class="eyebrow" style="margin:0">YOUR NINETY DAYS</div>'+
         '<span class="fine mono">'+m.pctThroughPlan+'% through</span></div>'+
-        '<div class="weeks">'+
+        '<div class="pl-arc">'+
           plan.weeks.map(function(w){
             var cls = w.week < week ? 'done' : (w.week === week ? 'now' : '');
             return '<span class="'+cls+'"></span>';
           }).join('')+
         '</div>'+
         '<div class="phaselabels"><span>WKS 1-4 ESTABLISH</span><span>5-8 DEEPEN</span><span>9-12 SUSTAIN</span></div>'+
-        '<div class="pl-prog-foot"><span>'+m.actionsDone+' action'+(m.actionsDone===1?'':'s')+' done</span>'+
-          '<span>'+m.weeksWithAction+' week'+(m.weeksWithAction===1?'':'s')+' you showed up</span></div>'+
+        '<div class="pl-stat">'+
+          '<div><span class="pl-stat-n">'+m.actionsDone+'</span><span class="pl-stat-l">Action'+(m.actionsDone===1?'':'s')+' done</span></div>'+
+          '<div><span class="pl-stat-n">'+m.weeksWithAction+'</span><span class="pl-stat-l">Week'+(m.weeksWithAction===1?'':'s')+' you showed up</span></div>'+
+          '<div><span class="pl-stat-n">'+m.cuesSet+'</span><span class="pl-stat-l">Cue'+(m.cuesSet===1?'':'s')+' set</span></div>'+
+        '</div>'+
       '</div>';
 
     // 4. Secondary: lead-from-strength and the areas also worth tending.
@@ -168,6 +188,58 @@
 
     root.innerHTML = html;
     restoreChecks();
+    wireCues();
+  }
+
+  /* ---------- if-then cues ----------
+     A goal intention says what. An implementation intention says when and where,
+     and that is the version people actually carry out. Stored locally so it works
+     signed out, and mirrored to the account when live so it follows him. */
+  function cueKey(k){ return k + '_when'; }
+
+  function readCue(k){
+    try { return localStorage.getItem(cueKey(k)) || ''; } catch(e){ return ''; }
+  }
+
+  function paintCue(key, val){
+    var said = root.querySelector('[data-said="'+key+'"]');
+    var txt  = root.querySelector('[data-saidtxt="'+key+'"]');
+    var btn  = root.querySelector('[data-whenbtn="'+key+'"]');
+    if(txt) txt.textContent = val;
+    if(said) said.classList.toggle('show', !!val);
+    if(btn) btn.innerHTML = val ? '<span>+</span> Change when and where'
+                                : '<span>+</span> Set when and where';
+  }
+
+  function saveCue(key, val){
+    try { val ? localStorage.setItem(cueKey(key), val) : localStorage.removeItem(cueKey(key)); } catch(e){}
+    paintCue(key, val);
+    if(window.FC && FC.live && FC.uid()){
+      FC.sb.from('plan_checkins').upsert({
+        user_id: FC.uid(), action_key: key, cue: val || null,
+        updated_at: new Date().toISOString()
+      }, {onConflict:'user_id,action_key'}).then(function(){}, function(){});
+    }
+  }
+
+  function wireCues(){
+    root.querySelectorAll('[data-whenbtn]').forEach(function(btn){
+      var key = btn.getAttribute('data-whenbtn');
+      var box = root.querySelector('[data-whenedit="'+key+'"]');
+      var inp = root.querySelector('[data-wheninput="'+key+'"]');
+      var sav = root.querySelector('[data-whensave="'+key+'"]');
+      paintCue(key, readCue(key));
+      btn.addEventListener('click', function(){
+        var open = box.classList.toggle('open');
+        if(open){ inp.value = readCue(key); inp.focus(); }
+      });
+      function commit(){
+        saveCue(key, (inp.value||'').trim());
+        box.classList.remove('open');
+      }
+      if(sav) sav.addEventListener('click', commit);
+      if(inp) inp.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); commit(); } });
+    });
   }
 
   // A small, varied affirmation when he marks an action done. Variable reinforcement,
@@ -206,16 +278,19 @@
   // ninety days he is (goal-gradient). No consecutive streak, because a broken streak
   // shames the exact users who miss weeks for real reasons. No badge theater.
   function computeProgress(plan, week){
-    var actionsDone = 0, weeksWithAction = 0;
+    var actionsDone = 0, weeksWithAction = 0, cuesSet = 0;
     for(var w=1; w<=12; w++){
       var wkDone = 0;
       for(var a=0; a<2; a++){
-        try { if(localStorage.getItem('fc_plan_w'+w+'_a'+a)==='1'){ actionsDone++; wkDone++; } } catch(e){}
+        var k = 'fc_plan_w'+w+'_a'+a;
+        try { if(localStorage.getItem(k)==='1'){ actionsDone++; wkDone++; } } catch(e){}
+        try { if(localStorage.getItem(k+'_when')){ cuesSet++; } } catch(e){}
       }
       if(wkDone>0) weeksWithAction++;
     }
     var pctThroughPlan = Math.min(100, Math.round((week/12)*100));
-    return { actionsDone: actionsDone, weeksWithAction: weeksWithAction, pctThroughPlan: pctThroughPlan };
+    return { actionsDone: actionsDone, weeksWithAction: weeksWithAction,
+             cuesSet: cuesSet, pctThroughPlan: pctThroughPlan };
   }
 
   // ---------- a representative demo result (signed-out preview) ----------
