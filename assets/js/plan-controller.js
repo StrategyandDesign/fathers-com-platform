@@ -44,6 +44,9 @@
     // write the result row directly (the session may not exist for this account yet)
     FC.sb.from('keystone_results').insert({
       user_id: FC.uid(),
+      // Preserve which instrument produced this. Saving a pending result without
+      // it turned every signed-out Manhood sitting into a Father result.
+      assessment_slug: pending.assessment_slug || 'keystone-father-profile',
       overall_pct: scored.overall,
       section_scores: scored.sections,
       scale_scores: scored.scales,
@@ -68,6 +71,25 @@
 
   // ---------- main render ----------
   function render(result, isDemo){
+    // The ninety-day tracks are written for fathers: twelve weeks of actions per
+    // scale, all phrased around a man's children. A Manhood Profile result would
+    // pick up those tracks on the scale keys the two instruments share, and show
+    // a man without children a plan about his kids. Until manhood tracks exist,
+    // say so plainly rather than hand him the wrong plan.
+    var slug = result && (result.assessment_slug || result.slug);
+    if(slug && slug !== 'keystone-father-profile'){
+      root.innerHTML =
+        '<div class="pl-hero">'+
+          '<div class="pl-hero-top"><div class="pl-hero-eyebrow">Your ninety-day plan</div></div>'+
+          '<div class="pl-hero-row"><div class="pl-hero-say">Not ready yet.</div></div>'+
+          '<div class="pl-hero-focus">Your profile is saved and your report is ready. The ninety-day plan for this profile is still being written, and we would rather show you nothing than show you someone else\u2019s plan.</div>'+
+        '</div>'+
+        '<div class="card" style="padding:26px">'+
+          '<p style="margin:0 0 18px">Your report has your strongest ground and your next move in it. Start there.</p>'+
+          '<a class="btn btn-primary" href="report.html">Read your report</a>'+
+        '</div>';
+      return;
+    }
     var plan = PLAN_ENGINE.build(result);
     var week = isDemo ? 3 : PLAN_ENGINE.currentWeek(result.completed_at);
     var wk = plan.weeks[week-1] || plan.weeks[0];
