@@ -477,7 +477,16 @@ window.PLAN_ENGINE = window.PLAN_ENGINE || {};
   // Returns { focusScale, focusLabel, focusText, weeks:[{week, phase, phaseLabel, primaryLabel, actions:[...]}], supporting:[...] }
   PLAN_ENGINE.build = function(result){
     var gap = result.gap_scale || 'consistency';
-    var track = TRACKS[gap] || TRACKS.consistency;
+    // Tracks belong to the instrument that produced the result. The father set is
+    // written around a man's children, so a Manhood result must not borrow it.
+    var slug = result && (result.assessment_slug || result.slug);
+    var SET = TRACKS;
+    if(slug && window.FCReg && FCReg.bySlug){
+      var entry = FCReg.bySlug(slug);
+      var data  = entry && FCReg.data ? FCReg.data(entry) : null;
+      if(data && data.tracks) SET = data.tracks;
+    }
+    var track = SET[gap] || SET.consistency || TRACKS.consistency;
     var phaseLabels = ['Establish', 'Deepen', 'Sustain'];
 
     // supporting scales: the two next-lowest, for context on the plan page
