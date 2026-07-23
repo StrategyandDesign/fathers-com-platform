@@ -3,7 +3,32 @@
   var root = document.getElementById('keystone');
   if(!root || !window.KEYSTONE || !window.KS) return;
 
-  KS.init(window.KEYSTONE);
+  /* Which instrument is this sitting? Chosen by ?assessment=<slug> and resolved
+     through the registry, so adding a profile is a registry entry rather than a
+     change here. Falls back to the father profile when the parameter is absent
+     or unrecognised, which keeps every existing link working. An instrument
+     that is not released is refused, so an uncalibrated draft cannot be reached
+     by guessing at a URL. */
+  var ACTIVE_INS = window.KEYSTONE;
+  (function pickInstrument(){
+    var want = null;
+    try { want = new URLSearchParams(window.location.search).get('assessment'); } catch(e){}
+    if(!want || !window.FCReg || !FCReg.bySlug) return;
+    var entry = FCReg.bySlug(want);
+    if(!entry) return;
+    var data = FCReg.data(entry);
+    if(!data) return;
+    if(data.released === false){
+      root.innerHTML = '<div class="container" style="padding:80px 0"><div class="card" style="max-width:560px;margin:0 auto;text-align:center">'+
+        '<h2 class="d-28" style="margin-bottom:10px">Not open yet</h2>'+
+        '<p class="small" style="margin-bottom:20px">This profile is not released to participants yet.</p>'+
+        '<a class="btn btn-primary" href="profile.html">Take the Keystone Father Profile</a></div></div>';
+      throw new Error('instrument not released');
+    }
+    ACTIVE_INS = data;
+  })();
+
+  KS.init(ACTIVE_INS);
   var order = KS.sectionKeys();     // full set; path narrows it via KS.pathSectionKeys()
   var curSection = null, curIndex = 0, curItems = [];
 
@@ -224,10 +249,19 @@
         pCount = KS.itemsInSection('practices').length,
         sCount = KS.itemsInSection('satisfaction').length,
         totalItems = dCount+pCount+sCount;
+    // Title and norm claim come from the instrument. They used to be hardcoded,
+    // which is how this screen ended up promising "normed on 9,232 fathers"
+    // while the instrument carries 2,066 and the report prints 2,066.
+    var insTitle = (ACTIVE_INS.title || 'The Keystone Father Profile').toUpperCase();
+    var insNormed = !!(ACTIVE_INS.norms_n > 0);
+    var insGroup = ACTIVE_INS.norm_group_noun || 'fathers';
+    var insClaim = insNormed
+      ? 'The complete validated inventory, normed on '+ACTIVE_INS.norms_n.toLocaleString()+' '+insGroup+'. Answer honestly. Your results are private.'
+      : 'The complete inventory. This profile does not have a norm group yet, so your results show where you placed yourself, not how you compare to other '+insGroup+'. Answer honestly. Your results are private.';
     root.innerHTML = shell(
-      '<div class="eyebrow">THE KEYSTONE FATHER PROFILE</div>'+
+      '<div class="eyebrow">'+insTitle+'</div>'+
       '<h2 style="margin:10px 0 6px">'+totalItems+' questions. Your call how you take them.</h2>'+
-      '<p class="helper">The complete validated inventory, normed on 9,232 fathers. Answer honestly. Your results are private.</p>'+
+      '<p class="helper">'+insClaim+'</p>'+
       '<div class="ks-modes">'+
         '<button class="ks-mode" data-mode="all_at_once">'+
           '<b>All at once</b><span>One sitting, about 20 minutes. Best if you have the time now.</span></button>'+

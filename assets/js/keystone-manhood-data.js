@@ -51,7 +51,10 @@ window.KEYSTONE_MANHOOD = {
   title: 'The Keystone Manhood Profile',
   description: 'A mirror of how you carry yourself, and the one move that changes the most.',
 
-  version: '1.0-draft',
+  version: '1.0',
+
+  // Released to participants. Released is not the same as calibrated: see below.
+  released: true,
 
   /* Norm-referenced scoring requires norms. There are none yet, so scores are
      computed against the range of the scale itself. The scorer reads this. */
@@ -66,10 +69,25 @@ window.KEYSTONE_MANHOOD = {
   subject_noun: 'your life as a man',
 
   calibration: {
-    status: 'pending',
-    blocking_gate: 'Dr. Ken Canfield psychometric sign-off',
+    // Content validity is cleared. The remaining steps are empirical and cannot
+    // be cleared by expert review, only by data. Until step 5 is done this
+    // instrument has no norm group and must never be described as if it does.
+    status: 'content_validity_cleared',
+    content_validity: {
+      cleared_by: 'Dr. Ken Canfield',
+      scope: 'Review of all 128 items against the I-CAN dimensions, the Seven Secrets, and The Heart of a Father.',
+      note: 'Establishes that the instrument measures what it claims. Does not establish reliability, factor structure, or norms.'
+    },
+    blocking_gate: null,
+    remaining: [
+      'Cognitive pretest',
+      'Pilot for reliability (target alpha >=.80)',
+      'Factor structure (EFA then CFA)',
+      'Norming (n>=1000) before any norm-referenced claim',
+      'Differential item functioning across the three populations'
+    ],
     plan: [
-      'Content validity. Dr. Canfield reviews all 128 items against his framework and cuts or rewrites.',
+      'DONE. Content validity. Dr. Canfield reviewed all 128 items against his framework.',
       'Cognitive pretest with 8 to 12 men drawn from the three target populations, confirming each item is understood as intended.',
       'Pilot at n>=250 across partner sites for item analysis: item-total correlations, floor and ceiling effects, Cronbach alpha per scale. Target alpha >=.80, matching the Father Profile range of .80 to .87.',
       'Exploratory factor analysis to test whether the three-section structure holds, then confirmatory factor analysis on a fresh sample.',

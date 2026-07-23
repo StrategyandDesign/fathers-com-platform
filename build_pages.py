@@ -2376,7 +2376,11 @@ if __name__ == '__main__':
             html += p['body']
             html += '\n<script src="assets/js/config.js"></script>\n<script src="assets/js/supabase-client.js"></script>\n<script src="assets/js/app.js"></script>\n'
             if fname == 'profile.html':
-                html += '<script src="assets/js/keystone-data.js"></script>\n<script src="assets/js/keystone-full.js"></script>\n<script src="assets/js/keystone-ui.js"></script>\n'
+                html += ('<script src="assets/js/keystone-data.js"></script>\n'
+                         '<script src="assets/js/keystone-manhood-data.js"></script>\n'
+                         '<script src="assets/js/assessment-registry.js"></script>\n'
+                         '<script src="assets/js/keystone-full.js"></script>\n'
+                         '<script src="assets/js/keystone-ui.js"></script>\n')
         else:
             html += nav(p.get('active',''), p.get('mode','public'))
             html += p['body']

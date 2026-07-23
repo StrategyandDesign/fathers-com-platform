@@ -233,6 +233,8 @@
       normed: normed, norms_n: K.norms_n || 0,
       mode: mode, calibration: calib,
       gate: (K.calibration && K.calibration.blocking_gate) || null,
+      cleared: (K.calibration && K.calibration.content_validity && K.calibration.content_validity.cleared_by) || null,
+      remaining: (K.calibration && K.calibration.remaining) || [],
       sections: (K.sections||[]).map(function(s){ return s.title || s.key; }).join(', ')
     };
   }
@@ -250,8 +252,12 @@
       '<p class="fine" style="margin-bottom:6px">'+esc(f.version)+' &middot; '+f.scales+' scales &middot; '+f.items+' items</p>'+
       '<p class="fine" style="margin-bottom:6px">Scoring: '+esc(scoring)+'</p>'+
       '<p class="fine" style="margin-bottom:12px;color:var(--ash)">'+esc(f.sections)+'</p>'+
-      (f.gate && !live
-        ? '<div class="notice brass" style="margin:0 0 12px;font-size:13px">Blocked until: '+esc(f.gate)+'</div>'
+      (!live
+        ? '<div class="notice brass" style="margin:0 0 12px;font-size:13px">'+
+            (f.cleared ? 'Content validity cleared by '+esc(f.cleared)+'. ' : '')+
+            (f.gate ? 'Blocked until: '+esc(f.gate)+'.'
+                    : 'Not yet normed. Remaining: '+esc(f.remaining.join('; '))+'.')+
+          '</div>'
         : '')+
       '<p class="fine" style="margin:0;color:var(--ash)">Defined in code. Edit the instrument file, not here.</p>'+
     '</div>';

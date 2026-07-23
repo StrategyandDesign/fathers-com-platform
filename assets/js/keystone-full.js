@@ -223,6 +223,10 @@ window.KS = window.KS || {};
     if(!(window.FC && FC.live && FC.uid() && session)) return Promise.resolve({demo:true});
     return FC.sb.from('keystone_results').insert({
       session_id: session.id, user_id: FC.uid(),
+      // Which instrument produced this. Without it the report falls back to the
+      // father profile, which is how a manhood result used to render as a
+      // father report. Identity on the row, never inferred from shape.
+      assessment_slug: (INS && INS.slug) || 'keystone-father-profile',
       overall_pct: scored.overall, section_scores: scored.sections,
       scale_scores: scored.scales, gap_scale: scored.gap, strength_scale: scored.strength
     }).then(function(){
