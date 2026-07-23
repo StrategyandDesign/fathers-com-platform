@@ -10,7 +10,8 @@
    ============================================================ */
 (function(){
   if(!window.KEYSTONE || !window.KS) return;
-  var ACTIVE = window.KEYSTONE;  // instrument the current render is drawing from
+  var ACTIVE = window.KEYSTONE;
+  var RC = null;   // per-scale copy for the instrument being rendered  // instrument the current render is drawing from
 
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function fmtDate(iso){ try { return new Date(iso).toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'}); } catch(e){ return ''; } }
@@ -239,7 +240,7 @@
   }
 
   function scaleRow(x, first, result){
-    var sc=result.scale_scores||{}, v=sc[x.key], c=R[x.key]||{};
+    var sc=result.scale_scores||{}, v=sc[x.key], c=(RC||R)[x.key]||{};
     var band=v.band?v.band.label:'', isStr=x.key===result.strength_scale, isGap=x.key===result.gap_scale;
     var high=(band==='Strong'||band==='Solid'), read=high?(c.s||''):(c.g||'');
     var fill=isStr?'rp-bar-str':(isGap?'rp-bar-gap':'rp-bar-fill');
@@ -265,11 +266,13 @@
 
   function chapterHtml(sec, idx, result, brand){
     var meta=SEC[sec.key]||{cls:'',theme:'',pracA:''};
+    // Instrument may override the practice call-out, which is father-worded by default.
+    if(sec.key==='practices' && ACTIVE && ACTIVE.practice_callout){ meta = Object.assign({}, meta, {pracA: ACTIVE.practice_callout}); }
     var scalesIn=sec.scales.filter(function(x){return (result.scale_scores||{})[x.key];});
     if(!scalesIn.length) return '';
     var rows=scalesIn.map(function(x,i){return scaleRow(x,i===0,result);}).join('');
     // practical panel: dimensions references the gap's first move; others use their own line
-    var doLine = meta.pracDo || ((R[result.gap_scale]&&R[result.gap_scale].m&&R[result.gap_scale].m[0])||'Pick one and start.');
+    var doLine = meta.pracDo || (((RC||R)[result.gap_scale]&&(RC||R)[result.gap_scale].m&&(RC||R)[result.gap_scale].m[0])||'Pick one and start.');
     var practical='<aside class="rp-practical '+meta.cls+'">'+
         '<div class="rp-practical-h">Start here</div>'+
         '<p class="rp-practical-body">'+esc(meta.pracA)+'</p>'+
@@ -282,7 +285,7 @@
       '<div class="rp-opener '+meta.cls+'">'+
         '<div class="rp-opener-copy"><div class="rp-opener-num">'+('0'+(idx+1)).slice(-2)+'</div>'+
           '<h2 class="rp-opener-title">'+esc(sec.title)+'</h2>'+
-          '<p class="rp-opener-intro">'+esc(SEC_INTRO[sec.key]||'')+'</p></div>'+
+          '<p class="rp-opener-intro">'+esc(((ACTIVE&&ACTIVE.section_intro)||SEC_INTRO)[sec.key]||'')+'</p></div>'+
         '<figure class="rp-photo '+meta.cls+'"'+pStyle+'>'+
           '<figcaption class="rp-photo-theme">'+esc(meta.theme)+'</figcaption>'+
           '<span class="rp-photo-slot rp-noprint">Photo slot &middot; set in Studio</span></figure>'+
@@ -297,6 +300,14 @@
   }
 
   /* ---------- render ---------- */
+  /* Per-scale copy belongs to the instrument being rendered. R below is the
+     father library; an instrument that ships its own scale_copy overrides it.
+     Without this a Manhood report borrowed father copy on shared scale keys. */
+  function copyFor(A){
+    var K = (A && window.FCReg && FCReg.data) ? FCReg.data(A) : null;
+    return (K && K.scale_copy) || R;
+  }
+
   function render(result, state, rootEl){
     rootEl = rootEl || document.getElementById('rpRoot');
     if(!rootEl) return;
@@ -304,6 +315,7 @@
     applyBranding(function(brand){
       brand = brand || {};
       ACTIVE = (A && FCReg.data(A)) || window.KEYSTONE;
+      RC = copyFor(A);   // father copy unless the instrument ships its own
       try { KS.init(ACTIVE); } catch(e){}
       var sc = result.scale_scores || {};
       var keys = Object.keys(sc);
@@ -311,8 +323,8 @@
       var thesis = A ? A.thesis : 'A mirror of how you father, and the one move that changes the most.';
       var strength = sc[result.strength_scale], gap = sc[result.gap_scale];
       var band = KS.bandFor(result.overall_pct != null ? result.overall_pct : 0);
-      var gapCopy = R[result.gap_scale] || {g:'This is the one to build first.', m:[]};
-      var strCopy = R[result.strength_scale] || {s:'You showed up and did the honest work.'};
+      var gapCopy = (RC||R)[result.gap_scale] || {g:'This is the one to build first.', m:[]};
+      var strCopy = (RC||R)[result.strength_scale] || {s:'You showed up and did the honest work.'};
 
       if(brand.accent){ rootEl.style.setProperty('--rpa', brand.accent); }
       if(brand.accent2){ rootEl.style.setProperty('--rpb', brand.accent2); }

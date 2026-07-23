@@ -562,7 +562,7 @@
     root.innerHTML = shell(
       '<div class="center" style="margin-bottom:30px">'+
         '<div class="ks-check" style="margin-bottom:10px">\u2713</div>'+
-        '<div class="eyebrow brass" style="margin-bottom:10px">ALL 128 ITEMS. DONE.</div>'+
+        '<div class="eyebrow brass" style="margin-bottom:10px">'+esc((ACTIVE_INS.title||'The Keystone Father Profile').toUpperCase())+' &middot; DONE.</div>'+
         '<h2 style="margin:0 0 6px">You just did what most men never do.</h2>'+
         '<p class="helper" style="margin:0">You looked at '+esc(ACTIVE_INS.subject_noun || 'how you father')+', honestly, all the way through.</p>'+
       '</div>'+

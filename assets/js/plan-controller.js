@@ -14,6 +14,27 @@
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function firstSentence(t){ t=String(t||''); var i=t.indexOf('. '); return i>0? t.slice(0,i+1) : t; }
 
+  /* A sitting finished while signed out lives in localStorage. Read it here so a
+     man who just finished sees HIS plan rather than a sample. Without this, a man
+     who took the Manhood Profile signed out was handed the father demo, which
+     builds from father tracks and talks about his kids. */
+  function pendingResult(){
+    var raw = null;
+    try { raw = localStorage.getItem('fc_pending_result'); } catch(e){ return null; }
+    if(!raw) return null;
+    try {
+      var p = JSON.parse(raw);
+      if(!p || !p.scored) return null;
+      return {
+        assessment_slug: p.assessment_slug || null,
+        overall_pct: p.scored.overall, section_scores: p.scored.sections,
+        scale_scores: p.scored.scales, gap_scale: p.scored.gap,
+        strength_scale: p.scored.strength,
+        completed_at: new Date(p.at || Date.now()).toISOString()
+      };
+    } catch(e){ return null; }
+  }
+
   // ---------- entry ----------
   function load(){
     if(window.FC && FC.live && FC.uid()){
@@ -27,6 +48,9 @@
           }).catch(function(){ needAssessment(); });
       });
     } else {
+      // Signed out: his own finished sitting first, the sample only if there is none.
+      var pend = pendingResult();
+      if(pend){ render(pend, false); return; }
       render(demoResult(), true);
     }
   }
@@ -299,6 +323,9 @@
   // ---------- a representative demo result (signed-out preview) ----------
   function demoResult(){
     return {
+      // Tagged so the engine builds it from the father tracks on purpose,
+      // rather than by falling through an untagged result.
+      assessment_slug: 'keystone-father-profile',
       overall_pct: 64,
       gap_scale: 'consistency',
       strength_scale: 'involvement',
