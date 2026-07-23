@@ -61,14 +61,41 @@
     'A starting point':'A starting point is still a start, and starting is the part most men skip.'
   };
 
-  /* ---------- load: signed in, pending, or sample ---------- */
+  /* ---------- load: signed in, pending, or sample ----------
+     A man can finish a sitting while signed out. That result lands in
+     localStorage as pending. If he already had an older saved result, this used
+     to render the OLD one and silently discard the sitting he just finished,
+     which is how a man who took the Manhood Profile was shown yesterday's Father
+     Profile. Whichever sitting is more recent wins. */
+  function pendingRow(){
+    var raw = null;
+    try { raw = localStorage.getItem('fc_pending_result'); } catch(e){ return null; }
+    if(!raw) return null;
+    try {
+      var p = JSON.parse(raw);
+      if(!p || !p.scored) return null;
+      return {
+        assessment_slug: p.assessment_slug || null,
+        overall_pct: p.scored.overall, scale_scores: p.scored.scales,
+        gap_scale: p.scored.gap, strength_scale: p.scored.strength,
+        completed_at: new Date(p.at||Date.now()).toISOString()
+      };
+    } catch(e){ return null; }
+  }
+
   function load(){
     if(window.FC && FC.live && FC.uid && FC.uid()){
       FC.sb.from('keystone_results').select('*').eq('user_id', FC.uid())
         .order('completed_at',{ascending:false}).limit(1).maybeSingle()
         .then(function(r){
-          if(r.data){ render(r.data, 'account'); }
-          else { pendingOrSample(); }
+          var saved = r && r.data ? r.data : null;
+          var pend  = pendingRow();
+          if(saved && pend){
+            var ts = function(x){ return new Date(x.completed_at || 0).getTime() || 0; };
+            return render(ts(pend) > ts(saved) ? pend : saved, 'account');
+          }
+          if(saved){ return render(saved, 'account'); }
+          return pendingOrSample();
         }).catch(pendingOrSample);
     } else {
       pendingOrSample();
@@ -82,6 +109,7 @@
         var p = JSON.parse(raw);
         if(p && p.scored){
           return render({
+            assessment_slug: p.assessment_slug || null,
             overall_pct: p.scored.overall, scale_scores: p.scored.scales,
             gap_scale: p.scored.gap, strength_scale: p.scored.strength,
             completed_at: new Date(p.at||Date.now()).toISOString()
