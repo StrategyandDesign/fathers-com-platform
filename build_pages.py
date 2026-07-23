@@ -322,6 +322,8 @@ PAGES['report.html'] = dict(title='Your Written Report', desc='Every dimension: 
 </div></section>
 <script src="assets/js/keystone-data.js"></script>
 <script src="assets/js/keystone-full.js"></script>
+<script src="assets/js/keystone-manhood-data.js"></script>
+<script src="assets/js/assessment-registry.js"></script>
 <script src="assets/js/keystone-report.js"></script>
 ''')
 

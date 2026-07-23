@@ -9,9 +9,8 @@
    highlight colors. Nothing else.
    ============================================================ */
 (function(){
-  var root = document.getElementById('rpRoot');
-  if(!root || !window.KEYSTONE || !window.KS) return;
-  try { KS.init(window.KEYSTONE); } catch(e){}
+  if(!window.KEYSTONE || !window.KS) return;
+  var ACTIVE = window.KEYSTONE;  // instrument the current render is drawing from
 
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function fmtDate(iso){ try { return new Date(iso).toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'}); } catch(e){ return ''; } }
@@ -191,7 +190,7 @@
     var xm=mx(50);
     out.push('<line x1="'+xm.toFixed(1)+'" y1="34" x2="'+xm.toFixed(1)+'" y2="228" class="rp-st-typical"/>');
     out.push('<text x="'+xm.toFixed(1)+'" y="26" class="rp-st-typlabel" text-anchor="middle">the typical father</text>');
-    KEYSTONE.sections.forEach(function(sec){
+    ACTIVE.sections.forEach(function(sec){
       var cy=laneY[sec.key]; if(cy==null) return;
       out.push('<text x="150" y="'+(cy-2)+'" class="rp-st-lane" text-anchor="end">'+esc(sec.title.replace('Fathering ','').toUpperCase())+'</text>');
       out.push('<text x="150" y="'+(cy+13)+'" class="rp-st-lanen" text-anchor="end">'+sec.scales.length+' parts</text>');
@@ -270,20 +269,25 @@
   }
 
   /* ---------- render ---------- */
-  function render(result, state){
+  function render(result, state, rootEl){
+    rootEl = rootEl || document.getElementById('rpRoot');
+    if(!rootEl) return;
+    var A = (window.FCReg && FCReg.detect) ? FCReg.detect(result) : null;
     applyBranding(function(brand){
       brand = brand || {};
+      ACTIVE = (A && FCReg.data(A)) || window.KEYSTONE;
+      try { KS.init(ACTIVE); } catch(e){}
       var sc = result.scale_scores || {};
       var keys = Object.keys(sc);
-      var isFather = keys.length >= 20;
-      var title = isFather ? 'The Keystone Father Profile' : 'The Manhood Profile';
+      var title = A ? A.reportTitle : 'The Keystone Father Profile';
+      var thesis = A ? A.thesis : 'A mirror of how you father, and the one move that changes the most.';
       var strength = sc[result.strength_scale], gap = sc[result.gap_scale];
       var band = KS.bandFor(result.overall_pct != null ? result.overall_pct : 0);
       var gapCopy = R[result.gap_scale] || {g:'This is the one to build first.', m:[]};
       var strCopy = R[result.strength_scale] || {s:'You showed up and did the honest work.'};
 
-      if(brand.accent){ root.style.setProperty('--rpa', brand.accent); }
-      if(brand.accent2){ root.style.setProperty('--rpb', brand.accent2); }
+      if(brand.accent){ rootEl.style.setProperty('--rpa', brand.accent); }
+      if(brand.accent2){ rootEl.style.setProperty('--rpb', brand.accent2); }
 
       var cobrand = '<div class="rp-cobrand">'+
         (brand.logo_primary ? '<img class="rp-logo" src="'+esc(brand.logo_primary)+'" alt="Program logo">' : '<span class="rp-cb-word">Fathers.com</span>')+
@@ -318,7 +322,7 @@
         '<article class="rp-gcard rp-gcard-gap"><div class="rp-geyebrow">Your next move</div>'+
           '<div class="rp-gbig">'+esc(gap?gap.label:'')+'</div><p class="rp-gline">'+esc(gapCopy.g||'')+'</p></article></section>';
 
-      var normN = (window.KEYSTONE && KEYSTONE.norms_n) ? KEYSTONE.norms_n.toLocaleString() : '2,066';
+      var normN = (ACTIVE && ACTIVE.norms_n) ? ACTIVE.norms_n.toLocaleString() : '2,066';
       var stats='<section class="rp-stats">'+
         '<div class="rp-stat"><div class="rp-stat-n">'+normN+'</div><div class="rp-stat-l">fathers in your norm group</div></div>'+
         '<div class="rp-stat"><div class="rp-stat-n">'+keys.length+'</div><div class="rp-stat-l">parts of your fathering, measured</div></div>'+
@@ -330,7 +334,7 @@
 
       var howto='<section class="rp-howto"><b>How to read this.</b> Each bar shows where you stand next to '+normN+' fathers in the national norm group; the center mark is the typical father. Standings are words, not grades: A starting point, Building, Developing, Solid, Strong. This is a self-report. It is a mirror, not a verdict, and every line in it can move.</section>';
 
-      var chapters = KEYSTONE.sections.map(function(sec,idx){ return chapterHtml(sec,idx,result,brand); }).join('');
+      var chapters = ACTIVE.sections.map(function(sec,idx){ return chapterHtml(sec,idx,result,brand); }).join('');
 
       var next90='<section id="rp-next90" class="rp-next90">'+
         '<div class="rp-n90-eyebrow">The next ninety days</div>'+
@@ -346,20 +350,20 @@
           (brand.logo_secondary?'<span class="rp-colo-div"></span><img class="rp-logo rp-colo-logo" src="'+esc(brand.logo_secondary)+'" alt="Partner logo">':'')+'</div>'+
         '<div class="rp-colo-lines">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit, since 1990.<br>Your results are yours alone. We never share them.</div></footer>';
 
-      root.innerHTML = '<div class="rp-doc">'+
+      rootEl.innerHTML = '<div class="rp-doc">'+
         '<header class="rp-cover"'+bgPhoto(brand.photo_cover, false)+'>'+cobrand+
           '<div class="rp-cover-main"><div>'+
             '<div class="rp-eyebrow rp-cover-eyebrow">Your written report</div>'+
             '<h1 class="rp-cover-title">'+esc(title)+'</h1>'+
             '<p class="rp-cover-sub">Prepared from your answers &middot; completed '+esc(fmtDate(result.completed_at))+'</p>'+
-            '<p class="rp-cover-thesis">A mirror of how you father, and the one move that changes the most.</p>'+
+            '<p class="rp-cover-thesis">'+esc(thesis)+'</p>'+
           '</div></div></header>'+
         contents+
         '<div class="rp-inner">'+stateLine+actions+glance+stats+shape+howto+'</div>'+
         chapters+next90+closing+
       '</div>';
 
-      fitCaptions(root); bindFitHooks();
+      fitCaptions(rootEl); bindFitHooks();
 
       var pb=document.getElementById('rpPrint');
       if(pb) pb.addEventListener('click', function(){ window.print(); });
@@ -402,6 +406,20 @@
       } else if(++tries >= 40){ clearInterval(iv); run(); }
     }, 50);
   }
-  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', boot); }
-  else { boot(); }
+  /* Public, page-agnostic API. Any surface (the participant dashboard, an admin
+     view-as, a standalone page) can render a report into its own container:
+       FCReport.render(containerEl, { result: <keystone_results row>, state: 'live' })
+     The assessment is resolved from the result via the registry, so the same call
+     renders a father profile or a manhood profile correctly. */
+  window.FCReport = {
+    render: function(el, opts){ opts = opts || {}; return render(opts.result, opts.state || 'live', el); },
+    sampleResult: sampleResult
+  };
+
+  /* report.html carries #rpRoot and self-renders the signed-in participant's own
+     report. Other pages leave #rpRoot out and drive FCReport.render themselves. */
+  if(document.getElementById('rpRoot')){
+    if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', boot); }
+    else { boot(); }
+  }
 })();
