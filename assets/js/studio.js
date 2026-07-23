@@ -74,8 +74,21 @@
       msg.textContent = 'Demo mode. Connect Supabase keys and branding saves live.';
       return;
     }
-    FC.sb.from('report_branding').select('*').eq('id',1).maybeSingle().then(function(r){
-      var b = r.data || {};
+    /* Branding follows the assessment. A creator picks which report he is
+       styling; the default applies to any assessment without its own. Before
+       this there was one global row, so styling one report styled them all. */
+    var brandSlug = null;   // null = the default row
+    function loadBranding(){
+      FC.sb.from('report_branding').select('*').then(function(r){
+        var rows = (r && r.data) || [];
+        var b = null;
+        for(var i=0;i<rows.length;i++){
+          if(brandSlug ? rows[i].assessment_slug === brandSlug : !rows[i].assessment_slug) b = rows[i];
+        }
+        paintBranding(b || {});
+      }, function(){});
+    }
+    function paintBranding(b){
       if(b.logo_primary){ state.logo_primary=b.logo_primary; show(1,b.logo_primary); }
       if(b.logo_secondary){ state.logo_secondary=b.logo_secondary; show(2,b.logo_secondary); }
       if(b.accent) accent.value = b.accent;
@@ -85,10 +98,31 @@
       if(b.photo_satisfaction){ state.photo_satisfaction=b.photo_satisfaction; showP('sat', b.photo_satisfaction); }
       if(b.photo_cover){ state.photo_cover=b.photo_cover; showP('cover', b.photo_cover); }
       if(b.photo_footer){ state.photo_footer=b.photo_footer; showP('footer', b.photo_footer); }
-    }, function(){});
+    }
+
+    /* Which report am I styling? Built from the registry, so a new assessment
+       appears here the moment it is registered. */
+    (function buildPicker(){
+      var host = document.getElementById('rb-scope');
+      if(!host) return;
+      var opts = ['<option value="">Every report (default)</option>'];
+      if(window.FCReg && FCReg.list){
+        FCReg.list().forEach(function(a){
+          var K = FCReg.data(a) || {};
+          opts.push('<option value="'+esc(K.slug||a.slug)+'">'+esc(K.title||a.name)+'</option>');
+        });
+      }
+      host.innerHTML = opts.join('');
+      host.addEventListener('change', function(){
+        brandSlug = host.value || null;
+        for(var k in state){ if(Object.prototype.hasOwnProperty.call(state,k)) state[k]=null; }
+        loadBranding();
+      });
+    })();
+    loadBranding();
     save.addEventListener('click', function(){
       save.disabled = true; save.textContent='Saving\u2026'; msg.textContent='';
-      var row = { id:1, accent:accent.value, accent2:accent2.value,
+      var row = { assessment_slug: brandSlug, accent:accent.value, accent2:accent2.value,
         updated_at:new Date().toISOString(), updated_by:(FC.uid&&FC.uid())||null };
       if(state.logo_primary!==null) row.logo_primary = state.logo_primary;
       if(state.logo_secondary!==null) row.logo_secondary = state.logo_secondary;
@@ -97,10 +131,15 @@
       if(state.photo_satisfaction!==null) row.photo_satisfaction = state.photo_satisfaction;
       if(state.photo_cover!==null) row.photo_cover = state.photo_cover;
       if(state.photo_footer!==null) row.photo_footer = state.photo_footer;
-      FC.sb.from('report_branding').upsert(row, {onConflict:'id'}).then(function(r2){
+      var q = brandSlug
+        ? FC.sb.from('report_branding').upsert(row, {onConflict:'assessment_slug'})
+        : FC.sb.from('report_branding').upsert(Object.assign({id:1}, row), {onConflict:'id'});
+      q.then(function(r2){
         save.disabled=false; save.textContent='Save branding';
         if(r2.error){ msg.textContent = r2.error.message || 'Could not save. Are you an instructor or admin?'; return; }
-        msg.textContent = 'Saved. Every report now carries it.';
+        msg.textContent = brandSlug
+          ? 'Saved. That report now carries it.'
+          : 'Saved. Every report without its own branding now carries it.';
       });
     });
   }

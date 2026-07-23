@@ -138,15 +138,26 @@
   }
 
   /* ---------- branding: two logos and the highlight colors. That is it. ---------- */
-  function applyBranding(then){
+  function applyBranding(wantSlug, then){
     var fallback = { accent:'', accent2:'', logo_primary:'', logo_secondary:'', photo_dimensions:'', photo_practices:'', photo_satisfaction:'' };
     var done=false, go=function(v){ if(!done){ done=true; then(v); } };
     if(!(window.FC && FC.live && FC.ready)){ go(fallback); return; }
     setTimeout(function(){ go(fallback); }, 2500);
     FC.ready.then(function(){
       if(!FC.sb){ return go(fallback); }
-      FC.sb.from('report_branding').select('*').eq('id',1).maybeSingle().then(function(r){
-        go(r && r.data ? r.data : fallback);
+      /* Branding follows the assessment. Read every row, prefer the one for this
+         instrument, fall back to the row with no slug, which is the default.
+         Before this, branding was one global row, so a hero image set for the
+         Manhood report also changed the Father report. */
+      FC.sb.from('report_branding').select('*').then(function(r){
+        var rows = (r && r.data) || [];
+        var slug = wantSlug || null;
+        var mine = null, dflt = null;
+        for(var i=0;i<rows.length;i++){
+          if(slug && rows[i].assessment_slug === slug) mine = rows[i];
+          if(!rows[i].assessment_slug) dflt = rows[i];
+        }
+        go(mine || dflt || (rows.length ? rows[0] : fallback));
       }, function(){ go(fallback); });
     }, function(){ go(fallback); });
   }
@@ -312,7 +323,8 @@
     rootEl = rootEl || document.getElementById('rpRoot');
     if(!rootEl) return;
     var A = (window.FCReg && FCReg.detect) ? FCReg.detect(result) : null;
-    applyBranding(function(brand){
+    var wantSlug = (A && FCReg.data && FCReg.data(A) && FCReg.data(A).slug) || (A && A.slug) || null;
+    applyBranding(wantSlug, function(brand){
       brand = brand || {};
       ACTIVE = (A && FCReg.data(A)) || window.KEYSTONE;
       RC = copyFor(A);   // father copy unless the instrument ships its own
