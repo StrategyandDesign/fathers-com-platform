@@ -203,19 +203,99 @@
     });});
   }
 
-  /* ---------------- INSTRUMENT BUILDER ---------------- */
+  /* ---------------- INSTRUMENT BUILDER ----------------
+     There are two assessment systems in this platform and this tab used to show
+     only one of them. The instruments a man actually takes are defined in code
+     and served through the registry (window.FCReg). The `instruments` table is
+     the Studio-authored engine, which nothing in the participant flow reads yet.
+     Listing only the table meant the screen showed a 4-domain, 1-item stub
+     labelled "The Keystone Father Profile" while the real 26-scale, 128-item
+     instrument was invisible. Now the real ones lead, read only, with their
+     true numbers, and the Studio drafts follow, labelled for what they are. */
+
+  // Derive an honest picture of a registry instrument from its own data.
+  function insFacts(A){
+    var K = (window.FCReg && FCReg.data(A)) || null;
+    if(!K) return null;
+    var scales=0, items=0;
+    (K.sections||[]).forEach(function(s){
+      scales += (s.scales||[]).length;
+      (s.scales||[]).forEach(function(x){ items += (x.items||[]).length; });
+    });
+    var normed  = !!(K.norms_n > 0);
+    var mode    = (K.scoring && K.scoring.mode) || (normed ? 'norm_referenced' : 'criterion_referenced');
+    var calib   = (K.calibration && K.calibration.status) || (normed ? 'normed' : 'pending');
+    return {
+      slug: K.slug || A.slug,
+      title: K.title || A.reportTitle || A.name,
+      version: K.version || 'v1',
+      scales: scales, items: items,
+      normed: normed, norms_n: K.norms_n || 0,
+      mode: mode, calibration: calib,
+      gate: (K.calibration && K.calibration.blocking_gate) || null,
+      sections: (K.sections||[]).map(function(s){ return s.title || s.key; }).join(', ')
+    };
+  }
+
+  function registryCard(f){
+    var live = f.calibration === 'normed';
+    var badge = live
+      ? '<span class="pill-status published">calibrated</span>'
+      : '<span class="pill-status draft">not calibrated</span>';
+    var scoring = f.normed
+      ? 'norm-referenced against ' + f.norms_n.toLocaleString() + ' in the norm group'
+      : 'criterion-referenced, no norm group yet';
+    return '<div class="card">'+
+      '<div class="row between" style="margin-bottom:8px;gap:10px"><b>'+esc(f.title)+'</b>'+badge+'</div>'+
+      '<p class="fine" style="margin-bottom:6px">'+esc(f.version)+' &middot; '+f.scales+' scales &middot; '+f.items+' items</p>'+
+      '<p class="fine" style="margin-bottom:6px">Scoring: '+esc(scoring)+'</p>'+
+      '<p class="fine" style="margin-bottom:12px;color:var(--ash)">'+esc(f.sections)+'</p>'+
+      (f.gate && !live
+        ? '<div class="notice brass" style="margin:0 0 12px;font-size:13px">Blocked until: '+esc(f.gate)+'</div>'
+        : '')+
+      '<p class="fine" style="margin:0;color:var(--ash)">Defined in code. Edit the instrument file, not here.</p>'+
+    '</div>';
+  }
+
   function loadInstruments(){
+    var box = el('instr-list');
+    // 1. The real instruments, from the registry. Rendered first and read only.
+    var live = '';
+    if(window.FCReg && FCReg.list){
+      var facts = FCReg.list().map(insFacts).filter(Boolean);
+      if(facts.length){
+        live = '<div class="eyebrow" style="margin:0 0 10px">IN THE PLATFORM &middot; WHAT PARTICIPANTS ACTUALLY TAKE</div>'+
+               '<div class="grid-auto">'+facts.map(registryCard).join('')+'</div>';
+      }
+    }
+    if(!live){
+      live = '<div class="notice brass" style="margin:0 0 8px">The assessment registry did not load, so the live instruments cannot be listed.</div>';
+    }
+
+    // 2. The Studio-authored table, labelled honestly.
     FC.sb.from('instruments').select('*').order('created_at',{ascending:false}).then(function(r){
       var rows=r.data||[];
-      if(!rows.length){el('instr-list').innerHTML='<p class="fine">No instruments yet.</p>';return;}
-      var html='<div class="grid-auto">';
-      rows.forEach(function(i){
-        html+='<div class="card"><div class="row between" style="margin-bottom:8px"><b>'+esc(i.title)+'</b><span class="pill-status '+i.status+'">'+i.status+'</span></div>'+
-          '<p class="fine" style="margin-bottom:12px">v'+i.version+' · scoring: '+i.scoring+'</p>'+
-          '<button class="btn btn-secondary mini" data-iedit="'+i.id+'">Edit</button></div>';
-      });
-      el('instr-list').innerHTML=html+'</div>';
-      el('instr-list').querySelectorAll('[data-iedit]').forEach(function(b){b.addEventListener('click',function(){editInstrument(b.dataset.iedit);});});
+      var reg = (window.FCReg && FCReg.list) ? FCReg.list().map(function(a){return a.slug;}) : [];
+      var drafts='<div class="eyebrow" style="margin:26px 0 10px">STUDIO DRAFTS &middot; NOT YET WIRED TO THE PARTICIPANT FLOW</div>';
+      if(!rows.length){
+        drafts += '<p class="fine">No Studio instruments yet.</p>';
+      } else {
+        drafts += '<div class="grid-auto">';
+        rows.forEach(function(i){
+          var collides = reg.indexOf(i.slug) > -1;
+          drafts+='<div class="card"><div class="row between" style="margin-bottom:8px;gap:10px"><b>'+esc(i.title)+'</b><span class="pill-status '+i.status+'">'+i.status+'</span></div>'+
+            '<p class="fine" style="margin-bottom:12px">v'+i.version+' &middot; scoring: '+esc(i.scoring)+'</p>'+
+            (collides
+              ? '<div class="notice brass" style="margin:0 0 12px;font-size:13px">Shares a slug with a live instrument. This draft is not what participants take, and publishing it will not change what they take.</div>'
+              : '')+
+            '<button class="btn btn-secondary mini" data-iedit="'+i.id+'">Edit</button></div>';
+        });
+        drafts += '</div>';
+      }
+      box.innerHTML = live + drafts;
+      box.querySelectorAll('[data-iedit]').forEach(function(b){b.addEventListener('click',function(){editInstrument(b.dataset.iedit);});});
+    }, function(){
+      box.innerHTML = live;
     });
   }
 
@@ -276,6 +356,13 @@
       };
       el('ie-pub').onclick=function(){
         var np=ins.status==='published'?'retired':'published';
+        // Publishing a draft that shares a slug with a live, code-defined
+        // instrument tells staff something untrue: it does not change what any
+        // participant takes, and it puts a "published" badge on a stub.
+        if(np==='published' && window.FCReg && FCReg.bySlug && FCReg.bySlug(ins.slug)){
+          toast('Not published. This slug belongs to a live instrument defined in code, so publishing here would not change what participants take.');
+          return;
+        }
         FC.sb.from('instruments').update({status:np,published_at:np==='published'?new Date().toISOString():null}).eq('id',id).then(function(r){
           if(r.error){toast('Failed: '+r.error.message);return;}
           audit&&audit('instrument_'+np,id,{});toast(np==='published'?'Published. Members can take it.':'Retired.');editInstrument(id);loadInstruments();

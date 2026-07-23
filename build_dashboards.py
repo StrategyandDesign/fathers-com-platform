@@ -74,13 +74,39 @@ HEAD = '''<!DOCTYPE html>
 
 FOOT = '''</main>
 <div class="toast"></div>
-<script src="assets/js/config.js"></script>
+{pre_scripts}<script src="assets/js/config.js"></script>
 <script src="assets/js/supabase-client.js"></script>
 <script src="assets/js/roles.js"></script>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/{page}.js"></script>
-</body></html>
+{post_scripts}</body></html>
 '''
+
+# Scripts a page needs loaded before its own controller. Studio's Assessments
+# tab lists the instruments participants actually take, which are defined in
+# code and served through the registry, so it needs the instrument data and the
+# registry in scope.
+PRE_SCRIPTS = {
+    'studio': (
+        '<script src="assets/js/keystone-data.js"></script>\n'
+        '<script src="assets/js/keystone-manhood-data.js"></script>\n'
+        '<script src="assets/js/assessment-registry.js"></script>\n'
+    ),
+    # The participant page embeds the real report component so an admin sees a
+    # father's dashboard exactly as he does. Same stack the dashboard uses.
+    'participant': (
+        '<script src="assets/js/keystone-data.js"></script>\n'
+        '<script src="assets/js/keystone-full.js"></script>\n'
+        '<script src="assets/js/keystone-manhood-data.js"></script>\n'
+        '<script src="assets/js/assessment-registry.js"></script>\n'
+        '<script src="assets/js/keystone-report.js"></script>\n'
+    ),
+}
+
+# Scripts a page needs after its own controller.
+POST_SCRIPTS = {
+    'participant': '<script src="assets/js/participant-preview.js"></script>\n',
+}
 
 PAGES = {
 'participant': ('Participant', '''
@@ -95,14 +121,24 @@ PAGES = {
     <div id="pt-results" style="margin-top:16px"><p class="fine">Search by name or email to begin.</p></div>
   </div>
   <div class="card" id="pt-detail" style="display:none"></div>
+
+  <div class="card" id="pt-preview-card" style="margin-top:20px">
+    <div class="row between wrap" style="gap:12px;margin-bottom:6px">
+      <h3 id="pt-preview-title" style="margin:0">The participant dashboard</h3>
+      <span class="chip" id="pt-preview-tag">Sample participant</span>
+    </div>
+    <p class="fine" id="pt-preview-note" style="margin-bottom:18px">This is the live dashboard component, not a picture of one. It renders from the same code a father sees, so it cannot fall out of date. Open a father above to see his in this same place.</p>
+    <div id="pt-preview"></div>
+  </div>
 </div>
 '''),
 
 
 'admin': ('Admin', '''
+
 <div class="dash-head"><h1 class="d-36">Admin</h1><p class="lead">People, roles, content, and the audit trail.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="admin-people">--</div><div class="glance-sub">people on the platform</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="admin-new">--</div><div class="glance-sub">new sign-ups</div></div><div class="glance-card"><div class="glance-lbl">CONTENT</div><div class="glance-big" data-glance="admin-content">--</div><div class="glance-sub">courses live</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="admin-next">Review pending role requests and new content awaiting approval.</div></div></div>
 <div data-tabs>
-  <div class="tabs"><button class="active">People &amp; roles</button><button>Content</button><button>Orgs</button><button>Audit</button><button>Certificates</button></div>
+  <div class="tabs"><button class="active">People &amp; roles</button><button>Content</button><button>Orgs</button><button>Certification</button><button>Audit</button></div>
 
   <div class="tabpanel active">
     <div class="card" style="margin-bottom:20px">
@@ -122,21 +158,8 @@ PAGES = {
     <div class="row between" style="margin-bottom:16px"><h3>All classes</h3><a class="btn btn-primary btn-sm" href="studio.html">Open Studio</a></div>
     <div id="content-table">Loading content…</div>
     <div class="card" style="margin-top:20px"><h3 style="margin-bottom:14px">Instruments</h3><div id="instr-table">Loading instruments…</div></div>
-  </div>
 
-  <div class="tabpanel">
-    <div class="card" style="margin-bottom:20px"><h3 style="margin-bottom:14px">Create an organization</h3>
-      <div class="grid-3" style="gap:12px;align-items:end">
-        <div class="field" style="margin:0"><label>Name</label><input class="input" id="org-name" placeholder="Living Hope Church"></div>
-        <div class="field" style="margin:0"><label>Seats</label><input class="input" id="org-seats" type="number" value="25"></div>
-        <button class="btn btn-primary" id="org-go">Create</button>
-      </div></div>
-    <div class="card"><h3 style="margin-bottom:14px">Organizations</h3><div id="orgs-table">Loading orgs…</div></div>
-  </div>
-
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Audit log</h3><div id="audit-table">Loading audit…</div></div></div>
-
-  <div class="tabpanel">
+    <div class="eyebrow" style="margin:30px 0 12px">CERTIFICATE COURSES</div>
     <div class="card" style="margin-bottom:20px">
       <div class="row between wrap" style="margin-bottom:18px;gap:12px">
         <h3>Build a course</h3>
@@ -176,15 +199,60 @@ PAGES = {
       <div id="cert-qa" class="fine">Loading&hellip;</div>
       <div class="row" style="gap:10px;margin-top:14px;align-items:end"><div class="field" style="margin:0;flex:1"><label>Prompt</label><input class="input" id="qa-prompt"></div><button class="btn btn-primary btn-sm" id="qa-add">Add prompt</button></div>
     </div>
+  </div>
 
+  <div class="tabpanel">
+    <div class="card" style="margin-bottom:20px"><h3 style="margin-bottom:14px">Create an organization</h3>
+      <div class="grid-3" style="gap:12px;align-items:end">
+        <div class="field" style="margin:0"><label>Name</label><input class="input" id="org-name" placeholder="Living Hope Church"></div>
+        <div class="field" style="margin:0"><label>Seats</label><input class="input" id="org-seats" type="number" value="25"></div>
+        <button class="btn btn-primary" id="org-go">Create</button>
+      </div></div>
+    <div class="card"><h3 style="margin-bottom:14px">Organizations</h3><div id="orgs-table">Loading orgs…</div></div>
+    <div class="card" style="margin-top:20px">
+      <h3 style="margin-bottom:6px">Partner course assignment</h3>
+      <p class="fine" style="margin-bottom:14px">Which courses each partner offers. Courses are authored once under Content; this decides who gets them.</p>
+      <div class="row wrap" style="gap:10px;margin-bottom:14px;align-items:end">
+        <div class="field" style="margin:0;flex:1;min-width:170px"><label>Partner</label><select class="input" id="oc-org"></select></div>
+        <div class="field" style="margin:0;flex:1;min-width:170px"><label>Course</label><select class="input" id="oc-course"></select></div>
+        <button class="btn btn-primary btn-sm" id="oc-add">Assign</button>
+      </div>
+      <div id="oc-table" class="fine">Loading&hellip;</div>
+    </div>
+  </div>
+
+  <div class="tabpanel">
     <div class="card">
       <h3 style="margin-bottom:6px">Completions to approve</h3>
       <p class="fine" style="margin-bottom:14px">Men who finished. Approve to issue the Certificate of Completion, signed and serialed.</p>
       <div id="cert-approvals" class="fine">Loading&hellip;</div>
     </div>
+    <div class="card" style="margin-bottom:20px">
+      <h3 style="margin-bottom:6px">Certified organizations</h3>
+      <p class="fine" style="margin-bottom:14px">The institutional layer. An organization earns Certified status against a published standard. Serials run NCF-O.</p>
+      <div id="reg-orgs" class="fine">Loading&hellip;</div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <h3 style="margin-bottom:6px">Certified facilitators</h3>
+      <p class="fine" style="margin-bottom:14px">Training, an exam, and a supervised first cohort. Serials run NCF-F.</p>
+      <div id="reg-facilitators" class="fine">Loading&hellip;</div>
+    </div>
+
+    <div class="card">
+      <div class="row between wrap" style="margin-bottom:6px;gap:12px">
+        <h3>Issued Certificates of Completion</h3>
+        <input class="input" id="reg-cert-search" placeholder="Search serial or name" style="max-width:250px">
+      </div>
+      <p class="fine" style="margin-bottom:14px">His, not the institution’s. Serials run FC. Revoking is a server-side action and is deliberately not offered here.</p>
+      <div id="reg-certs" class="fine">Loading&hellip;</div>
+    </div>
   </div>
+
+  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Audit log</h3><div id="audit-table">Loading audit…</div></div></div>
 </div>
 <script src="assets/js/admin-certs.js"></script>
+<script src="assets/js/admin-registry.js"></script>
 
 <div class="eyebrow" style="margin:34px 0 12px">EVERY ROLE VIEW</div>
 <p class="fine" style="color:var(--ash);margin-bottom:16px">Open any dashboard on the platform, exactly as that role sees it.</p>
@@ -394,7 +462,8 @@ PAGES = {
 if __name__ == '__main__':
     out = os.path.dirname(os.path.abspath(__file__))
     for page, (title, body) in PAGES.items():
-        html = HEAD.format(title=title, meta=social_meta(page, title)) + body + FOOT.format(page=page)
+        html = HEAD.format(title=title, meta=social_meta(page, title)) + body + FOOT.format(
+            page=page, pre_scripts=PRE_SCRIPTS.get(page, ''), post_scripts=POST_SCRIPTS.get(page, ''))
         with open(os.path.join(out, page + '.html'), 'w') as f:
             f.write(html)
         print('wrote', page + '.html')
