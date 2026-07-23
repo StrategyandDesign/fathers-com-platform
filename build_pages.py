@@ -131,7 +131,7 @@ PAGES['index.html'] = dict(title='Know where you stand', desc='Take the free Key
           </span>
           <span class="hio-arrow">&rarr;</span>
         </button>
-        <button class="hero-intent-opt" data-path="preparing">
+        <button class="hero-intent-opt" data-path="full" data-assessment="keystone-manhood-profile">
           <span class="hio-text">
             <span class="hio-label">I'm preparing, mentoring, or growing</span>
             <span class="hio-sub">The Manhood Track</span>

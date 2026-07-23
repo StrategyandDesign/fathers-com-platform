@@ -127,7 +127,11 @@
     var intent = null;
     try { intent = localStorage.getItem('fc_intent_path'); if(intent) localStorage.removeItem('fc_intent_path'); } catch(e){}
     if(intent === 'preparing'){ KS.setPath('preparing'); servedGate(preparingIntro); return; }
-    if(intent === 'father'){ KS.setPath('father'); servedGate(chooseMode); return; }
+    // 'full' and 'father' both mean the complete instrument. 'father' is kept
+    // because it is already sitting in returning visitors' localStorage and in
+    // existing links; 'full' is the honest name now that the complete path is
+    // also used by the Manhood Profile.
+    if(intent === 'full' || intent === 'father'){ KS.setPath('father'); servedGate(chooseMode); return; }
     if(window.FC && FC.live && FC.uid()){
       // Did he just save-and-signup mid-assessment? Restore his local work into his new account.
       var resuming = false;

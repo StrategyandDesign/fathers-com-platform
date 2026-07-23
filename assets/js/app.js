@@ -196,10 +196,15 @@
 
 
   // Hero intent form: tap a path on the homepage, remember it, go to the assessment.
+  // A track can name the instrument it leads to via data-assessment. Without one
+  // the man lands on the default profile, which is how the Fatherhood Track works.
   document.querySelectorAll('.hero-intent-opt').forEach(function(b){
     b.addEventListener('click', function(){
       try { localStorage.setItem('fc_intent_path', b.getAttribute('data-path')); } catch(e){}
-      window.location.href = 'profile.html';
+      var slug = b.getAttribute('data-assessment');
+      window.location.href = slug
+        ? 'profile.html?assessment=' + encodeURIComponent(slug)
+        : 'profile.html';
     });
   });
 
