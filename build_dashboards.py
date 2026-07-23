@@ -294,7 +294,12 @@ PAGES = {
 <div class="card" id="rb-card" style="padding:26px">
   <div class="eyebrow" style="margin-bottom:6px">REPORT BRANDING</div>
   <h3 style="margin-bottom:6px">The written report, in your program&rsquo;s colors</h3>
-  <p class="fine" style="color:var(--ash);margin-bottom:20px;max-width:64ch">This is what a course creator can change on the participant report: two logos, the highlight colors, one photo per section, and optional hero and footer backgrounds. Changes apply to every report the moment you save.</p>
+  <p class="fine" style="color:var(--ash);margin-bottom:16px;max-width:64ch">This is what a course creator can change on the participant report: two logos, the highlight colors, one photo per section, and optional hero and footer backgrounds. Changes apply the moment you save.</p>
+  <div class="field" style="max-width:360px;margin-bottom:22px">
+    <label>Which report</label>
+    <select class="input" id="rb-scope"></select>
+    <p class="fine" style="margin-top:6px;color:var(--ash)">Each assessment can carry its own look. The default covers any report that has none of its own.</p>
+  </div>
   <div class="grid-2" style="gap:20px;align-items:start">
     <div>
       <div class="eyebrow" style="font-size:10px;margin-bottom:8px">PRIMARY LOGO</div>
