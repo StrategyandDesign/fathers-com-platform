@@ -746,11 +746,11 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
   --rp-acc:#2E5741; --rp-acc-deep:#173629; --rp-acc-hi:#5B9A7A;
   --rp-r:16px; --rp-rc:12px; --rp-rs:7px;
   max-width:880px;margin:0 auto;background:var(--rp-paper);color:var(--rp-ink);
-  border-radius:20px;overflow:hidden;box-shadow:0 40px 90px -35px rgba(0,0,0,.55);
+  border-radius:20px;overflow:hidden;box-shadow:0 22px 58px -26px rgba(0,0,0,.22);
   font-family:var(--font-body,"Poppins",system-ui,sans-serif);font-size:16px;line-height:1.58}
 
 /* dark grey page frame behind the white report (report page only) */
-section.tight:has(#rpRoot){background:#555555;padding-bottom:64px}
+section.tight:has(#rpRoot){background:#F5F5F5;padding-bottom:64px}
 .container:has(#rpRoot){position:relative}
 .rp-doc *{box-sizing:border-box}
 .rp-doc h1,.rp-doc h2,.rp-doc h3{font-family:var(--font-display);font-weight:600;line-height:1.06;letter-spacing:-.014em;margin:0}

@@ -322,17 +322,30 @@
         '<article class="rp-gcard rp-gcard-gap"><div class="rp-geyebrow">Your next move</div>'+
           '<div class="rp-gbig">'+esc(gap?gap.label:'')+'</div><p class="rp-gline">'+esc(gapCopy.g||'')+'</p></article></section>';
 
-      var normN = (ACTIVE && ACTIVE.norms_n) ? ACTIVE.norms_n.toLocaleString() : '2,066';
+      // An instrument without norms must not borrow another instrument's. When
+      // norms_n is 0 the old falsy check fell through to '2,066', printing a
+      // national norm group on a profile that has never been normed.
+      var normed  = !!(ACTIVE && ACTIVE.norms_n > 0);
+      var normN   = normed ? ACTIVE.norms_n.toLocaleString() : null;
+      var groupN  = (ACTIVE && ACTIVE.norm_group_noun) || 'fathers';
+      var subjN   = (ACTIVE && ACTIVE.subject_noun) || 'your fathering';
+      var itemN   = 0;
+      if(ACTIVE && ACTIVE.sections){ ACTIVE.sections.forEach(function(s){ s.scales.forEach(function(x){ itemN += (x.items||[]).length; }); }); }
+      var firstStat = normed
+        ? '<div class="rp-stat"><div class="rp-stat-n">'+normN+'</div><div class="rp-stat-l">'+esc(groupN)+' in your norm group</div></div>'
+        : '<div class="rp-stat"><div class="rp-stat-n">'+itemN+'</div><div class="rp-stat-l">questions you answered</div></div>';
       var stats='<section class="rp-stats">'+
-        '<div class="rp-stat"><div class="rp-stat-n">'+normN+'</div><div class="rp-stat-l">fathers in your norm group</div></div>'+
-        '<div class="rp-stat"><div class="rp-stat-n">'+keys.length+'</div><div class="rp-stat-l">parts of your fathering, measured</div></div>'+
+        firstStat+
+        '<div class="rp-stat"><div class="rp-stat-n">'+keys.length+'</div><div class="rp-stat-l">parts of '+esc(subjN)+', measured</div></div>'+
         '<div class="rp-stat"><div class="rp-stat-n">90</div><div class="rp-stat-l">days to your next move</div></div></section>';
 
       var shape='<section class="rp-shape"><div class="rp-eyebrow">Your shape</div>'+
-        '<p class="rp-shape-lead">Each mark is one part of your fathering, placed against where the typical father stands. A mirror, not a ranking. The strongest ground is lit; the next move is ringed.</p>'+
+        '<p class="rp-shape-lead">Each mark is one part of '+esc(subjN)+', placed against '+(normed?'where the typical '+esc(groupN.replace(/s$/,''))+' stands':'the middle of the scale')+'. A mirror, not a ranking. The strongest ground is lit; the next move is ringed.</p>'+
         stripSvg(result)+'</section>';
 
-      var howto='<section class="rp-howto"><b>How to read this.</b> Each bar shows where you stand next to '+normN+' fathers in the national norm group; the center mark is the typical father. Standings are words, not grades: A starting point, Building, Developing, Solid, Strong. This is a self-report. It is a mirror, not a verdict, and every line in it can move.</section>';
+      var howto = normed
+        ? '<section class="rp-howto"><b>How to read this.</b> Each bar shows where you stand next to '+normN+' '+esc(groupN)+' in the national norm group; the center mark is the typical '+esc(groupN.replace(/s$/,''))+'. Standings are words, not grades: A starting point, Building, Developing, Solid, Strong. This is a self-report. It is a mirror, not a verdict, and every line in it can move.</section>'
+        : '<section class="rp-howto"><b>How to read this.</b> Each bar shows where you placed yourself on that part of '+esc(subjN)+', not how you compare to other '+esc(groupN)+'. This profile does not yet have a norm group, so nothing here ranks you against anyone. Standings are words, not grades: A starting point, Building, Developing, Solid, Strong. This is a self-report. It is a mirror, not a verdict, and every line in it can move.</section>';
 
       var chapters = ACTIVE.sections.map(function(sec,idx){ return chapterHtml(sec,idx,result,brand); }).join('');
 

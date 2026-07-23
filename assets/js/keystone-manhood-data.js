@@ -1,226 +1,364 @@
-// The Keystone Manhood Profile, KMP-0.1-draft.
-// Status: DRAFT ITEM BANK. Not validated. Not normed. Not deployed.
-// Deployment is gated on Dr. Ken Canfield's psychometric review and a norming study.
-// Architecture mirrors the Keystone Father Profile exactly: 128 items, 26 scales,
-// three sections, identical response scales, identical per-scale item counts,
-// identical scoring machinery. Equal length, equal weighting, equal scoring by design.
-// Research basis (documented in POSITIONING.md): positive-masculinity framework
-// (Kiselica and Englar-Carlson), conscientiousness and self-control outcome research,
-// generativity research, prosociality measurement, adult-development relationship findings.
-// The four headline dimensions parallel Involvement, Consistency, Awareness, Nurturance:
-// Presence, Discipline, Respect, Service.
+/* ============================================================
+   THE KEYSTONE MANHOOD PROFILE
+   ============================================================
+   Structural twin of the Keystone Father Profile: three sections, 26 scales,
+   128 items, the same response scales and the same item grammar. What differs
+   is the construct. The Father Profile measures a man toward his child. This
+   measures a man toward the people who depend on him, and toward the man he is
+   when no one is watching.
+
+   WHY THIS EXISTS SEPARATELY
+   The populations this platform serves (reentry, treatment, military
+   separation) include many men who are not currently fathering, or who are
+   fathering at a distance. Handing those men a fathering instrument produces
+   floor effects and shame. Every construct below is answerable by any man.
+
+   PROVENANCE
+   Each scale carries a `source` naming the element of Dr. Ken Canfield's
+   published framework it derives from:
+     I-CAN       his four dimensions of fathering: Involvement, Consistency,
+                 Awareness, Nurturance
+     7-SECRETS   Commitment, Knowing Your Child, Consistency, Protecting and
+                 Providing, Loving Their Mother, Active Listening, Spiritual
+                 Equipping
+     HEART       The Heart of a Father: examine your own heart, resolve your
+                 relationship with your own father, take the long view
+     PFP         a construct carried across from the Personal Fathering Profile
+                 structure itself
+   Where a construct has no direct antecedent it is marked EXTENSION with the
+   rationale stated. Nothing is attributed to him that he did not write.
+
+   DESIGN GUARDRAIL
+   Canfield's fathering work has been noted for avoiding the chest-beating,
+   paternalistic tone of some men's movements. A manhood instrument is exactly
+   where that tone creeps back in. So there are no items about dominance,
+   headship, toughness, provider-as-identity, or gender role prescription.
+   Manhood is measured here as character in relationship, which is the
+   through-line of his research. Items assume no wife, no children, no job and
+   no house, because many respondents will have none of those.
+
+   CALIBRATION STATUS: NOT YET NORMED.
+   The Father Profile is scored against published norms from 2,066 fathers.
+   This instrument has none. It is therefore scored criterion-referenced (where
+   a man placed himself on the scale) rather than norm-referenced (how he
+   compares to other men). Those are different claims and the platform must
+   never confuse them. See `calibration` for the plan that retires this status.
+
+   REQUIRES Dr. Ken Canfield psychometric sign-off before participant use.
+   ============================================================ */
 window.KEYSTONE_MANHOOD = {
-  "slug": "keystone-manhood-profile",
-  "title": "The Keystone Manhood Profile",
-  "version": "KMP-0.1-draft",
-  "validated": false,
-  "provisional": true,
-  "norms_n": 0,
-  "norms_note": "No norms exist. Scored deployment requires psychometric sign-off and a norming study. Until then results may be reported as raw baselines only, clearly labeled.",
-  "description": "The manhood inventory in development. 128 items, 26 scales, mirroring the Keystone Father Profile architecture. Draft under review.",
-  "sections": [
+  slug: 'keystone-manhood-profile',
+  title: 'The Keystone Manhood Profile',
+  description: 'A mirror of how you carry yourself, and the one move that changes the most.',
+
+  version: '1.0-draft',
+
+  /* Norm-referenced scoring requires norms. There are none yet, so scores are
+     computed against the range of the scale itself. The scorer reads this. */
+  scoring: {
+    mode: 'criterion_referenced',
+    basis: 'percent_of_scale_range',
+    note: 'Scores show where a man placed himself on each scale. They are not percentile ranks and must not be described as a comparison to other men until norms exist.'
+  },
+
+  norms_n: 0,
+  norm_group_noun: 'men',
+  subject_noun: 'your life as a man',
+
+  calibration: {
+    status: 'pending',
+    blocking_gate: 'Dr. Ken Canfield psychometric sign-off',
+    plan: [
+      'Content validity. Dr. Canfield reviews all 128 items against his framework and cuts or rewrites.',
+      'Cognitive pretest with 8 to 12 men drawn from the three target populations, confirming each item is understood as intended.',
+      'Pilot at n>=250 across partner sites for item analysis: item-total correlations, floor and ceiling effects, Cronbach alpha per scale. Target alpha >=.80, matching the Father Profile range of .80 to .87.',
+      'Exploratory factor analysis to test whether the three-section structure holds, then confirmatory factor analysis on a fresh sample.',
+      'Norming at n>=1000 to publish mean and SD per scale. At that point scoring.mode flips to norm_referenced and norms_n is set.',
+      'Differential item functioning check across the reentry, treatment and separation populations before any high-stakes use.'
+    ]
+  },
+
+  sections: [
+    /* -------------------------------------------------------------------
+       SECTION 1 - DIMENSIONS
+       The Father Profile opens with Canfield's I-CAN dimensions, the load
+       bearing walls of his model, so this opens the same way, translated
+       from "toward my child" to "toward the people who depend on me."
+       Involvement becomes Presence: a man with no children can still be
+       present or absent to the people in front of him.
+       ------------------------------------------------------------------- */
     {
-      "key": "dimensions",
-      "title": "Manhood Dimensions",
-      "instruction": "Decide how accurate each statement is concerning your life as a man.",
-      "scale": { "kind": "likert5", "labels": ["Mostly False", "Somewhat False", "Uncertain", "Somewhat True", "Mostly True"] },
-      "scales": [
-        { "key": "presence", "label": "Presence", "mean": null, "sd": null, "rel": null, "items": [
-          "I am engaged in the lives of the people closest to me.",
-          "I often have real conversations with the people who count on me.",
-          "I schedule time for the people who matter to me.",
-          "I show up when I say I will show up.",
-          "I take an active role in my family or my closest circle.",
-          "The people close to me and I often do things together."
-        ]},
-        { "key": "discipline", "label": "Discipline", "mean": null, "sd": null, "rel": null, "items": [
-          "People know what to expect from me.",
-          "I keep the commitments I make.",
-          "I hold myself to standards even when no one is watching.",
-          "I set limits on my own behavior and keep them.",
-          "I correct my own course when I am drifting.",
-          "I live the way I tell others to live."
-        ]},
-        { "key": "respect", "label": "Respect", "mean": null, "sd": null, "rel": null, "items": [
-          "I treat women with respect in every setting.",
-          "I speak about people the same way whether or not they are in the room.",
-          "I listen to opinions I disagree with without belittling the person.",
-          "I honor the people in authority over me even when I disagree.",
-          "I keep my word to people who could never make me keep it.",
-          "I treat people who can do nothing for me with dignity."
-        ]},
-        { "key": "service", "label": "Service", "mean": null, "sd": null, "rel": null, "items": [
-          "I look for ways to be useful to the people around me.",
-          "I help without being asked.",
-          "I put the needs of my family or community ahead of my comfort.",
-          "I use what I am good at to serve someone else.",
-          "I check on people who are struggling.",
-          "I carry weight so that someone weaker does not have to."
-        ]},
-        { "key": "drift", "label": "Drift", "mean": null, "sd": null, "rel": null, "reverse": true, "items": [
-          "I rarely make time for the people who need me.",
-          "I have difficulty getting motivated to handle my responsibilities.",
-          "The people close to me and I seldom spend real time together.",
-          "It is hard for me to get going on the things that matter.",
-          "I tend to delay doing the things I know I should do.",
-          "I rarely follow through on what I start.",
-          "I avoid taking action when action is needed."
-        ]},
-        { "key": "listening", "label": "Active Listening", "mean": null, "sd": null, "rel": null, "items": [
-          "I pay attention when people speak to me.",
-          "I carefully listen when someone expresses a concern to me.",
-          "I listen to the people close to me when they talk to me.",
-          "I show people that I care when they share a problem with me."
-        ]},
-        { "key": "work", "label": "Work", "mean": null, "sd": null, "rel": null, "items": [
-          "I do work that I can be proud of.",
-          "I earn my own way or I am working a plan to get there.",
-          "My work gives me a sense of accomplishment.",
-          "I take on work that challenges me.",
-          "My work gives me opportunity to grow as a person."
-        ]},
-        { "key": "steadiness", "label": "Steadiness", "mean": null, "sd": null, "rel": null, "items": [
-          "I keep my poise during stressful times.",
-          "I remain calm in a difficult conversation.",
-          "I can easily lose my temper during a conflict.",
-          "People who know me would say I am even-tempered.",
-          "I often get upset or angry with the people around me."
-        ]},
-        { "key": "direction", "label": "Direction", "mean": null, "sd": null, "rel": null, "items": [
-          "I have established goals for my life.",
-          "I have built habits and routines that hold my life steady.",
-          "I have a long-term plan for the kind of man I am becoming.",
-          "I stay connected to the people who have known me longest.",
-          "I seek the advice of older men I respect.",
-          "I know what I am building my life toward."
-        ]},
-        { "key": "growth", "label": "Growth", "mean": null, "sd": null, "rel": null, "items": [
-          "I have read a book, listened to a podcast, or attended a class in the past year to help me grow as a man.",
-          "I am in good physical health and exercise regularly.",
-          "I am making real progress as a man.",
-          "I regularly cultivate the moral and/or spiritual aspects of my life.",
-          "The people in my life enjoy being around me."
-        ]}
+      key: 'dimensions',
+      title: 'Manhood Dimensions',
+      instruction: 'Decide how accurate each statement is concerning your life as a man.',
+      scale: { kind: 'likert5', labels: ['Mostly False','Somewhat False','Uncertain','Somewhat True','Mostly True'] },
+      scales: [
+        { key:'presence', label:'Presence', mean:null, sd:null, rel:null,
+          source:'I-CAN (Involvement)',
+          items:[
+            'I am present in the lives of the people who depend on me.',
+            'I give people my full attention when I am with them.',
+            'I set aside time for the people who matter most to me.',
+            'I show up on ordinary days, not only for the big ones.',
+            'I take an active part in what the people close to me are going through.',
+            'The people close to me and I do things together regularly.'
+          ]},
+        { key:'consistency', label:'Consistency', mean:null, sd:null, rel:null,
+          source:'I-CAN (Consistency); 7-SECRETS (Consistency)',
+          items:[
+            'I am the same man in private that I am in public.',
+            'The people close to me know what to expect from me.',
+            'I keep my word even when it costs me something.',
+            'My mood does not decide how I treat people.',
+            'I follow through on what I start.',
+            'People can count on me to be steady when things get hard.'
+          ]},
+        { key:'awareness', label:'Awareness', mean:null, sd:null, rel:null,
+          source:'I-CAN (Awareness); HEART (examine your own heart)',
+          items:[
+            'I know what sets me off before it happens.',
+            'I can name what I am feeling when I am under pressure.',
+            'I notice when someone close to me is struggling.',
+            'I understand how my upbringing shaped the man I am.',
+            'I know my own strengths and my own limits.',
+            'I can tell when I have hurt someone, even if they say nothing.'
+          ]},
+        { key:'nurturance', label:'Nurturance', mean:null, sd:null, rel:null,
+          source:'I-CAN (Nurturance)',
+          items:[
+            'I encourage the people close to me.',
+            'I am gentle with people who are hurting.',
+            'I tell the people I love that I love them.',
+            'I look for ways to make someone else\u2019s day easier.',
+            'I am patient with people who need more time than I do.',
+            'People feel safe bringing me bad news.'
+          ]},
+        { key:'commitment', label:'Commitment', mean:null, sd:null, rel:null,
+          source:'7-SECRETS (Commitment)',
+          items:[
+            'I do not quit on people when it gets hard.',
+            'The people who depend on me know they come first.',
+            'I stay in relationships through seasons that are not easy.',
+            'I have decided what kind of man I intend to be.',
+            'I keep commitments I made when circumstances were different.',
+            'I am reachable when the people who need me reach for me.',
+            'I would give up something I want for someone I am responsible for.'
+          ]},
+        { key:'active_listening', label:'Active Listening', mean:null, sd:null, rel:null,
+          source:'7-SECRETS (Active Listening)',
+          items:[
+            'I listen without planning my answer.',
+            'I let people finish before I speak.',
+            'I ask questions instead of assuming I already know.',
+            'People tell me they feel heard by me.'
+          ]},
+        { key:'work_contribution', label:'Work and Contribution', mean:null, sd:null, rel:null,
+          source:'PFP (Job Satisfaction); 7-SECRETS (Protecting and Providing). EXTENSION: widened from employment to contribution, because many respondents are between jobs, incarcerated, or in treatment.',
+          items:[
+            'The work I do matters to me.',
+            'I carry my share of the load.',
+            'I own my mistakes instead of explaining them away.',
+            'I do honest work even when no one is checking.',
+            'What I do with my days is worth doing.'
+          ]},
+        { key:'emotional_regulation', label:'Emotional Regulation', mean:null, sd:null, rel:null,
+          source:'PFP (Emotional Regulation)',
+          items:[
+            'I stay calm when I am provoked.',
+            'I handle frustration without taking it out on people.',
+            'I can sit with a hard feeling without acting on it.',
+            'I settle back down quickly after something goes wrong.',
+            'My anger does not run the room.'
+          ]},
+        { key:'legacy_and_planning', label:'Legacy and Planning', mean:null, sd:null, rel:null,
+          source:'HEART (take the long view); PFP (Legacy and Planning)',
+          items:[
+            'I think about what people will remember about me.',
+            'I am building something that will outlast me.',
+            'I plan for the years ahead, not only for this week.',
+            'I have thought about what I want to pass on.',
+            'I am deliberate about the direction my life is going.',
+            'The choices I make now account for the people who come after me.'
+          ]},
+        { key:'flourishing', label:'Flourishing', mean:null, sd:null, rel:null,
+          source:'PFP (Flourishing)',
+          items:[
+            'I have a sense of purpose.',
+            'I am mostly at peace with myself.',
+            'I have people I can be honest with.',
+            'I am growing rather than standing still.',
+            'My life is going in a good direction.'
+          ]}
       ]
     },
+
+    /* -------------------------------------------------------------------
+       SECTION 2 - PRACTICES
+       The Father Profile's practices operationalize the Seven Secrets as
+       tasks a man rates himself on. Same grammar here: gerund phrases rated
+       Very Poor to Very Good. "Loving their mother" becomes the closest
+       relationship, answerable whether a man is married, co-parenting,
+       separated, or single.
+       ------------------------------------------------------------------- */
     {
-      "key": "practices",
-      "title": "Manhood Practices",
-      "instruction": "Decide how successful you are in each of the following practices of your life as a man.",
-      "scale": { "kind": "likert5", "labels": ["Very Poor", "Poor", "Fair", "Good", "Very Good"] },
-      "scales": [
-        { "key": "modeling", "label": "Modeling", "mean": null, "sd": null, "rel": null, "items": [
-          "Demonstrating emotional maturity to the people around me.",
-          "Being a mature example to younger men and boys.",
-          "Being a good example to the people who watch my life.",
-          "Living in a way I would want others to copy."
-        ]},
-        { "key": "restraint", "label": "Restraint", "mean": null, "sd": null, "rel": null, "items": [
-          "Responding calmly when someone says hurtful things to me.",
-          "Allowing people to disagree with me.",
-          "Being patient with people when they make mistakes.",
-          "Not losing my temper when I am provoked.",
-          "Responding calmly when someone does something I do not agree with."
-        ]},
-        { "key": "knowing_people", "label": "Knowing My People", "mean": null, "sd": null, "rel": null, "items": [
-          "Knowing the strengths and personalities of the people closest to me.",
-          "Knowing the plans and dreams of the people closest to me.",
-          "Knowing who my people spend their time with.",
-          "Knowing the issues the people close to me are dealing with.",
-          "Knowing who and what the people close to me look up to.",
-          "Knowing what the people close to me need from me right now."
-        ]},
-        { "key": "provision", "label": "Provision", "mean": null, "sd": null, "rel": null, "items": [
-          "Providing for my own needs without leaning on others.",
-          "Keeping a consistent income or working a real plan toward one.",
-          "Handling my money so that my obligations are met.",
-          "Making certain the basic needs of the people who depend on me are met."
-        ]},
-        { "key": "skill_building", "label": "Skill Building", "mean": null, "sd": null, "rel": null, "items": [
-          "Having a specific plan for my own growth.",
-          "Developing my strengths and abilities on purpose.",
-          "Learning new skills that make me more useful.",
-          "Taking an active role in my own education or training.",
-          "Teaching a skill to someone else.",
-          "Finishing the training or study I start."
-        ]},
-        { "key": "counsel", "label": "Counsel", "mean": null, "sd": null, "rel": null, "items": [
-          "Talking honestly with someone I trust about how my life is going.",
-          "Bringing my real problems to someone instead of hiding them.",
-          "Discussing my goals with someone who will hold me to them.",
-          "Admitting my frustrations to someone instead of letting them build."
-        ]},
-        { "key": "crisis", "label": "Crisis", "mean": null, "sd": null, "rel": null, "items": [
-          "Handling a crisis in a mature manner.",
-          "Knowing what to do when things fall apart.",
-          "Being able to deal with a crisis in a positive manner.",
-          "Being level-headed during a crisis.",
-          "Helping others stay steady during a crisis.",
-          "Not blaming others when things go wrong."
-        ]},
-        { "key": "encouragement", "label": "Encouragement", "mean": null, "sd": null, "rel": null, "items": [
-          "Telling people when they have done something well.",
-          "Sincerely thanking people who help me.",
-          "Telling someone they matter to me.",
-          "Pointing out qualities in people that I respect.",
-          "Building real relationships instead of keeping everyone at a distance.",
-          "Telling someone I am proud of them."
-        ]},
-        { "key": "conviction", "label": "Conviction", "mean": null, "sd": null, "rel": null, "items": [
-          "Telling the truth even when it costs me.",
-          "Living by convictions rather than convenience.",
-          "Stressing the importance of honesty in how I deal with people.",
-          "Taking part in a community that holds me to something higher.",
-          "Having honest conversations about right and wrong."
-        ]},
-        { "key": "time_for_others", "label": "Time for Others", "mean": null, "sd": null, "rel": null, "items": [
-          "Spending time regularly with the people who count on me.",
-          "Sacrificing some of my own activities for the people who need me.",
-          "Giving individual attention to the people close to me.",
-          "Setting aside special time for someone other than myself."
-        ]},
-        { "key": "accountability", "label": "Accountability", "mean": null, "sd": null, "rel": null, "items": [
-          "Receiving correction without making excuses.",
-          "Taking responsibility when I am wrong.",
-          "Keeping the boundaries and expectations I have agreed to.",
-          "Letting someone speak into my life with authority."
-        ]},
-        { "key": "close_relationships", "label": "Close Relationships", "mean": null, "sd": null, "rel": null, "items": [
-          "Having a positive and honest relationship with the people closest to me.",
-          "Working at my closest relationships instead of coasting.",
-          "Spending unhurried time with the people I love.",
-          "Repairing a relationship when I have damaged it."
-        ]}
+      key: 'practices',
+      title: 'Manhood Practices',
+      instruction: 'Decide how successful you are in each of the following.',
+      scale: { kind: 'likert5', labels: ['Very Poor','Poor','Fair','Good','Very Good'] },
+      scales: [
+        { key:'modeling', label:'Modeling', mean:null, sd:null, rel:null,
+          source:'PFP (Modeling)',
+          items:[
+            'Demonstrating emotional maturity to the people around me.',
+            'Being a man someone younger could pattern himself after.',
+            'Setting an example I would be glad to see repeated.',
+            'Living out the values I say I hold.'
+          ]},
+        { key:'freedom_of_expression', label:'Freedom of Expression', mean:null, sd:null, rel:null,
+          source:'PFP (Freedom of Expression)',
+          items:[
+            'Making it safe for people to disagree with me.',
+            'Letting the people close to me say hard things without paying for it.',
+            'Admitting when I am wrong.',
+            'Taking criticism without shutting down or striking back.',
+            'Leaving room for honest conversation.'
+          ]},
+        { key:'knowing_my_people', label:'Knowing My People', mean:null, sd:null, rel:null,
+          source:'7-SECRETS (Knowing Your Child)',
+          items:[
+            'Knowing what the people closest to me are carrying right now.',
+            'Remembering what matters to the people I love.',
+            'Knowing who the important people in their lives are.',
+            'Recognizing when someone close to me has had a hard day.',
+            'Understanding what encourages the people I care about.',
+            'Knowing what the people close to me are hoping for.'
+          ]},
+        { key:'financial_provision', label:'Financial Provision', mean:null, sd:null, rel:null,
+          source:'7-SECRETS (Protecting and Providing)',
+          items:[
+            'Meeting my financial obligations on time.',
+            'Providing what I am responsible for providing.',
+            'Handling money openly with the people it affects.',
+            'Planning ahead financially instead of only reacting.'
+          ]},
+        { key:'learning_growth', label:'Learning and Growth', mean:null, sd:null, rel:null,
+          source:'PFP (Education Involvement). EXTENSION: redirected from a child\u2019s schooling to the man\u2019s own continued learning, which is answerable without children.',
+          items:[
+            'Learning something new on purpose.',
+            'Reading, studying, or training to get better at something.',
+            'Asking for help when I do not know how.',
+            'Taking correction and actually using it.',
+            'Building a skill that makes me more useful to someone.',
+            'Staying curious about lives that are not like mine.'
+          ]},
+        { key:'seeking_counsel', label:'Seeking Counsel', mean:null, sd:null, rel:null,
+          source:'PFP (Parental Discussion). EXTENSION: widened from co-parent discussion to shared decision making with whoever a man is accountable to.',
+          items:[
+            'Talking big decisions through before I make them.',
+            'Asking someone I trust what they think.',
+            'Weighing advice that runs against what I already want.',
+            'Working out a disagreement instead of going silent.'
+          ]},
+        { key:'handling_crises', label:'Handling Crises', mean:null, sd:null, rel:null,
+          source:'7-SECRETS (Protecting and Providing); PFP (Family Crises)',
+          items:[
+            'Staying steady when something goes wrong.',
+            'Handling a crisis calmly and constructively.',
+            'Being someone others turn to in an emergency.',
+            'Making clear decisions under pressure.',
+            'Helping people feel safe when things are uncertain.',
+            'Getting the household or the team back on its feet after a setback.'
+          ]},
+        { key:'showing_affection', label:'Showing Affection', mean:null, sd:null, rel:null,
+          source:'PFP (Showing Affection)',
+          items:[
+            'Telling the people close to me that they matter.',
+            'Showing appropriate physical affection.',
+            'Saying thank you out loud.',
+            'Being warm rather than only useful.',
+            'Letting people see that I care.',
+            'Making people feel wanted rather than tolerated.'
+          ]},
+        { key:'spiritual_moral_grounding', label:'Spiritual and Moral Grounding', mean:null, sd:null, rel:null,
+          source:'7-SECRETS (Spiritual Equipping)',
+          items:[
+            'Living by a moral code I could explain to someone.',
+            'Practicing what I believe rather than only stating it.',
+            'Passing on what I believe to people who look to me.',
+            'Facing my own failings honestly.',
+            'Drawing strength from something bigger than myself.'
+          ]},
+        { key:'time_commitment', label:'Time Commitment', mean:null, sd:null, rel:null,
+          source:'PFP (Time Commitment)',
+          items:[
+            'Giving my time to the people who need it most.',
+            'Protecting time that belongs to the people I love.',
+            'Being unhurried when someone needs me.',
+            'Keeping my work and my people in balance.'
+          ]},
+        { key:'giving_receiving_guidance', label:'Giving and Receiving Guidance', mean:null, sd:null, rel:null,
+          source:'PFP (Giving Guidance). EXTENSION: made two directional, because being mentored is as diagnostic as mentoring for these populations.',
+          items:[
+            'Giving guidance without taking over.',
+            'Letting an older or wiser man speak into my life.',
+            'Helping someone coming up behind me.',
+            'Correcting someone without shaming him.'
+          ]},
+        { key:'closest_relationship', label:'Closest Relationship', mean:null, sd:null, rel:null,
+          source:'7-SECRETS (Loving Their Mother); PFP (Marital Relationship). EXTENSION: framed as the closest relationship so single, separated and co-parenting men can answer it.',
+          items:[
+            'Tending to my closest relationship.',
+            'Speaking well of that person when they are not in the room.',
+            'Settling conflict instead of letting it sit.',
+            'Being a partner rather than a project.'
+          ]}
       ]
     },
+
+    /* -------------------------------------------------------------------
+       SECTION 3 - SATISFACTION
+       The Heart of a Father argues a man must resolve his relationship with
+       his own father before he can build well with anyone else. The Father
+       Profile encodes that by opening its satisfaction section with
+       childhood. Those four items carry across unchanged: they were already
+       about the man, not about his child.
+       ------------------------------------------------------------------- */
     {
-      "key": "satisfaction",
-      "title": "Manhood Satisfaction",
-      "instruction": "Decide how satisfied you are for each area stated below.",
-      "scale": { "kind": "likert7", "labels": ["Extremely Dissatisfied", "Very Dissatisfied", "Somewhat Dissatisfied", "Mixed", "Somewhat Satisfied", "Very Satisfied", "Extremely Satisfied"] },
-      "scales": [
-        { "key": "childhood_satisfaction", "label": "Childhood Satisfaction", "mean": null, "sd": null, "rel": null, "items": [
-          "How satisfied were you with your childhood?",
-          "How satisfied were you with your relationship to your father while growing up?",
-          "How satisfied were you with your relationship to your mother while growing up?",
-          "How satisfied are you with the guidance you received while growing up?"
-        ]},
-        { "key": "manhood_satisfaction", "label": "Manhood Satisfaction", "mean": null, "sd": null, "rel": null, "items": [
-          "How satisfied are you with yourself as a man?",
-          "How satisfied are you with the direction your life is heading?",
-          "How satisfied are you with the man you are becoming?"
-        ]},
-        { "key": "contribution_satisfaction", "label": "Contribution Satisfaction", "mean": null, "sd": null, "rel": null, "items": [
-          "How satisfied are you with the confidence you have to lead when it is your turn to lead?",
-          "How satisfied are you with the support you receive from the people around you?",
-          "How satisfied are you with how useful you are to others?",
-          "How satisfied are you with the respect you receive from the people who know you best?"
-        ]},
-        { "key": "relationship_satisfaction", "label": "Relationship Satisfaction", "mean": null, "sd": null, "rel": null, "items": [
-          "How satisfied are you with your communication with the people closest to you?",
-          "How satisfied are you with your ability to talk about what matters?",
-          "How satisfied are you with how much the people close to you talk to you?"
-        ]}
+      key: 'satisfaction',
+      title: 'Manhood Satisfaction',
+      instruction: 'Decide how satisfied you are for each area stated below.',
+      scale: { kind: 'likert7', labels: ['Extremely Dissatisfied','Very Dissatisfied','Somewhat Dissatisfied','Mixed','Somewhat Satisfied','Very Satisfied','Extremely Satisfied'] },
+      scales: [
+        { key:'childhood_satisfaction', label:'Childhood Satisfaction', mean:null, sd:null, rel:null,
+          source:'HEART (resolve your relationship with your own father). Items carried across unchanged from the Father Profile.',
+          items:[
+            'How satisfied were you with your childhood?',
+            'How satisfied were you with your relationship to your father while growing up?',
+            'How satisfied were you with your relationship to your mother while growing up?',
+            'How satisfied are you with the guidance you received growing up?'
+          ]},
+        { key:'manhood_satisfaction', label:'Manhood Satisfaction', mean:null, sd:null, rel:null,
+          source:'PFP (Fathering Satisfaction), turned toward the man himself',
+          items:[
+            'How satisfied are you with the man you have become?',
+            'How satisfied are you with the way you carry responsibility?',
+            'How satisfied are you with the direction your life is going?'
+          ]},
+        { key:'leadership_satisfaction', label:'Leadership Satisfaction', mean:null, sd:null, rel:null,
+          source:'PFP (Leadership Satisfaction)',
+          items:[
+            'How satisfied are you with the influence you have on others?',
+            'How satisfied are you with the way you lead in your home or your circle?',
+            'How satisfied are you with the way you handle authority over you?',
+            'How satisfied are you with the trust you have earned?'
+          ]},
+        { key:'relationship_satisfaction', label:'Satisfaction with Close Relationships', mean:null, sd:null, rel:null,
+          source:'PFP (Satisfaction with Child Relationship), widened to close relationships',
+          items:[
+            'How satisfied are you with your closest relationship?',
+            'How satisfied are you with the friendships you have?',
+            'How satisfied are you with how well the people close to you know you?'
+          ]}
       ]
     }
   ]

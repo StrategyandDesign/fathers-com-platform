@@ -186,8 +186,21 @@ window.KS = window.KS || {};
         if(n===0){ scaleScores[sc.key] = {raw:0, pct:0, band:bandFor(0), label:sc.label, section:sec.key}; return; }
         // scale to full item count if partially answered (keeps comparability to norm sum)
         var fullRaw = raw * (sc.items.length / n);
-        var z = sc.sd ? (fullRaw - sc.mean) / sc.sd : 0;
-        var pct = pctFromZ(z);
+        var pct;
+        if(sc.sd){
+          // Norm-referenced: where he stands against the published norm group.
+          pct = pctFromZ((fullRaw - sc.mean) / sc.sd);
+        } else {
+          // No norms published for this instrument. Score criterion-referenced:
+          // where he placed himself along the scale's own range. Previously this
+          // branch produced z=0 for every scale, which meant every man scored
+          // exactly 50 on all 26 scales and strength and gap were arbitrary ties.
+          // This is a different claim from a percentile and the report says so.
+          var mx = sec.scale.kind==='likert7' ? 7 : 5;
+          var lo = sc.items.length, hi = sc.items.length * mx;
+          pct = Math.round(((fullRaw - lo) / (hi - lo)) * 100);
+          pct = Math.max(0, Math.min(100, pct));
+        }
         scaleScores[sc.key] = {raw: Math.round(fullRaw), pct: pct, band: bandFor(pct), label: sc.label, section: sec.key, mean: sc.mean};
         secPcts.push(pct); allPcts.push(pct);
       });
