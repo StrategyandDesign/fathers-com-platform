@@ -29,6 +29,10 @@
     stage('<p class="ash">Loading your course\u2026</p>');
     FC.sb.from('certificate_courses').select('id,slug,title,hours,published').eq('slug',slug).single().then(function(cr){
       if(cr.error || !cr.data){ stage('<div class="notice brass">Course not found.</div>'); return; }
+      // A draft is not open to participants. It used to be reachable by typing
+      // the slug into the URL, which meant unfinished material could be taken.
+      if(cr.data.published === false){
+        stage('<div class="notice brass">This course is not open yet. <a class="link" href="certificates.html">See the courses that are</a>.</div>'); return; }
       course = cr.data;
       $('cw-title').textContent = course.title;
       // must be enrolled
