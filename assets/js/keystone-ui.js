@@ -454,7 +454,10 @@
     ksEv('assessment_complete', { preparing: KS.isPreparing() });
     // Preserve the completed result locally so it survives the sign-up round trip.
     try { localStorage.setItem('fc_pending_result', JSON.stringify({
-      scored: scored, preparing: KS.isPreparing(), at: Date.now()
+      scored: scored, preparing: KS.isPreparing(), at: Date.now(),
+      // Which instrument produced this. Without it a man who takes the Manhood
+      // Profile signed out is handed a Father Profile report when he lands.
+      assessment_slug: (ACTIVE_INS && ACTIVE_INS.slug) || 'keystone-father-profile'
     })); } catch(e){}
 
     var signedIn = window.FC && FC.live && FC.uid();
@@ -490,13 +493,19 @@
   }
 
   // ---------- full results: shown free to everyone, all 26 dimensions ----------
+  window.__showResults = function(sc){ return showResults(sc); };  // test seam
   function showResults(scored){
     enterAssessment();
     if(KS.isPreparing()){ return finishPreparing(scored); }
     var strK = scored.strength, gapK = scored.gap;
     var strength = scored.scales[strK], gap = scored.scales[gapK];
-    var sCopy = SCALE_COPY[strK] || {s:'You showed up and did the honest work.',g:'',m:[]};
-    var gCopy = SCALE_COPY[gapK] || {s:'',g:'This is the one to build first.',m:[]};
+    // Copy comes from the instrument being taken. This used to read a single
+    // father-specific library keyed by scale name, so a man taking the Manhood
+    // Profile was shown lines about his kids on shared scale keys, and blank
+    // copy on the keys the father profile does not have.
+    var COPY = ACTIVE_INS.scale_copy || SCALE_COPY;
+    var sCopy = COPY[strK] || {s:'You showed up and did the honest work.',g:'',m:[]};
+    var gCopy = COPY[gapK] || {s:'',g:'This is the one to build first.',m:[]};
     var band = (KS.bandFor ? KS.bandFor(scored.overall) : {label:'A starting point'});
     var bandLine = {
       'Strong':'You are on strong ground. The work now is to hold it.',
@@ -509,7 +518,14 @@
     var signedIn = window.FC && FC.live && FC.uid();
 
     var sp = strength ? strength.pct : 0;
-    var strengthStanding = sp>=60 ? ('Stronger than about '+sp+' out of 100 fathers here.')
+    // A percentile standing is a claim about a norm group. On an instrument that
+    // has none, it is meaningless and it was also printing nonsense like
+    // "stronger than about 100 out of 100 fathers". Only normed instruments get
+    // a comparison, and the noun comes from the instrument.
+    var normedIns = !!(ACTIVE_INS.norms_n > 0);
+    var groupNoun = ACTIVE_INS.norm_group_noun || 'fathers';
+    var strengthStanding = (normedIns && sp>=60 && sp<100)
+                          ? ('Stronger than about '+sp+' out of 100 '+groupNoun+' here.')
                           : 'This is your strongest ground to build from.';
 
     var sectionsHtml = order.map(function(secKey){
@@ -548,7 +564,7 @@
         '<div class="ks-check" style="margin-bottom:10px">\u2713</div>'+
         '<div class="eyebrow brass" style="margin-bottom:10px">ALL 128 ITEMS. DONE.</div>'+
         '<h2 style="margin:0 0 6px">You just did what most men never do.</h2>'+
-        '<p class="helper" style="margin:0">You looked at how you father, honestly, all the way through.</p>'+
+        '<p class="helper" style="margin:0">You looked at '+esc(ACTIVE_INS.subject_noun || 'how you father')+', honestly, all the way through.</p>'+
       '</div>'+
       '<div class="ks-strength-hero">'+
         '<div class="eyebrow" style="margin-bottom:12px">YOUR STRONGEST GROUND</div>'+
@@ -571,7 +587,11 @@
         '<p class="fine" style="margin-top:14px">These are day one. Your full ninety-day plan builds from here.</p></div>' : '')+
       accountCard+
       '<details class="ks-fullprofile"><summary>See your full profile, all 26 dimensions</summary>'+
-        '<p class="fine" style="margin:12px 0 18px">Relative to 2,066 fathers. Your strength and your next move are marked.</p>'+
+        '<p class="fine" style="margin:12px 0 18px">'+
+          (normedIns
+            ? 'Relative to '+ACTIVE_INS.norms_n.toLocaleString()+' '+esc(groupNoun)+'. Your strength and your next move are marked.'
+            : 'This profile does not have a norm group yet, so nothing here ranks you against anyone. Your strength and your next move are marked.')+
+        '</p>'+
         sectionsHtml+
       '</details>'+
       '<p class="ks-end">You were never broken. Now you build.</p>',
