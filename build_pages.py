@@ -584,6 +584,8 @@ PAGES['plan.html'] = dict(title='Home', desc='Your baseline, your plan, your wor
   </div>
 </div></section>
 <script src="assets/js/keystone-data.js"></script>
+<script src="assets/js/keystone-manhood-data.js"></script>
+<script src="assets/js/assessment-registry.js"></script>
 <script src="assets/js/plan-engine.js"></script>
 <script src="assets/js/plan-controller.js"></script>
 <script src="assets/js/home.js"></script>
