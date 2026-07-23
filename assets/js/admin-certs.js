@@ -8,7 +8,10 @@
   function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function note(m){ if (window.toast) toast(m); }
 
-  var demo = !(window.FC && FC.live);
+  // Evaluated lazily, never captured at parse time. This file loads before
+  // supabase-client.js defines window.FC, so reading FC here would always report
+  // demo mode and strand every panel on "Loading" even on a live site.
+  function isDemo(){ return !(window.FC && FC.live); }
   var courses = [], curCourse = null, curVideo = null, videos = [];
 
   // Show a loud, visible error in a section (so nothing ever fails silently).
@@ -28,7 +31,13 @@
   }
 
   function boot(){
-    if (demo) return;                       // admin.js shows the demo note
+    // In demo mode there is nothing to fetch. Say so, rather than returning and
+    // leaving the panels reading "Loading" forever.
+    if (isDemo()) {
+      var m = '<div class="notice brass" style="margin:0">Demo mode. Add Supabase keys in <code>assets/js/config.js</code> to load live course data.</div>';
+      ['cert-videos','cert-qa','cert-approvals'].forEach(function(id){ var e = el(id); if (e) e.innerHTML = m; });
+      return;
+    }
     FC.ready.then(function(){
       // Load courses unconditionally so the dropdown fills.
       loadCourses();
