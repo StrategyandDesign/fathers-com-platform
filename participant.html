@@ -58,12 +58,27 @@
     <div id="pt-results" style="margin-top:16px"><p class="fine">Search by name or email to begin.</p></div>
   </div>
   <div class="card" id="pt-detail" style="display:none"></div>
+
+  <div class="card" id="pt-preview-card" style="margin-top:20px">
+    <div class="row between wrap" style="gap:12px;margin-bottom:6px">
+      <h3 id="pt-preview-title" style="margin:0">The participant dashboard</h3>
+      <span class="chip" id="pt-preview-tag">Sample participant</span>
+    </div>
+    <p class="fine" id="pt-preview-note" style="margin-bottom:18px">This is the live dashboard component, not a picture of one. It renders from the same code a father sees, so it cannot fall out of date. Open a father above to see his in this same place.</p>
+    <div id="pt-preview"></div>
+  </div>
 </div>
 </main>
 <div class="toast"></div>
+<script src="assets/js/keystone-data.js"></script>
+<script src="assets/js/keystone-full.js"></script>
+<script src="assets/js/keystone-manhood-data.js"></script>
+<script src="assets/js/assessment-registry.js"></script>
+<script src="assets/js/keystone-report.js"></script>
 <script src="assets/js/config.js"></script>
 <script src="assets/js/supabase-client.js"></script>
 <script src="assets/js/roles.js"></script>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/participant.js"></script>
+<script src="assets/js/participant-preview.js"></script>
 </body></html>

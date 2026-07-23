@@ -51,6 +51,9 @@
   }
 
   function openFather(uid, name){
+    // Drive the dashboard preview below, so an admin sees this father's own
+    // dashboard rendered by the same component he uses.
+    document.dispatchEvent(new CustomEvent('fc:participant-selected', { detail: { uid: uid, name: name } }));
     var box = el('pt-detail');
     box.style.display='';
     box.innerHTML = '<h3 style="margin-bottom:6px">'+esc(name)+'</h3><p class="fine" style="margin-bottom:16px">Individual snapshot. Handle with care; this is a man\u2019s private data.</p><p class="fine" id="pt-loading">Loading\u2026</p>';
