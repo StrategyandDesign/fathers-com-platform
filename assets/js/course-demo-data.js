@@ -202,7 +202,7 @@ window.FC_COURSE_DEMO = {
         "ord": 6,
         "title": "The Line You Leave On",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 494,
         "checkpoint_json": [
           {
             "prompt": "What belongs in the line you leave on?",
@@ -232,7 +232,8 @@ window.FC_COURSE_DEMO = {
             "correct_index": 0
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s06.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s06.png",
+        "video_url": "assets/video/steady/s06-the-line-you-leave-on.mp4"
       },
       {
         "id": "demo-anger-7",

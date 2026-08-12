@@ -185,8 +185,8 @@
     {
       "ord": 6,
       "title": "The Line You Leave On",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s06-the-line-you-leave-on.mp4",
+      "duration_seconds": 494,
       "checkpoint": [
         {
           "prompt": "What belongs in the line you leave on?",
