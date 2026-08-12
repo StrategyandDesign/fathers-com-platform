@@ -32,7 +32,8 @@ STILL_DIR = {
 
 VIDEO_FOR_SESSION = {
     # (slug, ord) -> relative mp4 path
-    ("anger", 1): "assets/video/steady/surge-is-a-signal-fluid.mp4",
+    ("anger", 1): "assets/video/steady/s01-the-surge-is-a-signal.mp4",
+    ("anger", 2): "assets/video/steady/s02-know-your-early-cues.mp4",
 }
 
 

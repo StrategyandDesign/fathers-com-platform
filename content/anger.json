@@ -5,7 +5,7 @@
     {
       "ord": 1,
       "title": "The Surge Is a Signal",
-      "vimeo": "https://fathers-com-platform.vercel.app/assets/video/steady/surge-is-a-signal-fluid.mp4",
+      "vimeo": "assets/video/steady/s01-the-surge-is-a-signal.mp4",
       "duration_seconds": 502,
       "checkpoint": [
         {
@@ -41,8 +41,8 @@
     {
       "ord": 2,
       "title": "Know Your Early Cues",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s02-know-your-early-cues.mp4",
+      "duration_seconds": 518,
       "checkpoint": [
         {
           "prompt": "Where does this session tell you to catch the surge?",
