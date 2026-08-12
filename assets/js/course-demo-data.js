@@ -88,7 +88,7 @@ window.FC_COURSE_DEMO = {
         "ord": 3,
         "title": "Six Seconds",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 498,
         "checkpoint_json": [
           {
             "prompt": "What do six seconds buy you, per this session?",
@@ -118,14 +118,15 @@ window.FC_COURSE_DEMO = {
             "correct_index": 1
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s03.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s03.png",
+        "video_url": "assets/video/steady/s03-six-seconds.mp4"
       },
       {
         "id": "demo-anger-4",
         "ord": 4,
         "title": "The Long Exhale",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 484,
         "checkpoint_json": [
           {
             "prompt": "Why the long exhale specifically?",
@@ -155,7 +156,8 @@ window.FC_COURSE_DEMO = {
             "correct_index": 1
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s04.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s04.png",
+        "video_url": "assets/video/steady/s04-the-long-exhale.mp4"
       },
       {
         "id": "demo-anger-5",

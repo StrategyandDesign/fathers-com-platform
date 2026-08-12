@@ -77,8 +77,8 @@
     {
       "ord": 3,
       "title": "Six Seconds",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s03-six-seconds.mp4",
+      "duration_seconds": 498,
       "checkpoint": [
         {
           "prompt": "What do six seconds buy you, per this session?",
@@ -113,8 +113,8 @@
     {
       "ord": 4,
       "title": "The Long Exhale",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s04-the-long-exhale.mp4",
+      "duration_seconds": 484,
       "checkpoint": [
         {
           "prompt": "Why the long exhale specifically?",
