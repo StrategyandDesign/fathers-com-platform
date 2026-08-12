@@ -724,6 +724,17 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 .cert-doc-serial{font-family:var(--font-mono);font-size:10px;color:#4A4436;line-height:1.7}
 .cert-doc-qr{width:52px;height:52px;flex:0 0 52px;border:1.5px solid #1B2E28;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;color:#4A4436}
 
+/* Mid-page sample certificate on Courses page */
+.cert-sample{margin:40px 0 8px;display:flex;flex-direction:column;align-items:center;gap:22px}
+.cert-sample-stage{perspective:1600px;display:flex;justify-content:center;width:100%}
+.cert-sample .cert-doc{width:min(420px,92vw)}
+.cert-sample-caption{text-align:center;max-width:46ch;margin:0 auto}
+.cert-sample-caption .eyebrow{display:inline-block;margin-bottom:8px}
+.cert-sample-caption p{margin:0;color:var(--ash)}
+@media (prefers-reduced-motion:reduce){
+  .cert-doc-3d,.cert-hero-art:hover .cert-doc-3d{transform:none}
+}
+
 /* WHAT IT PROVES: four pillars */
 .cert-proves{padding:96px 0}
 .cert-pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
