@@ -221,8 +221,8 @@
     {
       "ord": 7,
       "title": "Name the Feeling",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s07-name-the-feeling.mp4",
+      "duration_seconds": 481,
       "checkpoint": [
         {
           "prompt": "Why does saying the feeling out loud matter, per this session?",

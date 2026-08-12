@@ -38,6 +38,7 @@ VIDEO_FOR_SESSION = {
     ("anger", 4): "assets/video/steady/s04-the-long-exhale.mp4",
     ("anger", 5): "assets/video/steady/s05-step-away-to-come-back.mp4",
     ("anger", 6): "assets/video/steady/s06-the-line-you-leave-on.mp4",
+    ("anger", 7): "assets/video/steady/s07-name-the-feeling.mp4",
 }
 
 
