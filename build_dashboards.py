@@ -174,7 +174,7 @@ PAGES = {
         </div>
       </div>
       <div id="certs-build">
-        <p class="fine" style="margin:0 0 14px">Five videos per course. Each video ends in a Checkpoint; the course closes with the Final Q&amp;A. Completion issues the Certificate of Completion, signed by Dr. Canfield and the Certified Facilitator who sponsored the seat, at no cost to the man.</p>
+        <p class="fine" style="margin:0 0 14px">Five videos per course. Each video ends in a Checkpoint; the course closes with the Final Q&amp;A. Completion issues the Certificate of Completion, signed by Dr. Canfield and your Certified Facilitator, at no cost to the man.</p>
         <div class="eyebrow" style="margin:0 0 12px">VIDEOS, WITH LENGTH SO WE KNOW IF THEY WATCHED</div>
         <div id="cert-videos" class="fine">Loading&hellip;</div>
         <div class="row wrap" style="gap:10px;margin-top:16px;align-items:end">

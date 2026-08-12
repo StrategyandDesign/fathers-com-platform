@@ -8,7 +8,7 @@ On September 30, 2025, ACF awarded over $100 million to 109 organizations
 across 38 states on five-year grants running to 2030, including 50 FORGE
 Fatherhood grantees (acf.gov). These grants fund parenting-skill services,
 staff training, and required performance reporting through the nFORM system.
-Certification fees, facilitator training, and sponsored seats fit the
+Certification fees and facilitator training fit the
 training and service-delivery budget lines. The Efficacy Report answers the
 reporting expectation these grants carry.
 
@@ -37,5 +37,5 @@ review). docs/EVIDENCE-BAR.md is the plan to be first through that door.
 ## How to write it into a budget
 1. Organization certification: training or quality-assurance line.
 2. Facilitator certification and renewal: staff development line.
-3. Sponsored seats: direct service line.
-4. The Efficacy Report: satisfies outcome-reporting deliverables.
+3. The Efficacy Report: satisfies outcome-reporting deliverables.
+4. Seat gifts / "sponsored seats" are retired. Do not budget a per-man seat sponsorship line for Fathers.com.

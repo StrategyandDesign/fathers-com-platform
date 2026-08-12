@@ -30,7 +30,7 @@ SHOW_MILITARY stays False until then (POSITIONING.md 15 posture holds).
 5. Content: lead with Coming Home Present, which now includes the module
    fathers named in the research: catching up on how your child grew while
    you were away. Parenting confidence runs as a thread, not a lecture.
-6. Cost: free to the father, always. Sponsorship covers seats.
+6. Cost: free to the father, always. Sponsorship funds organization certification and facilitator credentialing.
 7. Format options: father-only cohorts and a father-track-within-couples
    variant; units choose.
 

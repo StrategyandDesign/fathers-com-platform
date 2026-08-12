@@ -143,7 +143,7 @@ y = section(c, y, "What the certificate contains",
 y = section(c, y, "Cost to the parent",
     "Zero, ever. The Keystone Profile, the twelve-week plan, the courses, and the Certificate "
     "of Completion are free to the participant. Organizations pay for certification. "
-    "Sponsorship funds seats.", 9.8, 13.5)
+    "Sponsorship funds organization certification and facilitator credentialing.", 9.8, 13.5)
 y = section(c, y, "Privacy posture",
     "No clinical information is stored on the platform. The certificate and the public "
     "verification page never name the referring organization. The account belongs to the "
