@@ -173,7 +173,12 @@
     }
 
     if(!isDemo && result.completion_tier === 'quick'){
-      html = '<div class="notice brass" style="margin:0 0 20px"><b>Starting baseline from Dimensions.</b> This is not the full Keystone. <a class="link" href="profile.html">Finish the full Profile</a> when you want the complete picture. Your plan still builds from the scales you answered.</div>' + html;
+      var qSlug = result.assessment_slug || 'keystone-father-profile';
+      var qManhood = qSlug === 'keystone-manhood-profile';
+      var qDim = qManhood ? 'Manhood Dimensions' : 'Father Dimensions';
+      var qFull = qManhood ? 'Manhood Profile' : 'Keystone';
+      var qHref = 'profile.html?assessment=' + encodeURIComponent(qSlug);
+      html = '<div class="notice brass" style="margin:0 0 20px"><b>Starting baseline from '+qDim+'.</b> This is not the full '+qFull+'. <a class="link" href="'+qHref+'">Finish the full Profile</a> when you want the complete picture. Your plan still builds from the scales you answered.</div>' + html;
     }
 
     // 2. THIS WEEK'S MOVE. Each action can carry a cue in his own words: when and

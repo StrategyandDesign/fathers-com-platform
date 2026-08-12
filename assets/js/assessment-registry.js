@@ -43,7 +43,7 @@
       thesis:'A mirror of how you carry yourself, and the one move that changes the most.',
       dataGlobal:'KEYSTONE_MANHOOD',
       resultTable:'keystone_results', sessionTable:'keystone_sessions',
-      route:'profile.html?track=manhood'
+      route:'profile.html?assessment=keystone-manhood-profile&start=quick'
     }
   ];
 

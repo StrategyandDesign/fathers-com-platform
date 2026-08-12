@@ -444,7 +444,7 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
         <span class="fine" aria-hidden="true">&middot;</span>
         <a class="link ash" href="organizations.html">I have a facilitator</a>
         <span class="fine" aria-hidden="true">&middot;</span>
-        <a class="link ash" href="profile.html?assessment=keystone-manhood-profile">Manhood track</a>
+        <a class="link ash" href="profile.html?assessment=keystone-manhood-profile&start=quick">Manhood track</a>
       </div>
     </div>
   </div>

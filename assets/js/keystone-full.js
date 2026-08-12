@@ -14,8 +14,9 @@ window.KS = window.KS || {};
   var flatItems = [];      // ordered list of {key, section, scale, prompt, kind, labels}
   var mode = 'by_section';
   var path = 'father';     // 'father' = full instrument; 'preparing' = childhood + readiness only
-  // Quick Start is NOT a separate path. It is the father path limited to the
-  // Dimensions section (completion_tier='quick'). Do not reuse path=preparing.
+  // Quick Start is NOT a separate path. On the full-instrument path it limits
+  // work to the Dimensions section (completion_tier='quick') for Father or
+  // Manhood. Do not reuse path=preparing for Quick Start.
   var quickStart = false;
   try { quickStart = sessionStorage.getItem('fc_quick_start') === '1'; } catch(e){}
 
@@ -61,9 +62,9 @@ window.KS = window.KS || {};
     return flatItems.filter(function(f){ return PREPARING_SCALES.indexOf(f.scale) >= 0; });
   };
   KS.pathSectionKeys = function(){
-    // Quick Start: Dimensions only on the father path. Full Keystone clears the
-    // flag and returns all three sections again (sections_done already has dimensions).
-    if(quickStart && path === 'father') return ['dimensions'];
+    // Quick Start: Dimensions only on the full-instrument path (Father or Manhood).
+    // Full Profile clears the flag and returns all three sections again.
+    if(quickStart && !KS.isPreparing()) return ['dimensions'];
     if(path === 'father') return INS.sections.map(function(s){return s.key;});
     // preparing: only sections that contain a preparing scale
     var keys = [];
@@ -158,12 +159,12 @@ window.KS = window.KS || {};
 
   KS.answeredCount = function(secKey){
     var items = secKey ? KS.itemsInSection(secKey)
-              : (quickStart && path === 'father' ? KS.itemsInSection('dimensions') : flatItems);
+              : (quickStart && !KS.isPreparing() ? KS.itemsInSection('dimensions') : flatItems);
     return items.filter(function(f){ return answers[f.key]!=null; }).length;
   };
   KS.totalCount = function(secKey){
     if(secKey) return KS.itemsInSection(secKey).length;
-    if(quickStart && path === 'father') return KS.itemsInSection('dimensions').length;
+    if(quickStart && !KS.isPreparing()) return KS.itemsInSection('dimensions').length;
     return flatItems.length;
   };
   KS.sectionsDone = function(){ return (session && session.sections_done) || []; };

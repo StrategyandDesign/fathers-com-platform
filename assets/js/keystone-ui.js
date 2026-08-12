@@ -12,11 +12,21 @@
   var ACTIVE_INS = window.KEYSTONE;
   (function pickInstrument(){
     var want = null;
-    try { want = new URLSearchParams(window.location.search).get('assessment'); } catch(e){}
-    if(!want || !window.FCReg || !FCReg.bySlug) return;
-    var entry = FCReg.bySlug(want);
-    if(!entry) return;
-    var data = FCReg.data(entry);
+    var track = null;
+    try {
+      var sp = new URLSearchParams(window.location.search);
+      want = sp.get('assessment');
+      track = sp.get('track');
+    } catch(e){}
+    if(!want && track === 'manhood') want = 'keystone-manhood-profile';
+    if(!want) return;
+    var data = null;
+    if(window.FCReg && FCReg.bySlug){
+      var entry = FCReg.bySlug(want);
+      if(entry) data = FCReg.data(entry);
+    }
+    if(!data && want === 'keystone-manhood-profile') data = window.KEYSTONE_MANHOOD || null;
+    if(!data && want === 'keystone-father-profile') data = window.KEYSTONE || null;
     if(!data) return;
     if(data.released === false){
       root.innerHTML = '<div class="container" style="padding:80px 0"><div class="card" style="max-width:560px;margin:0 auto;text-align:center">'+
@@ -27,6 +37,22 @@
     }
     ACTIVE_INS = data;
   })();
+
+  function activateInstrument(slug){
+    var data = null;
+    if(window.FCReg && FCReg.bySlug){
+      var entry = FCReg.bySlug(slug);
+      if(entry) data = FCReg.data(entry);
+    }
+    if(!data && slug === 'keystone-manhood-profile') data = window.KEYSTONE_MANHOOD || null;
+    if(!data && slug === 'keystone-father-profile') data = window.KEYSTONE || null;
+    if(!data) return false;
+    if(data.released === false) return false;
+    ACTIVE_INS = data;
+    KS.init(ACTIVE_INS);
+    order = KS.sectionKeys();
+    return true;
+  }
 
   KS.init(ACTIVE_INS);
   var order = KS.sectionKeys();     // full set; path narrows it via KS.pathSectionKeys()
@@ -166,18 +192,51 @@
   // ---------- entry: choose mode, or resume ----------
   /* Real start of the runner. Separated so the conversion intro (#ksIntro) can
      stay on screen until the man taps Begin, instead of being wiped by gate(). */
+  function isManhoodInstrument(){
+    return !!(ACTIVE_INS && ACTIVE_INS.slug === 'keystone-manhood-profile');
+  }
+
+  function beginQuickStart(){
+    KS.setPath('father');
+    KS.setQuickStart(true);
+    servedGate(function(){
+      enterAssessment();
+      ksStart();
+      KS.resumeOrStart('by_section').then(function(){ runSection('dimensions'); });
+    });
+  }
+
+  function beginManhoodQuick(){
+    if(!activateInstrument('keystone-manhood-profile')){
+      // Fall back only if manhood data is missing; keep legacy childhood path alive.
+      KS.setPath('preparing');
+      servedGate(preparingIntro);
+      return;
+    }
+    beginQuickStart();
+  }
+
   function proceedStart(){
     // Quick / full entry from ?start= or fc_intent_start. Quick is Dimensions
-    // only on the father path (not path=preparing).
+    // only on the full-instrument path (Father or Manhood), never path=preparing.
     var startIntent = readStartIntent();
     if(startIntent === 'quick'){
-      KS.setPath('father');
-      KS.setQuickStart(true);
-      servedGate(function(){
-        enterAssessment();
-        ksStart();
-        KS.resumeOrStart('by_section').then(function(){ runSection('dimensions'); });
-      });
+      var wantAssessment = null;
+      try { wantAssessment = new URLSearchParams(window.location.search).get('assessment'); } catch(e){}
+      var track = null;
+      try { track = new URLSearchParams(window.location.search).get('track'); } catch(e){}
+      if(!wantAssessment && track === 'manhood') wantAssessment = 'keystone-manhood-profile';
+      if(wantAssessment === 'keystone-manhood-profile' || isManhoodInstrument()){
+        beginManhoodQuick();
+        return;
+      }
+      if(wantAssessment === 'keystone-father-profile' || (wantAssessment && wantAssessment !== 'keystone-manhood-profile')){
+        if(wantAssessment === 'keystone-father-profile') activateInstrument('keystone-father-profile');
+        beginQuickStart();
+        return;
+      }
+      // Shared Quick Start entry with no assessment: fork Father vs Manhood.
+      servedGate(quickStartGate);
       return;
     }
     if(startIntent === 'full'){
@@ -189,7 +248,8 @@
     // An explicit track choice on the homepage always wins, signed in or not.
     var intent = null;
     try { intent = localStorage.getItem('fc_intent_path'); if(intent) localStorage.removeItem('fc_intent_path'); } catch(e){}
-    if(intent === 'preparing'){ KS.setPath('preparing'); servedGate(preparingIntro); return; }
+    // Legacy preparing intent now lands on Manhood Dimensions quick (real instrument).
+    if(intent === 'preparing'){ beginManhoodQuick(); return; }
     // 'full' and 'father' both mean the complete instrument. 'father' is kept
     // because it is already sitting in returning visitors' localStorage and in
     // existing links; 'full' is the honest name now that the complete path is
@@ -279,7 +339,7 @@
     var pre = null;
     try { pre = localStorage.getItem('fc_intent_path'); localStorage.removeItem('fc_intent_path'); } catch(e){}
     if(pre === 'father'){ KS.setPath('father'); chooseMode(); return; }
-    if(pre === 'preparing'){ KS.setPath('preparing'); preparingIntro(); return; }
+    if(pre === 'preparing'){ beginManhoodQuick(); return; }
     gate();  // no pre-selection: show the full gate question
   }
 
@@ -293,15 +353,48 @@
       '<div class="ks-modes" style="margin-top:32px">'+
         '<button class="ks-mode" data-path="father">'+
           '<b>I\'m raising children now</b>'+
-          '<span>The Fatherhood Track. You\'ll take the full Keystone Father Profile: the complete inventory of how you father today.</span></button>'+
-        '<button class="ks-mode" data-path="preparing">'+
+          '<span>The Fatherhood Track. The Keystone Father Profile: how you father today.</span></button>'+
+        '<button class="ks-mode" data-path="manhood">'+
           '<b>I\'m preparing, mentoring, or growing</b>'+
-          '<span>The Manhood Track, measured by The Keystone Manhood Profile. Expectant fathers, future fathers, mentors, and men rebuilding. You\'ll start by reflecting on your own upbringing, then explore the path.</span></button>'+
+          '<span>The Manhood Track. The Keystone Manhood Profile: Presence, Discipline, Respect, and Service. Start with Dimensions.</span></button>'+
       '</div>');
     root.querySelectorAll('.ks-mode').forEach(function(b){
       b.onclick = function(){
-        KS.setPath(b.dataset.path);
-        servedGate(b.dataset.path === 'father' ? chooseMode : preparingIntro);
+        if(b.dataset.path === 'father'){
+          activateInstrument('keystone-father-profile');
+          KS.setPath('father');
+          KS.clearQuickStart();
+          servedGate(chooseMode);
+          return;
+        }
+        beginManhoodQuick();
+      };
+    });
+  }
+
+  // Shared Quick Start fork when ?start=quick has no assessment deep link.
+  function quickStartGate(){
+    enterAssessment();
+    root.innerHTML = shell(
+      '<div class="eyebrow brass" style="margin-bottom:18px">QUICK START</div>'+
+      '<h2 style="margin:0 0 8px">Which baseline do you want?</h2>'+
+      '<p class="helper">Dimensions only, about eight minutes. Your plan can start from this. Finish the full Profile when you want the complete picture.</p>'+
+      '<div class="ks-modes" style="margin-top:32px">'+
+        '<button class="ks-mode" data-quick="father">'+
+          '<b>Raising children now</b>'+
+          '<span>Father Dimensions. A starting baseline on how you father today.</span></button>'+
+        '<button class="ks-mode" data-quick="manhood">'+
+          '<b>Preparing, mentoring, or growing</b>'+
+          '<span>Manhood Dimensions. Presence, Discipline, Respect, and Service.</span></button>'+
+      '</div>');
+    root.querySelectorAll('.ks-mode').forEach(function(b){
+      b.onclick = function(){
+        if(b.dataset.quick === 'manhood'){
+          beginManhoodQuick();
+          return;
+        }
+        activateInstrument('keystone-father-profile');
+        beginQuickStart();
       };
     });
   }
@@ -590,10 +683,14 @@
 
   function finishQuick(){
     var scored = KS.score();
-    ksEv("assessment_quick_complete", { section: "dimensions" });
+    var slug = (ACTIVE_INS && ACTIVE_INS.slug) || "keystone-father-profile";
+    var manhood = slug === "keystone-manhood-profile";
+    var dimLabel = manhood ? "Manhood Dimensions" : "Father Dimensions";
+    var fullLabel = manhood ? "Manhood Profile" : "Keystone";
+    ksEv("assessment_quick_complete", { section: "dimensions", assessment_slug: slug });
     try { localStorage.setItem("fc_pending_result", JSON.stringify({
       scored: scored, preparing: false, at: Date.now(),
-      assessment_slug: (ACTIVE_INS && ACTIVE_INS.slug) || "keystone-father-profile",
+      assessment_slug: slug,
       completion_tier: "quick"
     })); } catch(e){}
 
@@ -606,7 +703,7 @@
           FC.ready.then(function(){
             return FC.sb.from("pending_results").insert({
               token: tok,
-              assessment_slug: (ACTIVE_INS && ACTIVE_INS.slug) || "keystone-father-profile",
+              assessment_slug: slug,
               payload: { scored: scored, preparing: false, at: Date.now(), completion_tier: "quick" }
             });
           }).then(function(){}, function(e){ console.error("[keystone] pending park failed", e); });
@@ -624,12 +721,13 @@
     var sCopy = COPY[strK] || {s:"You showed up and did the honest work.",g:"",m:[]};
     var gCopy = COPY[gapK] || {s:"",g:"This is the one to build first.",m:[]};
     var sameScale = (strK === gapK);
+    var planHref = "plan.html?assessment="+encodeURIComponent(slug)+"&reveal=1";
     root.innerHTML = shell(
       "<div class=\"center\" style=\"margin-bottom:24px\">"+
         "<div class=\"ks-check\" style=\"margin-bottom:10px\">\u2713</div>"+
-        "<div class=\"eyebrow brass\" style=\"margin-bottom:10px\">STARTING BASELINE \u00b7 DIMENSIONS</div>"+
+        "<div class=\"eyebrow brass\" style=\"margin-bottom:10px\">STARTING BASELINE \u00b7 "+esc(dimLabel.toUpperCase())+"</div>"+
         "<h2 style=\"margin:0 0 6px\">Starting baseline locked.</h2>"+
-        "<p class=\"helper\" style=\"margin:0\">Dimensions only, not the full Keystone. Your plan can start from this. Finish the full Profile when you want the complete picture.</p>"+
+        "<p class=\"helper\" style=\"margin:0\">Dimensions only, not the full "+esc(fullLabel)+". Your plan can start from this.</p>"+
       "</div>"+
       "<div class=\"ks-strength-hero\">"+
         "<div class=\"eyebrow\" style=\"margin-bottom:12px\">YOUR STRONGEST GROUND</div>"+
@@ -643,8 +741,8 @@
           (gCopy.g ? "<p class=\"ks-next-line\">"+esc(gCopy.g)+"</p>" : "")+
         "</div>")+
       "<div class=\"stack-16\" style=\"margin-top:24px\">"+
-        "<a class=\"btn btn-primary\" style=\"width:100%\" href=\"plan.html?assessment=keystone-father-profile&reveal=1\">Start my plan</a>"+
-        "<button class=\"btn btn-secondary\" style=\"width:100%\" id=\"ksContFull\">Continue full Keystone</button>"+
+        "<a class=\"btn btn-primary\" style=\"width:100%\" href=\""+planHref+"\">Start my plan</a>"+
+        "<button class=\"btn btn-secondary\" style=\"width:100%\" id=\"ksContFull\">Continue full "+esc(fullLabel)+"</button>"+
         "<p class=\"fine\" style=\"text-align:center;margin-top:4px\"><a class=\"link ash\" href=\"certificates.html\" style=\"font-size:12px\">Browse courses</a></p>"+
       "</div>"
     );
