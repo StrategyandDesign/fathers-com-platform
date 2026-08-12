@@ -724,17 +724,6 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 .cert-doc-serial{font-family:var(--font-mono);font-size:10px;color:#4A4436;line-height:1.7}
 .cert-doc-qr{width:52px;height:52px;flex:0 0 52px;border:1.5px solid #1B2E28;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;color:#4A4436}
 
-/* Mid-page sample certificate on Courses page */
-.cert-sample{margin:40px 0 8px;display:flex;flex-direction:column;align-items:center;gap:22px}
-.cert-sample-stage{perspective:1600px;display:flex;justify-content:center;width:100%}
-.cert-sample .cert-doc{width:min(420px,92vw)}
-.cert-sample-caption{text-align:center;max-width:46ch;margin:0 auto}
-.cert-sample-caption .eyebrow{display:inline-block;margin-bottom:8px}
-.cert-sample-caption p{margin:0;color:var(--ash)}
-@media (prefers-reduced-motion:reduce){
-  .cert-doc-3d,.cert-hero-art:hover .cert-doc-3d{transform:none}
-}
-
 /* WHAT IT PROVES: four pillars */
 .cert-proves{padding:96px 0}
 .cert-pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
@@ -1390,7 +1379,6 @@ html[data-theme="dark"] .cert-req-mark{color:#141210}
 @media(max-width:780px){.split-audience{grid-template-columns:1fr}}
 
 .progress-rail{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0}
-.hero-cta .progress-rail{padding:0;margin:0}
 .progress-rail .pr-step{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ash)}
 .progress-rail .pr-step .pr-n{width:22px;height:22px;border-radius:50%;border:1px solid var(--hairline-strong);display:inline-flex;align-items:center;justify-content:center;font-size:10px}
 .progress-rail .pr-step.is-done{color:var(--bone)}
@@ -1398,6 +1386,31 @@ html[data-theme="dark"] .cert-req-mark{color:#141210}
 .progress-rail .pr-step.is-here{color:var(--bone)}
 .progress-rail .pr-step.is-here .pr-n{background:var(--yellow);border-color:var(--yellow);color:#0A0A0A;font-weight:700}
 .progress-rail .pr-join{width:18px;height:1px;background:var(--hairline);flex:0 0 auto}
+
+/* Homepage hero CTA hierarchy */
+.hero-cta{display:flex;flex-direction:column;align-items:flex-start;gap:20px;max-width:440px;width:100%}
+.hero-cta-primary{display:flex;flex-direction:column;gap:8px;width:100%}
+.hero-cta-primary .btn{width:100%;text-align:center}
+.hero-cta .progress-rail{padding:0;margin:0}
+.hero-cta-secondary{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.hero-cta-secondary .link{font-size:13px;color:var(--ash)}
+.hero-cta-secondary .link:hover{color:var(--bone)}
+.hero-cta-secondary .fine{color:var(--ash);opacity:.7;font-size:12px}
+
+/* How-it-works rail: scanable + air under hero CTA on mobile */
+.hiw-section{padding-top:28px;padding-bottom:28px}
+.hiw-lede{margin:0 0 18px;color:var(--ash);max-width:58ch}
+.hiw-rail .hiw .hiw-t{display:block;font-family:var(--font-display);font-weight:600;font-size:18px;letter-spacing:-.014em;line-height:1.25;color:var(--bone)}
+.hiw-rail .hiw .hiw-p{margin:8px 0 0;font-size:14px;line-height:1.5;color:var(--ash)}
+@media(max-width:680px){
+  .hiw-section{padding-top:36px;padding-bottom:32px}
+  .hero{padding-bottom:36px}
+}
+
+/* Course card quiet CTA affordance */
+#homeclasses .card{position:relative}
+#homeclasses .card-cta{display:inline-block;margin-top:12px;font-size:13px;font-weight:600;color:var(--brass)}
+#homeclasses .card:hover .card-cta{color:var(--yellow)}
 
 .org-panel{background:var(--coal);border:1px solid var(--hairline);border-radius:var(--r-card);padding:28px 30px;box-shadow:var(--elev-1)}
 .org-panel h2,.org-panel h3{letter-spacing:-.014em}
@@ -1425,6 +1438,7 @@ html[data-theme="dark"] .cert-req-mark{color:#141210}
 .hiw-rail .hiw:last-child{border-radius:0 var(--r-card) var(--r-card) 0}
 .hiw-rail .hiw + .hiw{border-left:0}
 .hiw-rail .hiw .hiw-n{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;color:var(--brass);margin-bottom:8px}
+.hiw-rail .hiw > b:not(.hiw-t){display:block;font-family:var(--font-display);font-weight:600;font-size:18px;letter-spacing:-.014em;line-height:1.25}
 @media(max-width:780px){
   .hiw-rail{grid-template-columns:1fr}
   .hiw-rail .hiw,.hiw-rail .hiw:first-child,.hiw-rail .hiw:last-child{border-radius:0;border-left:1px solid var(--hairline)}
@@ -1433,8 +1447,13 @@ html[data-theme="dark"] .cert-req-mark{color:#141210}
   .hiw-rail .hiw:last-child{border-radius:0 0 var(--r-card) var(--r-card)}
 }
 
-.social-proof{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;align-items:center;padding:8px 0}
-.social-proof span{font-size:12.5px;color:var(--ash);font-family:var(--font-mono);letter-spacing:.04em}
+.social-proof{display:flex;flex-wrap:wrap;gap:10px 28px;justify-content:center;align-items:center;padding:10px 0 4px}
+.social-proof span{font-size:12.5px;color:var(--ash);font-family:var(--font-mono);letter-spacing:.04em;position:relative}
+.social-proof span + span::before{content:"";position:absolute;left:-16px;top:50%;width:4px;height:4px;border-radius:50%;background:var(--hairline-strong);transform:translateY(-50%)}
+@media(max-width:560px){
+  .social-proof{gap:8px 18px;justify-content:flex-start}
+  .social-proof span + span::before{display:none}
+}
 
 .nav-links .nav-org{color:var(--nav-ink)}
 .foot-verify{display:inline-flex;align-items:center;gap:8px;margin-top:8px;padding:8px 12px;border:1px solid rgba(201,151,59,.45);border-radius:6px;color:var(--brass)!important;font-weight:600;font-size:13px!important}

@@ -142,9 +142,9 @@ def nav(active='', mode='public'):
 
 
 TRUST_BAR = '''<div class="trust-bar" role="note"><div class="container trust-bar-inner">
-  <span>Free for participants</span><span class="tb-dot" aria-hidden="true">&middot;</span>
+  <span>Free Profile &amp; courses</span><span class="tb-dot" aria-hidden="true">&middot;</span>
   <span>Facilitator-supported</span><span class="tb-dot" aria-hidden="true">&middot;</span>
-  <span>Verifiable certificate</span><span class="tb-dot" aria-hidden="true">&middot;</span>
+  <span>Certificate anyone can verify</span><span class="tb-dot" aria-hidden="true">&middot;</span>
   <a href="verify.html">Verify a serial</a>
 </div></div>
 '''
@@ -422,19 +422,21 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
     <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em" data-motion="fade-up">Become the father they can count on.</h1>
     <p class="lead" style="margin:22px 0 12px" data-motion="fade-up">Presence they can feel. Steadiness under pressure. Warmth they hear.</p>
     <p style="color:var(--ash);margin:0 0 24px;max-width:42ch;font-size:17px;line-height:1.5">Free Profile, about twenty minutes. Your plan and film path start from there.</p>
-    <div class="hero-cta" data-motion="hero-cta" style="display:flex;flex-direction:column;align-items:flex-start;gap:14px;max-width:440px">
-      <a class="btn btn-yellow btn-lg" href="profile.html" style="width:100%;text-align:center">Start free Profile &middot; about 20 min</a>
-      <div class="progress-rail" aria-hidden="true" style="padding:0">
-        <span class="pr-step is-here"><span class="pr-n">1</span> Profile</span><span class="pr-join"></span>
-        <span class="pr-step"><span class="pr-n">2</span> Plan</span><span class="pr-join"></span>
-        <span class="pr-step"><span class="pr-n">3</span> Course</span>
+    <div class="hero-cta" data-motion="hero-cta">
+      <div class="hero-cta-primary">
+        <a class="btn btn-yellow btn-lg" href="profile.html">Start free Profile &middot; about 20 min</a>
+        <div class="progress-rail" aria-hidden="true">
+          <span class="pr-step is-here"><span class="pr-n">1</span> Profile</span><span class="pr-join"></span>
+          <span class="pr-step"><span class="pr-n">2</span> Plan</span><span class="pr-join"></span>
+          <span class="pr-step"><span class="pr-n">3</span> Course</span>
+        </div>
       </div>
-      <div class="row wrap" style="gap:16px;align-items:center">
-        <a class="link ash" href="login.html" style="font-size:13px">Log in</a>
-        <span class="fine" style="color:var(--ash)">&middot;</span>
-        <a class="link ash" href="organizations.html" style="font-size:13px">I have a facilitator</a>
-        <span class="fine" style="color:var(--ash)">&middot;</span>
-        <a class="link ash" href="profile.html?assessment=keystone-manhood-profile" style="font-size:13px">Manhood track</a>
+      <div class="hero-cta-secondary">
+        <a class="link ash" href="login.html">Log in</a>
+        <span class="fine" aria-hidden="true">&middot;</span>
+        <a class="link ash" href="organizations.html">I have a facilitator</a>
+        <span class="fine" aria-hidden="true">&middot;</span>
+        <a class="link ash" href="profile.html?assessment=keystone-manhood-profile">Manhood track</a>
       </div>
     </div>
   </div>
@@ -465,13 +467,25 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
   </div>
 </div></header>
 
-<section class="tight" style="padding-top:12px;padding-bottom:20px"><div class="container">
+<section class="hiw-section tight"><div class="container">
   <div class="eyebrow brass" style="margin-bottom:10px">HOW IT WORKS</div>
-  <p class="small" style="margin:0 0 18px;color:var(--ash);max-width:62ch">Same destination every time: a father they can count on. Three honest steps get you there.</p>
+  <p class="small hiw-lede">Same destination every time: a father they can count on. Three steps.</p>
   <div class="hiw-rail" aria-label="Profile, then Plan, then Course">
-    <div class="hiw"><div class="hiw-n">01 &middot; PROFILE</div><b>Know where you stand</b><p class="small" style="margin-top:8px;color:var(--ash)">Free Keystone Father Profile. About twenty minutes. Private to you. Your baseline on the four things that matter.</p></div>
-    <div class="hiw"><div class="hiw-n">02 &middot; PLAN</div><b>Twelve weeks, built for you</b><p class="small" style="margin-top:8px;color:var(--ash)">Small moves from your gaps, workable on a busy week. Practice that shows up where you are.</p></div>
-    <div class="hiw"><div class="hiw-n">03 &middot; COURSE</div><b>Train on film. Leave with proof.</b><p class="small" style="margin-top:8px;color:var(--ash)">Facilitator-supported film courses. Checkpoints, logged hours, and a certificate anyone can verify.</p></div>
+    <div class="hiw">
+      <div class="hiw-n">01 &middot; PROFILE</div>
+      <b class="hiw-t">Know where you stand</b>
+      <p class="hiw-p">Free Keystone Father Profile. About twenty minutes. Private. Your baseline on the four things that matter.</p>
+    </div>
+    <div class="hiw">
+      <div class="hiw-n">02 &middot; PLAN</div>
+      <b class="hiw-t">Twelve weeks, built for you</b>
+      <p class="hiw-p">Small moves from your gaps, workable on a busy week. Practice that shows up where you are.</p>
+    </div>
+    <div class="hiw">
+      <div class="hiw-n">03 &middot; COURSE</div>
+      <b class="hiw-t">Train on film. Leave with proof.</b>
+      <p class="hiw-p">Film courses with a facilitator. Checkpoints, logged hours, and a certificate anyone can verify.</p>
+    </div>
   </div>
 </div></section>
 
@@ -539,7 +553,8 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
       <div style="padding:20px 22px">
         <div class="row between" style="margin-bottom:8px"><span class="pill">FREE COURSE</span><span class="fine mono">9 sessions</span></div>
         <h3 style="margin-bottom:6px">Fathering Fundamentals</h3>
-        <p class="fine" style="color:var(--ash)">The Seven Secrets of Effective Fathers, taught by Dr. Ken Canfield. Nine sessions (intro, seven secrets, bonus), usable the same night. Free to train; completion recognized.</p>
+        <p class="fine" style="color:var(--ash)">Dr. Ken Canfield&rsquo;s Seven Secrets. Nine sessions you can use the same night. Free to train.</p>
+        <span class="card-cta">Start Fundamentals &rarr;</span>
       </div>
     </a>
     <a class="card" href="course-steady-under-pressure.html" style="padding:0;overflow:hidden;text-decoration:none">
@@ -547,7 +562,8 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
       <div style="padding:20px 22px">
         <div class="row between" style="margin-bottom:8px"><span class="pill">FILM COURSE</span><span class="fine mono">12 sessions</span></div>
         <h3 style="margin-bottom:6px">Steady Under Pressure</h3>
-        <p class="fine" style="color:var(--ash)">Steadiness, trained on film with a facilitator. Checkpoints and a verifiable certificate.</p>
+        <p class="fine" style="color:var(--ash)">Keep your cool when the day hits hard. Short films, real practice, a certificate you earn.</p>
+        <span class="card-cta">See Steady &rarr;</span>
       </div>
     </a>
     <a class="card" href="course-coming-home-present.html" style="padding:0;overflow:hidden;text-decoration:none">
@@ -555,7 +571,8 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
       <div style="padding:20px 22px">
         <div class="row between" style="margin-bottom:8px"><span class="pill">FILM COURSE</span><span class="fine mono">12 sessions</span></div>
         <h3 style="margin-bottom:6px">Coming Home Present</h3>
-        <p class="fine" style="color:var(--ash)">Rehab and treatment reconnect, then service return. Film with a facilitator; proof a court or program can check.</p>
+        <p class="fine" style="color:var(--ash)">Walk back in present. Skills for the first weeks home, trained on film with a facilitator.</p>
+        <span class="card-cta">See Coming Home &rarr;</span>
       </div>
     </a>
     <a class="card" href="course-same-team.html" style="padding:0;overflow:hidden;text-decoration:none">
@@ -563,7 +580,8 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
       <div style="padding:20px 22px">
         <div class="row between" style="margin-bottom:8px"><span class="pill">FILM COURSE</span><span class="fine mono">12 sessions</span></div>
         <h3 style="margin-bottom:6px">Same Team</h3>
-        <p class="fine" style="color:var(--ash)">Co-parenting on film with a facilitator. One team around the children, whatever the arrangement.</p>
+        <p class="fine" style="color:var(--ash)">Stay on the same side for your kids. Calm handoffs, clearer talk, less heat between homes.</p>
+        <span class="card-cta">See Same Team &rarr;</span>
       </div>
     </a>
   </div>
@@ -571,11 +589,11 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
 </div></section>
 
 <section class="tight" style="padding:10px 0 34px"><div class="container">
-  <div class="social-proof">
+  <div class="social-proof" aria-label="Trust signals">
     <span>National Center for Fathering &middot; since 1990</span>
-    <span>Dr. Ken Canfield</span>
-    <span>Verify any serial at fathers.com/verify</span>
-    <span>Change measured per man, baseline to exit</span>
+    <span>Built with Dr. Ken Canfield</span>
+    <span>Any serial: fathers.com/verify</span>
+    <span>Progress tracked, baseline to finish</span>
   </div>
 </div></section>
 
@@ -583,7 +601,7 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
   <div>
     <div class="eyebrow brass" style="margin-bottom:14px">PROVE &middot; THE CERTIFICATE OF COMPLETION</div>
     <h2 class="d-36" style="font-size:32px">Proof you did the work.</h2>
-    <p style="color:var(--ash);margin:16px 0 26px;max-width:50ch">Checkpoints passed, a written final reviewed by his Certified Facilitator, and a serial any court, program, or employer can confirm online. Signed by Dr. Ken Canfield and the Certified Facilitator who sponsored your seat. Free to every man who earns it.</p>
+    <p style="color:var(--ash);margin:16px 0 26px;max-width:50ch">Checkpoints passed, a written final reviewed by your Certified Facilitator, and a serial any court, program, or employer can confirm online. Signed by Dr. Ken Canfield and the facilitator who led your work. Free to every man who earns it.</p>
     <a class="btn btn-secondary" href="certificates.html">See the Certificate</a>
     <p class="fine" style="margin-top:16px">Run a program? Become a Certified Organization and your facilitators present these at completion. <a class="link ash" href="organizations.html" style="font-size:12px">Get certified</a>.</p>
   </div>
