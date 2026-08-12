@@ -447,14 +447,68 @@
       stage('<div class="notice brass">Could not reach the grading server. Nothing was recorded; try again in a moment.</div>');
     });
   }
+  var LOCK_LINES = {
+    anger: {
+      1: 'Surge named. Early cues next.',
+      2: 'Early cues marked. Six seconds next.',
+      3: 'Six seconds in hand. The long exhale next.',
+      4: 'Exhale locked in. Step away next.',
+      5: 'Step away marked. The leave-line next.',
+      6: 'Leave-line set. Naming the feeling next.',
+      7: 'Feeling named. Without weapons next.',
+      8: 'Loaded words out. Own it same day next.',
+      9: 'Owned same day. The short apology next.',
+      10: 'Apology kept short. Sleep, food, movement next.',
+      11: 'Boring hours marked. Your steady week next.',
+      12: 'Steady week set. Final questions when you are ready.'
+    }
+  };
+
+  function lockLine(v){
+    var map = LOCK_LINES[slug] || {};
+    if (map[v.ord]) return map[v.ord];
+    if (v.ord >= videos.length) return 'Session '+v.ord+' locked in.';
+    return 'Session '+v.ord+' locked in. Next up when you are ready.';
+  }
+
+  function lockPipsHtml(doneOrd){
+    var html = '';
+    for (var i = 1; i <= videos.length; i++){
+      var cls = 'course-pip';
+      if (i < doneOrd) cls += ' is-done';
+      else if (i === doneOrd) cls += ' is-done is-here';
+      html += '<span class="'+cls+'"></span>';
+    }
+    return html;
+  }
+
   function showCheckpointResult(pass, right, total){
-    var qs = { length: total };
     if(pass){
       markVideoComplete();
-      stage('<div class="cw-status"><div class="cw-status-icon">\u2713</div><h2>Checkpoint passed</h2><p>'+right+' of '+qs.length+' correct. Lesson complete.</p><button class="btn btn-primary" id="cw-continue">Continue</button></div>');
-      $('cw-continue').addEventListener('click', renderOutline);
+      var nextIdx = videos.indexOf(curVideo) + 1;
+      var hasNext = nextIdx > 0 && nextIdx < videos.length;
+      var btnLabel = hasNext ? ('Continue to Session '+(nextIdx+1)) : 'Continue';
+      stage(
+        '<div class="cw-lock" data-motion="fade-up">'+
+          '<div class="cw-lock-mark" aria-hidden="true">\u2713</div>'+
+          '<div class="cw-lock-pips" aria-label="Progress">'+lockPipsHtml(curVideo.ord)+'</div>'+
+          '<div class="eyebrow brass" style="margin-bottom:10px">SESSION '+curVideo.ord+' OF '+videos.length+'</div>'+
+          '<h2>'+esc(lockLine(curVideo))+'</h2>'+
+          '<p>'+right+' of '+total+' correct. Locked in.</p>'+
+          '<button class="btn btn-primary" id="cw-continue">'+esc(btnLabel)+'</button>'+
+        '</div>'
+      );
+      if (window.FCMotion && FCMotion.pulseSuccess){
+        var mark = root.querySelector('.cw-lock-mark');
+        if (mark) FCMotion.pulseSuccess(mark);
+      }
+      $('cw-continue').addEventListener('click', function(){
+        if (hasNext) openVideo(nextIdx);
+        else if (demo) openFinal();
+        else renderOutline();
+      });
     } else {
-      stage('<div class="cw-status"><div class="cw-status-icon cw-warn">!</div><h2>Not quite</h2><p>'+right+' of '+qs.length+' correct. Review the lesson and try the Checkpoint again.</p><div class="row" style="gap:12px;justify-content:center"><button class="btn btn-secondary" id="cw-rewatch">Rewatch lesson</button><button class="btn btn-primary" id="cw-retry">Retry Checkpoint</button></div></div>');
+      stage('<div class="cw-status"><div class="cw-status-icon cw-warn">!</div><h2>Not quite</h2><p>'+right+' of '+total+' correct. Review the lesson and try the Checkpoint again.</p><div class="row" style="gap:12px;justify-content:center"><button class="btn btn-secondary" id="cw-rewatch">Rewatch lesson</button><button class="btn btn-primary" id="cw-retry">Retry Checkpoint</button></div></div>');
       $('cw-rewatch').addEventListener('click', function(){ var i=videos.indexOf(curVideo); openVideo(i); });
       $('cw-retry').addEventListener('click', openCheckpoint);
     }

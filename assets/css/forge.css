@@ -1540,14 +1540,16 @@ html[data-theme="dark"] .cert-req-mark{color:#141210}
   .course-hero{padding:28px 0 36px}
   .course-intro{grid-template-columns:1fr;gap:20px}
   .course-intro .course-billboard{order:-1;aspect-ratio:16/10;max-height:280px}
+  .course-intro-copy .lead,
+  .course-intro-copy .fine{max-width:none}
+  .course-hero-cta{align-items:stretch}
+  .course-hero-cta .btn{width:100%}
+  .course-focus{text-align:left}
+}
 
 .course-hero-notes{margin-top:4px;max-width:46ch}
 .course-hero-notes summary{cursor:pointer;color:var(--ash)}
 .course-hero-notes[open] summary{color:var(--brass)}
-
-  .course-intro-copy .lead,
-  .course-intro-copy .fine{max-width:none}
-}
 
 @media(min-width:1100px){
   .course-hero .container{padding-left:40px;padding-right:40px}
@@ -1649,3 +1651,36 @@ html[data-theme="dark"] .cert-req-mark{color:#141210}
 .cw-poster-wrap{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
 .cw-poster-wrap img,.cw-poster-wrap video{width:100%;height:100%;object-fit:cover;display:block}
 .cw-poster-wrap .cw-html5{width:100%;height:100%;object-fit:contain;background:#000}
+
+/* Course hero CTAs */
+.course-hero-cta{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 8px;justify-content:flex-start}
+.course-hero-note{color:var(--ash);margin:0 0 10px;max-width:48ch}
+
+/* Focus band: one session, progress pips, collapsed path */
+.course-focus-band{padding-top:8px}
+.course-focus{max-width:var(--max);text-align:center;display:flex;flex-direction:column;align-items:center}
+.course-focus .d-28{max-width:22ch}
+.course-focus .fine{margin-left:auto;margin-right:auto}
+.course-pip-rail{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:4px 0 0}
+.course-pip{width:10px;height:10px;border-radius:50%;border:1px solid var(--hairline-strong);background:transparent}
+.course-pip.is-here{background:var(--yellow);border-color:var(--yellow)}
+.course-pip.is-done{background:var(--brass);border-color:var(--brass)}
+.course-focus-cta{margin:0 0 18px}
+.course-full-path{width:100%;max-width:52ch;text-align:left;margin-top:4px}
+.course-full-path summary{cursor:pointer;color:var(--ash);list-style:none}
+.course-full-path summary::-webkit-details-marker{display:none}
+.course-full-path[open] summary{color:var(--brass);margin-bottom:6px}
+.course-full-path .sag-item{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid rgba(127,127,127,.22);text-decoration:none;color:inherit}
+.course-full-path .sag-n{color:var(--ash);min-width:26px}
+.course-outlines{margin:8px 0 28px;padding:14px 0 0;border-top:1px solid var(--hairline)}
+.course-outlines > summary{cursor:pointer;color:var(--ash);margin-bottom:14px}
+.course-outlines[open] > summary{color:var(--brass)}
+
+/* Player: calm session lock beat */
+.cw-lock{text-align:center;padding:40px 22px 28px;max-width:440px;margin:0 auto}
+.cw-lock-pips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0 0 22px}
+.cw-lock-pips .course-pip{width:9px;height:9px}
+.cw-lock h2{font-family:var(--font-display);font-size:clamp(22px,3vw,28px);font-weight:600;color:var(--bone);margin:0 0 10px;line-height:1.25}
+.cw-lock p{color:var(--ash);line-height:1.55;margin:0 0 22px}
+.cw-lock .cw-lock-mark{width:44px;height:44px;border-radius:50%;border:1px solid var(--brass);color:var(--brass);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:18px}
+

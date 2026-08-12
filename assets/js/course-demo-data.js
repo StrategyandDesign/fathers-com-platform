@@ -12,7 +12,7 @@ window.FC_COURSE_DEMO = {
         "ord": 1,
         "title": "The Surge Is a Signal",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 502,
         "checkpoint_json": [
           {
             "prompt": "What does this session call the surge you feel when anger hits?",
@@ -43,14 +43,14 @@ window.FC_COURSE_DEMO = {
           }
         ],
         "poster": "assets/img/session-stills/steady-under-pressure/s01.png",
-        "video_url": "assets/video/steady/surge-is-a-signal-fluid.mp4"
+        "video_url": "assets/video/steady/s01-the-surge-is-a-signal.mp4"
       },
       {
         "id": "demo-anger-2",
         "ord": 2,
         "title": "Know Your Early Cues",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 518,
         "checkpoint_json": [
           {
             "prompt": "Where does this session tell you to catch the surge?",
@@ -80,7 +80,8 @@ window.FC_COURSE_DEMO = {
             "correct_index": 1
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s02.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s02.png",
+        "video_url": "assets/video/steady/s02-know-your-early-cues.mp4"
       },
       {
         "id": "demo-anger-3",

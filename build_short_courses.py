@@ -95,10 +95,24 @@ def session_article(course: dict, sess: dict) -> str:
             f' src="{_e(mp4)}"></video>\n'
             '    </div>\n'
         )
+        caption = (
+            '    <div class="vs-caption">\n'
+            '      <p class="eyebrow brass">SESSION FILM</p>\n'
+            '      <p class="fine" style="color:var(--ash)">Scratch cut ready in the player. Watch there, then take the checkpoint.</p>\n'
+            f'      <p style="margin-top:10px"><a class="btn btn-yellow btn-sm" href="{demo_href}">Open in the player</a></p>\n'
+            '    </div>\n'
+        )
     else:
         media = (
             '    <div class="vs-media" data-motion="media-fade">\n'
             f'      <img src="{_e(still_src)}" alt="Shape preview for {_e(sess["title"])}">\n'
+            '    </div>\n'
+        )
+        caption = (
+            '    <div class="vs-caption">\n'
+            '      <p class="eyebrow brass">SHAPE PREVIEW · PLACEHOLDER</p>\n'
+            '      <p class="fine" style="color:var(--ash)">Final film goes here. Until then this shape still holds the 16:9 slot.</p>\n'
+            f'      <p style="margin-top:10px"><a class="btn btn-yellow btn-sm" href="{demo_href}">Open in the player</a></p>\n'
             '    </div>\n'
         )
     label = sess.get("session_label") or f"SESSION {ord_}"
@@ -110,12 +124,7 @@ def session_article(course: dict, sess: dict) -> str:
         f'  <div class="row between" style="margin-bottom:10px"><span class="pill">{_e(label)}</span><span class="fine mono">{_e(length)}</span></div>\n'
         f'  <h3 class="d-28" style="margin-bottom:12px">{_e(sess["title"])}</h3>\n'
         f'  <div class="video-slot vs-still" data-video="{vkey}" data-course="{_e(slug)}" data-session="{ord_}">\n'
-        + media +
-        '    <div class="vs-caption">\n'
-        '      <p class="eyebrow brass">SHAPE PREVIEW · PLACEHOLDER</p>\n'
-        '      <p class="fine" style="color:var(--ash)">Final film goes here. Until then this shape still holds the 16:9 slot.</p>\n'
-        f'      <p style="margin-top:10px"><a class="btn btn-yellow btn-sm" href="{demo_href}">Open preview player</a></p>\n'
-        '    </div>\n'
+        + media + caption +
         '  </div>\n'
         f'  <div class="session-checkpoint" data-session-checkpoint data-course="{_e(slug)}" data-session="{ord_}"></div>\n'
         f'  <p class="lead" style="font-size:17px;margin-bottom:12px">{_q(sess["quote"])}</p>\n'
@@ -127,22 +136,45 @@ def session_article(course: dict, sess: dict) -> str:
     )
 
 
-def glance_html(course: dict) -> str:
-    items = []
+def path_rail_html(course: dict) -> str:
+    """Quiet progress pips + collapsed full path. Orientation, not a syllabus dump."""
+    sessions = course["sessions"]
+    n = len(sessions)
     prefix = course["id_prefix"]
-    for sess in course["sessions"]:
+    slug = course["slug"]
+    demo_href = f"course.html?preview=1&amp;cert={_e(slug)}"
+    pips = "".join(
+        f'<span class="course-pip{" is-here" if sess["ord"] == sessions[0]["ord"] else ""}" title="Session {sess["ord"]}"></span>'
+        for sess in sessions
+    )
+    items = []
+    for sess in sessions:
         items.append(
-            f'<a class="sag-item" href="#{prefix}{sess["ord"]}" style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid rgba(127,127,127,.22);text-decoration:none;color:inherit">'
-            f'<span class="fine mono" style="color:var(--ash);min-width:26px">{sess["ord"]}</span>'
-            f'<span class="small"><b>{_e(sess["title"])}</b> <span style="color:var(--ash)">&middot; {_q(sess["quote"])}</span></span></a>'
+            f'<a class="sag-item" href="#{prefix}{sess["ord"]}">'
+            f'<span class="fine mono sag-n">{sess["ord"]}</span>'
+            f'<span class="small"><b>{_e(sess["title"])}</b>'
+            f' <span class="ash">&middot; {_q(sess["quote"])}</span></span></a>'
         )
-    n = len(course["sessions"])
+    first = sessions[0]
+    first_ord = int(first["ord"])
+    if first_ord > 0:
+        eyebrow = f"SESSION {first_ord} OF {n}"
+        cta_label = f"Start Session {first_ord} in the player"
+    else:
+        eyebrow = f"START · {n} SESSIONS"
+        cta_label = "Start in the player"
     return (
-        '<section class="tight"><div class="container" style="max-width:var(--max)">'
-        '<div class="eyebrow" style="margin-bottom:6px">SESSIONS AT A GLANCE</div>'
-        f'<p class="fine" style="color:var(--ash);margin:0 0 6px">The {n} sessions. Tap any one to read it in full. Shape stills hold each film slot for now. Open the <a class="link" href="course.html?preview=1&amp;cert={_e(course["slug"])}">full preview player</a> for the course flow.</p>'
+        '<section class="tight course-focus-band"><div class="container course-focus">'
+        f'<div class="eyebrow brass" style="margin-bottom:8px">{eyebrow}</div>'
+        f'<h2 class="d-28" style="margin-bottom:8px">{_e(first["title"])}</h2>'
+        f'<p class="fine ash" style="margin:0 0 14px;max-width:46ch">{_q(first["quote"])}</p>'
+        f'<div class="course-pip-rail" aria-label="Course progress">{pips}</div>'
+        '<p class="fine ash" style="margin:10px 0 16px;max-width:46ch">'
+        'One session at a time. Finish it in the player, then the next one opens.</p>'
+        f'<div class="course-focus-cta"><a class="btn btn-yellow" href="{demo_href}">{cta_label}</a></div>'
+        f'<details class="course-full-path"><summary class="fine">See the full path ({n} sessions)</summary>'
         + "".join(items)
-        + "</div></section>"
+        + "</details></div></section>"
     )
 
 
@@ -173,8 +205,8 @@ def billboard_html(course: dict) -> str:
         f'      <p class="fine mono" style="letter-spacing:.08em;margin-bottom:10px;color:var(--ash)">{_e(course["eyebrow_track"])}</p>\n'
         f'      <p class="lead" style="margin-bottom:12px" data-motion="fade-up">{_e(course["lead"])}</p>\n'
         f'      <p class="fine" style="color:var(--ash);margin-bottom:16px;line-height:1.55">{_e(course["fine1"])}</p>\n'
-        f'      <div class="row wrap" style="gap:10px;margin-bottom:8px"><a class="btn btn-yellow" href="profile.html">Start with free Profile</a><a class="btn btn-secondary" href="course.html?preview=1&amp;cert={_e(course["slug"])}">Watch the preview player</a></div>\n'
-        '      <p class="fine" style="color:var(--ash);margin:0 0 10px;max-width:48ch">Preview is practice only. Earn proof through a Certified Organization.</p>\n'
+        f'      <div class="course-hero-cta"><a class="btn btn-yellow" href="profile.html">Start with free Profile</a><a class="btn btn-secondary" href="course.html?preview=1&amp;cert={_e(course["slug"])}">Watch the preview player</a></div>\n'
+        '      <p class="fine course-hero-note">Preview is practice only. Earn proof through a Certified Organization.</p>\n'
         f'{notes_html}'
         '    </div>\n'
         '    <div class="course-billboard" aria-hidden="true">\n'
@@ -199,13 +231,26 @@ def cta_html() -> str:
 
 
 def render_course_body(course: dict) -> str:
-    articles = "\n".join(session_article(course, s) for s in course["sessions"])
+    sessions = course["sessions"]
+    first = session_article(course, sessions[0])
+    rest = "\n".join(session_article(course, s) for s in sessions[1:])
+    n = len(sessions)
+    outlines = ""
+    if rest:
+        outlines = (
+            f'<details class="course-outlines">'
+            f'<summary class="fine">Session outlines (2–{n})</summary>\n'
+            f'{rest}\n'
+            f'</details>\n'
+        )
     return (
         billboard_html(course)
-        + glance_html(course)
+        + path_rail_html(course)
         + '\n<section><div class="container" style="max-width:var(--max)">\n'
-        + articles
-        + "\n</div></section>"
+        + '<div class="eyebrow" style="margin-bottom:12px">START HERE</div>\n'
+        + first
+        + outlines
+        + "</div></section>"
         + cta_html()
     )
 
