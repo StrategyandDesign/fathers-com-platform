@@ -278,7 +278,7 @@ window.FC_COURSE_DEMO = {
         "ord": 8,
         "title": "Feelings Without Weapons",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 528,
         "checkpoint_json": [
           {
             "prompt": "What does 'without loading it' mean here?",
@@ -308,7 +308,8 @@ window.FC_COURSE_DEMO = {
             "correct_index": 1
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s08.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s08.png",
+        "video_url": "assets/video/steady/s08-feelings-without-weapons.mp4"
       },
       {
         "id": "demo-anger-9",
