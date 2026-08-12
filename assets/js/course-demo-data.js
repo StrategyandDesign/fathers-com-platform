@@ -240,7 +240,7 @@ window.FC_COURSE_DEMO = {
         "ord": 7,
         "title": "Name the Feeling",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 481,
         "checkpoint_json": [
           {
             "prompt": "Why does saying the feeling out loud matter, per this session?",
@@ -270,7 +270,8 @@ window.FC_COURSE_DEMO = {
             "correct_index": 1
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s07.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s07.png",
+        "video_url": "assets/video/steady/s07-name-the-feeling.mp4"
       },
       {
         "id": "demo-anger-8",
