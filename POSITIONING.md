@@ -8,7 +8,7 @@ and pricing questions. Facts are labeled facts. Hypotheses are labeled hypothese
 - NCF certifies institutions and people. Participants complete free.
 - **Certified Organization**: a site credential. Annual, published, revocable.
 - **Certified Facilitator**: a personal credential. Examined, supervised, renewed annually, published, revocable. It belongs to the person and travels with them.
-- **Certificate of Completion**: the participant document. Earned, serialed, signed by Dr. Ken Canfield and the Certified Facilitator who sponsored the seat, publicly verifiable, and free to the man. Always.
+- **Certificate of Completion**: the participant document. Earned, serialed, signed by Dr. Ken Canfield and your Certified Facilitator (or the Certified Facilitator who claimed your seat), publicly verifiable, and free to the man. Always.
 - "Certified / certification" is reserved for organizations and facilitators. The man's document uses "certificate" but never "certified." The grammar carries the tier.
 
 ## 2. Naming decision (research basis)
@@ -41,8 +41,8 @@ market runs a true certification regime. That gap is the moat.
 | Participant: profile, courses, Certificate of Completion | $0 | Always. Non-negotiable. |
 | Certified Facilitator | $349 initial, $99/yr renewal | Above Prepare/Enrich's one-day price because ours includes exam + supervision + registry; far below clinical-grade practitioner training. |
 | Certified Organization | $1,500 per site per year | Unlimited cohorts at the site. Efficacy Report included. Multi-site custom. |
-| Seat sponsorship | $120 per man | Funds membership-year + printed materials through Certified Organizations. Donor never sees program names. |
-| Library membership | $120/yr (beta $79 founding) | Optional B2C. Never gates courses or certificates. |
+| Seat sponsorship ($120/man) | Retired | Do not use. Sponsorship funds Certified Organization status and facilitator credentialing only, never a man seat or free-seat gift. |
+| Library membership | $79 founding / $120 after | Optional B2C support for film production (Founding Library Member). Never call this sponsor. Never said to fund free seats. Never gates courses or certificates. |
 
 ## 5. Military surface
 
@@ -93,6 +93,15 @@ and recovery, reentry and alternative sentencing, courts and probation).
 No clinical information is stored on this platform. Where 42 CFR Part 2 applies
 to a partner, the partner kit carries the QSOA template; the platform never
 receives Part 2 data. The participant owns his account after discharge.
+
+
+
+## 9a. Sponsorship / Library vocabulary (locked)
+
+- **Sponsor / sponsorship / gift**: ONLY funding Certified Organization status and facilitator credentialing. Nav "Sponsor" and footer "Sponsor certification" point at `sponsor.html`.
+- **Library membership**: optional B2C support for film production. UI: Founding Library Member at $79, then $120. Never call this sponsor. Never say it funds free seats. Courses stay free either way. Checkout CTA: Support film production → `checkout.html`.
+- **Claimed seat**: operational enrollment. Certificate signer language: "your Certified Facilitator" or "who claimed your seat." Never "sponsored your seat."
+- **Seat sponsorship ($120/man)**: retired. Do not revive in copy or partner materials.
 
 ## 10. Design partner: Returning Home, Inc. (returninghomenwa.com)
 

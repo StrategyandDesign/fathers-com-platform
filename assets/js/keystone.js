@@ -282,7 +282,7 @@
           </div></div></div>`).join('')}
       </div>
       <div class="row"><button class="btn btn-primary" data-go>Save my plan</button>
-      <a class="link" href="sponsor.html">Support the work &rarr;</a></div>`;
+      <a class="link" href="sponsor.html">Sponsor certification &rarr;</a></div>`;
     wire(SCREENS[idx]);
   }
 
@@ -298,7 +298,7 @@
           <div>
             <p style="font-size:15px;margin-bottom:14px">Everything a man needs here is free: the Profile, this plan, the courses, and the Certificate of Completion when he earns it.</p>
             <a class="btn btn-primary" href="plan.html" style="width:100%">Open my plan</a>
-            <p style="margin-top:14px"><a class="link ash" href="sponsor.html">Support the work &rarr;</a></p>
+            <p style="margin-top:14px"><a class="link ash" href="sponsor.html">Sponsor certification &rarr;</a></p>
           </div>
         </div>
       </div>`;

@@ -12,8 +12,8 @@ OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 # changelog.html. Bump BOTH constants on every release, add a CHANGELOG entry
 # below, regenerate, and upload. The stamp is the answer to "what version is
 # live": read any page footer.
-PLATFORM_VERSION = "4.16.2"
-VERSION_DATE = "2026-08-11"
+PLATFORM_VERSION = "4.16.4"
+VERSION_DATE = "2026-08-12"
 
 # v4.0 reposition flags (ADR-4: rollout is a data change, not a redesign).
 # SHOW_MILITARY dark-launches the entire veteran surface: pages are not generated,
@@ -180,6 +180,13 @@ PAGES = {}
 # Release notes rendered on changelog.html. Newest first. Public copy:
 # POSITIONING.md section 9 language rules apply.
 CHANGELOG = [
+    ("4.16.4", "2026-08-12",
+     "Vocabulary lock lands on current main after later PRs: Sponsor "
+     "means certification funding only; Library membership (Founding "
+     "Library Member $79, then $120) supports film production and is "
+     "never called sponsor; certificate copy uses your Certified "
+     "Facilitator or who claimed your seat; seat sponsorship ($120/man) "
+     "stays retired."),
     ("4.16.2", "2026-08-11",
      "The Studio tells the platform's truth. Its courses tab now reads "
      "the real course tables: actual publish states, actual session and "
@@ -196,9 +203,9 @@ CHANGELOG = [
      "Membership steps out of the course path everywhere. The flagship "
      "workbook is included free with the course, the course page lists "
      "what is free instead of what a membership includes, and checkout "
-     "becomes what it always was underneath: Support the work, a "
-     "founding-supporter membership that funds the films, the kits, and "
-     "free seats, and never gates a thing."),
+     "becomes what it always was underneath: Support film production, a "
+     "Library membership that funds the films as they ship, and never "
+     "gates a course."),
     ("4.15.3", "2026-08-11",
      "The Guide's launcher wears the site's colors: a white question mark "
      "on black. The panel it opens stays light and high-contrast."),
@@ -517,8 +524,8 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
   <div>
     <div class="eyebrow" style="margin-bottom:12px">START FREE</div>
     <h2 class="d-28" style="margin-bottom:14px">Start free. Grow on a plan.</h2>
-    <p class="fine" style="color:var(--ash);max-width:46ch;margin-bottom:24px">Every course is free to the man who takes it. Certified Organizations and facilitators carry the standard: facilitator-supported film courses, logged sessions, and a verifiable certificate. Sponsors fund organization certification and facilitator credentialing, not individual seats.</p>
-    <div class="row wrap" style="align-items:center;gap:18px"><a class="btn btn-yellow" href="profile.html">Start your Profile</a><a class="link" href="sponsor.html">Sponsor a Certified Organization &rarr;</a></div>
+    <p class="fine" style="color:var(--ash);max-width:52ch;margin-bottom:18px">Three clear paths. You (the man): free Profile, plan, courses, and Certificate of Completion. Optional: Library membership supports film production at $79 founding, then $120. Orgs and sponsors pay for certification and facilitator credentialing, never a man&rsquo;s seat.</p>
+    <div class="row wrap" style="align-items:center;gap:18px"><a class="btn btn-yellow" href="profile.html">Start your Profile</a><a class="link" href="checkout.html">Support film production &rarr;</a><a class="link" href="sponsor.html">Sponsor certification &rarr;</a></div>
   </div>
   <div>
     <div class="fine mono" style="letter-spacing:.08em;margin-bottom:4px;color:var(--ash)">WHAT FREE INCLUDES</div>
@@ -601,7 +608,7 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
   <div>
     <div class="eyebrow brass" style="margin-bottom:14px">PROVE &middot; THE CERTIFICATE OF COMPLETION</div>
     <h2 class="d-36" style="font-size:32px">Proof you did the work.</h2>
-    <p style="color:var(--ash);margin:16px 0 26px;max-width:50ch">Checkpoints passed, a written final reviewed by your Certified Facilitator, and a serial any court, program, or employer can confirm online. Signed by Dr. Ken Canfield and the facilitator who led your work. Free to every man who earns it.</p>
+    <p style="color:var(--ash);margin:16px 0 26px;max-width:50ch">Checkpoints passed, a written final reviewed by your Certified Facilitator, and a serial any court, program, or employer can confirm online. Signed by Dr. Ken Canfield and your Certified Facilitator. Free to every man who earns it.</p>
     <a class="btn btn-secondary" href="certificates.html">See the Certificate</a>
     <p class="fine" style="margin-top:16px">Run a program? Become a Certified Organization and your facilitators present these at completion. <a class="link ash" href="organizations.html" style="font-size:12px">Get certified</a>.</p>
   </div>
@@ -638,7 +645,7 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
   <h2 class="d-28" style="margin-bottom:24px">Frequently asked questions</h2>
   <details open><summary>What is Fathers.com?</summary><div class="body">Fathers.com is the home of the Keystone Standard, from the National Center for Fathering. Men measure where they stand and complete the courses free. NCF certifies the organizations and facilitators who lead them, and every man who finishes holds a Certificate of Completion anyone can verify. Programs and agencies use the same standard to show whether men are changing.</div></details>
 <details><summary>Who gets certified?</summary><div class="body">Organizations and facilitators. An organization earns Certified status against a published standard. A facilitator earns the Certified Facilitator credential through training, an exam, and a supervised first cohort. The man who completes a course receives a Certificate of Completion: earned, serialed, signed, and free to him. Certification is the institutional layer. Completion is his.</div></details>
-  <details><summary>How much does it cost?</summary><div class="body">For the man doing the work: nothing. The Keystone Profile, the twelve-week plan, the courses, and the Certificate of Completion are free. Organizations pay for certification and facilitator credentialing. An optional founding-supporter membership funds the film library: $79 a year at founding pricing, $120 after, with a 30-day money-back guarantee. It funds the work; it never gates it.</div></details>
+  <details><summary>How much does it cost?</summary><div class="body">For the man doing the work: nothing. The Keystone Profile, the twelve-week plan, the courses, and the Certificate of Completion are free. Sponsorship funds Certified Organization status and facilitator credentialing. An optional Library membership supports film production: Founding Library Member at $79 a year, then $120, with a 30-day money-back guarantee. Courses stay free either way.</div></details>
   <details><summary>How does the Keystone Profile work?</summary><div class="body">The full Keystone Father Profile, in one sitting. The exact item and scale counts, the response format, and the measured median completion time live on the <a class="link" href="research.html">Research page</a>. You get four domain scores, an overall baseline, and a plan built from your answers. Your results are yours. We never share them.</div></details>
   <details><summary>Do you rate other programs?</summary><div class="body">No. We certify organizations and facilitators against our own published standard, and we publish who currently holds that certification and who has had it revoked. We do not rate or rank programs that are not certified with us.</div></details>
   <details><summary>Are the Certificates of Completion accepted by courts?</summary><div class="body">Each certificate carries logged sessions, passed checkpoints, and a public verification page. Acceptance is decided by each court or program, so confirm with yours before enrolling.</div></details>
@@ -1126,13 +1133,13 @@ PAGES['groups.html'] = dict(title='For Groups', desc='Circles for workplaces, te
 ''')
 
 # ================================================== checkout.html (P8 screens 1-2)
-PAGES['checkout.html'] = dict(title='Support the work', desc='Founding-supporter membership funds the films and free seats. $79 a year at founding pricing. Everything a man needs here stays free.', active='', mode='public', body='''
+PAGES['checkout.html'] = dict(title='Support film production', desc='Founding Library Member supports film production. $79 a year at founding pricing, then $120. Courses stay free either way.', active='', mode='public', body='''
 <section class="tight" style="padding-top:56px"><div class="container" data-seq style="max-width:1080px">
   <div class="seqpanel">
     <div style="display:grid;grid-template-columns:1.2fr .9fr;gap:48px;align-items:start">
       <div>
-        <h1 class="d-36" style="margin-bottom:14px">Support the work.</h1>
-        <p class="small" style="color:var(--ash);margin-bottom:24px;max-width:50ch">The membership is the library as it grows: founding pricing while the film library is in production. Fundamentals plays today; the three new courses are live as written sessions, films uploading as they finish. Your Profile, plan, retakes, the courses, and your Certificate of Completion stay free either way. The membership funds the work; it never gates it.</p>
+        <h1 class="d-36" style="margin-bottom:14px">Support film production.</h1>
+        <p class="small" style="color:var(--ash);margin-bottom:24px;max-width:50ch">Library membership is optional support for film production while the library grows. Founding pricing while films are in production. Fundamentals plays today; the three new courses are live as written sessions, films uploading as they finish. Your Profile, plan, retakes, the courses, and your Certificate of Completion stay free either way. Library membership funds film production; it never gates a course.</p>
 
         <div class="field"><label>Card number</label><input class="input" inputmode="numeric" placeholder="4242 4242 4242 4242"></div>
         <div class="grid-2" style="gap:16px">
@@ -1143,20 +1150,20 @@ PAGES['checkout.html'] = dict(title='Support the work', desc='Founding-supporter
           <div class="field"><label>Name on card</label><input class="input" placeholder="Full name"></div>
           <div class="field"><label>ZIP</label><input class="input" inputmode="numeric" placeholder="72712"></div>
         </div>
-        <button class="btn btn-primary" id="paybtn" style="width:100%;margin-top:10px" data-next>Become a founding supporter</button>
+        <button class="btn btn-primary" id="paybtn" style="width:100%;margin-top:10px" data-next>Become a Founding Library Member</button>
         <p class="fine" style="margin-top:14px">Payment processing wires to Stripe at deploy. No card is charged in this prototype.</p>
       </div>
       <aside class="card" style="padding:28px">
-        <div class="row between" style="margin-bottom:4px"><b>Founding Supporter &middot; annual</b><b class="mono">$120.00</b></div>
+        <div class="row between" style="margin-bottom:4px"><b>Founding Library Member &middot; annual</b><b class="mono">$120.00</b></div>
         <p class="small" style="margin-bottom:14px">$10 a month, billed once a year</p>
         <div class="row between" style="margin-bottom:18px;padding:10px 12px;border:1px solid var(--hairline);border-radius:6px">
-          <span class="small"><s class="ash">$120</s> <b class="bone">$79 founding member</b></span><span class="pill pill-new">Beta pricing</span></div>
+          <span class="small"><s class="ash">$120</s> <b class="bone">$79 Founding Library Member</b></span><span class="pill pill-new">Beta pricing</span></div>
         <div class="row" style="gap:10px;margin-bottom:18px"><span class="checkmark">&check;</span><span class="small">30-day money-back guarantee, no questions</span></div>
         <hr class="hr" style="margin-bottom:18px">
         <div class="stack-8">
           <div class="check"><span class="checkmark">&check;</span><span class="small">Every film, class, and workbook as they publish; the library is in production, films uploading as they finish</span></div>
           <div class="check"><span class="checkmark">&check;</span><span class="small">Your baseline and twelve-week plan</span></div>
-          <div class="check"><span class="checkmark">&check;</span><span class="small">Funds the films, the facilitator kits, and free seats for men in programs</span></div>
+          <div class="check"><span class="checkmark">&check;</span><span class="small">Funds film production as the library grows</span></div>
         </div>
         <p class="fine" style="margin-top:18px">By continuing you agree to the <a class="link ash" href="terms.html" style="font-size:12px">terms</a>. Current pricing for organizations and facilitators is published on the <a class="link ash" href="organizations.html" style="font-size:12px">Organizations page</a>.</p>
       </aside>
@@ -1206,7 +1213,7 @@ PAGES['sponsor.html'] = dict(title='Sponsor organization certification', desc='F
       <button class="chip" type="button" data-toggle="single">Custom</button>
     </div>
     <form data-lead="sponsor-interest" data-done="Received. We will email you when certification sponsorship checkout opens." style="max-width:520px">
-      <div class="eyebrow" style="margin:4px 0 10px">WHERE YOUR GIFT GOES</div>
+      <div class="eyebrow" style="margin:4px 0 10px">WHERE THIS SUPPORT GOES</div>
       <div class="row wrap" style="gap:8px;margin-bottom:14px">
         <label class="chip"><input type="radio" name="designation" value="greatest-need" checked> Where the need is greatest</label>
         <label class="chip"><input type="radio" name="designation" value="new-site"> A new Certified Organization</label>
@@ -1489,8 +1496,9 @@ PAGES['certificates.html'] = dict(title='The Courses and the Certificate of Comp
       </div>
       <div class="cert-req-note">
         <b>Running a program?</b>
-        <p class="small" style="margin:6px 0 14px">Become a Certified Organization: credentialed facilitators, claimed seats, and completion in your Efficacy Report. Optional live cohort mode available for programs that want it. Free for your men, always.</p>
+        <p class="small" style="margin:6px 0 14px">Become a Certified Organization: credentialed facilitators, claimed seats, and completion in your Efficacy Report. Orgs and sponsors pay for certification. Men stay free. Optional Library membership supports film production; it never gates a course.</p>
         <a class="link brass" href="organizations.html" style="font-size:14px">Get certified &rarr;</a>
+        <p class="fine" style="margin-top:12px"><a class="link ash" href="checkout.html" style="font-size:12px">Support film production</a> &middot; <a class="link ash" href="sponsor.html" style="font-size:12px">Sponsor certification</a></p>
       </div>
     </aside>
   </div>
