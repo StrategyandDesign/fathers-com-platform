@@ -316,7 +316,7 @@ window.FC_COURSE_DEMO = {
         "ord": 9,
         "title": "Own It Same Day",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 503,
         "checkpoint_json": [
           {
             "prompt": "What is the standard for owning it, per this session?",
@@ -346,7 +346,8 @@ window.FC_COURSE_DEMO = {
             "correct_index": 1
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s09.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s09.png",
+        "video_url": "assets/video/steady/s09-own-it-same-day.mp4"
       },
       {
         "id": "demo-anger-10",

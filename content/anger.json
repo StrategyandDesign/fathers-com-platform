@@ -293,8 +293,8 @@
     {
       "ord": 9,
       "title": "Own It Same Day",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s09-own-it-same-day.mp4",
+      "duration_seconds": 503,
       "checkpoint": [
         {
           "prompt": "What is the standard for owning it, per this session?",
