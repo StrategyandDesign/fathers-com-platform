@@ -66,7 +66,7 @@ html[data-theme="light"]{
   --elev-2:0 8px 24px rgba(0,0,0,.28);
   --elev-3:0 16px 48px rgba(0,0,0,.40);
   --r-card:10px; --r-btn:6px; --r-pill:999px;
-  --font-display:"Source Serif 4","Iowan Old Style",Georgia,serif;
+  --font-display:"IBM Plex Serif","Iowan Old Style",Georgia,serif;
   --font-ui:"Poppins",system-ui,-apple-system,Arial,sans-serif;
   --font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   --max:1216px;
@@ -1379,6 +1379,7 @@ html[data-theme="dark"] .cert-req-mark{color:#141210}
 @media(max-width:780px){.split-audience{grid-template-columns:1fr}}
 
 .progress-rail{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0}
+.hero-cta .progress-rail{padding:0;margin:0}
 .progress-rail .pr-step{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ash)}
 .progress-rail .pr-step .pr-n{width:22px;height:22px;border-radius:50%;border:1px solid var(--hairline-strong);display:inline-flex;align-items:center;justify-content:center;font-size:10px}
 .progress-rail .pr-step.is-done{color:var(--bone)}

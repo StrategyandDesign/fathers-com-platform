@@ -473,6 +473,10 @@
         '</div>'+
         '<p class="fine" style="margin-top:14px;text-align:center">Already have an account? <a class="link ash" href="login.html?next=profile.html" style="font-size:12px">Sign in</a></p>'+
         '<p class="fine" style="margin-top:10px;text-align:center"><button class="ks-save-btn" id="ksSaveBack">Not now, keep going</button></p>'+
+        '<p class="fine" style="margin-top:16px;text-align:center">'+
+          '<button class="ks-save-btn" id="ksSaveLeave" type="button">Leave without saving</button>'+
+          '<span style="display:block;margin-top:6px;color:var(--ash)">You\'ll lose answers from this visit.</span>'+
+        '</p>'+
       '</div>');
     var input = document.getElementById('ksSaveEmail');
     var passEl = document.getElementById('ksSavePass');
@@ -505,6 +509,16 @@
     input.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
     if(passEl) passEl.addEventListener('keydown', function(e){ if(e.key==='Enter') submit(); });
     if(backBtn) backBtn.onclick = function(){ drawItem(); };
+    var leaveBtn = document.getElementById('ksSaveLeave');
+    if(leaveBtn) leaveBtn.onclick = function(){
+      var n = 0;
+      try { n = KS.answeredCount() || 0; } catch(e){}
+      if(n > 0 && !window.confirm('Leave without saving? You\'ll lose the answers from this visit.')) return;
+      if(KS.clearLocal) KS.clearLocal();
+      try { localStorage.removeItem('fc_resume_intent'); } catch(e){}
+      try { sessionStorage.removeItem('ks_intro_done'); } catch(e){}
+      location.href = 'index.html';
+    };
     input.focus();
   }
 
