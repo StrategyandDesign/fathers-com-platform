@@ -1,4 +1,4 @@
-// review_award (WP-F): the approval path. Facilitator or admin only, legal
+// review_award (WP-F): the approval path. circle_leader / org_admin / admin only, legal
 // transitions only, contact hours and attestation frozen at approval, the
 // serial minted at signing, every action audited with the reviewer as actor.
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
@@ -42,7 +42,7 @@ serve(async (req) => {
 
   const svc = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: roles } = await svc.from("user_roles").select("role").eq("user_id", reviewer);
-  const allowed = (roles ?? []).some((r: { role: string }) => ["facilitator", "admin", "owner"].includes(r.role));
+  const allowed = (roles ?? []).some((r: { role: string }) => ["circle_leader", "org_admin", "admin"].includes(r.role));
   if (!allowed) return json(req, { error: "reviewer role required" }, 403);
 
   let body: { user_id?: string; course_id?: string; action?: string; note?: string; contact_hours?: number; attestation_method?: string; integrity_cleared?: boolean };

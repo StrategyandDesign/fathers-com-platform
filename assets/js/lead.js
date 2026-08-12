@@ -9,7 +9,7 @@
       el('lead-thisweek').innerHTML='<p class="fine">Live Circle loads with Supabase keys.</p>'; return; }
     FCR.guard(['circle_leader','admin']).then(function(ok){
       if(!ok){ el('denied').style.display=''; return; }
-      el('app').style.display=''; loadCircles();
+      el('app').style.display=''; loadCircles(); progressStrip();
     });
   }
   function loadCircles(){
@@ -25,7 +25,7 @@
       select(rows[0].circles.id);
     });
   }
-  function select(id){ circleId=id; thisWeek(); weeks(); announcements(); roster(); claims(); }
+  function select(id){ circleId=id; thisWeek(); weeks(); announcements(); roster(); claims(); progressStrip(); }
 
   function thisWeek(){
     FC.sb.from('circle_weeks').select('*').eq('circle_id',circleId).order('week',{ascending:false}).limit(1).then(function(r){
@@ -102,6 +102,48 @@
     });
   }
 
+
+  // ---- Progress strip: claim-scoped telemetry only. Never answers or scores.
+  function progressStrip(){
+    var box = el('lead-progress'); if(!box) return;
+    box.innerHTML = '<p class="fine">Loading progress\u2026</p>';
+    FC.sb.rpc('facilitator_participant_progress').then(function(r){
+      if(r.error){
+        box.innerHTML = '<p class="fine">Progress loads once the facilitator progress function is live.</p>';
+        return;
+      }
+      var rows = r.data || [];
+      var watched = rows.filter(function(x){ return (x.sessions_completed||0) > 0; }).length;
+      var menEl = document.querySelector('[data-glance="lead-men"]');
+      var watchEl = document.querySelector('[data-glance="lead-watched"]');
+      if(menEl) menEl.textContent = String(rows.length);
+      if(watchEl) watchEl.textContent = String(watched);
+      if(!rows.length){
+        box.innerHTML = '<p class="fine">No active claims yet. Claim a man above; his Profile and session progress show here (never his answers or scores).</p>';
+        return;
+      }
+      box.innerHTML = '<table class="dtable"><thead><tr>'+
+        '<th>Name</th><th>Email</th><th>Profile</th><th>Sessions</th><th>Checkpoints</th><th>Time</th><th>Course state</th><th>Cert</th>'+
+        '</tr></thead><tbody>'+
+        rows.map(function(x){
+          var mins = Math.round((x.seconds_logged||0)/60);
+          var cert = x.cert_serial ? esc(x.cert_serial) : (x.enroll_state||'claimed');
+          return '<tr>'+
+            '<td>'+esc(x.participant_name||'\u2014')+'</td>'+
+            '<td class="fine">'+esc(x.participant_email||'')+'</td>'+
+            '<td>'+(x.profile_complete?'Yes':'No')+'</td>'+
+            '<td class="mono">'+(x.sessions_completed||0)+'</td>'+
+            '<td class="mono">'+(x.checkpoints_passed||0)+'</td>'+
+            '<td class="fine">'+(mins? (mins+' min') : '\u2014')+'</td>'+
+            '<td class="fine">'+esc(x.course_title? (x.course_title+' \u00b7 '+(x.enroll_state||'')) : (x.enroll_state||'claimed'))+'</td>'+
+            '<td class="fine">'+cert+'</td>'+
+            '</tr>';
+        }).join('')+
+        '</tbody></table>'+
+        '<p class="fine" style="margin-top:12px">You never see a man\u2019s answers or scores. This strip is enough to know who needs a nudge.</p>';
+    });
+  }
+
   // ---- Verification sheet: one CSV for the coordinator who requires proof.
   // Reads only what this facilitator's active claims cover (RLS: roster
   // verification migration). Never includes org identity; the public verify
@@ -124,25 +166,33 @@
           var ids = profs.map(function(p){ return p.id; });
           FC.sb.from('certificate_courses').select('id,title').then(function(kr){
             var titles = {}; ((kr && kr.data) || []).forEach(function(k){ titles[k.id] = k.title; });
-            var certQ = ids.length ? FC.sb.from('certificates').select('*').in('user_id', ids)
+            var enrQ = ids.length ? FC.sb.from('certificate_enrollments').select('id,user_id,course_id,state').in('user_id', ids)
                                    : Promise.resolve({ data: [] });
+            enrQ.then(function(er){
+              if(er && er.error){ fail('Could not load enrollments for the sheet.'); return; }
+              var enrolls = (er && er.data) || [];
+              var enrById = {}; enrolls.forEach(function(e){ enrById[e.id] = e; });
+              var enrIds = enrolls.map(function(e){ return e.id; });
+              var certQ = enrIds.length ? FC.sb.from('certificates').select('*').in('enrollment_id', enrIds)
+                                         : Promise.resolve({ data: [] });
             certQ.then(function(xr){
-              if(xr && xr.error){ fail('The verification sheet loads with the roster migration applied.'); return; }
+              if(xr && xr.error){ fail('Could not load certificates for the sheet.'); return; }
               var certs = (xr && xr.data) || [];
               var head = ['Name','Email','Course','Serial','Status','Issued','Verify at'];
               var verify = location.origin + '/verify.html';
               var rows = [head.map(csvCell).join(',')];
               var seen = {};
               certs.forEach(function(c){
-                var p = byId[c.user_id] || {};
+                var e = enrById[c.enrollment_id] || {};
+                var p = byId[e.user_id] || {};
                 seen[(p.email || '').toLowerCase()] = true;
                 rows.push([
-                  p.full_name || p.name || '',
+                  p.name || '',
                   p.email || '',
-                  c.course_title || titles[c.course_id] || '',
+                  c.course_title || titles[e.course_id] || '',
                   c.serial || '',
-                  c.status || 'issued',
-                  (c.issued_at || c.created_at || '').slice(0, 10),
+                  c.revoked ? 'revoked' : 'issued',
+                  (c.issued_at || '').slice(0, 10),
                   verify
                 ].map(csvCell).join(','));
               });
@@ -163,6 +213,7 @@
               document.body.appendChild(a); a.click();
               setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
               if(msg){ msg.textContent = 'Downloaded. ' + (rows.length - 1) + ' men on the sheet.'; msg.className = 'fine cpn-ok'; }
+            });
             });
           });
         });

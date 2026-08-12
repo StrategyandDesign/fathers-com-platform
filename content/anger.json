@@ -5,8 +5,8 @@
     {
       "ord": 1,
       "title": "The Surge Is a Signal",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "https://fathers-com-platform.vercel.app/assets/video/steady/surge-is-a-signal-fluid.mp4",
+      "duration_seconds": 502,
       "checkpoint": [
         {
           "prompt": "What does this session call the surge you feel when anger hits?",
