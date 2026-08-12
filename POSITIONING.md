@@ -55,8 +55,14 @@ plus a copy pass restores the vertical (ADR-4 posture).
 
 ## 6. Coming Home Present
 
-Universalized: "presence after time away, whatever kept you away." No branch by
-population. The deployment cut of the course can return behind the military flag.
+Rehab / treatment reconnect first. Lead audience: fathers in rehab or treatment
+preparing to reconnect with children and/or a significant other. Armed service
+members returning home are the second, universal application of the same body
+skills and practices. Scene language prefers treatment house, program rules,
+early leave passes, first calls home, first visit, and first night back.
+Deployment / combat / barracks are not the default story. Practice constraints
+stay: no practice beyond the rules that govern him now; before-return options;
+completion never requires child contact.
 
 ## 7. The Keystone Manhood Profile (KMP-0.1-draft)
 

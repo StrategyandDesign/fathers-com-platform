@@ -13,7 +13,7 @@ Long hour-long film sessions create one distant finish line. Men drop off mid-co
 
 ## Courses rewritten
 1. **Steady Under Pressure** (`slug: anger`) — was 6 x 60 min; now 12 x ~12 min
-2. **Coming Home Present** (`slug: reentry`) — was 8 x 60 min; now 12 x ~12 min
+2. **Coming Home Present** (`slug: reentry`) — was 8 x 60 min; now 12 x ~12 min. Audience: fathers in rehab or treatment preparing to reconnect with children and/or a significant other; service members returning home are the second application of the same skills.
 3. **Same Team** (`slug: coparenting`) — was 6 x 60 min; now 12 x ~12 min
 
 Certificate metadata hours for all three: **3.0** (12 x 12 min = 2.4h film, rounded for display).

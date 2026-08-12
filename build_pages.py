@@ -579,7 +579,7 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
       <div style="padding:20px 22px">
         <div class="row between" style="margin-bottom:8px"><span class="pill">FILM COURSE</span><span class="fine mono">12 sessions</span></div>
         <h3 style="margin-bottom:6px">Coming Home Present</h3>
-        <p class="fine" style="color:var(--ash)">Walk back in present. Skills for the first weeks home, trained on film with a facilitator.</p>
+<p class="fine" style="color:var(--ash)">Rehab and treatment reconnect, then service return. Film with a facilitator; proof a court or program can check.</p>
         <span class="card-cta">See Coming Home &rarr;</span>
       </div>
     </a>
@@ -900,7 +900,7 @@ PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flag
   <h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:20px">Keep training. The other three.</h2>
   <div class="rowscroll" data-repeat="3" data-prefix="IMG-P4-REL-" data-ratio="r-2x3" data-href="certificates.html#catalog"
     data-titles="Steady Under Pressure|Coming Home Present|Same Team"
-    data-subs="Steadiness, trained|Presence after time away|One team for your children"
+    data-subs="Steadiness, trained|Reconnect after a program|One team for your children"
     data-metas="12 sessions &middot; Certificate of Completion|12 sessions &middot; Certificate of Completion|12 sessions &middot; Certificate of Completion"></div>
 </div></section>
 <script src="assets/js/cert-preview.js"></script>
