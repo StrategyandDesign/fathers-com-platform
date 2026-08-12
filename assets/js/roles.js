@@ -91,7 +91,11 @@ window.FCR = window.FCR || {};
     // A number that never arrives is a broken promise. After the queries have had
     // their chance, any glance still showing the placeholder becomes an honest zero.
     document.querySelectorAll('[data-glance]').forEach(function(el){
-      if(el.textContent.trim()==='--') el.textContent='0';
+      if(el.textContent.trim()!=='--') return;
+      var k = el.getAttribute('data-glance') || '';
+      if(k === 'lead-next-meet'){ el.textContent = 'none'; return; }
+      if(k === 'lead-next') return;
+      el.textContent = '0';
     });
   }
   document.addEventListener('DOMContentLoaded', function(){
@@ -136,11 +140,13 @@ window.FCR = window.FCR || {};
       }, function(){});
     }
 
-    // LEAD glance (circle members)
+    // LEAD glance: claim count (Desk works with or without a Circle)
     if(document.querySelector('[data-glance="lead-men"]')){
-      sb.from('circle_members').select('id', {count:'exact', head:true}).then(function(r){
-        if(r && r.count != null) setGlance('lead-men', r.count);
-      }, function(){});
+      sb.from('participant_claims').select('id', {count:'exact', head:true})
+        .eq('facilitator_user_id', FC.uid()).eq('status','active')
+        .then(function(r){
+          if(r && r.count != null) setGlance('lead-men', r.count);
+        }, function(){});
     }
   });
 })();

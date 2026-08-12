@@ -22,6 +22,13 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://fathers-com-platform.vercel.app/assets/img/og-image.jpg">
+<style>
+/* Progress strip: keep wide tables readable on phones */
+#lead-progress .dtable-wrap{margin-top:4px}
+#lead-progress .dtable{min-width:640px}
+#lead-progress .dtable td:nth-child(2),
+#lead-progress .dtable th:nth-child(2){max-width:180px;overflow:hidden;text-overflow:ellipsis}
+</style>
 </head>
 <body data-auth="required">
 <nav class="nav"><div class="container nav-inner">
@@ -41,17 +48,17 @@
 </div>
 </div></nav>
 <div id="denied" class="container" style="display:none;padding:80px 0"><div class="card" style="max-width:520px;margin:0 auto;text-align:center">
-<h2 class="d-28" style="margin-bottom:10px">Not your dashboard</h2>
-<p class="small" style="margin-bottom:20px">This area needs a role you do not have. If that is wrong, ask an admin to grant it.</p>
+<h2 class="d-28" style="margin-bottom:10px">Facilitator Desk is not open for this account</h2>
+<p class="small" style="margin-bottom:20px">You need the Facilitator role (<code>circle_leader</code>) or admin. Org-only roles use the Org desk. If that is wrong, ask an admin to grant Facilitator access.</p>
 <a class="btn btn-primary" href="plan.html">Back to My Plan</a></div></div>
 <div id="demo-note" class="container" style="display:none;padding:24px 0"><div class="notice brass" style="max-width:900px;margin:0 auto">Demo mode. Add Supabase keys in <code>assets/js/config.js</code> to load live data. The controls below show the real interface; writes activate once connected.</div></div>
 <main id="app" class="container" style="padding:40px 0 96px;display:none">
 
-<div class="dash-head"><h1 class="d-36">Facilitator Desk</h1><p class="lead">Claim seats, keep the roster, watch progress, and stay available for questions. Your Certified Facilitator status lives in the public registry.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men in your Circle</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">watched the film</div></div><div class="glance-card"><div class="glance-lbl">NEXT MEETING</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">stay ready</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Post this week's question, and check who hasn't watched yet.</div></div></div>
+<div class="dash-head"><h1 class="d-36">Facilitator Desk</h1><p class="lead">Claim men so they can enroll at no cost. Watch Profile and session progress. Stay available for questions. You never see answers or scores. Your Certified Facilitator listing stays on the public registry.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">CLAIMED</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men you support</div></div><div class="glance-card"><div class="glance-lbl">MOVING</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">started a session</div></div><div class="glance-card"><div class="glance-lbl">NEXT MEETING</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">Circle week, when set</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Open Claims to seat a man, then check Progress.</div></div></div>
 <div id="circle-picker" class="row" style="margin-bottom:24px"></div>
 <div id="lead-body" data-tabs>
   <div class="tabs"><button class="active">This week</button><button>Plan weeks</button><button>Announce</button><button>Roster</button><button>Progress</button><button>Claims</button></div>
-  <div class="tabpanel active"><div id="lead-thisweek">Pick a Circle…</div></div>
+  <div class="tabpanel active"><div id="lead-thisweek"><div class="card"><p class="fine">Circle weeks show here once an admin assigns you a Circle. Claims and Progress work now without one.</p></div></div></div>
   <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Set a week</h3>
     <div class="grid-4" style="gap:12px;align-items:end">
       <div class="field" style="margin:0"><label>Week</label><input class="input" id="cw-week" type="number" value="1"></div>
@@ -71,11 +78,11 @@
   </div></div>
   <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Members</h3><div id="lead-roster"></div></div></div>
   <div class="tabpanel"><div class="card"><h3 style="margin-bottom:6px">Participant progress</h3>
-    <p class="fine" style="margin-bottom:14px">Profile done, sessions watched, checkpoints, and time. You never see a man's answers or scores.</p>
+    <p class="fine" style="margin-bottom:14px">Profile done, sessions watched, checkpoints, and time for men you claimed. You never see answers or scores.</p>
     <div id="lead-progress" class="fine">Loading&hellip;</div>
   </div></div>
   <div class="tabpanel"><div class="card"><h3 style="margin-bottom:6px">Claim a participant</h3>
-    <p class="fine" style="margin-bottom:14px">A man can only enroll in the courses once you claim him. Enter the email he signs in with. He pays nothing; his completion counts in your cohort.</p>
+    <p class="fine" style="margin-bottom:14px">A man enrolls in the courses only after you claim him. Use the email he signs in with. He pays nothing. His completion counts with you. A Circle is optional.</p>
     <div class="row wrap" style="gap:10px;align-items:end">
       <div class="field" style="margin:0;flex:2;min-width:220px"><label>Participant email</label><input class="input" id="claim-email" type="email" placeholder="him@example.com"></div>
       <button class="btn btn-primary btn-sm" id="claim-add">Claim</button>
@@ -84,7 +91,7 @@
     <div class="eyebrow" style="margin:20px 0 10px">YOUR ACTIVE CLAIMS</div>
     <div id="claim-list" class="fine">Loading&hellip;</div>
     <div class="eyebrow" style="margin:26px 0 10px">VERIFICATION SHEET</div>
-    <p class="fine" style="margin-bottom:12px">One sheet for the coordinator who requires proof: every man you claimed, his certificate serial, and its status. Hand it over yourself; the public verification page never names your organization.</p>
+    <p class="fine" style="margin-bottom:12px">One CSV for a coordinator who needs proof: every man you claimed, his certificate serial, and status. You hand it over. The public verify page never names your organization.</p>
     <button class="btn btn-secondary btn-sm" id="lead-export">Download verification sheet (CSV)</button>
     <p class="fine" id="lead-export-msg" style="margin-top:10px;min-height:16px"></p>
   </div></div>
