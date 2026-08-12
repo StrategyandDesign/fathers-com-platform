@@ -356,7 +356,7 @@
           '<span>The Fatherhood Track. The Keystone Father Profile: how you father today.</span></button>'+
         '<button class="ks-mode" data-path="manhood">'+
           '<b>I\'m preparing, mentoring, or growing</b>'+
-          '<span>The Manhood Track. The Keystone Manhood Profile: Presence, Discipline, Respect, and Service. Start with Dimensions.</span></button>'+
+          '<span>The Manhood Track. The Keystone Manhood Profile for any man. Start with Manhood Dimensions, about eight minutes.</span></button>'+
       '</div>');
     root.querySelectorAll('.ks-mode').forEach(function(b){
       b.onclick = function(){
@@ -385,7 +385,7 @@
           '<span>Father Dimensions. A starting baseline on how you father today.</span></button>'+
         '<button class="ks-mode" data-quick="manhood">'+
           '<b>Preparing, mentoring, or growing</b>'+
-          '<span>Manhood Dimensions. Presence, Discipline, Respect, and Service.</span></button>'+
+          '<span>Manhood Dimensions. A starting baseline on how you carry yourself with the people who depend on you.</span></button>'+
       '</div>');
     root.querySelectorAll('.ks-mode').forEach(function(b){
       b.onclick = function(){
