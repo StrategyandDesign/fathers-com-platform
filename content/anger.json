@@ -401,8 +401,8 @@
     {
       "ord": 12,
       "title": "Your Steady Week",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s12-your-steady-week.mp4",
+      "duration_seconds": 524,
       "checkpoint": [
         {
           "prompt": "What does this course ask you to leave with?",

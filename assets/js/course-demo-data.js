@@ -430,7 +430,7 @@ window.FC_COURSE_DEMO = {
         "ord": 12,
         "title": "Your Steady Week",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 524,
         "checkpoint_json": [
           {
             "prompt": "What does this course ask you to leave with?",
@@ -460,7 +460,8 @@ window.FC_COURSE_DEMO = {
             "correct_index": 0
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s12.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s12.png",
+        "video_url": "assets/video/steady/s12-your-steady-week.mp4"
       }
     ],
     "final_qa": [
