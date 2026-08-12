@@ -8,11 +8,11 @@
     "id_prefix": "b",
     "video_prefix": "sup-b",
     "eyebrow_track": "FOR EVERY MAN, ON EITHER TRACK",
-    "lead": "Twelve short film sessions on steadiness: the surge, early cues, six seconds, the exhale, the step away, naming it, the short apology, and the habits underneath. Consistency, trained where you stand.",
+    "lead": "Twelve short films on steadiness under pressure: notice the surge early, buy six seconds, repair the same day, and build habits that hold.",
     "desc": "Twelve short sessions on steadiness: the surge, early cues, six seconds, the exhale, the step away, naming it, the short apology, and steady habits.",
-    "fine1": "Self-paced film. About twelve minutes each. Watch when you can. A Certified Facilitator is available for questions and accountability when your seat is claimed. Optional live cohorts may be offered by some programs. Every drill except a live home repair is practicable wherever you are right now.",
-    "fine2": "Logged sessions and a checkable practice. Completion never requires contact with your child, and no practice ever asks you to go beyond the rules that govern you now or any court order.",
-    "disclaimer": "Not anger management, batterer intervention, or a substitute for any court-mandated program; not designed or validated for those purposes and never ordered in their place.",
+    "fine1": "Self-paced. About twelve minutes each. A Certified Facilitator is available when your seat is claimed.",
+    "fine2": "Completion never requires contact with your child. No practice asks you to go beyond the rules that govern you now or any court order.",
+    "disclaimer": "Not anger management, batterer intervention, or a substitute for any court-mandated program. Not designed or validated for those purposes and never ordered in their place.",
     "sessions": [
       {
         "ord": 1,
@@ -146,10 +146,10 @@
     "id_prefix": "a",
     "video_prefix": "chp-a",
     "eyebrow_track": "FOR FATHERS IN REHAB OR TREATMENT RECONNECTING AT HOME",
-    "lead": "Twelve short film sessions for fathers in rehab or treatment preparing to reconnect with their children and/or a significant other: the body you bring home, the wave, few promises kept, the child who grew, small deposits, repair, reunion day, and the season after. Built so a man can complete the practices inside the rules that govern him now. Same body skills if you are coming home from service.",
+    "lead": "Twelve short films for fathers in rehab or treatment preparing to reconnect at home. Built so every practice fits the rules that govern you now. Same body skills if you are coming home from service.",
     "desc": "Twelve short sessions on presence after time in a program: reconnect with children and a significant other, with the same skills for service members and anyone returning after time away.",
-    "fine1": "Self-paced film. About twelve minutes each. Watch when you can. A Certified Facilitator is available for questions and accountability when your seat is claimed. Optional live cohorts may be offered by some programs. The reunion session is a climax: you leave with a first-hour plan rehearsed and in hand.",
-    "fine2": "Logged sessions and a checkable practice. Completion never requires contact with your child, and no practice ever asks you to go beyond the rules that govern you now or any court order. Where contact is limited, every drill has a before-return option.",
+    "fine1": "Self-paced. About twelve minutes each. A Certified Facilitator is available when your seat is claimed.",
+    "fine2": "Completion never requires contact with your child. No practice asks you to go beyond the rules that govern you now or any court order. Where contact is limited, every drill has a before-return option.",
     "sessions": [
       {
         "ord": 1,
@@ -296,7 +296,8 @@
         "after_return": "Work the plan and report at the checkpoint."
       }
     ],
-    "stills_dir": "coming-home-present"
+    "stills_dir": "coming-home-present",
+    "disclaimer": ""
   },
   "coparenting": {
     "slug": "coparenting",
@@ -307,10 +308,10 @@
     "id_prefix": "c",
     "video_prefix": "st-c",
     "eyebrow_track": "BUILT FOR FATHERS RAISING CHILDREN ACROSS TWO HOMES",
-    "lead": "Twelve short film sessions on co-parenting: one team for your children, a shared goal, the flooded pause, businesslike messages, cooler channels, reliability inside every order, and a calm handoff ritual.",
+    "lead": "Twelve short films on co-parenting as one team for your children: cool the heat, keep messages businesslike, and hand off with a calm ritual.",
     "desc": "Twelve short sessions on co-parenting across two homes: one team, a shared goal, flooded means pause, businesslike messages, reliability, and the handoff ritual.",
-    "fine1": "Self-paced film. About twelve minutes each. Watch when you can. A Certified Facilitator is available for questions and accountability when your seat is claimed. Optional live cohorts may be offered by some programs.",
-    "fine2": "Logged sessions and a checkable practice. Completion never requires contact with your child, and no practice ever asks you to go beyond the rules that govern you now or any court order.",
+    "fine1": "Self-paced. About twelve minutes each. A Certified Facilitator is available when your seat is claimed.",
+    "fine2": "Completion never requires contact with your child. No practice asks you to go beyond the rules that govern you now or any court order.",
     "sessions": [
       {
         "ord": 1,
@@ -433,7 +434,8 @@
         "science": "A predictable ritual says what words cannot at the transition."
       }
     ],
-    "stills_dir": "same-team"
+    "stills_dir": "same-team",
+    "disclaimer": ""
   },
   "fundamentals": {
     "slug": "fundamentals",
@@ -445,9 +447,9 @@
     "video_prefix": "ff-f",
     "stills_dir": "fathering-fundamentals",
     "eyebrow_track": "SEVEN SECRETS · ASSESSMENT & COURSE · ALREADY FILMED",
-    "lead": "Introduction, seven secrets, and a bonus: Dr. Ken Canfield's research-based course already shot on fathers.com. Shape-animation stills hold the slot until Ken's film URLs are wired. Free assessment included.",
+    "lead": "Dr. Ken Canfield's Seven Secrets course, already filmed: introduction, seven secrets, and a bonus. Free assessment included.",
     "desc": "The Seven Secrets of Effective Fathers: intro, seven secrets, and a bonus session, with shape previews and practice checkpoints on the guide page.",
-    "fine1": "Film already shot. Wrapper stills keep visual consistency with the short courses. Ken's session film stays as shot once Vimeo IDs are connected. Self-paced, with a Certified Facilitator available when your seat is claimed.",
+    "fine1": "Self-paced film. A Certified Facilitator is available when your seat is claimed. Shape stills hold the slot until Ken's film URLs are wired.",
     "fine2": "Logged sessions and checkpoints for enrolled learners. Guide-page checkpoints are practice only and never mint a certificate on their own.",
     "sessions": [
       {
@@ -558,6 +560,7 @@
         "session_label": "BONUS",
         "length_label": "part of 1.1h course"
       }
-    ]
+    ],
+    "disclaimer": ""
   }
 }

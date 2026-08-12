@@ -148,10 +148,19 @@ def glance_html(course: dict) -> str:
 def billboard_html(course: dict) -> str:
     n = len(course["sessions"])
     minutes = "ALREADY FILMED" if course.get("slug") == "fundamentals" else "~12 MINUTES EACH"
-    disc = ""
+    notes = []
+    if course.get("fine2"):
+        notes.append(_e(course["fine2"]))
     if course.get("disclaimer"):
-        disc = (
-            f'      <p class="fine" style="color:var(--ash);margin-bottom:14px">{_e(course["disclaimer"])}</p>\n'
+        notes.append(_e(course["disclaimer"]))
+    notes_html = ""
+    if notes:
+        body = " ".join(notes)
+        notes_html = (
+            '      <details class="course-hero-notes">\n'
+            '        <summary class="fine">Important notes</summary>\n'
+            f'        <p class="fine" style="color:var(--ash);margin:8px 0 0;line-height:1.55">{body}</p>\n'
+            '      </details>\n'
         )
     return (
         '\n<section class="band course-hero"><div class="container">\n'
@@ -161,12 +170,11 @@ def billboard_html(course: dict) -> str:
         f'      <div class="eyebrow brass" style="margin-bottom:14px">FILM COURSE &middot; {n} SESSIONS &middot; {minutes}</div>\n'
         f'      <h1 class="d-36" style="margin-bottom:14px">{_e(course["title"])}</h1>\n'
         f'      <p class="fine mono" style="letter-spacing:.08em;margin-bottom:10px;color:var(--ash)">{_e(course["eyebrow_track"])}</p>\n'
-        f'      <p class="lead" style="margin-bottom:10px" data-motion="fade-up">{_e(course["lead"])}</p>\n'
-        f'      <p class="fine" style="color:var(--ash);margin-bottom:6px">{_e(course["fine1"])}</p>\n'
-        f'      <p class="fine" style="color:var(--ash);margin-bottom:14px">{_e(course["fine2"])}</p>\n'
-        f'{disc}'
-        f'      <div class="row wrap" style="gap:10px;margin-bottom:8px"><a class="btn btn-yellow" href="profile.html">Start with free Profile</a><a class="btn btn-secondary" href="course.html?preview=1&amp;cert={_e(course["slug"])}">Watch the preview player</a><a class="btn btn-secondary" href="certificates.html#catalog">Browse courses</a></div>\n'
-        '      <p class="fine" style="color:var(--ash);margin:0 0 6px;max-width:48ch">Preview is practice only. Earn proof through a Certified Organization.</p>\n'
+        f'      <p class="lead" style="margin-bottom:12px" data-motion="fade-up">{_e(course["lead"])}</p>\n'
+        f'      <p class="fine" style="color:var(--ash);margin-bottom:16px;line-height:1.55">{_e(course["fine1"])}</p>\n'
+        f'      <div class="row wrap" style="gap:10px;margin-bottom:8px"><a class="btn btn-yellow" href="profile.html">Start with free Profile</a><a class="btn btn-secondary" href="course.html?preview=1&amp;cert={_e(course["slug"])}">Watch the preview player</a></div>\n'
+        '      <p class="fine" style="color:var(--ash);margin:0 0 10px;max-width:48ch">Preview is practice only. Earn proof through a Certified Organization.</p>\n'
+        f'{notes_html}'
         '    </div>\n'
         '    <div class="course-billboard" aria-hidden="true">\n'
         f'      <img src="{_e(course["photo"])}" alt="">\n'
@@ -176,6 +184,7 @@ def billboard_html(course: dict) -> str:
         '  </div>\n'
         '</div></section>\n'
     )
+
 
 
 def cta_html() -> str:

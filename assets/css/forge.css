@@ -1540,6 +1540,11 @@ html[data-theme="dark"] .cert-req-mark{color:#141210}
   .course-hero{padding:28px 0 36px}
   .course-intro{grid-template-columns:1fr;gap:20px}
   .course-intro .course-billboard{order:-1;aspect-ratio:16/10;max-height:280px}
+
+.course-hero-notes{margin-top:4px;max-width:46ch}
+.course-hero-notes summary{cursor:pointer;color:var(--ash)}
+.course-hero-notes[open] summary{color:var(--brass)}
+
   .course-intro-copy .lead,
   .course-intro-copy .fine{max-width:none}
 }
