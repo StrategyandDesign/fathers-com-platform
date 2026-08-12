@@ -257,8 +257,8 @@
     {
       "ord": 8,
       "title": "Feelings Without Weapons",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s08-feelings-without-weapons.mp4",
+      "duration_seconds": 528,
       "checkpoint": [
         {
           "prompt": "What does 'without loading it' mean here?",
