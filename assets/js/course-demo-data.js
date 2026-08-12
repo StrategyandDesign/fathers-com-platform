@@ -354,7 +354,7 @@ window.FC_COURSE_DEMO = {
         "ord": 10,
         "title": "The Short Apology",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 502,
         "checkpoint_json": [
           {
             "prompt": "Which of these is a repair and not an excuse?",
@@ -384,7 +384,8 @@ window.FC_COURSE_DEMO = {
             "correct_index": 1
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s10.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s10.png",
+        "video_url": "assets/video/steady/s10-the-short-apology.mp4"
       },
       {
         "id": "demo-anger-11",

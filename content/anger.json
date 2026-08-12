@@ -329,8 +329,8 @@
     {
       "ord": 10,
       "title": "The Short Apology",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s10-the-short-apology.mp4",
+      "duration_seconds": 502,
       "checkpoint": [
         {
           "prompt": "Which of these is a repair and not an excuse?",
