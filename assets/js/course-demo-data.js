@@ -392,7 +392,7 @@ window.FC_COURSE_DEMO = {
         "ord": 11,
         "title": "Sleep, Food, Movement",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 509,
         "checkpoint_json": [
           {
             "prompt": "Where does this session say steadiness is actually built?",
@@ -422,7 +422,8 @@ window.FC_COURSE_DEMO = {
             "correct_index": 1
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s11.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s11.png",
+        "video_url": "assets/video/steady/s11-sleep-food-movement.mp4"
       },
       {
         "id": "demo-anger-12",

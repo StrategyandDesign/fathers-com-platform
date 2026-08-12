@@ -365,8 +365,8 @@
     {
       "ord": 11,
       "title": "Sleep, Food, Movement",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s11-sleep-food-movement.mp4",
+      "duration_seconds": 509,
       "checkpoint": [
         {
           "prompt": "Where does this session say steadiness is actually built?",
