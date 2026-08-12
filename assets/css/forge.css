@@ -1531,6 +1531,17 @@ html[data-theme="dark"] .cert-req-mark{color:#141210}
 .cert-hero-father .cert-hero-art{opacity:.92}
 .cert-proof-strip{padding:40px 0;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline)}
 .cert-proof-strip .cert-pillars{gap:18px}
+/* Mid-page SAMPLE certificate: own centered band under pillars */
+.cert-sample{margin:40px 0 0;padding:36px 24px 28px;border-radius:var(--r-card);border:1px solid var(--hairline);background:rgba(255,255,255,.02);display:flex;flex-direction:column;align-items:center;text-align:center}
+.cert-sample-stage{display:flex;justify-content:center;width:100%;perspective:none}
+.cert-proof-strip .cert-doc-3d{transform:none;transition:none}
+.cert-proof-strip .cert-doc{width:min(520px,92vw);margin:0 auto;box-shadow:0 24px 56px rgba(0,0,0,.45),0 4px 16px rgba(0,0,0,.35)}
+.cert-sample-caption{margin:22px auto 0;max-width:42ch;text-align:center}
+.cert-sample-caption p{margin:8px 0 0;color:var(--ash)}
+.cert-proof-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:28px}
+@media(max-width:680px){
+  .cert-sample{margin-top:28px;padding:28px 16px 22px}
+}
 @media(max-width:980px){
   .ks-intro-grid{grid-template-columns:1fr;gap:22px}
   .ks-intro-visual{aspect-ratio:16/10;max-height:280px}
