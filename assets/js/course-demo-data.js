@@ -164,7 +164,7 @@ window.FC_COURSE_DEMO = {
         "ord": 5,
         "title": "Step Away to Come Back",
         "vimeo_id": null,
-        "duration_seconds": 720,
+        "duration_seconds": 467,
         "checkpoint_json": [
           {
             "prompt": "What is the purpose of stepping away in this session?",
@@ -194,7 +194,8 @@ window.FC_COURSE_DEMO = {
             "correct_index": 1
           }
         ],
-        "poster": "assets/img/session-stills/steady-under-pressure/s05.png"
+        "poster": "assets/img/session-stills/steady-under-pressure/s05.png",
+        "video_url": "assets/video/steady/s05-step-away-to-come-back.mp4"
       },
       {
         "id": "demo-anger-6",

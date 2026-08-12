@@ -149,8 +149,8 @@
     {
       "ord": 5,
       "title": "Step Away to Come Back",
-      "vimeo": "pending",
-      "duration_seconds": 720,
+      "vimeo": "assets/video/steady/s05-step-away-to-come-back.mp4",
+      "duration_seconds": 467,
       "checkpoint": [
         {
           "prompt": "What is the purpose of stepping away in this session?",
