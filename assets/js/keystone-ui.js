@@ -634,6 +634,8 @@
     if(backBtn) backBtn.onclick = function(){ drawItem(); };
     var leaveBtn = document.getElementById('ksSaveLeave');
     if(leaveBtn) leaveBtn.onclick = function(){
+      // Quiet exit: clear the local draft and return home. Confirm only when
+      // there is something real to lose; one dialog max.
       var n = 0;
       try { n = KS.answeredCount() || 0; } catch(e){}
       if(n > 0 && !window.confirm('Leave without saving? You\'ll lose the answers from this visit.')) return;
