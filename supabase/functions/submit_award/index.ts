@@ -73,6 +73,19 @@ serve(async (req) => {
   const answered = new Set((fr ?? []).filter((r: { answer_text?: string }) => (r.answer_text ?? "").trim().length > 0).map((r: { question_id: string }) => r.question_id));
   for (const q of fq ?? []) if (!answered.has(q.id)) gaps.push(`Answer final question ${q.ord}`);
 
+  // Certificate submit requires a full Keystone Father Profile result.
+  // Quick Start (Dimensions only) is not enough for an award.
+  const { data: ksRows } = await svc
+    .from("keystone_results")
+    .select("id,completion_tier")
+    .eq("user_id", uid)
+    .eq("assessment_slug", "keystone-father-profile")
+    .eq("completion_tier", "full")
+    .limit(1);
+  if (!ksRows || ksRows.length === 0) {
+    gaps.push("Finish the full Keystone Father Profile (Quick start alone is not enough for a certificate)");
+  }
+
   if (gaps.length) return json(req, { error: "incomplete", gaps }, 409);
 
   const { data: cur } = await svc.from("certificate_awards").select("status,recipient_display").eq("user_id", uid).eq("course_id", course_id).maybeSingle();

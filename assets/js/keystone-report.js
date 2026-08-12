@@ -201,7 +201,8 @@
       section_scores: sc.sections,
       scale_scores: sc.scales,
       gap_scale: sc.gap,
-      strength_scale: sc.strength
+      strength_scale: sc.strength,
+      completion_tier: pending.completion_tier || 'full'
     }).then(function(){
       try { localStorage.removeItem('fc_pending_result'); } catch(e){}
       next();

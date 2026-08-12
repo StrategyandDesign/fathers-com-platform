@@ -428,10 +428,11 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
     <div class="eyebrow" style="margin-bottom:18px">FATHERS.COM</div>
     <h1 class="d-48" style="font-weight:700;letter-spacing:-.02em" data-motion="fade-up">Become the father they can count on.</h1>
     <p class="lead" style="margin:22px 0 12px" data-motion="fade-up">Presence they can feel. Steadiness under pressure. Warmth they hear.</p>
-    <p style="color:var(--ash);margin:0 0 24px;max-width:42ch;font-size:17px;line-height:1.5">Free Profile, about twenty minutes. Your plan and film path start from there.</p>
+    <p style="color:var(--ash);margin:0 0 24px;max-width:42ch;font-size:17px;line-height:1.5">Start with Dimensions in about eight minutes, or take the full Keystone in about twenty. Your plan and film path start from there.</p>
     <div class="hero-cta" data-motion="hero-cta">
       <div class="hero-cta-primary">
-        <a class="btn btn-yellow btn-lg" href="profile.html">Start free Profile &middot; about 20 min</a>
+        <a class="btn btn-yellow btn-lg" href="profile.html?start=quick">Quick start &middot; about 8 min</a>
+        <a class="btn btn-secondary btn-lg" href="profile.html?start=full" style="margin-top:10px">Full Keystone &middot; about 20 min</a>
         <div class="progress-rail" aria-hidden="true">
           <span class="pr-step is-here"><span class="pr-n">1</span> Profile</span><span class="pr-join"></span>
           <span class="pr-step"><span class="pr-n">2</span> Plan</span><span class="pr-join"></span>
@@ -481,7 +482,7 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
     <div class="hiw">
       <div class="hiw-n">01 &middot; PROFILE</div>
       <b class="hiw-t">Know where you stand</b>
-      <p class="hiw-p">Free Keystone Father Profile. About twenty minutes. Private. Your baseline on the four things that matter.</p>
+      <p class="hiw-p">Free Keystone Father Profile. Quick start covers Dimensions in about eight minutes. Full Profile is about twenty. Private. Your baseline on the four things that matter.</p>
     </div>
     <div class="hiw">
       <div class="hiw-n">02 &middot; PLAN</div>
@@ -678,11 +679,11 @@ PAGES['profile.html'] = dict(title='The Keystone Father Profile', desc='Know whe
     <div class="ks-intro-copy">
       <div class="eyebrow brass" style="margin-bottom:14px">THE KEYSTONE FATHER PROFILE</div>
       <h1 class="d-36">Know where you stand.<br>Train what matters.</h1>
-      <p style="color:var(--ash);max-width:48ch;font-size:17px;line-height:1.55;margin:0 0 4px">An honest read, not a lecture. About twenty minutes. You leave with four scores you can train and a twelve-week plan built from your answers.</p>
+      <p style="color:var(--ash);max-width:48ch;font-size:17px;line-height:1.55;margin:0 0 4px">An honest read, not a lecture. Quick start is the Dimensions section only, a starting baseline, not the full Keystone. Or take the full Profile for the complete picture.</p>
       <div class="ks-intro-meta">
-        <span class="fine mono" style="letter-spacing:.04em">~20 minutes</span>
+        <span class="fine mono" style="letter-spacing:.04em">Quick ~8 min</span>
         <span class="fine ash">&middot;</span>
-        <span class="fine mono" style="letter-spacing:.04em">Pause anytime</span>
+        <span class="fine mono" style="letter-spacing:.04em">Full ~20 min</span>
         <span class="fine ash">&middot;</span>
         <span class="fine mono" style="letter-spacing:.04em">Private to you</span>
       </div>
@@ -723,8 +724,10 @@ PAGES['profile.html'] = dict(title='The Keystone Father Profile', desc='Know whe
   </div>
 
   <div style="text-align:center;margin-top:8px">
-    <button class="btn btn-yellow btn-lg" id="ksBegin">Begin the Profile</button>
-    <p class="fine" style="margin-top:16px;color:var(--ash)">Already started? It picks up where you left off.</p>
+    <a class="btn btn-yellow btn-lg" id="ksBeginQuick" href="profile.html?start=quick">Quick start &middot; about 8 min</a>
+    <div style="margin-top:12px"><a class="btn btn-secondary" id="ksBeginFull" href="profile.html?start=full">Full Keystone &middot; about 20 min</a></div>
+    <button class="btn btn-secondary" id="ksBegin" hidden>Begin the Profile</button>
+    <p class="fine" style="margin-top:16px;color:var(--ash)">Quick start is Dimensions only, a starting baseline. Already started? It picks up where you left off.</p>
   </div>
 
   <p class="fine" style="max-width:62ch;margin:28px auto 0;color:var(--ash);text-align:center">An educational tool from Dr. Ken Canfield and the National Center for Fathering. Not clinical or diagnostic. Spec on the <a class="link" href="research.html">Research page</a>. If you are carrying something heavy, tell your facilitator. Connecting you with help the same day is part of the job.</p>
@@ -736,6 +739,10 @@ PAGES['profile.html'] = dict(title='The Keystone Father Profile', desc='Know whe
   function begin(){ intro.hidden=true; app.hidden=false; try{sessionStorage.setItem('ks_intro_done','1')}catch(_){} window.scrollTo(0,0); }
   var b=document.getElementById('ksBegin'); if(b) b.addEventListener('click', begin);
   try{ if(sessionStorage.getItem('ks_intro_done')==='1') begin(); }catch(_){}
+  try{
+    var sp=new URLSearchParams(location.search).get('start');
+    if(sp==='quick'||sp==='full') begin();
+  }catch(_){}
 })();</script>
 ''')
 

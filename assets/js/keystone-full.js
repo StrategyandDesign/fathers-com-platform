@@ -14,6 +14,10 @@ window.KS = window.KS || {};
   var flatItems = [];      // ordered list of {key, section, scale, prompt, kind, labels}
   var mode = 'by_section';
   var path = 'father';     // 'father' = full instrument; 'preparing' = childhood + readiness only
+  // Quick Start is NOT a separate path. It is the father path limited to the
+  // Dimensions section (completion_tier='quick'). Do not reuse path=preparing.
+  var quickStart = false;
+  try { quickStart = sessionStorage.getItem('fc_quick_start') === '1'; } catch(e){}
 
   // Which scales a non-father ('preparing') can honestly answer.
   // Childhood Satisfaction is about HIS OWN upbringing - every man can answer it.
@@ -41,6 +45,15 @@ window.KS = window.KS || {};
   KS.setPath = function(p){ path = p; };
   KS.getPath = function(){ return path; };
   KS.isPreparing = function(){ return path === 'preparing'; };
+  KS.setQuickStart = function(on){
+    quickStart = !!on;
+    try {
+      if(quickStart) sessionStorage.setItem('fc_quick_start','1');
+      else sessionStorage.removeItem('fc_quick_start');
+    } catch(e){}
+  };
+  KS.isQuickStart = function(){ return !!quickStart; };
+  KS.clearQuickStart = function(){ KS.setQuickStart(false); };
 
   // items for the current path. Fathers get everything; preparing men get only answerable scales.
   KS.pathItems = function(){
@@ -48,6 +61,9 @@ window.KS = window.KS || {};
     return flatItems.filter(function(f){ return PREPARING_SCALES.indexOf(f.scale) >= 0; });
   };
   KS.pathSectionKeys = function(){
+    // Quick Start: Dimensions only on the father path. Full Keystone clears the
+    // flag and returns all three sections again (sections_done already has dimensions).
+    if(quickStart && path === 'father') return ['dimensions'];
     if(path === 'father') return INS.sections.map(function(s){return s.key;});
     // preparing: only sections that contain a preparing scale
     var keys = [];
@@ -141,10 +157,15 @@ window.KS = window.KS || {};
   };
 
   KS.answeredCount = function(secKey){
-    var items = secKey ? KS.itemsInSection(secKey) : flatItems;
+    var items = secKey ? KS.itemsInSection(secKey)
+              : (quickStart && path === 'father' ? KS.itemsInSection('dimensions') : flatItems);
     return items.filter(function(f){ return answers[f.key]!=null; }).length;
   };
-  KS.totalCount = function(secKey){ return (secKey ? KS.itemsInSection(secKey) : flatItems).length; };
+  KS.totalCount = function(secKey){
+    if(secKey) return KS.itemsInSection(secKey).length;
+    if(quickStart && path === 'father') return KS.itemsInSection('dimensions').length;
+    return flatItems.length;
+  };
   KS.sectionsDone = function(){ return (session && session.sections_done) || []; };
   KS.getMode = function(){ return mode; };
   KS.getAnswers = function(){ return answers; };
@@ -219,8 +240,13 @@ window.KS = window.KS || {};
     return { overall: overall, sections: sectionSums, scales: scaleScores, gap: gap, strength: str };
   };
 
-  KS.saveResult = function(scored){
+  KS.saveResult = function(scored, tier){
     if(!(window.FC && FC.live && FC.uid() && session)) return Promise.resolve({demo:true});
+    if(!tier){
+      if(KS.isPreparing()) tier = 'preparing';
+      else if(quickStart) tier = 'quick';
+      else tier = 'full';
+    }
     return FC.sb.from('keystone_results').insert({
       session_id: session.id, user_id: FC.uid(),
       // Which instrument produced this. Without it the report falls back to the
@@ -228,7 +254,8 @@ window.KS = window.KS || {};
       // father report. Identity on the row, never inferred from shape.
       assessment_slug: (INS && INS.slug) || 'keystone-father-profile',
       overall_pct: scored.overall, section_scores: scored.sections,
-      scale_scores: scored.scales, gap_scale: scored.gap, strength_scale: scored.strength
+      scale_scores: scored.scales, gap_scale: scored.gap, strength_scale: scored.strength,
+      completion_tier: tier
     }).then(function(r){
       /* Fail loudly and do NOT mark the sitting complete.
 
@@ -241,6 +268,9 @@ window.KS = window.KS || {};
         console.error('[keystone] result not saved:', r.error.message || r.error);
         return { error: r.error };
       }
+      // Quick Start parks a Dimensions baseline but leaves the session open so
+      // he can resume Practices + Satisfaction when he continues the full Profile.
+      if(tier === 'quick') return { ok: true, tier: 'quick' };
       return FC.sb.from('keystone_sessions').update({
         status:'completed', completed_at:new Date().toISOString()
       }).eq('id', session.id);

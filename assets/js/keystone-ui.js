@@ -34,6 +34,14 @@
 
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function pct(a,b){ return b? Math.round((a/b)*100):0; }
+  function readStartIntent(){
+    var start = null;
+    try { start = new URLSearchParams(window.location.search).get('start'); } catch(e){}
+    if(!start){
+      try { start = localStorage.getItem('fc_intent_start'); if(start) localStorage.removeItem('fc_intent_start'); } catch(e){}
+    }
+    return start;
+  }
   /* Honest remaining time from unanswered items. Median sitting ~20 min / 128
      items (~9s each). Round up to whole minutes; never invent a fake countdown. */
   function timeLeftLabel(){
@@ -159,6 +167,25 @@
   /* Real start of the runner. Separated so the conversion intro (#ksIntro) can
      stay on screen until the man taps Begin, instead of being wiped by gate(). */
   function proceedStart(){
+    // Quick / full entry from ?start= or fc_intent_start. Quick is Dimensions
+    // only on the father path (not path=preparing).
+    var startIntent = readStartIntent();
+    if(startIntent === 'quick'){
+      KS.setPath('father');
+      KS.setQuickStart(true);
+      servedGate(function(){
+        enterAssessment();
+        ksStart();
+        KS.resumeOrStart('by_section').then(function(){ runSection('dimensions'); });
+      });
+      return;
+    }
+    if(startIntent === 'full'){
+      KS.setPath('father');
+      KS.clearQuickStart();
+      servedGate(chooseMode);
+      return;
+    }
     // An explicit track choice on the homepage always wins, signed in or not.
     var intent = null;
     try { intent = localStorage.getItem('fc_intent_path'); if(intent) localStorage.removeItem('fc_intent_path'); } catch(e){}
@@ -203,10 +230,13 @@
     try { introDone = sessionStorage.getItem('ks_intro_done') === '1'; } catch(e){}
     var intentPeek = null;
     var resumePeek = false;
+    var startPeek = null;
     try { intentPeek = localStorage.getItem('fc_intent_path'); } catch(e){}
     try { resumePeek = localStorage.getItem('fc_resume_intent') === '1'; } catch(e){}
-    // Homepage track choice or mid-assessment resume always skip the invite.
-    if(intentPeek || resumePeek || introDone || !intro || intro.hidden || !beginBtn){
+    try { startPeek = new URLSearchParams(window.location.search).get('start'); } catch(e){}
+    if(!startPeek){ try { startPeek = localStorage.getItem('fc_intent_start'); } catch(e){} }
+    // Homepage track choice, quick/full entry, or mid-assessment resume always skip the invite.
+    if(intentPeek || resumePeek || startPeek || introDone || !intro || intro.hidden || !beginBtn){
       proceedStart();
       return;
     }
@@ -525,10 +555,19 @@
   function endSection(){
     var pathOrder = KS.pathSectionKeys(); var nextKey = pathOrder[pathOrder.indexOf(curSection)+1] || null;
     KS.markSectionDone(curSection, nextKey).then(function(){
+      // Quick Start ends after Dimensions with its own beat (not the full 26-scale dump).
+      if(KS.isQuickStart && KS.isQuickStart() && curSection === 'dimensions'){
+        finishQuick();
+        return;
+      }
       if(KS.getMode()==='all_at_once'){ routeNext(); return; }
       // sectioned mode: celebrate the checkpoint
       if(!nextKey){ finish(); return; }
       var doneN = KS.sectionsDone().length;
+      var quickHint = (curSection === 'dimensions')
+        ? '<p class="fine" style="margin-top:14px;text-align:center;color:var(--ash)">Want a plan now from Dimensions? Use Quick start next time.</p>'
+          + '<button class="btn btn-secondary" style="width:100%;margin-top:10px" id="ks-use-quick">Use this as my starting plan</button>'
+        : '';
       root.innerHTML = shell(
         '<div class="eyebrow">SECTION COMPLETE</div>'+
         '<div class="ks-check">✓</div>'+
@@ -537,9 +576,88 @@
         '<div class="stack-16" style="margin-top:24px">'+
           '<button class="btn btn-primary" style="width:100%" id="ks-cont">Next section</button>'+
           '<a class="btn btn-secondary" style="width:100%" href="plan.html">Finish later</a>'+
+          quickHint+
         '</div>');
       document.getElementById('ks-cont').onclick = function(){ routeNext(); };
+      var uq = document.getElementById('ks-use-quick');
+      if(uq) uq.onclick = function(){
+        KS.setQuickStart(true);
+        finishQuick();
+      };
     });
+  }
+
+
+  function finishQuick(){
+    var scored = KS.score();
+    ksEv("assessment_quick_complete", { section: "dimensions" });
+    try { localStorage.setItem("fc_pending_result", JSON.stringify({
+      scored: scored, preparing: false, at: Date.now(),
+      assessment_slug: (ACTIVE_INS && ACTIVE_INS.slug) || "keystone-father-profile",
+      completion_tier: "quick"
+    })); } catch(e){}
+
+    if(!(window.FC && FC.live && FC.uid())){
+      try {
+        var tok = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+                : "ct-"+Date.now()+"-"+Math.random().toString(36).slice(2,10);
+        localStorage.setItem("fc_claim_token", tok);
+        if(window.FC && FC.live && FC.ready){
+          FC.ready.then(function(){
+            return FC.sb.from("pending_results").insert({
+              token: tok,
+              assessment_slug: (ACTIVE_INS && ACTIVE_INS.slug) || "keystone-father-profile",
+              payload: { scored: scored, preparing: false, at: Date.now(), completion_tier: "quick" }
+            });
+          }).then(function(){}, function(e){ console.error("[keystone] pending park failed", e); });
+        }
+      } catch(e){}
+    }
+
+    var signedIn = window.FC && FC.live && FC.uid();
+    if(signedIn){ KS.saveResult(scored, "quick"); }
+
+    enterAssessment();
+    var strK = scored.strength, gapK = scored.gap;
+    var strength = scored.scales[strK], gap = scored.scales[gapK];
+    var COPY = ACTIVE_INS.scale_copy || SCALE_COPY;
+    var sCopy = COPY[strK] || {s:"You showed up and did the honest work.",g:"",m:[]};
+    var gCopy = COPY[gapK] || {s:"",g:"This is the one to build first.",m:[]};
+    var sameScale = (strK === gapK);
+    root.innerHTML = shell(
+      "<div class=\"center\" style=\"margin-bottom:24px\">"+
+        "<div class=\"ks-check\" style=\"margin-bottom:10px\">\u2713</div>"+
+        "<div class=\"eyebrow brass\" style=\"margin-bottom:10px\">STARTING BASELINE \u00b7 DIMENSIONS</div>"+
+        "<h2 style=\"margin:0 0 6px\">Starting baseline locked.</h2>"+
+        "<p class=\"helper\" style=\"margin:0\">Dimensions only, not the full Keystone. Your plan can start from this. Finish the full Profile when you want the complete picture.</p>"+
+      "</div>"+
+      "<div class=\"ks-strength-hero\">"+
+        "<div class=\"eyebrow\" style=\"margin-bottom:12px\">YOUR STRONGEST GROUND</div>"+
+        "<div class=\"ks-strength-name\">"+esc(strength ? strength.label : "You showed up")+"</div>"+
+        (sCopy.s ? "<p class=\"ks-strength-line\">"+esc(sCopy.s)+"</p>" : "")+
+      "</div>"+
+      (sameScale ? "" :
+        "<div class=\"ks-next\">"+
+          "<div class=\"eyebrow\" style=\"margin-bottom:10px\">YOUR NEXT MOVE</div>"+
+          "<div class=\"ks-next-name\">"+esc(gap ? gap.label : "")+"</div>"+
+          (gCopy.g ? "<p class=\"ks-next-line\">"+esc(gCopy.g)+"</p>" : "")+
+        "</div>")+
+      "<div class=\"stack-16\" style=\"margin-top:24px\">"+
+        "<a class=\"btn btn-primary\" style=\"width:100%\" href=\"plan.html?assessment=keystone-father-profile&reveal=1\">Start my plan</a>"+
+        "<button class=\"btn btn-secondary\" style=\"width:100%\" id=\"ksContFull\">Continue full Keystone</button>"+
+        "<p class=\"fine\" style=\"text-align:center;margin-top:4px\"><a class=\"link ash\" href=\"certificates.html\" style=\"font-size:12px\">Browse courses</a></p>"+
+      "</div>"
+    );
+    try {
+      if(window.FCMotion && FCMotion.pulseSuccess){
+        FCMotion.pulseSuccess(root.querySelector(".ks-check") || root);
+      }
+    } catch(e){}
+    var cont = document.getElementById("ksContFull");
+    if(cont) cont.onclick = function(){
+      KS.clearQuickStart();
+      routeNext();
+    };
   }
 
   // ---------- results: all 26 scales ----------
@@ -547,11 +665,13 @@
     var scored = KS.score();
     ksEv('assessment_complete', { preparing: KS.isPreparing() });
     // Preserve the completed result locally so it survives the sign-up round trip.
+    var finishTier = KS.isPreparing() ? 'preparing' : 'full';
     try { localStorage.setItem('fc_pending_result', JSON.stringify({
       scored: scored, preparing: KS.isPreparing(), at: Date.now(),
       // Which instrument produced this. Without it a man who takes the Manhood
       // Profile signed out is handed a Father Profile report when he lands.
-      assessment_slug: (ACTIVE_INS && ACTIVE_INS.slug) || 'keystone-father-profile'
+      assessment_slug: (ACTIVE_INS && ACTIVE_INS.slug) || 'keystone-father-profile',
+      completion_tier: finishTier
     })); } catch(e){}
 
     /* localStorage cannot follow a man to another device, and most men open the
@@ -569,7 +689,7 @@
             return FC.sb.from('pending_results').insert({
               token: tok,
               assessment_slug: (ACTIVE_INS && ACTIVE_INS.slug) || 'keystone-father-profile',
-              payload: { scored: scored, preparing: KS.isPreparing(), at: Date.now() }
+              payload: { scored: scored, preparing: KS.isPreparing(), at: Date.now(), completion_tier: finishTier }
             });
           }).then(function(){}, function(e){ console.error('[keystone] pending park failed', e); });
         }
@@ -577,7 +697,7 @@
     }
 
     var signedIn = window.FC && FC.live && FC.uid();
-    if(signedIn){ KS.saveResult(scored); }
+    if(signedIn){ KS.saveResult(scored, finishTier); }
 
     if(KS.isPreparing()){
       return finishPreparing(scored);

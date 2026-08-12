@@ -30,6 +30,7 @@
         overall_pct: p.scored.overall, section_scores: p.scored.sections,
         scale_scores: p.scored.scales, gap_scale: p.scored.gap,
         strength_scale: p.scored.strength,
+        completion_tier: p.completion_tier || 'full',
         completed_at: new Date(p.at || Date.now()).toISOString()
       };
     } catch(e){ return null; }
@@ -112,7 +113,8 @@
       section_scores: scored.sections,
       scale_scores: scored.scales,
       gap_scale: scored.gap,
-      strength_scale: scored.strength
+      strength_scale: scored.strength,
+      completion_tier: pending.completion_tier || 'full'
     }).then(function(){
       try { localStorage.removeItem('fc_pending_result'); } catch(e){}
       next();
@@ -168,6 +170,10 @@
       html = '<div class="notice brass" style="margin:0 0 20px"><b>This is a sample plan, not yours.</b> <a class="link" href="profile.html">Take your Profile</a> and your own twelve-week plan is built from your results.</div>' + html;
       html = html.replace('Built from your Keystone Profile. Your focus is', 'A sample focus: ');
       html = html.replace('<span class="pl-hero-base-k">Where you started</span>', '<span class="pl-hero-base-k">Sample baseline</span>');
+    }
+
+    if(!isDemo && result.completion_tier === 'quick'){
+      html = '<div class="notice brass" style="margin:0 0 20px"><b>Starting baseline from Dimensions.</b> This is not the full Keystone. <a class="link" href="profile.html">Finish the full Profile</a> when you want the complete picture. Your plan still builds from the scales you answered.</div>' + html;
     }
 
     // 2. THIS WEEK'S MOVE. Each action can carry a cue in his own words: when and
