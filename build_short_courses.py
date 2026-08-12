@@ -137,7 +137,7 @@ def glance_html(course: dict) -> str:
         )
     n = len(course["sessions"])
     return (
-        '<section class="tight"><div class="container" style="max-width:860px">'
+        '<section class="tight"><div class="container" style="max-width:var(--max)">'
         '<div class="eyebrow" style="margin-bottom:6px">SESSIONS AT A GLANCE</div>'
         f'<p class="fine" style="color:var(--ash);margin:0 0 6px">The {n} sessions. Tap any one to read it in full. Shape stills hold each film slot for now. Open the <a class="link" href="course.html?preview=1&amp;cert={_e(course["slug"])}">full preview player</a> for the course flow.</p>'
         + "".join(items)
@@ -151,32 +151,36 @@ def billboard_html(course: dict) -> str:
     disc = ""
     if course.get("disclaimer"):
         disc = (
-            f'  <p class="fine" style="color:var(--ash);max-width:62ch;margin-bottom:14px">{_e(course["disclaimer"])}</p>\n'
+            f'      <p class="fine" style="color:var(--ash);margin-bottom:14px">{_e(course["disclaimer"])}</p>\n'
         )
-    # Keep the intentional double-close pattern used by existing course pages / build_pages
-    return f'''
-<section class="band"><div class="container" style="max-width:860px">
-  <a class="link ash" href="certificates.html" style="font-size:13px;display:inline-block;margin-bottom:20px">&larr; All courses</a>
-  <div class="course-billboard">
-    <img src="{_e(course["photo"])}" alt="">
-    <div class="cb-shade"></div>
-    <div class="cb-copy"><div class="eyebrow">FILM COURSE &middot; {n} SESSIONS</div><h2>{_e(course["title"])}</h2></div>
-  </div>
-  <div class="eyebrow brass" style="margin-bottom:14px">FILM COURSE &middot; {n} SESSIONS &middot; {minutes}</div>
-  <h1 class="d-36" style="margin-bottom:14px">{_e(course["title"])}</h1>
-  <p class="fine mono" style="letter-spacing:.08em;margin-bottom:10px;color:var(--ash)">{_e(course["eyebrow_track"])}</p>
-  <p class="lead" style="max-width:62ch;margin-bottom:10px" data-motion="fade-up">{_e(course["lead"])}</p>
-  <p class="fine" style="color:var(--ash);max-width:62ch;margin-bottom:6px">{_e(course["fine1"])}</p>
-  <p class="fine" style="color:var(--ash);max-width:62ch;margin-bottom:14px">{_e(course["fine2"])}</p>
-{disc}  <div class="row wrap" style="gap:10px;margin-bottom:8px"><a class="btn btn-yellow" href="profile.html">Start with free Profile</a><a class="btn btn-secondary" href="course.html?preview=1&amp;cert={_e(course["slug"])}">Watch the preview player</a><a class="btn btn-secondary" href="certificates.html#catalog">Browse courses</a></div>
-  <p class="fine" style="color:var(--ash);margin:0 0 18px;max-width:48ch">Preview is practice only. Earn proof through a Certified Organization.</p>
-</div></section></div></section>
-'''
+    return (
+        '\n<section class="band course-hero"><div class="container">\n'
+        '  <a class="link ash" href="certificates.html" style="font-size:13px;display:inline-block;margin-bottom:20px">&larr; All courses</a>\n'
+        '  <div class="course-intro">\n'
+        '    <div class="course-intro-copy">\n'
+        f'      <div class="eyebrow brass" style="margin-bottom:14px">FILM COURSE &middot; {n} SESSIONS &middot; {minutes}</div>\n'
+        f'      <h1 class="d-36" style="margin-bottom:14px">{_e(course["title"])}</h1>\n'
+        f'      <p class="fine mono" style="letter-spacing:.08em;margin-bottom:10px;color:var(--ash)">{_e(course["eyebrow_track"])}</p>\n'
+        f'      <p class="lead" style="margin-bottom:10px" data-motion="fade-up">{_e(course["lead"])}</p>\n'
+        f'      <p class="fine" style="color:var(--ash);margin-bottom:6px">{_e(course["fine1"])}</p>\n'
+        f'      <p class="fine" style="color:var(--ash);margin-bottom:14px">{_e(course["fine2"])}</p>\n'
+        f'{disc}'
+        f'      <div class="row wrap" style="gap:10px;margin-bottom:8px"><a class="btn btn-yellow" href="profile.html">Start with free Profile</a><a class="btn btn-secondary" href="course.html?preview=1&amp;cert={_e(course["slug"])}">Watch the preview player</a><a class="btn btn-secondary" href="certificates.html#catalog">Browse courses</a></div>\n'
+        '      <p class="fine" style="color:var(--ash);margin:0 0 6px;max-width:48ch">Preview is practice only. Earn proof through a Certified Organization.</p>\n'
+        '    </div>\n'
+        '    <div class="course-billboard" aria-hidden="true">\n'
+        f'      <img src="{_e(course["photo"])}" alt="">\n'
+        '      <div class="cb-shade"></div>\n'
+        f'      <div class="cb-copy"><div class="eyebrow">FILM COURSE &middot; {n} SESSIONS</div><h2>{_e(course["title"])}</h2></div>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '</div></section>\n'
+    )
 
 
 def cta_html() -> str:
     return '''
-<section class="band"><div class="container" style="max-width:860px;text-align:center">
+<section class="band"><div class="container" style="max-width:var(--max);text-align:center">
   <h2 class="d-28" style="margin-bottom:10px">Start free. Train on film.</h2>
   <p style="color:var(--ash);max-width:56ch;margin:0 auto 20px">Start with the Keystone Father Profile and your twelve-week plan, or bring this course to the men your organization serves. Facilitator-supported, self-paced.</p>
   <div class="row" style="gap:12px;justify-content:center"><a class="btn btn-primary" href="profile.html">Start with the Profile</a><a class="btn btn-secondary" href="organizations.html">Bring it to your organization</a></div>
@@ -189,7 +193,7 @@ def render_course_body(course: dict) -> str:
     return (
         billboard_html(course)
         + glance_html(course)
-        + '\n<section><div class="container" style="max-width:860px">\n'
+        + '\n<section><div class="container" style="max-width:var(--max)">\n'
         + articles
         + "\n</div></section>"
         + cta_html()
