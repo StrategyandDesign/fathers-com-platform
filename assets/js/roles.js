@@ -24,7 +24,12 @@ window.FCR = window.FCR || {};
   FCR.has = function(role){ return FCR.roles.indexOf(role) > -1; };
   FCR.isAdmin = function(){ return FCR.has('admin'); };
   FCR.canAuthor = function(){ return FCR.has('admin') || FCR.has('instructor'); };
-  FCR.leadsAnyOrg = function(){ return FCR.has('admin') || FCR.has('org_admin') || FCR.has('circle_leader') || Object.keys(FCR.orgRoles).length>0; };
+  FCR.leadsAnyOrg = function(){
+    if(FCR.has('admin') || FCR.has('org_admin') || FCR.has('circle_leader')) return true;
+    return Object.keys(FCR.orgRoles).some(function(oid){
+      return (FCR.orgRoles[oid]||[]).some(function(r){ return r==='org_admin' || r==='circle_leader'; });
+    });
+  };
 
   // Guard: call at top of a dashboard page. Redirects if the user lacks any of the roles.
   FCR.guard = function(allowed){
@@ -52,6 +57,7 @@ window.FCR = window.FCR || {};
     if(FCR.canAuthor()) links.push(['Studio','studio.html']);
     if(FCR.leadsAnyOrg()) links.push(['Org','org.html']);
     if(FCR.has('circle_leader')) links.push(['Lead','lead.html']);
+    if(FCR.has('researcher')) links.push(['Report','efficacy-report.html']);
     if(!links.length) return;
     if(right.querySelector('[data-fcr-dash]')) return;
     var wrap = document.createElement('div');
