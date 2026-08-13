@@ -4,7 +4,7 @@
   function el(id){return document.getElementById(id);}
   function show(){el('app').style.display='';}
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function scopedRole(role){ return role==='org_admin' || role==='circle_leader'; }
+  function scopedRole(role){ return role==='org_admin' || role==='circle_leader' || role==='researcher'; }
 
   function boot(){
     if(demo){ el('demo-note').style.display=''; show(); loadContent(); ensureGrantUi(); return; }
@@ -23,7 +23,7 @@
       '<select class="input" id="gr-org"><option value="">Select org</option></select></div>'+
       '<label class="fine" style="display:block;margin-top:10px"><input type="checkbox" id="gr-both"> Grant both org_admin and circle_leader (Org + Desk)</label>';
     msg.parentNode.insertBefore(box, msg);
-    msg.textContent='org_admin and circle_leader need an organization. Returning Home needs both roles on the same person.';
+    msg.textContent='org_admin, circle_leader, and researcher need an organization. Returning Home needs both org_admin and circle_leader on the same person; researcher is a separate grant.';
     var role=el('gr-role'); if(role) role.addEventListener('change', toggleOrgSelect);
     var both=el('gr-both'); if(both) both.addEventListener('change', toggleOrgSelect);
     toggleOrgSelect();
@@ -82,7 +82,7 @@
     var orgId=(el('gr-org')&&el('gr-org').value)||'';
     var roles=both?['org_admin','circle_leader']:[role];
     if(roles.some(scopedRole) && !orgId){
-      el('gr-msg').textContent='org_admin and circle_leader need an organization.';
+      el('gr-msg').textContent='org_admin, circle_leader, and researcher need an organization.';
       return;
     }
     FC.sb.from('profiles').select('id').eq('email',email).maybeSingle().then(function(r){
@@ -223,19 +223,21 @@
     FC.sb.from('orgs').select('id,name,seats,renews_on').order('name').then(function(r){
       var rows=r.data||[];
       fillOrgSelect(rows);
-      var html='<p class="fine" style="margin:0 0 12px">Mint a join code here. Grant both roles on the same person for Returning Home (Org + Desk). Do not mail Team@ for setup.</p>';
+      var html='<p class="fine" style="margin:0 0 12px">Mint a join code here. Grant both roles on the same person for Returning Home (Org + Desk). Grant researcher for the Efficacy Report only. Do not mail Team@ for setup.</p>';
       html+='<table class="dtable"><thead><tr><th>Organization</th><th>Cohort</th><th>Renews</th><th></th></tr></thead><tbody>';
       rows.forEach(function(o){
         html+='<tr><td>'+esc(o.name)+'</td><td class="mono">'+o.seats+'</td><td class="fine">'+(o.renews_on||'-')+'</td>'+
           '<td class="inline-actions">'+
           '<button class="btn btn-secondary mini" data-orgadmin="'+o.id+'">+ org_admin</button>'+
           '<button class="btn btn-secondary mini" data-leader="'+o.id+'">+ leader</button>'+
+          '<button class="btn btn-secondary mini" data-researcher="'+o.id+'">+ researcher</button>'+
           '<button class="btn btn-secondary mini" data-both="'+o.id+'">Grant both</button>'+
           '<button class="btn btn-primary mini" data-mint="'+o.id+'">Mint join code</button></td></tr>';
       });
       el('orgs-table').innerHTML=html+'</tbody></table>';
       el('orgs-table').querySelectorAll('[data-orgadmin]').forEach(function(b){b.addEventListener('click',function(){grantScoped(b.dataset.orgadmin,'org_admin');});});
       el('orgs-table').querySelectorAll('[data-leader]').forEach(function(b){b.addEventListener('click',function(){grantScoped(b.dataset.leader,'circle_leader');});});
+      el('orgs-table').querySelectorAll('[data-researcher]').forEach(function(b){b.addEventListener('click',function(){grantScoped(b.dataset.researcher,'researcher');});});
       el('orgs-table').querySelectorAll('[data-both]').forEach(function(b){b.addEventListener('click',function(){grantBoth(b.dataset.both);});});
       el('orgs-table').querySelectorAll('[data-mint]').forEach(function(b){b.addEventListener('click',function(){mintJoin(b.dataset.mint);});});
     });
