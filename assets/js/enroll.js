@@ -81,6 +81,7 @@
           return;
         }
 
+        // Function errors surface loudly, never silently.
         var detail = (err && err.message) || (d && (d.message || d.error)) || 'Enrollment is not available right now.';
         note('Could not complete enrollment: ' + detail, 'cpn-err');
       }, function(e){
