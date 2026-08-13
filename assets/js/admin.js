@@ -4,19 +4,51 @@
   function el(id){return document.getElementById(id);}
   function show(){el('app').style.display='';}
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function scopedRole(role){ return role==='org_admin' || role==='circle_leader'; }
 
   function boot(){
-    if(demo){ el('demo-note').style.display=''; show(); loadContent(); return; }
+    if(demo){ el('demo-note').style.display=''; show(); loadContent(); ensureGrantUi(); return; }
     FCR.guard(['admin']).then(function(ok){
       if(!ok){ el('denied').style.display=''; return; }
-      show(); loadPeople(); loadContent(); loadInstruments(); loadOrgs(); loadAudit();
+      show(); ensureGrantUi(); loadPeople(); loadContent(); loadInstruments(); loadOrgs(); loadAudit();
     });
+  }
+
+  function ensureGrantUi(){
+    if(el('gr-org')) { toggleOrgSelect(); return; }
+    var msg=el('gr-msg'); if(!msg) return;
+    var box=document.createElement('div');
+    box.innerHTML=
+      '<div class="field" id="gr-org-wrap" style="margin:12px 0 0;display:none"><label>Organization</label>'+
+      '<select class="input" id="gr-org"><option value="">Select org</option></select></div>'+
+      '<label class="fine" style="display:block;margin-top:10px"><input type="checkbox" id="gr-both"> Grant both org_admin and circle_leader (Org + Desk)</label>';
+    msg.parentNode.insertBefore(box, msg);
+    msg.textContent='org_admin and circle_leader need an organization. Returning Home needs both roles on the same person.';
+    var role=el('gr-role'); if(role) role.addEventListener('change', toggleOrgSelect);
+    var both=el('gr-both'); if(both) both.addEventListener('change', toggleOrgSelect);
+    toggleOrgSelect();
+  }
+
+  function toggleOrgSelect(){
+    var role=(el('gr-role')&&el('gr-role').value)||'';
+    var both=el('gr-both')&&el('gr-both').checked;
+    var wrap=el('gr-org-wrap');
+    if(wrap) wrap.style.display=(scopedRole(role)||both)?'':'none';
+  }
+
+  function fillOrgSelect(rows){
+    var sel=el('gr-org'); if(!sel) return;
+    var keep=sel.value;
+    sel.innerHTML='<option value="">Select org</option>'+(rows||[]).map(function(o){
+      return '<option value="'+esc(o.id)+'">'+esc(o.name)+'</option>';
+    }).join('');
+    if(keep) sel.value=keep;
+    toggleOrgSelect();
   }
 
   function loadPeople(){
     FC.sb.from('profiles').select('id,name,email').order('created_at',{ascending:false}).then(function(r){
       var rows=r.data||[];
-      // fetch roles per user
       FC.sb.from('user_roles').select('user_id,role,org_id').then(function(rr){
         var byUser={};(rr.data||[]).forEach(function(x){(byUser[x.user_id]=byUser[x.user_id]||[]).push(x);});
         var html='<table class="dtable"><thead><tr><th>Name</th><th>Email</th><th>Roles</th><th></th></tr></thead><tbody>';
@@ -45,13 +77,28 @@
 
   function grant(){
     var email=el('gr-email').value.trim(), role=el('gr-role').value;
+    var both=el('gr-both')&&el('gr-both').checked;
     if(!email){el('gr-msg').textContent='Enter an email.';return;}
+    var orgId=(el('gr-org')&&el('gr-org').value)||'';
+    var roles=both?['org_admin','circle_leader']:[role];
+    if(roles.some(scopedRole) && !orgId){
+      el('gr-msg').textContent='org_admin and circle_leader need an organization.';
+      return;
+    }
     FC.sb.from('profiles').select('id').eq('email',email).maybeSingle().then(function(r){
       if(!r.data){el('gr-msg').textContent='No user with that email yet. They must sign in once first.';return;}
-      FC.sb.from('user_roles').insert({user_id:r.data.id,role:role}).then(function(res){
-        if(res.error){el('gr-msg').textContent='Failed: '+res.error.message;return;}
-        audit('grant_role',r.data.id,{role:role});
-        el('gr-msg').textContent='Granted '+role+' to '+email+'.';el('gr-email').value='';loadPeople();
+      var uid=r.data.id;
+      var inserts=roles.map(function(rl){
+        var row={user_id:uid,role:rl};
+        if(scopedRole(rl)) row.org_id=orgId;
+        return FC.sb.from('user_roles').insert(row);
+      });
+      Promise.all(inserts).then(function(results){
+        var err=(results||[]).map(function(res){return res&&res.error;}).filter(Boolean)[0];
+        if(err){el('gr-msg').textContent='Failed: '+err.message;return;}
+        audit('grant_role',uid,{roles:roles,org:orgId||null});
+        el('gr-msg').textContent='Granted '+roles.join(' + ')+' to '+email+'.';
+        el('gr-email').value='';loadPeople();
       });
     });
   }
@@ -59,7 +106,7 @@
   function loadContent(){
     var host=el('content-table');
     var SLUG_PAGE={fundamentals:'course-fathering-fundamentals.html',reentry:'course-coming-home-present.html',anger:'course-steady-under-pressure.html',coparenting:'course-same-team.html',manhood:'course-the-man-before-you.html'};
-    var EXPECTED={fundamentals:9,reentry:12,anger:12,coparenting:12,manhood:6};
+    var EXPECTED={fundamentals:8,reentry:12,anger:12,coparenting:12,manhood:6};
     function paintCerts(courses, counts){
       var html='<div class="eyebrow" style="margin:0 0 10px">CERTIFICATE COURSES (PRODUCT TRUTH)</div>';
       html+='<table class="dtable"><thead><tr><th>Course</th><th>Sessions</th><th>Films live</th><th>Status</th><th></th></tr></thead><tbody>';
@@ -93,14 +140,14 @@
       return html+'</tbody></table>';
     }
     if(!(window.FC&&FC.live)){
-      var demo=[
+      var demoRows=[
         {id:'d1',slug:'fundamentals',title:'Fathering Fundamentals',published:true},
         {id:'d2',slug:'reentry',title:'Coming Home Present',published:true},
         {id:'d3',slug:'anger',title:'Steady Under Pressure',published:true},
         {id:'d4',slug:'coparenting',title:'Same Team',published:true}
       ];
-      var counts={d1:{sessions:9,films:0},d2:{sessions:12,films:0},d3:{sessions:12,films:0},d4:{sessions:12,films:0}};
-      host.innerHTML=paintCerts(demo,counts)+paintClasses([]);
+      var counts={d1:{sessions:8,films:0},d2:{sessions:12,films:0},d3:{sessions:12,films:0},d4:{sessions:12,films:0}};
+      host.innerHTML=paintCerts(demoRows,counts)+paintClasses([]);
       return;
     }
     Promise.all([
@@ -130,19 +177,67 @@
     });
   }
 
+  function newJoinCode(){
+    var alphabet='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    var out='';
+    for(var i=0;i<8;i++) out+=alphabet.charAt(Math.floor(Math.random()*alphabet.length));
+    return out;
+  }
+
+  function mintJoin(orgId){
+    function attempt(n){
+      var code=newJoinCode();
+      return FC.sb.from('org_join_codes').insert({org_id:orgId,code:code,active:true}).then(function(res){
+        if(res.error){
+          if(n<1) return attempt(n+1);
+          toast('Could not mint: '+res.error.message);
+          return;
+        }
+        audit('mint_join_code',orgId,{code:code});
+        toast('Join code '+code+' · /profile.html?join='+code);
+      });
+    }
+    attempt(0);
+  }
+
+  function grantBoth(orgId){
+    var email=prompt('Email to grant org_admin AND circle_leader for this org:');
+    if(!email) return;
+    FC.sb.from('profiles').select('id').eq('email',email.trim()).maybeSingle().then(function(r){
+      if(!r.data){toast('No user with that email yet. They must sign in once first.');return;}
+      var uid=r.data.id;
+      Promise.all([
+        FC.sb.from('user_roles').insert({user_id:uid,role:'org_admin',org_id:orgId}),
+        FC.sb.from('user_roles').insert({user_id:uid,role:'circle_leader',org_id:orgId})
+      ]).then(function(results){
+        var err=(results||[]).map(function(res){return res&&res.error;}).filter(Boolean)[0];
+        if(err){toast('Failed: '+err.message);return;}
+        audit('grant_scoped_role',uid,{roles:['org_admin','circle_leader'],org:orgId});
+        toast('Granted org_admin + circle_leader.');
+        loadPeople();
+      });
+    });
+  }
+
   function loadOrgs(){
     FC.sb.from('orgs').select('id,name,seats,renews_on').order('name').then(function(r){
       var rows=r.data||[];
-      var html='<table class="dtable"><thead><tr><th>Organization</th><th>Seats</th><th>Renews</th><th></th></tr></thead><tbody>';
+      fillOrgSelect(rows);
+      var html='<p class="fine" style="margin:0 0 12px">Mint a join code here. Grant both roles on the same person for Returning Home (Org + Desk). Do not mail Team@ for setup.</p>';
+      html+='<table class="dtable"><thead><tr><th>Organization</th><th>Seats</th><th>Renews</th><th></th></tr></thead><tbody>';
       rows.forEach(function(o){
         html+='<tr><td>'+esc(o.name)+'</td><td class="mono">'+o.seats+'</td><td class="fine">'+(o.renews_on||'-')+'</td>'+
           '<td class="inline-actions">'+
           '<button class="btn btn-secondary mini" data-orgadmin="'+o.id+'">+ org_admin</button>'+
-          '<button class="btn btn-secondary mini" data-leader="'+o.id+'">+ leader</button></td></tr>';
+          '<button class="btn btn-secondary mini" data-leader="'+o.id+'">+ leader</button>'+
+          '<button class="btn btn-secondary mini" data-both="'+o.id+'">Grant both</button>'+
+          '<button class="btn btn-primary mini" data-mint="'+o.id+'">Mint join code</button></td></tr>';
       });
       el('orgs-table').innerHTML=html+'</tbody></table>';
       el('orgs-table').querySelectorAll('[data-orgadmin]').forEach(function(b){b.addEventListener('click',function(){grantScoped(b.dataset.orgadmin,'org_admin');});});
       el('orgs-table').querySelectorAll('[data-leader]').forEach(function(b){b.addEventListener('click',function(){grantScoped(b.dataset.leader,'circle_leader');});});
+      el('orgs-table').querySelectorAll('[data-both]').forEach(function(b){b.addEventListener('click',function(){grantBoth(b.dataset.both);});});
+      el('orgs-table').querySelectorAll('[data-mint]').forEach(function(b){b.addEventListener('click',function(){mintJoin(b.dataset.mint);});});
     });
   }
 
@@ -154,6 +249,7 @@
       FC.sb.from('user_roles').insert({user_id:r.data.id,role:role,org_id:orgId}).then(function(res){
         if(res.error){toast('Failed: '+res.error.message);return;}
         audit('grant_scoped_role',r.data.id,{role:role,org:orgId});toast('Granted '+role+'.');
+        loadPeople();
       });
     });
   }
