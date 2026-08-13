@@ -129,7 +129,12 @@ def test_facilitator_desk_has_claims(page, server):
     assert "(x.sessions_completed||0) > weekIndex" in js
     assert "paintBoard" in js
     assert "certificates').select('*')" not in js
+    assert "course totals" not in js
+    assert "perSession:true" in js
     assert 'data-role="leader">Desk</a>' in html
+    review = _fetch(server, "review.html")
+    assert "Reach him from Desk." in review
+    assert "log the contact in your kit" not in review
     certs = _fetch(server, "certificates.html")
     assert "PREVIEW THE PLAYER" not in certs
     assert "shape stills until Vimeo is wired" not in certs

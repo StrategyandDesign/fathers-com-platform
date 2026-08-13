@@ -37,7 +37,8 @@
     var s=(serial||'').trim();
     return s ? ('verify.html?serial='+encodeURIComponent(s)) : 'verify.html';
   }
-  // RPC is aggregates only. Derive this-session Y/N from counts vs the selected week.
+  // Honest sequential proxy (Coming Home cannot skip films). RPC is aggregates
+  // only; derive this-session Y/N from counts vs the selected week. Do not invent an RPC.
   function withSessionFlags(rows){
     return (rows||[]).map(function(x){
       return Object.assign({}, x, {
@@ -284,7 +285,6 @@
   function renderBoard(rows, opts){
     var box=el('lead-thisweek'); if(!box) return;
     opts=opts||{};
-    var perSession=!!opts.perSession;
     var title=filmTitle(weekIndex);
     if(!rows || !rows.length){
       box.innerHTML='<div class="dash-empty"><h3>No men claimed yet</h3><p>Claim a man by the email he signs in with. He can train without you. This board stays up even if you have no Circle.</p></div>';
@@ -292,17 +292,9 @@
     }
     var head = '<th>Name</th><th>Week</th><th>Film</th><th>Check</th><th>Practice</th><th>Serial</th><th></th>';
     var body = rows.map(function(x){
-      var filmCell, checkCell, pracCell;
-      if(perSession){
-        filmCell='<td class="lead-yn">'+(x.film_yn?'Y':'N')+'</td>';
-        checkCell='<td class="lead-yn">'+(x.check_yn?'Y':'N')+'</td>';
-        pracCell='<td class="lead-yn">'+(x.practice_yn?'Y':'N')+'</td>';
-      } else {
-        // RPC is aggregates only. Do not invent this-session Y/N.
-        filmCell='<td class="mono" title="Course-to-date films. Not this session.">'+(x.sessions_completed||0)+'</td>';
-        checkCell='<td class="mono" title="Course-to-date checkpoints. Not this session.">'+(x.checkpoints_passed||0)+'</td>';
-        pracCell='<td class="mono" title="Course-to-date practices. Not this session.">'+(typeof x.practices_completed==='number'?x.practices_completed:0)+'</td>';
-      }
+      var filmCell='<td class="lead-yn">'+(x.film_yn?'Y':'N')+'</td>';
+      var checkCell='<td class="lead-yn">'+(x.check_yn?'Y':'N')+'</td>';
+      var pracCell='<td class="lead-yn">'+(x.practice_yn?'Y':'N')+'</td>';
       var serial=x.cert_serial
         ? '<a class="link" href="'+esc(verifyHref(x.cert_serial))+'">'+esc(x.cert_serial)+'</a>'
         : '—';
@@ -316,9 +308,7 @@
         '<td>'+reach+'</td>'+
         '</tr>';
     }).join('');
-    var note = perSession
-      ? '<p class="fine" style="margin-top:12px">Y/N is this session. You never see a man\u2019s answers, scores, or practice log.</p>'
-      : '<p class="fine" style="margin-top:12px">Film, Check, and Practice are course totals. The progress RPC does not return this session\u2019s flags, so those Y/N cells are not invented here. You never see a man\u2019s answers, scores, or practice log.</p>';
+    var note = '<p class="fine" style="margin-top:12px">You never see a man\u2019s answers, scores, or practice log.</p>';
     box.innerHTML='<div class="dtable-wrap"><table class="dtable"><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></div>'+note;
   }
 
