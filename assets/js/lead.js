@@ -33,6 +33,25 @@
   function el(id){return document.getElementById(id);}
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function filmTitle(i){ i=Math.max(0,Math.min(FILMS.length-1,i|0)); return FILMS[i]; }
+  function verifyHref(serial){
+    var s=(serial||'').trim();
+    return s ? ('verify.html?serial='+encodeURIComponent(s)) : 'verify.html';
+  }
+  // RPC is aggregates only. Derive this-session Y/N from counts vs the selected week.
+  function withSessionFlags(rows){
+    return (rows||[]).map(function(x){
+      return Object.assign({}, x, {
+        film_yn: (x.sessions_completed||0) > weekIndex,
+        check_yn: (x.checkpoints_passed||0) > weekIndex,
+        practice_yn: (x.practices_completed||0) > weekIndex
+      });
+    });
+  }
+  function paintBoard(rows){
+    var flagged=withSessionFlags(rows);
+    renderBoard(flagged,{perSession:true});
+    considerNext(flagged,{perSession:true});
+  }
   function setGlance(key, value){
     var n=document.querySelector('[data-glance="'+key+'"]');
     if(n && value!=null) n.textContent=value;
@@ -72,10 +91,9 @@
     setFilmGlance(filmTitle(weekIndex));
     updateSeatChip(3);
     var serial=el('lead-serial-chip');
-    if(serial){ serial.textContent='NCF-F-2026-0142 → verify'; serial.href='verify.html'; }
-    renderBoard(DEMO_ROWS,{perSession:true});
+    if(serial){ serial.textContent='NCF-F-2026-0142 → verify'; serial.href=verifyHref('NCF-F-2026-0142'); }
+    paintBoard(DEMO_ROWS);
     renderClaimList(lastClaims,true);
-    considerNext(DEMO_ROWS,{perSession:true});
   }
 
   function renderWeekChips(){
@@ -91,8 +109,7 @@
         setFilmGlance(filmTitle(weekIndex));
         var filmSel=el('cw-film'); if(filmSel) filmSel.value=String(weekIndex);
         var weekInp=el('cw-week'); if(weekInp) weekInp.value=String(weekIndex+1);
-        renderBoard(lastProgress.length?lastProgress:(demo?DEMO_ROWS:[]), {perSession:demo});
-        considerNext(lastProgress.length?lastProgress:(demo?DEMO_ROWS:[]), {perSession:demo});
+        paintBoard(lastProgress.length?lastProgress:(demo?DEMO_ROWS:[]));
       });
     });
     setFilmGlance(filmTitle(weekIndex));
@@ -118,7 +135,7 @@
       var row=(r.data||[])[0];
       if(!row || !row.serial){ chip.textContent='Serial → verify'; chip.href='verify.html'; return; }
       chip.textContent=row.serial+' → verify';
-      chip.href='verify.html';
+      chip.href=verifyHref(row.serial);
       chip.title='Public registry. Organization name is never shown there.';
     });
   }
@@ -177,7 +194,7 @@
       fillFilmSelect();
       var weekInp=el('cw-week'); if(weekInp) weekInp.value=String(weekIndex+1);
       setFilmGlance(filmTitle(weekIndex));
-      renderBoard(lastProgress,{perSession:false});
+      paintBoard(lastProgress);
     });
   }
 
@@ -287,7 +304,7 @@
         pracCell='<td class="mono" title="Course-to-date practices. Not this session.">'+(typeof x.practices_completed==='number'?x.practices_completed:0)+'</td>';
       }
       var serial=x.cert_serial
-        ? '<a class="link" href="verify.html">'+esc(x.cert_serial)+'</a>'
+        ? '<a class="link" href="'+esc(verifyHref(x.cert_serial))+'">'+esc(x.cert_serial)+'</a>'
         : '—';
       var href=reachHref(x);
       var reach=href ? '<a class="btn btn-secondary mini" href="'+esc(href)+'">'+esc(reachLabel(x))+'</a>' : '';
@@ -415,17 +432,17 @@
     FC.sb.rpc('facilitator_participant_progress').then(function(r){
       if(r.error){
         if(note) note.innerHTML='<p class="fine">Could not load progress right now. Try again in a moment. If it keeps failing, tell an admin.</p>';
-        renderBoard(lastClaims.map(function(c){ return {participant_email:c.participant_email}; }), {perSession:false});
+        paintBoard(lastClaims.map(function(c){ return {participant_email:c.participant_email}; }));
         return;
       }
       var rows=r.data||[];
       lastProgress=rows;
-      var watched=rows.filter(function(x){ return (x.sessions_completed||0)>0; }).length;
+      var flagged=withSessionFlags(rows);
+      var watched=flagged.filter(function(x){ return x.film_yn; }).length;
       setGlance('lead-men', String(rows.length));
       setGlance('lead-watched', String(watched));
       updateSeatChip(rows.length);
-      renderBoard(rows, {perSession:false});
-      considerNext(rows, {perSession:false});
+      paintBoard(rows);
       if(note) note.innerHTML='';
     });
   }
@@ -456,7 +473,7 @@
               var enrolls=(er&&er.data)||[];
               var enrById={}; enrolls.forEach(function(e){ enrById[e.id]=e; });
               var enrIds=enrolls.map(function(e){ return e.id; });
-              var certQ=enrIds.length ? FC.sb.from('certificates').select('*').in('enrollment_id', enrIds)
+              var certQ=enrIds.length ? FC.sb.from('certificates').select('enrollment_id,serial,revoked,issued_at,course_title').in('enrollment_id', enrIds)
                                        : Promise.resolve({ data: [] });
             certQ.then(function(xr){
               if(xr && xr.error){ fail('Could not load certificates for the sheet.'); return; }

@@ -34,7 +34,7 @@
         var d=r&&r.data&&r.data.data; var err=r&&r.error;
         if(err||!d){ qEl.innerHTML='<p class="fine">'+esc((err&&err.message)||'Reviewer role required, or the review function is not deployed yet.')+'</p>'; aEl.innerHTML=''; return; }
         qEl.innerHTML=(d.submitted&&d.submitted.length)?d.submitted.map(function(s){return card(s,d.flags);}).join(''):'<p class="fine">Nothing waiting. Good.</p>';
-        aEl.innerHTML=(d.absent&&d.absent.length)?d.absent.map(function(e){return '<p class="small">'+esc(e.user_id).slice(0,8)+'&hellip; &middot; last activity '+esc(e.last_activity_at||'never')+'</p>';}).join(''):'<p class="fine">Every enrolled man has been active inside 72 hours.</p>';
+        aEl.innerHTML=(d.absent&&d.absent.length)?d.absent.map(function(e){var who=e.email?('<a href="mailto:'+esc(e.email)+'">'+esc(e.email)+'</a>'):(esc(e.user_id).slice(0,8)+'&hellip;');return '<p class="small">'+who+' &middot; last activity '+esc(e.last_activity_at||'never')+'</p>';}).join(''):'<p class="fine">Every enrolled man has been active inside 72 hours.</p>';
         qEl.querySelectorAll('[data-a]').forEach(function(b){ b.addEventListener('click',function(){
           var host=b.closest('[data-id]'); var parts=host.getAttribute('data-id').split('::');
           var extra={};

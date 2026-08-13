@@ -124,6 +124,12 @@ def test_facilitator_desk_has_claims(page, server):
     assert "The Body You Bring Home" in js
     assert "review.html#rv-absent" in js
     assert "verify.html" in js
+    assert "verify.html?serial=" in js
+    assert "withSessionFlags" in js
+    assert "(x.sessions_completed||0) > weekIndex" in js
+    assert "paintBoard" in js
+    assert "certificates').select('*')" not in js
+    assert 'data-role="leader">Desk</a>' in html
     certs = _fetch(server, "certificates.html")
     assert "PREVIEW THE PLAYER" not in certs
     assert "shape stills until Vimeo is wired" not in certs
