@@ -7,6 +7,7 @@
   function el(id){return document.getElementById(id);}
   function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   function fmt(n){ return (n===null||n===undefined||isNaN(n)) ? '0' : Math.round(n*10)/10; }
+  function isAdmin(){ return window.FCR && typeof FCR.isAdmin==='function' && FCR.isAdmin(); }
 
   function boot(){
     if(demo){ var dn=el('demo-note'); if(dn) dn.style.display=''; var ap=el('app'); if(ap) ap.style.display='';
@@ -23,11 +24,14 @@
       if(!rows.length){
         el('org-picker').innerHTML='';
         var body=el('org-body');
+        var setup = isAdmin()
+          ? '<p class="small" style="color:var(--ash)">Create the organization and mint a join code on <a class="link" href="admin.html">Admin \u2192 Orgs</a>. Grant org_admin and circle_leader with that org.</p>'
+          : '<p class="small" style="color:var(--ash)">Ask the registrar to create your organization from Admin and mint a join code. There is no mailto setup path.</p>';
         if(body) body.innerHTML='<div class="card" style="padding:32px;max-width:640px">'+
           '<div class="eyebrow" style="margin-bottom:10px">NO ORGANIZATION YET</div>'+
           '<h3 style="margin-bottom:8px">Your program is not set up here yet.</h3>'+
           '<p class="small" style="color:var(--ash);margin-bottom:16px">Once your organization is created and you are added as its admin, this page becomes your window: men measured, movement, completions, and your join link. You never see a man\u2019s answers or scores.</p>'+
-          '<p class="small" style="color:var(--ash)">To get set up, write <a class="link" href="mailto:Team@Fathers.com?subject=Set%20up%20our%20organization">Team@Fathers.com</a> and we will stand up your program and send your join link, usually same day.</p>'+
+          setup+
         '</div>';
         return;}
       el('org-picker').innerHTML=rows.map(function(o,i){return '<button class="chip'+(i===0?' selected':'')+'" data-org="'+o.id+'" data-name="'+esc(o.name)+'" data-seats="'+(o.seats||'')+'" data-renews="'+(o.renews_on||'')+'">'+esc(o.name)+'</button>';}).join('');
@@ -51,8 +55,10 @@
     FC.sb.from('org_join_codes').select('code,active,support_note').eq('org_id',id).then(function(r){
       var codes=(r.data||[]).filter(function(c){return c.active;});
       if(r.error || !codes.length){
-        box.innerHTML='<p class="small" style="color:var(--ash);margin-bottom:10px">No join code minted yet. One link enrolls every man; write us and we mint it same day.</p>'+
-          '<a class="link" href="mailto:Team@Fathers.com?subject=Mint%20our%20join%20code">Request your link &rarr;</a>';
+        var hint = isAdmin()
+          ? '<a class="link" href="admin.html">Mint the join code on Admin \u2192 Orgs</a>'
+          : 'Ask the registrar to mint a join code from Admin.';
+        box.innerHTML='<p class="small" style="color:var(--ash);margin-bottom:10px">No join code minted yet. One link enrolls every man.</p><p class="small">'+hint+'</p>';
         return;
       }
       var code=codes[0].code;
@@ -88,7 +94,7 @@
         var msg = !fathers ? 'Send your join link to the first ten men. The baseline is where everything starts.'
           : gap>0 ? gap+' of your men have measured once and not again. The retake is where movement shows; resend the link.'
           : 'Every measured man has a latest profile. Watch the movement column and share the report.';
-        nx.innerHTML='<div class="card" style="padding:18px 22px;margin-bottom:20px;border-left:3px solid var(--ember)">'+
+        nx.innerHTML='<div class="card" style="padding:18px 22px;margin-bottom:20px;border-left:3px solid var(--ember)">'+ 
           '<div class="eyebrow" style="margin-bottom:6px">CONSIDER NEXT</div>'+
           '<p class="small" style="margin:0">'+msg+'</p></div>';
       }
