@@ -7,23 +7,24 @@ DB role keys are stable; display names carry the v4.0 certification positioning 
 
 | Role (DB key) | Positioned as | Can do | Dashboard |
 |---|---|---|---|
-| admin | NCF Registrar | Everything: grant/revoke roles, create orgs, see all people and content, read the audit log, issue Certificates of Completion, maintain the registry | admin.html |
+| admin | NCF Registrar | Everything: grant/revoke roles, create orgs, mint join codes, see all people and content, read the audit log, issue Certificates of Completion, maintain the registry | admin.html |
 | instructor | NCF curriculum staff | Build and publish courses (lessons + Vimeo + workbooks + drip), build and publish assessment instruments, issue certificates | studio.html |
 | content_reviewer | NCF reviewer | Read drafts before publish (review workflow hook; same read scope as authors) | studio.html (read) |
-| org_admin | Certified Organization admin | Manage their organization's seats, invite men, see participation counts (never individual answers or scores) | org.html |
-| circle_leader | Certified Facilitator | Support men from the Facilitator Desk: claim seats, see roster and progress, post announcements, quiet alerts. Live cohort co-watch is optional, not required for default completion. Public credential status lives in the registry | lead.html |
-| member | Participant | Take assessments, work a plan, watch lessons, post in their Circle. Pays nothing, ever | plan.html (default) |
+| org_admin | Certified Organization admin | Manage their organization's seats, invite men, see participation counts (never individual answers or scores). **Must have org_id.** | org.html |
+| circle_leader | Certified Facilitator | Support men from the Facilitator Desk: claim seats, see roster and progress. **Must have org_id.** Live cohort co-watch is optional. Public credential status lives in the registry | lead.html |
+| member | Participant | Take assessments, work a plan, watch lessons. Pays nothing, ever | plan.html (default) |
 
-Every signed-in user is a member (Participant) by default. Roles are additive and, for org_admin and circle_leader (Certified Organization admin and Certified Facilitator), scoped to a specific org. The Certified Facilitator credential itself belongs to the person and follows them across organizations; the circle_leader grant is the per-org operating permission.
+Every signed-in user is a member (Participant) by default. Roles are additive and, for org_admin and circle_leader, scoped to a specific org. The Certified Facilitator credential belongs to the person; the circle_leader grant is the per-org operating permission.
+
+## Friday path (Returning Home)
+Grant **both** `org_admin` and `circle_leader` to the same person, each with the Returning Home `org_id`. That opens org.html and lead.html. `lead.html` stays circle_leader-gated; do not change that guard. Do not insert those roles without an org. Unscoped circle_leader rows are fixed by re-granting from Admin → Orgs.
+
+Mint join codes from Admin → Orgs. Do not mail Team@ for setup. Do not seed grants from SQL unless the registrar has no UI.
 
 ## Who can build what
 - Courses, lessons, videos (Vimeo), workbooks, drip schedules: instructor or admin, in Studio.
-- Assessment instruments (items, response scales, domains, domain and item weights, reverse-scoring, scoring formula, interpretation bands): instructor or admin, in Studio. Publishing an instrument makes it the live assessment on the Keystone page. Responses are immutable once submitted, so results are auditable.
-- Certificates: issued by instructor or admin through a security-definer function that stamps a unique serial and writes an auditable row. Public verification reads a limited view.
-
-## Measurable and auditable
-- Instrument responses store the overall score, per-domain scores, the gap domain, and every raw item answer, with a timestamp. No update or delete policy exists on responses, so the record cannot be altered after the fact.
-- Privileged actions (role grants, publishes, org creation, certificate issuance) write to `audit_log`, readable only by admins.
+- Assessment instruments: instructor or admin, in Studio.
+- Certificates: issued by instructor or admin through a security-definer function.
 
 ## First admin
 After you sign in once, run this in the Supabase SQL editor, replacing the email:
@@ -34,7 +35,4 @@ select id, 'admin' from auth.users where email = 'you@fathers.com';
 From then on, grant every other role from the Admin dashboard.
 
 ## Communications (launch scope)
-- Circle discussion threads (member to member, within a Circle).
-- Circle announcements (facilitator to claimed men / cohort grouping).
-- Triggered email via Resend (welcome, weekly plan, invite, certificate, and the rest in `emails/`).
-Direct member-to-member messaging and real-time chat are deliberately deferred.
+Circle announcements stay dark unless a Circle has meeting time. Triggered email: org-invite from org.js only. Cadence templates are not wired. Direct member-to-member messaging is deferred.
