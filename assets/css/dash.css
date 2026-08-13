@@ -51,3 +51,12 @@
 .dash-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--hairline)}
 .dash-row:last-child{border-bottom:0}
 .dash-row .meta{font-family:var(--font-mono);font-size:11px;color:var(--ash)}
+
+/* Facilitator Desk: one board, claimed men, this week's film */
+#lead-live{display:none}
+#lead-live.is-live{display:block}
+#lead-thisweek .dtable{min-width:720px}
+#lead-week-chips .chip{max-width:100%}
+.lead-yn{font-family:var(--font-mono);letter-spacing:.06em;font-weight:600}
+.glance-next-txt a{color:var(--yellow);text-underline-offset:3px}
+#lead-head-chips a.chip{text-decoration:none}
