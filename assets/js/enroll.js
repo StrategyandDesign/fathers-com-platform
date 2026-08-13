@@ -1,8 +1,8 @@
 /* Course enrollment : Fathers.com
    Industry-standard shape: the browser sends intent (the course) to the
    server-side checkout function, which owns the claim check and fulfillment.
-   v4.0: participation requires an active claim by a Certified Facilitator or
-   Certified Organization. This file computes nothing and enrolls nothing itself. */
+   Films and training are open without a claim. A certificate still needs an
+   active claim by a Certified Facilitator or Certified Organization. */
 (function(){
   function qs(k){ return new URLSearchParams(location.search).get(k) || ''; }
   function $(id){ return document.getElementById(id); }
@@ -11,13 +11,6 @@
   var slug  = (qs('cert') || 'fundamentals').toLowerCase();
   var title = qs('title') || 'Fathering Fundamentals';
   var hours = qs('hours') || '10.0';
-  // v4.0: courses and the Certificate of Completion are free to the man, always.
-  // Enrollment requires an active claim; the server-side checkout function is
-  // the authority on both the claim and the enrollment.
-
-  // v4.11: every course in the slate is live. The development-era branch that
-  // routed some slugs to a waitlist panel is gone with the panel itself; every
-  // slug flows through the one real enrollment path below.
 
   setText('certTitle', title);
   setText('certTitleSum', title);
@@ -37,11 +30,24 @@
     var n = $('enrollNote'); if(n){ n.textContent = text; n.className = 'fine ' + (cls||''); }
   }
 
+  function claimNote(){
+    var cs = $('claimStatus');
+    if(cs){
+      cs.className = 'small';
+      cs.innerHTML = 'Films and your plan stay open. A certificate needs a Certified Facilitator or Organization to claim your seat.'+
+        '<div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">'+
+          '<a class="btn btn-primary btn-sm" href="course.html?cert='+encodeURIComponent(slug)+'">Watch the films</a>'+
+          '<a class="link ash" href="plan.html">Continue your free plan</a>'+
+        '</div>'+
+        '<p class="fine" style="margin:10px 0 0">If you already have a facilitator, ask them to add your seat. Then come back here if you want the serial.</p>';
+    }
+    note('You can train now. The certificate waits on a claimed seat.', '');
+  }
+
   function enroll(){
     var btn = $('enrollBtn');
 
     if(!(window.FC && FC.live)){
-      // Demo mode (no keys): show the success experience.
       showSuccess(); return;
     }
 
@@ -60,20 +66,13 @@
         var d = r && r.data;
         var err = r && r.error;
 
-        if(d && d.enrolled){ showSuccess(); return; }
-        if(d && d.claim_required){
-          var cs = $('claimStatus');
-          if(cs){
-            cs.className = 'small cpn-err';
-            cs.innerHTML = 'Courses open after a Certified Facilitator or Organization adds you to their roster. That keeps the work accountable and the certificate verifiable.'+
-              '<div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">'+
-                '<a class="btn btn-primary btn-sm" href="plan.html">Continue your free plan</a>'+
-                '<a class="link ash" href="organizations.html">Find a Certified Organization</a>'+
-                '<a class="link ash" href="facilitators.html">How facilitators work</a>'+
-              '</div>'+
-              '<p class="fine" style="margin:10px 0 0">If you already have a facilitator, ask them to add your seat. It takes them under a minute. Then come back here and enroll free.</p>';
-          }
-          note('Your free plan stays open. When your seat is ready, enrollment is one tap.', 'cpn-err');
+        if(d && d.enrolled){
+          if(d.claim_required_for_certificate) claimNote();
+          showSuccess();
+          return;
+        }
+        if(d && (d.claim_required || d.claim_required_for_certificate)){
+          claimNote();
           return;
         }
         if(d && d.checkout_url){
@@ -81,7 +80,6 @@
           return;
         }
 
-        // Function errors surface loudly, never silently.
         var detail = (err && err.message) || (d && (d.message || d.error)) || 'Enrollment is not available right now.';
         note('Could not complete enrollment: ' + detail, 'cpn-err');
       }, function(e){
