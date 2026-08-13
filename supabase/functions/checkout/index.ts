@@ -1,24 +1,21 @@
 // ============================================================================
-// checkout  ·  Fathers.com course enrollment protocol (v4.0.1)
+// checkout  ·  Fathers.com course enrollment protocol (v4.0.2)
 // ----------------------------------------------------------------------------
 // The single server-side authority for course enrollment. The browser sends
 // intent (the course). This function checks the claim, reads the price from
 // the database (participant courses are $0 by policy), and fulfills. The
 // client never computes money and never decides eligibility.
 //
-// v4.0 RULE (POSITIONING.md 3): a participant can only enroll when an active
-// claim exists for him, placed by a Certified Facilitator or a Certified
-// Organization. Claims live in participant_claims and match on user_id or on
-// the sign-in email. No claim -> claim_required, no enrollment.
+// v4.0.2: films and training are open without a claim. Enrollment writes
+// certificate_enrollments so progress can attach. certificate_awards (the
+// issue path) still require an active participant_claims row. No claim is
+// not a hard stop: return enrolled + claim_required_for_certificate.
 //
 // v4.0.1 (one change, two lines): expected outcomes now return HTTP 200.
 // supabase-js functions.invoke() discards the response body on any non-2xx
 // and hands the client only "Edge Function returned a non-2xx status code".
-// claim_required at 403 and requires_payment at 402 were therefore invisible
-// to enroll.js: a man with no claim saw a generic failure instead of "ask
-// your facilitator to claim your seat". Business outcomes are 200 with a
-// discriminated body; only genuine failures (auth, not-found, insert error)
-// stay non-2xx.
+// Business outcomes are 200 with a discriminated body; only genuine failures
+// (auth, not-found, insert error) stay non-2xx.
 //
 // PAID ROWS (later): the facilitator course may ship as a priced row in
 // certificate_courses. The [STRIPE] block below activates for any row with a
@@ -65,7 +62,7 @@ function json(req: Request, body: unknown, status = 200) {
 }
 
 // Fulfillment is one function so free-now and Stripe-later produce identical
-// records: enrollment (active) + certificate award (in_progress).
+// records: enrollment (active). Certificate award (in_progress) only when claimed.
 async function fulfill(admin: ReturnType<typeof createClient>, args: {
   userId: string; courseId: string; claimId: string | null;
   amountPaidCents: number; checkoutRef: string | null;
@@ -83,17 +80,19 @@ async function fulfill(admin: ReturnType<typeof createClient>, args: {
     if (ins.error) throw ins.error;
   }
 
-  // The accountability record the admin console approves and e-sign signs.
-  await admin.from("certificate_awards")
-    .upsert({ user_id: args.userId, course_id: args.courseId, status: "in_progress" },
-            { onConflict: "user_id,course_id", ignoreDuplicates: true });
+  // Issue path: the accountability record the admin console approves and signs.
+  // No claim → no award row. Films still play; a serial cannot mint from this.
+  if (args.claimId) {
+    await admin.from("certificate_awards")
+      .upsert({ user_id: args.userId, course_id: args.courseId, status: "in_progress" },
+              { onConflict: "user_id,course_id", ignoreDuplicates: true });
+  }
 }
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
   if (req.method !== "POST") return json(req, { error: "method not allowed" }, 405);
 
-  // ---- 1) Authenticate the father ----
   const jwt = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
   if (!jwt) return json(req, { error: "not signed in" }, 401);
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
@@ -106,20 +105,17 @@ Deno.serve(async (req) => {
   if (body.action !== "create_checkout") return json(req, { error: "unsupported action" }, 400);
   if (!body.course_slug) return json(req, { error: "course_slug required" }, 400);
 
-  // ---- 2) Price truth: the database, never the browser ----
   const { data: course, error: courseErr } = await admin
     .from("certificate_courses")
     .select("id,slug,title,hours,price_cents")
     .eq("slug", body.course_slug.toLowerCase()).single();
   if (courseErr || !course) return json(req, { error: "course not found" }, 404);
 
-  // Already enrolled: succeed idempotently.
   const { data: already } = await admin
     .from("certificate_enrollments")
     .select("id").eq("user_id", userId).eq("course_id", course.id).maybeSingle();
   if (already) return json(req, { ok: true, enrolled: true, already: true, course: course.slug });
 
-  // ---- 3) The claim check: the only door into a course ----
   const email = (userData.user.email ?? "").toLowerCase();
   const { data: claims } = await admin
     .from("participant_claims")
@@ -127,45 +123,48 @@ Deno.serve(async (req) => {
     .eq("status", "active")
     .or(`user_id.eq.${userId},participant_email.eq.${email}`);
   const claim = (claims ?? [])[0] ?? null;
-  if (!claim) {
-    // v4.0.1: 200, not 403. A missing claim is an expected business outcome
-    // the client must be able to read and explain, not a transport failure.
-    return json(req, {
-      claim_required: true,
-      message: "No active claim found. Ask your facilitator or organization to claim your seat, then enroll again.",
-    }, 200);
-  }
-  // Attach the account to an email-only claim so future checks are direct.
-  if (!claim.user_id) {
+  if (claim && !claim.user_id) {
     await admin.from("participant_claims").update({ user_id: userId }).eq("id", claim.id);
   }
 
   const totalCents = course.price_cents;
 
-  // ---- 4) Participant path ($0 by policy): fulfill now ----
   if (totalCents <= 0) {
     try {
       await fulfill(admin, {
-        userId, courseId: course.id, claimId: claim.id,
+        userId, courseId: course.id, claimId: claim?.id ?? null,
         amountPaidCents: 0, checkoutRef: null,
       });
-      return json(req, { ok: true, enrolled: true, course: course.slug, total_cents: 0 });
+      return json(req, {
+        ok: true,
+        enrolled: true,
+        course: course.slug,
+        total_cents: 0,
+        claim: !!claim,
+        ...(claim ? {} : {
+          claim_required_for_certificate: true,
+          message: "Films and training are open. A certificate needs a facilitator to claim your seat.",
+        }),
+      });
     } catch (e) {
       return json(req, { error: "enrollment failed", detail: String(e) }, 500);
     }
   }
 
-  // ---- 5) [STRIPE] Paid path: pre-shaped, activates when the secret exists ----
   if (!STRIPE_SECRET_KEY) {
-    // v4.0.1: 200, not 402, for the same reason as claim_required above.
     return json(req, {
       requires_payment: true,
       total_cents: totalCents,
       message: "This is a priced credential and card payment is not yet enabled.",
     }, 200);
   }
-  // When STRIPE_SECRET_KEY is set, create a Checkout Session and return its URL.
-  // Fulfillment happens in checkout-webhook on checkout.session.completed.
+  if (!claim) {
+    return json(req, {
+      claim_required_for_certificate: true,
+      enrolled: false,
+      message: "A priced certificate needs a facilitator to claim your seat first.",
+    }, 200);
+  }
   const params = new URLSearchParams({
     mode: "payment",
     "line_items[0][price_data][currency]": "usd",
