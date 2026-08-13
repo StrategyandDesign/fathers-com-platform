@@ -1,13 +1,12 @@
 // review_award (WP-F): the approval path. circle_leader / org_admin / admin only, legal
 // transitions only, contact hours and attestation frozen at approval, the
 // serial minted at signing, every action audited with the reviewer as actor.
-// Queue joins awards.user_id to the caller's active participant_claims:
+// Queue joins awards.user_id, or profiles.id via participant_email when user_id
+// is null, to the caller's active participant_claims:
 // org_admin by org, circle_leader by circle if those claims exist else org,
 // platform admin global. snapshot_checkpoints is video-id keys only.
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-// CORS helpers inlined so this function deploys as a single pasted file
-// from the Supabase dashboard editor, no shared-module resolution required.
 const CORS_BASE = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-internal-secret",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -34,10 +33,8 @@ function json(req: Request, body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { ...corsFor(req), "Content-Type": "application/json" } });
 }
 
-
-
 type RoleRow = { role: string; org_id?: string | null };
-type ClaimRow = { user_id?: string | null };
+type ClaimRow = { user_id?: string | null; participant_email?: string | null };
 
 /** Keys only. Never {right, total} or answer bodies. UI counts Object.keys. */
 function scrubCheckpoints(raw: unknown): string[] {
@@ -45,8 +42,25 @@ function scrubCheckpoints(raw: unknown): string[] {
   return Object.keys(raw as Record<string, unknown>);
 }
 
-function idsFromClaims(rows: ClaimRow[] | null | undefined): string[] {
-  return [...new Set((rows ?? []).map((c) => c.user_id).filter((id): id is string => !!id))];
+/** user_id when present; else profiles.id for participant_email. Empty stays empty. */
+async function resolveClaimUserIds(
+  svc: ReturnType<typeof createClient>,
+  rows: ClaimRow[] | null | undefined,
+): Promise<string[]> {
+  const ids = new Set<string>();
+  const emails: string[] = [];
+  for (const c of rows ?? []) {
+    if (c.user_id) ids.add(c.user_id);
+    else if (c.participant_email) emails.push(c.participant_email.trim().toLowerCase());
+  }
+  const uniq = [...new Set(emails)];
+  for (const email of uniq) {
+    const { data } = await svc.from("profiles").select("id,email").ilike("email", email).limit(5);
+    for (const p of data ?? []) {
+      if (p?.id && String(p.email || "").toLowerCase() === email) ids.add(p.id as string);
+    }
+  }
+  return [...ids];
 }
 
 async function reviewerScope(
@@ -63,13 +77,12 @@ async function reviewerScope(
 
   const orgIds = [...new Set(rows.filter((r) => r.org_id && (r.role === "org_admin" || r.role === "circle_leader")).map((r) => r.org_id as string))];
 
-  // Join awards.user_id to the caller's active participant_claims (queried, not a global dump).
   if (isOrg && orgIds.length) {
     const { data: claims } = await svc.from("participant_claims")
-      .select("user_id")
+      .select("user_id,participant_email")
       .eq("status", "active")
       .in("org_id", orgIds);
-    return { allowed: true, isAdmin: false, userIds: idsFromClaims(claims as ClaimRow[]) };
+    return { allowed: true, isAdmin: false, userIds: await resolveClaimUserIds(svc, claims as ClaimRow[]) };
   }
 
   if (isLeader) {
@@ -80,24 +93,24 @@ async function reviewerScope(
     const circleIds = [...new Set((memberships ?? []).map((m: { circle_id?: string }) => m.circle_id).filter((id): id is string => !!id))];
     if (circleIds.length) {
       const { data: circleClaims } = await svc.from("participant_claims")
-        .select("user_id")
+        .select("user_id,participant_email")
         .eq("status", "active")
         .in("circle_id", circleIds);
-      const circleIdsFound = idsFromClaims(circleClaims as ClaimRow[]);
+      const circleIdsFound = await resolveClaimUserIds(svc, circleClaims as ClaimRow[]);
       if (circleIdsFound.length) return { allowed: true, isAdmin: false, userIds: circleIdsFound };
     }
     if (orgIds.length) {
       const { data: orgClaims } = await svc.from("participant_claims")
-        .select("user_id")
+        .select("user_id,participant_email")
         .eq("status", "active")
         .in("org_id", orgIds);
-      return { allowed: true, isAdmin: false, userIds: idsFromClaims(orgClaims as ClaimRow[]) };
+      return { allowed: true, isAdmin: false, userIds: await resolveClaimUserIds(svc, orgClaims as ClaimRow[]) };
     }
     const { data: own } = await svc.from("participant_claims")
-      .select("user_id")
+      .select("user_id,participant_email")
       .eq("status", "active")
       .eq("facilitator_user_id", reviewer);
-    return { allowed: true, isAdmin: false, userIds: idsFromClaims(own as ClaimRow[]) };
+    return { allowed: true, isAdmin: false, userIds: await resolveClaimUserIds(svc, own as ClaimRow[]) };
   }
 
   return { allowed: true, isAdmin: false, userIds: [] };
@@ -125,9 +138,6 @@ serve(async (req) => {
   const { user_id, course_id, action, note, contact_hours, attestation_method } = body;
   const recipient_display = typeof (body as { recipient_display?: string }).recipient_display === "string" ? (body as { recipient_display?: string }).recipient_display!.trim() : undefined;
 
-  // Reviewer read path: the queue of submitted awards with evidence, plus the
-  // 72-hour absence list. Reads run with the service role because RLS scopes
-  // participants to their own rows; the role gate above is the authority here.
   if (action === "queue") {
     const scopedIds = scope.userIds;
     if (!scope.isAdmin && (!scopedIds || scopedIds.length === 0)) {
@@ -183,7 +193,7 @@ serve(async (req) => {
     if (!(cur.recipient_display ?? "").trim()) return json(req, { error: "cannot sign without a confirmed recipient name" }, 409);
     let serial = "";
     for (let i = 0; i < 8; i++) {
-      const AB = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"; // Crockford, no confusables
+      const AB = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
       const bytes = crypto.getRandomValues(new Uint8Array(6));
       serial = "FC-2026-" + Array.from(bytes).map((b) => AB[b % 32]).join("");
       const { data: clash } = await svc.from("public_certificates").select("serial").eq("serial", serial).maybeSingle();
