@@ -366,7 +366,7 @@ def cert_card_html(course: dict) -> str:
         blurb = "Steadiness on film: the pause, the repair, and the habits underneath. Twelve short sessions. Facilitator available for questions."
         data_desc = "Steadiness, trained on film: the pause, the repair, and the habits underneath them. Self-paced, with a Certified Facilitator available for questions. Sessions logged, checkpoints, and a final assessment at eighty percent to pass."
     elif slug == "fundamentals":
-        blurb = "Seven Secrets assessment and course: intro + seven secrets. Already filmed; shape stills until Vimeo is wired."
+        blurb = "Seven Secrets assessment and course: intro plus seven secrets. Self-paced film, checkpoints, and a Certified Facilitator available for questions."
         data_desc = "The Seven Secrets of Effective Fathers Assessment and Course. Self-paced sessions with checkpoints, a free assessment, and a Certified Facilitator available for questions."
         hours = "1.1"
     else:

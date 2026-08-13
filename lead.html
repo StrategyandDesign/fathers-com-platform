@@ -47,47 +47,68 @@
 <div id="demo-note" class="container" style="display:none;padding:24px 0"><div class="notice brass" style="max-width:900px;margin:0 auto">Demo mode. Add Supabase keys in <code>assets/js/config.js</code> to load live data. The controls below show the real interface; writes activate once connected.</div></div>
 <main id="app" class="container" style="padding:40px 0 96px;display:none">
 
-<div class="dash-head"><h1 class="d-36">Facilitator Desk</h1><p class="lead">Claim seats, keep the roster, watch progress, and stay available for questions. Your Certified Facilitator status lives in the public registry.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men in your Circle</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">watched the film</div></div><div class="glance-card"><div class="glance-lbl">NEXT MEETING</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">stay ready</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Post this week's question, and check who hasn't watched yet.</div></div></div>
-<div id="circle-picker" class="row" style="margin-bottom:24px"></div>
-<div id="lead-body" data-tabs>
-  <div class="tabs"><button class="active">This week</button><button>Plan weeks</button><button>Announce</button><button>Roster</button><button>Progress</button><button>Claims</button></div>
-  <div class="tabpanel active"><div id="lead-thisweek">Pick a Circle…</div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Set a week</h3>
-    <div class="grid-4" style="gap:12px;align-items:end">
-      <div class="field" style="margin:0"><label>Week</label><input class="input" id="cw-week" type="number" value="1"></div>
-      <div class="field" style="margin:0"><label>Class slug</label><input class="input" id="cw-class" placeholder="fundamentals"></div>
-      <div class="field" style="margin:0"><label>Lesson #</label><input class="input" id="cw-lesson" type="number" value="1"></div>
+<div class="dash-head">
+  <h1 class="d-36">Facilitator Desk</h1>
+  <p class="lead">He can train without you. Claiming a seat means you stay available for questions and accountability, not that you sit the films with him. Your Certified Facilitator status lives in the public registry.</p>
+  <div class="row wrap" id="lead-head-chips" style="gap:8px;margin-top:14px">
+    <span class="chip selected" id="lead-seat-chip">Seating for Returning Home</span>
+    <a class="chip" id="lead-serial-chip" href="verify.html">Serial &rarr; verify</a>
+  </div>
+</div>
+<div class="glance">
+  <div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men you claimed</div></div>
+  <div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">watched the film</div></div>
+  <div class="glance-card"><div class="glance-lbl">THIS SESSION</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">this week&rsquo;s film</div></div>
+  <div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Claim a man, then reach the one who has not started.</div></div>
+</div>
+<div id="lead-week-chips" class="chiprow" style="margin-bottom:18px"></div>
+<div class="dash-panel">
+  <div class="dash-panel-h">
+    <h3>This week&rsquo;s board</h3>
+    <p class="fine">Men you claimed. This session&rsquo;s film, checkpoint, and practice flags only. Never answers or scores.</p>
+  </div>
+  <div id="lead-thisweek"><p class="fine">Loading&hellip;</p></div>
+  <div id="lead-progress" class="fine" style="margin-top:10px"></div>
+</div>
+<div class="dash-panel">
+  <div class="dash-panel-h"><h3>Claim a man</h3></div>
+  <p class="fine" style="margin-bottom:14px">He can train without you. Claiming him means you stay available. Enter the email he signs in with. He pays nothing. A Circle is optional; an empty Circle does not empty this desk.</p>
+  <div class="row wrap" style="gap:10px;align-items:end">
+    <div class="field" style="margin:0;flex:2;min-width:220px"><label>Participant email</label><input class="input" id="claim-email" type="email" placeholder="him@example.com"></div>
+    <button class="btn btn-primary btn-sm" id="claim-add">Claim</button>
+  </div>
+  <p class="fine" id="claim-msg" style="margin-top:10px;min-height:16px"></p>
+  <div class="eyebrow" style="margin:20px 0 10px">MEN YOU CLAIMED</div>
+  <div id="claim-list" class="fine">Loading&hellip;</div>
+  <div class="eyebrow" style="margin:26px 0 10px">VERIFICATION SHEET</div>
+  <p class="fine" style="margin-bottom:12px">One sheet for the coordinator who requires proof: every man you claimed, his certificate serial, and its status. Hand it over yourself; the public verification page never names your organization.</p>
+  <button class="btn btn-secondary btn-sm" id="lead-export">Download verification sheet (CSV)</button>
+  <p class="fine" id="lead-export-msg" style="margin-top:10px;min-height:16px"></p>
+</div>
+<div id="lead-live">
+  <div id="circle-picker" class="row" style="margin-bottom:24px"></div>
+  <div class="dash-panel">
+    <div class="dash-panel-h"><h3>Plan weeks</h3><p class="fine">Live cohort only. Film title, not a class slug.</p></div>
+    <div class="grid-3" style="gap:12px;align-items:end">
+      <div class="field" style="margin:0"><label>Week</label><input class="input" id="cw-week" type="number" value="1" min="1" max="12"></div>
+      <div class="field" style="margin:0"><label>Film</label><select class="input" id="cw-film"></select></div>
       <div class="field" style="margin:0"><label>Meets on</label><input class="input" id="cw-date" type="date"></div>
     </div>
     <div class="field" style="margin-top:12px"><label>Discussion question</label><input class="input" id="cw-q"></div>
     <div class="field"><label>Shared action</label><input class="input" id="cw-action"></div>
     <button class="btn btn-primary btn-sm" id="cw-go">Save week</button>
     <div id="cw-list" style="margin-top:20px"></div>
-  </div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Announce to your Circle</h3>
+  </div>
+  <div class="dash-panel">
+    <div class="dash-panel-h"><h3>Announce</h3><p class="fine">Live cohort only.</p></div>
     <textarea class="input" id="ann-body" placeholder="Say it straight."></textarea>
     <button class="btn btn-primary btn-sm" id="ann-go" style="margin-top:12px">Post announcement</button>
     <div id="ann-list" style="margin-top:20px"></div>
-  </div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Members</h3><div id="lead-roster"></div></div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:6px">Participant progress</h3>
-    <p class="fine" style="margin-bottom:14px">Profile done, sessions watched, checkpoints, and time for men you claimed. You never see answers or scores.</p>
-    <div id="lead-progress" class="fine">Loading&hellip;</div>
-  </div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:6px">Claim a participant</h3>
-    <p class="fine" style="margin-bottom:14px">A man can only enroll in the courses once you claim him. Enter the email he signs in with. He pays nothing; his completion counts in your cohort.</p>
-    <div class="row wrap" style="gap:10px;align-items:end">
-      <div class="field" style="margin:0;flex:2;min-width:220px"><label>Participant email</label><input class="input" id="claim-email" type="email" placeholder="him@example.com"></div>
-      <button class="btn btn-primary btn-sm" id="claim-add">Claim</button>
-    </div>
-    <p class="fine" id="claim-msg" style="margin-top:10px;min-height:16px"></p>
-    <div class="eyebrow" style="margin:20px 0 10px">YOUR ACTIVE CLAIMS</div>
-    <div id="claim-list" class="fine">Loading&hellip;</div>
-    <div class="eyebrow" style="margin:26px 0 10px">VERIFICATION SHEET</div>
-    <p class="fine" style="margin-bottom:12px">One sheet for the coordinator who requires proof: every man you claimed, his certificate serial, and its status. Hand it over yourself; the public verification page never names your organization.</p>
-    <button class="btn btn-secondary btn-sm" id="lead-export">Download verification sheet (CSV)</button>
-    <p class="fine" id="lead-export-msg" style="margin-top:10px;min-height:16px"></p>
-  </div></div>
+  </div>
+  <div class="dash-panel">
+    <div class="dash-panel-h"><h3>Circle roster</h3><p class="fine">Live cohort members. The board above is men you claimed.</p></div>
+    <div id="lead-roster"></div>
+  </div>
 </div>
 </main>
 <div class="toast"></div>
