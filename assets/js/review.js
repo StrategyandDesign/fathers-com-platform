@@ -13,19 +13,19 @@
     var mins=Math.round((s.snapshot_independent_seconds||0)/60);
     var cps=s.snapshot_checkpoints||{}; var cpN=Object.keys(cps).length; var cpTxt=cpN?(cpN+' complete'):'none';
     var id=s.user_id+'::'+s.course_id;
-    return '<div class="card" style="padding:18px;margin-bottom:14px" data-id="'+esc(id)+'">'
-      +(fl.length?'<p class="fine" style="color:var(--error)">FLAGGED: '+esc(fl[0].reason)+' &middot; clearing required</p>':'')
-      +'<p class="small"><b>'+esc(s.user_id).slice(0,8)+'&hellip;</b> &middot; independent time '+mins+' min &middot; checkpoints '+cpTxt+' &middot; final answers '+esc(s.snapshot_final_answers_count)+'</p>'
-      +'<div class="row wrap" style="gap:8px;align-items:center;margin:6px 0 8px"><span class="fine">NAME ON THE CERTIFICATE</span><input class="input" style="flex:1;min-width:180px" data-f="name" value="'+esc(s.recipient_display||'')+'" placeholder="Confirm the man\'s name"></div>'
-      +'<div class="row wrap" style="gap:8px;margin-top:10px;align-items:center">'
-      +'<input class="input" type="number" step="0.5" min="0" placeholder="Contact hours" style="width:130px" data-f="hours">'
-      +'<select class="input" style="width:190px" data-f="att"><option value="facilitator">Attested by facilitator</option><option value="id">Confirmed by ID</option></select>'
-      +'<input class="input" placeholder="Note (for return)" style="flex:1;min-width:140px" data-f="note">'
-      +(fl.length?'<label class="fine"><input type="checkbox" data-f="clear"> Integrity cleared</label>':'')
-      +'<button class="btn btn-primary btn-sm" data-a="approve">Approve</button>'
-      +'<button class="btn btn-secondary btn-sm" data-a="return">Return</button>'
-      +'<button class="btn btn-secondary btn-sm" data-a="sign">Sign</button>'
-      +'</div></div>';
+    return '<div class="card" style="padding:18px;margin-bottom:14px" data-id="'+esc(id)+'">'+
+      (fl.length?'<p class="fine" style="color:var(--error)">FLAGGED: '+esc(fl[0].reason)+' &middot; clearing required</p>':'')+
+      '<p class="small"><b>'+esc(s.user_id).slice(0,8)+'&hellip;</b> &middot; independent time '+mins+' min &middot; checkpoints '+cpTxt+' &middot; final answers '+esc(s.snapshot_final_answers_count)+'</p>'+
+      '<div class="row wrap" style="gap:8px;align-items:center;margin:6px 0 8px"><span class="fine">NAME ON THE CERTIFICATE</span><input class="input" style="flex:1;min-width:180px" data-f="name" value="'+esc(s.recipient_display||'')+'" placeholder="Confirm the man\'s name"></div>'+
+      '<div class="row wrap" style="gap:8px;margin-top:10px;align-items:center">'+
+      '<input class="input" type="number" step="0.5" min="0" placeholder="Contact hours" style="width:130px" data-f="hours">'+
+      '<select class="input" style="width:190px" data-f="att"><option value="facilitator">Attested by facilitator</option><option value="id">Confirmed by ID</option></select>'+
+      '<input class="input" placeholder="Note (for return)" style="flex:1;min-width:140px" data-f="note">'+
+      (fl.length?'<label class="fine"><input type="checkbox" data-f="clear"> Integrity cleared</label>':'')+
+      '<button class="btn btn-primary btn-sm" data-a="approve">Approve</button>'+
+      '<button class="btn btn-secondary btn-sm" data-a="return">Return</button>'+
+      '<button class="btn btn-secondary btn-sm" data-a="sign">Sign</button>'+
+      '</div></div>';
   }
   function load(){
     FC.ready.then(function(){
