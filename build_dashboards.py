@@ -462,8 +462,7 @@ PAGES = {
     <button class="btn btn-primary btn-sm" id="claim-add">Claim</button>
   </div>
   <p class="fine" id="claim-msg" style="margin-top:10px;min-height:16px"></p>
-  <div class="eyebrow" style="margin:20px 0 10px">MEN YOU CLAIMED</div>
-  <div id="claim-list" class="fine">Loading&hellip;</div>
+  <div id="claim-list" class="fine"></div>
   <div class="eyebrow" style="margin:26px 0 10px">VERIFICATION SHEET</div>
   <p class="fine" style="margin-bottom:12px">One sheet for the coordinator who requires proof: every man you claimed, his certificate serial, and its status. Hand it over yourself; the public verification page never names your organization.</p>
   <button class="btn btn-secondary btn-sm" id="lead-export">Download verification sheet (CSV)</button>

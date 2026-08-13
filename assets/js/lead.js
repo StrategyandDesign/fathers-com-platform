@@ -281,6 +281,25 @@
   function reachLabel(row){
     return row.phone ? 'Call '+displayName(row) : 'Email '+displayName(row);
   }
+  function claimIdFor(email){
+    var em=(email||'').toLowerCase();
+    var id=null;
+    lastClaims.forEach(function(c){ if((c.participant_email||'').toLowerCase()===em) id=c.id; });
+    return id;
+  }
+  function bindRelease(root){
+    if(!root) return;
+    root.querySelectorAll('[data-crel]').forEach(function(b){b.addEventListener('click',function(){
+      var id=b.dataset.crel;
+      b.disabled=true; b.textContent='Releasing…';
+      FC.sb.from('participant_claims').update({status:'released'}).eq('id',id).then(function(ur){
+        if(ur.error){ toast('Could not release that claim.'); b.disabled=false; b.textContent='Release'; return; }
+        toast('Claim released.');
+        claims();
+        progressStrip();
+      });
+    });});
+  }
 
   function renderBoard(rows, opts){
     var box=el('lead-thisweek'); if(!box) return;
@@ -292,24 +311,27 @@
     }
     var head = '<th>Name</th><th>Week</th><th>Film</th><th>Check</th><th>Practice</th><th>Serial</th><th></th>';
     var body = rows.map(function(x){
-      var filmCell='<td class="lead-yn">'+(x.film_yn?'Y':'N')+'</td>';
-      var checkCell='<td class="lead-yn">'+(x.check_yn?'Y':'N')+'</td>';
-      var pracCell='<td class="lead-yn">'+(x.practice_yn?'Y':'N')+'</td>';
+      var filmCell='<td class="lead-yn" data-label="Film">'+(x.film_yn?'Y':'N')+'</td>';
+      var checkCell='<td class="lead-yn" data-label="Check">'+(x.check_yn?'Y':'N')+'</td>';
+      var pracCell='<td class="lead-yn" data-label="Practice">'+(x.practice_yn?'Y':'N')+'</td>';
       var serial=x.cert_serial
         ? '<a class="link" href="'+esc(verifyHref(x.cert_serial))+'">'+esc(x.cert_serial)+'</a>'
         : '—';
       var href=reachHref(x);
       var reach=href ? '<a class="btn btn-secondary mini" href="'+esc(href)+'">'+esc(reachLabel(x))+'</a>' : '';
+      var cid=(!demo && x.participant_email) ? claimIdFor(x.participant_email) : null;
+      var rel=cid ? '<button type="button" class="btn btn-secondary mini" data-crel="'+esc(cid)+'">Release</button>' : '';
       return '<tr>'+
-        '<td>'+esc(displayName(x))+'</td>'+
-        '<td class="fine">'+esc(title)+'</td>'+
+        '<td class="lead-name">'+esc(displayName(x))+'</td>'+
+        '<td class="fine" data-label="Week">'+esc(title)+'</td>'+
         filmCell+checkCell+pracCell+
-        '<td class="fine">'+serial+'</td>'+
-        '<td>'+reach+'</td>'+
+        '<td class="fine" data-label="Serial">'+serial+'</td>'+
+        '<td class="lead-actions">'+reach+rel+'</td>'+
         '</tr>';
     }).join('');
     var note = '<p class="fine" style="margin-top:12px">You never see a man\u2019s answers, scores, or practice log.</p>';
     box.innerHTML='<div class="dtable-wrap"><table class="dtable"><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></div>'+note;
+    bindRelease(box);
   }
 
   function pickNudge(rows, opts){
@@ -371,22 +393,7 @@
       box.innerHTML='<p class="fine">No men claimed yet. Enter his sign-in email above. He can train after you claim him, without you in the room.</p>';
       return;
     }
-    box.innerHTML='<table class="dtable"><thead><tr><th>Email</th><th>Claimed</th><th></th></tr></thead><tbody>'+
-      rows.map(function(c){
-        var when=c.created_at? new Date(c.created_at).toLocaleDateString() : '—';
-        var rel=isDemo?'':('<td><button class="btn btn-secondary mini" data-crel="'+c.id+'">Release</button></td>');
-        return '<tr><td class="fine">'+esc(c.participant_email)+'</td><td class="fine">'+when+'</td>'+(isDemo?'<td></td>':rel)+'</tr>';
-      }).join('')+'</tbody></table>';
-    box.querySelectorAll('[data-crel]').forEach(function(b){b.addEventListener('click',function(){
-      var id=b.dataset.crel;
-      b.disabled=true; b.textContent='Releasing…';
-      FC.sb.from('participant_claims').update({status:'released'}).eq('id',id).then(function(ur){
-        if(ur.error){ toast('Could not release that claim.'); b.disabled=false; b.textContent='Release'; return; }
-        toast('Claim released.');
-        claims();
-        progressStrip();
-      });
-    });});
+    box.innerHTML='';
   }
 
   function addClaim(){
