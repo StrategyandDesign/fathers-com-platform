@@ -200,7 +200,10 @@
       var idEl=ok.querySelector('[data-f=identity]'); if(idEl) idEl.textContent = (d.attestation_method==='id') ? 'Confirmed by ID at enrollment' : 'Confirmed by Certified Facilitator';
     } else {no.style.display='';}
   }
-  if(vf){vf.addEventListener('submit',function(e){
+  if(vf){
+    var pre=new URLSearchParams(location.search).get('serial');
+    if(pre) vf.querySelector('input').value=pre;
+    vf.addEventListener('submit',function(e){
     e.preventDefault();
     var s=vf.querySelector('input').value.trim().toUpperCase();
     if(LIVE){FC.ready.then(function(){

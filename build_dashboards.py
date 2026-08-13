@@ -55,7 +55,7 @@ HEAD = '''<!DOCTYPE html>
 <li><a href="participant.html" data-role="admin">Participant</a></li>
 <li><a href="studio.html" data-role="author">Studio</a></li>
 <li><a href="org.html" data-role="org">Org</a></li>
-<li><a href="lead.html" data-role="leader">Facilitate</a></li>
+<li><a href="lead.html" data-role="leader">Desk</a></li>
 </ul>
 <div class="nav-right">
 <a href="plan.html">My Plan</a>
@@ -86,8 +86,8 @@ FOOT = '''</main>
 # tab lists the instruments participants actually take, which are defined in
 # code and served through the registry, so it needs the instrument data and the
 # registry in scope.
-REVIEW_BODY = '<div class="wrap" style="max-width:980px;margin:0 auto;padding:32px 20px">\n  <div class="eyebrow" style="margin-bottom:10px">FACILITATOR REVIEW</div>\n  <h1 style="margin-bottom:6px">The review queue</h1>\n  <p class="small" style="color:var(--ash);max-width:62ch;margin-bottom:26px">Every submitted award, with the evidence frozen at submission: independent minutes, checkpoint completion (yes or counts), and how many final answers were submitted. No answers and no right/total scores. Approve with contact hours and attestation, return with a note, or sign to mint the serial. Flagged records name their reason and require clearing before approval.</p>\n  <div id="rv-queue"><p class="fine">Loading the queue&hellip;</p></div>\n  <h2 style="margin:38px 0 8px">No activity in 72 hours</h2>\n  <p class="small" style="color:var(--ash);margin-bottom:14px">The retention lever: a named man, noticed early. Reach him today and log the contact in your kit.</p>\n  <div id="rv-absent"><p class="fine">Loading&hellip;</p></div>\n</div>'
-REVIEW_JS = '<script>\n(function(){\n  var qEl=document.getElementById(\'rv-queue\'), aEl=document.getElementById(\'rv-absent\');\n  if(!qEl) return;\n  var m=document.createElement(\'meta\'); m.name=\'robots\'; m.content=\'noindex,nofollow\'; document.head.appendChild(m);\n  function esc(s){return String(s==null?\'\':s).replace(/[&<>]/g,function(c){return {\'&\':\'&amp;\',\'<\':\'&lt;\',\'>\':\'&gt;\'}[c];});}\n  function act(u,c,action,extra){\n    return FC.sb.functions.invoke(\'review_award\',{body:Object.assign({user_id:u,course_id:c,action:action},extra||{})})\n      .then(function(r){ if(r&&r.error){alert(\'Failed: \'+(r.error.message||\'error\'));} load(); });\n  }\n  function card(s,flags){\n    var fl=(flags||[]).filter(function(f){return f.user_id===s.user_id&&f.course_id===s.course_id;});\n    var mins=Math.round((s.snapshot_independent_seconds||0)/60);\n    var cps=s.snapshot_checkpoints||{}; var cpN=Object.keys(cps).length; var cpTxt=cpN?(cpN+\' complete\'):\'none\';\n    var id=s.user_id+\'::\'+s.course_id;\n    return \'<div class="card" style="padding:18px;margin-bottom:14px" data-id="\'+esc(id)+\'">\'\n      +(fl.length?\'<p class="fine" style="color:var(--error)">FLAGGED: \'+esc(fl[0].reason)+\' &middot; clearing required</p>\':\'\')\n      +\'<p class="small"><b>\'+esc(s.user_id).slice(0,8)+\'&hellip;</b> &middot; independent time \'+mins+\' min &middot; checkpoints \'+cpTxt+\' &middot; final answers \'+esc(s.snapshot_final_answers_count)+\'</p>\'\n      +\'<div class="row wrap" style="gap:8px;align-items:center;margin:6px 0 8px"><span class="fine">NAME ON THE CERTIFICATE</span><input class="input" style="flex:1;min-width:180px" data-f="name" value="\'+esc(s.recipient_display||\'\')+\'" placeholder="Confirm the man\\\'s name"></div>\'\n      +\'<div class="row wrap" style="gap:8px;margin-top:10px;align-items:center">\'\n      +\'<input class="input" type="number" step="0.5" min="0" placeholder="Contact hours" style="width:130px" data-f="hours">\'\n      +\'<select class="input" style="width:190px" data-f="att"><option value="facilitator">Attested by facilitator</option><option value="id">Confirmed by ID</option></select>\'\n      +\'<input class="input" placeholder="Note (for return)" style="flex:1;min-width:140px" data-f="note">\'\n      +(fl.length?\'<label class="fine"><input type="checkbox" data-f="clear"> Integrity cleared</label>\':\'\')\n      +\'<button class="btn btn-primary btn-sm" data-a="approve">Approve</button>\'\n      +\'<button class="btn btn-secondary btn-sm" data-a="return">Return</button>\'\n      +\'<button class="btn btn-secondary btn-sm" data-a="sign">Sign</button>\'\n      +\'</div></div>\';\n  }\n  function load(){\n    FC.ready.then(function(){\n      if(!(FC.uid&&FC.uid())){ location.href=\'login.html?next=review.html\'; return; }\n      FC.sb.functions.invoke(\'review_award\',{body:{action:\'queue\'}}).then(function(r){\n        var d=r&&r.data&&r.data.data; var err=r&&r.error;\n        if(err||!d){ qEl.innerHTML=\'<p class="fine">\'+esc((err&&err.message)||\'Reviewer role required, or the review function is not deployed yet.\')+\'</p>\'; aEl.innerHTML=\'\'; return; }\n        qEl.innerHTML=(d.submitted&&d.submitted.length)?d.submitted.map(function(s){return card(s,d.flags);}).join(\'\'):\'<p class="fine">Nothing waiting. Good.</p>\';\n        aEl.innerHTML=(d.absent&&d.absent.length)?d.absent.map(function(e){return \'<p class="small">\'+esc(e.user_id).slice(0,8)+\'&hellip; &middot; last activity \'+esc(e.last_activity_at||\'never\')+\'</p>\';}).join(\'\'):\'<p class="fine">Every enrolled man has been active inside 72 hours.</p>\';\n        qEl.querySelectorAll(\'[data-a]\').forEach(function(b){ b.addEventListener(\'click\',function(){\n          var host=b.closest(\'[data-id]\'); var parts=host.getAttribute(\'data-id\').split(\'::\');\n          var extra={};\n          if(b.getAttribute(\'data-a\')===\'approve\'){\n            extra.contact_hours=parseFloat(host.querySelector(\'[data-f=hours]\').value||\'0\');\n            extra.recipient_display=(host.querySelector(\'[data-f=name]\').value||\'\').trim();\n            if(!extra.recipient_display){ alert(\'Confirm the man\\\'s name before approving; it is what the certificate will carry.\'); return; }\n            extra.attestation_method=host.querySelector(\'[data-f=att]\').value;\n            var cl=host.querySelector(\'[data-f=clear]\'); if(cl&&cl.checked) extra.integrity_cleared=true;\n          }\n          if(b.getAttribute(\'data-a\')===\'return\'){ extra.note=host.querySelector(\'[data-f=note]\').value; }\n          act(parts[0],parts[1],b.getAttribute(\'data-a\'),extra);\n        });});\n      });\n    });\n  }\n  load();\n})();\n</script>'
+REVIEW_BODY = '<div class="wrap" style="max-width:980px;margin:0 auto;padding:32px 20px">\n  <div class="eyebrow" style="margin-bottom:10px">FACILITATOR REVIEW</div>\n  <h1 style="margin-bottom:6px">The review queue</h1>\n  <p class="small" style="color:var(--ash);max-width:62ch;margin-bottom:26px">Every submitted award, with the evidence frozen at submission: independent minutes, checkpoint completion (yes or counts), and how many final answers were submitted. No answers and no right/total scores. Approve with contact hours and attestation, return with a note, or sign to mint the serial. Flagged records name their reason and require clearing before approval.</p>\n  <div id="rv-queue"><p class="fine">Loading the queue&hellip;</p></div>\n  <h2 style="margin:38px 0 8px">No activity in 72 hours</h2>\n  <p class="small" style="color:var(--ash);margin-bottom:14px">The retention lever: a named man, noticed early. Reach him from Desk.</p>\n  <div id="rv-absent"><p class="fine">Loading&hellip;</p></div>\n</div>'
+REVIEW_JS = '<script>\n(function(){\n  var qEl=document.getElementById(\'rv-queue\'), aEl=document.getElementById(\'rv-absent\');\n  if(!qEl) return;\n  var m=document.createElement(\'meta\'); m.name=\'robots\'; m.content=\'noindex,nofollow\'; document.head.appendChild(m);\n  function esc(s){return String(s==null?\'\':s).replace(/[&<>]/g,function(c){return {\'&\':\'&amp;\',\'<\':\'&lt;\',\'>\':\'&gt;\'}[c];});}\n  function act(u,c,action,extra){\n    return FC.sb.functions.invoke(\'review_award\',{body:Object.assign({user_id:u,course_id:c,action:action},extra||{})})\n      .then(function(r){ if(r&&r.error){alert(\'Failed: \'+(r.error.message||\'error\'));} load(); });\n  }\n  function card(s,flags){\n    var fl=(flags||[]).filter(function(f){return f.user_id===s.user_id&&f.course_id===s.course_id;});\n    var mins=Math.round((s.snapshot_independent_seconds||0)/60);\n    var cps=s.snapshot_checkpoints||{}; var cpN=Object.keys(cps).length; var cpTxt=cpN?(cpN+\' complete\'):\'none\';\n    var id=s.user_id+\'::\'+s.course_id;\n    return \'<div class="card" style="padding:18px;margin-bottom:14px" data-id="\'+esc(id)+\'">\'\n      +(fl.length?\'<p class="fine" style="color:var(--error)">FLAGGED: \'+esc(fl[0].reason)+\' &middot; clearing required</p>\':\'\')\n      +\'<p class="small"><b>\'+esc(s.user_id).slice(0,8)+\'&hellip;</b> &middot; independent time \'+mins+\' min &middot; checkpoints \'+cpTxt+\' &middot; final answers \'+esc(s.snapshot_final_answers_count)+\'</p>\'\n      +\'<div class="row wrap" style="gap:8px;align-items:center;margin:6px 0 8px"><span class="fine">NAME ON THE CERTIFICATE</span><input class="input" style="flex:1;min-width:180px" data-f="name" value="\'+esc(s.recipient_display||\'\')+\'" placeholder="Confirm the man\\\'s name"></div>\'\n      +\'<div class="row wrap" style="gap:8px;margin-top:10px;align-items:center">\'\n      +\'<input class="input" type="number" step="0.5" min="0" placeholder="Contact hours" style="width:130px" data-f="hours">\'\n      +\'<select class="input" style="width:190px" data-f="att"><option value="facilitator">Attested by facilitator</option><option value="id">Confirmed by ID</option></select>\'\n      +\'<input class="input" placeholder="Note (for return)" style="flex:1;min-width:140px" data-f="note">\'\n      +(fl.length?\'<label class="fine"><input type="checkbox" data-f="clear"> Integrity cleared</label>\':\'\')\n      +\'<button class="btn btn-primary btn-sm" data-a="approve">Approve</button>\'\n      +\'<button class="btn btn-secondary btn-sm" data-a="return">Return</button>\'\n      +\'<button class="btn btn-secondary btn-sm" data-a="sign">Sign</button>\'\n      +\'</div></div>\';\n  }\n  function load(){\n    FC.ready.then(function(){\n      if(!(FC.uid&&FC.uid())){ location.href=\'login.html?next=review.html\'; return; }\n      FC.sb.functions.invoke(\'review_award\',{body:{action:\'queue\'}}).then(function(r){\n        var d=r&&r.data&&r.data.data; var err=r&&r.error;\n        if(err||!d){ qEl.innerHTML=\'<p class="fine">\'+esc((err&&err.message)||\'Reviewer role required, or the review function is not deployed yet.\')+\'</p>\'; aEl.innerHTML=\'\'; return; }\n        qEl.innerHTML=(d.submitted&&d.submitted.length)?d.submitted.map(function(s){return card(s,d.flags);}).join(\'\'):\'<p class="fine">Nothing waiting. Good.</p>\';\n        aEl.innerHTML=(d.absent&&d.absent.length)?d.absent.map(function(e){var who=e.email?(\'<a href="mailto:\'+esc(e.email)+\'">\'+esc(e.email)+\'</a>\'):(esc(e.user_id).slice(0,8)+\'&hellip;\');return \'<p class="small">\'+who+\' &middot; last activity \'+esc(e.last_activity_at||\'never\')+\'</p>\';}).join(\'\'):\'<p class="fine">Every enrolled man has been active inside 72 hours.</p>\';\n        qEl.querySelectorAll(\'[data-a]\').forEach(function(b){ b.addEventListener(\'click\',function(){\n          var host=b.closest(\'[data-id]\'); var parts=host.getAttribute(\'data-id\').split(\'::\');\n          var extra={};\n          if(b.getAttribute(\'data-a\')===\'approve\'){\n            extra.contact_hours=parseFloat(host.querySelector(\'[data-f=hours]\').value||\'0\');\n            extra.recipient_display=(host.querySelector(\'[data-f=name]\').value||\'\').trim();\n            if(!extra.recipient_display){ alert(\'Confirm the man\\\'s name before approving; it is what the certificate will carry.\'); return; }\n            extra.attestation_method=host.querySelector(\'[data-f=att]\').value;\n            var cl=host.querySelector(\'[data-f=clear]\'); if(cl&&cl.checked) extra.integrity_cleared=true;\n          }\n          if(b.getAttribute(\'data-a\')===\'return\'){ extra.note=host.querySelector(\'[data-f=note]\').value; }\n          act(parts[0],parts[1],b.getAttribute(\'data-a\'),extra);\n        });});\n      });\n    });\n  }\n  load();\n})();\n</script>'
 
 PRE_SCRIPTS = {
     'studio': (
@@ -431,47 +431,68 @@ PAGES = {
 '''),
 
 'lead': ('Facilitator Desk', '''
-<div class="dash-head"><h1 class="d-36">Facilitator Desk</h1><p class="lead">Claim seats, keep the roster, watch progress, and stay available for questions. Your Certified Facilitator status lives in the public registry.</p></div><div class="glance"><div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men in your Circle</div></div><div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">watched the film</div></div><div class="glance-card"><div class="glance-lbl">NEXT MEETING</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">stay ready</div></div><div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Post this week's question, and check who hasn't watched yet.</div></div></div>
-<div id="circle-picker" class="row" style="margin-bottom:24px"></div>
-<div id="lead-body" data-tabs>
-  <div class="tabs"><button class="active">This week</button><button>Plan weeks</button><button>Announce</button><button>Roster</button><button>Progress</button><button>Claims</button></div>
-  <div class="tabpanel active"><div id="lead-thisweek">Pick a Circle…</div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Set a week</h3>
-    <div class="grid-4" style="gap:12px;align-items:end">
-      <div class="field" style="margin:0"><label>Week</label><input class="input" id="cw-week" type="number" value="1"></div>
-      <div class="field" style="margin:0"><label>Class slug</label><input class="input" id="cw-class" placeholder="fundamentals"></div>
-      <div class="field" style="margin:0"><label>Lesson #</label><input class="input" id="cw-lesson" type="number" value="1"></div>
+<div class="dash-head">
+  <h1 class="d-36">Facilitator Desk</h1>
+  <p class="lead">He can train without you. Claiming a seat means you stay available for questions and accountability, not that you sit the films with him. Your Certified Facilitator status lives in the public registry.</p>
+  <div class="row wrap" id="lead-head-chips" style="gap:8px;margin-top:14px">
+    <span class="chip selected" id="lead-seat-chip">Seating for Returning Home</span>
+    <a class="chip" id="lead-serial-chip" href="verify.html">Serial &rarr; verify</a>
+  </div>
+</div>
+<div class="glance">
+  <div class="glance-card"><div class="glance-lbl">YOUR WORLD</div><div class="glance-big" data-glance="lead-men">--</div><div class="glance-sub">men you claimed</div></div>
+  <div class="glance-card"><div class="glance-lbl">THIS WEEK</div><div class="glance-big" data-glance="lead-watched">--</div><div class="glance-sub">watched the film</div></div>
+  <div class="glance-card"><div class="glance-lbl">THIS SESSION</div><div class="glance-big glance-sm" data-glance="lead-next-meet">--</div><div class="glance-sub">this week&rsquo;s film</div></div>
+  <div class="glance-card glance-next"><div class="glance-lbl">CONSIDER NEXT</div><div class="glance-next-txt" data-glance="lead-next">Claim a man, then reach the one who has not started.</div></div>
+</div>
+<div id="lead-week-chips" class="chiprow" style="margin-bottom:18px"></div>
+<div class="dash-panel">
+  <div class="dash-panel-h">
+    <h3>This week&rsquo;s board</h3>
+    <p class="fine">Men you claimed. This session&rsquo;s film, checkpoint, and practice flags only. Never answers or scores.</p>
+  </div>
+  <div id="lead-thisweek"><p class="fine">Loading&hellip;</p></div>
+  <div id="lead-progress" class="fine" style="margin-top:10px"></div>
+</div>
+<div class="dash-panel">
+  <div class="dash-panel-h"><h3>Claim a man</h3></div>
+  <p class="fine" style="margin-bottom:14px">He can train without you. Claiming him means you stay available. Enter the email he signs in with. He pays nothing. A Circle is optional; an empty Circle does not empty this desk.</p>
+  <div class="row wrap" style="gap:10px;align-items:end">
+    <div class="field" style="margin:0;flex:2;min-width:220px"><label>Participant email</label><input class="input" id="claim-email" type="email" placeholder="him@example.com"></div>
+    <button class="btn btn-primary btn-sm" id="claim-add">Claim</button>
+  </div>
+  <p class="fine" id="claim-msg" style="margin-top:10px;min-height:16px"></p>
+  <div class="eyebrow" style="margin:20px 0 10px">MEN YOU CLAIMED</div>
+  <div id="claim-list" class="fine">Loading&hellip;</div>
+  <div class="eyebrow" style="margin:26px 0 10px">VERIFICATION SHEET</div>
+  <p class="fine" style="margin-bottom:12px">One sheet for the coordinator who requires proof: every man you claimed, his certificate serial, and its status. Hand it over yourself; the public verification page never names your organization.</p>
+  <button class="btn btn-secondary btn-sm" id="lead-export">Download verification sheet (CSV)</button>
+  <p class="fine" id="lead-export-msg" style="margin-top:10px;min-height:16px"></p>
+</div>
+<div id="lead-live">
+  <div id="circle-picker" class="row" style="margin-bottom:24px"></div>
+  <div class="dash-panel">
+    <div class="dash-panel-h"><h3>Plan weeks</h3><p class="fine">Live cohort only. Film title, not a class slug.</p></div>
+    <div class="grid-3" style="gap:12px;align-items:end">
+      <div class="field" style="margin:0"><label>Week</label><input class="input" id="cw-week" type="number" value="1" min="1" max="12"></div>
+      <div class="field" style="margin:0"><label>Film</label><select class="input" id="cw-film"></select></div>
       <div class="field" style="margin:0"><label>Meets on</label><input class="input" id="cw-date" type="date"></div>
     </div>
     <div class="field" style="margin-top:12px"><label>Discussion question</label><input class="input" id="cw-q"></div>
     <div class="field"><label>Shared action</label><input class="input" id="cw-action"></div>
     <button class="btn btn-primary btn-sm" id="cw-go">Save week</button>
     <div id="cw-list" style="margin-top:20px"></div>
-  </div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Announce to your Circle</h3>
+  </div>
+  <div class="dash-panel">
+    <div class="dash-panel-h"><h3>Announce</h3><p class="fine">Live cohort only.</p></div>
     <textarea class="input" id="ann-body" placeholder="Say it straight."></textarea>
     <button class="btn btn-primary btn-sm" id="ann-go" style="margin-top:12px">Post announcement</button>
     <div id="ann-list" style="margin-top:20px"></div>
-  </div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:14px">Members</h3><div id="lead-roster"></div></div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:6px">Participant progress</h3>
-    <p class="fine" style="margin-bottom:14px">Profile done, sessions watched, checkpoints, and time for men you claimed. You never see answers or scores.</p>
-    <div id="lead-progress" class="fine">Loading&hellip;</div>
-  </div></div>
-  <div class="tabpanel"><div class="card"><h3 style="margin-bottom:6px">Claim a participant</h3>
-    <p class="fine" style="margin-bottom:14px">A man can only enroll in the courses once you claim him. Enter the email he signs in with. He pays nothing; his completion counts in your cohort.</p>
-    <div class="row wrap" style="gap:10px;align-items:end">
-      <div class="field" style="margin:0;flex:2;min-width:220px"><label>Participant email</label><input class="input" id="claim-email" type="email" placeholder="him@example.com"></div>
-      <button class="btn btn-primary btn-sm" id="claim-add">Claim</button>
-    </div>
-    <p class="fine" id="claim-msg" style="margin-top:10px;min-height:16px"></p>
-    <div class="eyebrow" style="margin:20px 0 10px">YOUR ACTIVE CLAIMS</div>
-    <div id="claim-list" class="fine">Loading&hellip;</div>
-    <div class="eyebrow" style="margin:26px 0 10px">VERIFICATION SHEET</div>
-    <p class="fine" style="margin-bottom:12px">One sheet for the coordinator who requires proof: every man you claimed, his certificate serial, and its status. Hand it over yourself; the public verification page never names your organization.</p>
-    <button class="btn btn-secondary btn-sm" id="lead-export">Download verification sheet (CSV)</button>
-    <p class="fine" id="lead-export-msg" style="margin-top:10px;min-height:16px"></p>
-  </div></div>
+  </div>
+  <div class="dash-panel">
+    <div class="dash-panel-h"><h3>Circle roster</h3><p class="fine">Live cohort members. The board above is men you claimed.</p></div>
+    <div id="lead-roster"></div>
+  </div>
 </div>
 '''),
     'review': ('Review Queue', REVIEW_BODY),

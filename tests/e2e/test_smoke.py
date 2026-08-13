@@ -110,10 +110,34 @@ def test_account_has_visible_signout(page, server):
 
 def test_facilitator_desk_has_claims(page, server):
     html = _fetch(server, "lead.html")
-    for hook in ('id="claim-email"', 'id="claim-add"', 'id="claim-list"'):
+    for hook in ('id="claim-email"', 'id="claim-add"', 'id="claim-list"', 'id="lead-export"', 'id="lead-thisweek"', 'id="lead-week-chips"', 'id="lead-seat-chip"', 'id="lead-serial-chip"'):
         assert hook in html
+    assert "men you claimed" in html
+    assert "men in your Circle" not in html
+    assert "He can train without you" in html
+    assert "Seating for Returning Home" in html
+    assert "NEXT MEETING" not in html
+    assert "This week</button>" not in html
+    assert "Plan weeks</button>" not in html
     js = _fetch(server, "assets/js/lead.js")
     assert "participant_claims" in js
+    assert "The Body You Bring Home" in js
+    assert "review.html#rv-absent" in js
+    assert "verify.html" in js
+    assert "verify.html?serial=" in js
+    assert "withSessionFlags" in js
+    assert "(x.sessions_completed||0) > weekIndex" in js
+    assert "paintBoard" in js
+    assert "certificates').select('*')" not in js
+    assert "course totals" not in js
+    assert "perSession:true" in js
+    assert 'data-role="leader">Desk</a>' in html
+    review = _fetch(server, "review.html")
+    assert "Reach him from Desk." in review
+    assert "log the contact in your kit" not in review
+    certs = _fetch(server, "certificates.html")
+    assert "PREVIEW THE PLAYER" not in certs
+    assert "shape stills until Vimeo is wired" not in certs
 
 def test_admin_console_builds_courses(page, server):
     html = _fetch(server, "admin.html")
