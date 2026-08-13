@@ -25,7 +25,7 @@
         "ord": 1,
         "title": "The Surge Is a Signal",
         "quote": "The surge is a signal, not an order.",
-        "scene": "The noise in the meal line rises, trays and voices. His jaw sets before he knows why. That jaw is the earliest cue, and it is not an order to blow.",
+        "scene": "The noise at a group meal rises. Voices overlap. His jaw sets before he knows why. That jaw is the earliest cue, and it is not an order to blow.",
         "in_room": "The body's stress response in plain language. You learn that the surge fires before deliberation, and that the skill is what you do in the next few seconds.",
         "leave_with": "You can treat the surge as information instead of a command.",
         "practice": "Log three moments of rising tension this week. For each, write the trigger and the earliest body cue you noticed.",
@@ -165,8 +165,8 @@
     "id_prefix": "a",
     "video_prefix": "chp-a",
     "eyebrow_track": "FOR FATHERS IN REHAB OR TREATMENT RECONNECTING AT HOME",
-    "lead": "Twelve short film sessions for fathers in rehab or treatment preparing to reconnect with their children and/or a significant other: the body you bring home, the wave, few promises kept, the child who grew, small deposits, repair, reunion day, and the season after. Built so a man can complete the practices inside the rules that govern him now. Same body skills if you are coming home from service.",
-    "desc": "Twelve short sessions on presence after time in a program: reconnect with children and a significant other, with the same skills for service members and anyone returning after time away.",
+    "lead": "Twelve short film sessions for fathers in rehab or treatment preparing to reconnect with their children and/or a significant other: the body you bring home, the wave, few promises kept, the child who grew, small deposits, repair, reunion day, and the season after. Built so a man can complete the practices inside the rules that govern him now.",
+    "desc": "Twelve short sessions on presence after time in a program: reconnect with children and a significant other.",
     "fine1": "Self-paced film. Twelve weeks. One short film each week, then a checkpoint and a lived practice. Watch when you can. A Certified Facilitator is available when your seat is claimed.",
     "fine2": "Logged sessions and a checkable practice. Completion never requires contact with your child, and no practice ever asks you to go beyond the rules that govern you now or any court order. Where contact is limited, every drill has a before-return option.",
     "welcome": {
@@ -182,7 +182,7 @@
         "title": "The Body You Bring Home",
         "quote": "Your body did its job there. Now teach it that home is not there.",
         "scene": "Quiet hours in the treatment house. A door slams down the hall. Before a thought arrives, his shoulders are up and his eyes are on the doorway. Same body that will walk into a loud kitchen on his first night home.",
-        "in_room": "The body's alarm in plain language: how a long stretch in a controlled environment (program, facility, or deployment) retunes it, and how that collides with a loud home and a waiting significant other. You plot your baseline and pick your tells. Same work if you are coming home from service.",
+        "in_room": "The body's alarm in plain language: how a long stretch in a controlled environment (program or facility) retunes it, and how that collides with a loud home and a waiting significant other. You plot your baseline and pick your tells.",
         "leave_with": "You can name what your body is doing when it revs, and call it a physical response, not a character flaw.",
         "practice": "Keep a short body-state log and name two likely home triggers.",
         "science": "Fight or flight can outlast the threat; naming the response is the first retraining step.",
@@ -195,7 +195,7 @@
         "title": "Home Is Not There",
         "quote": "Same noise, new meaning. Train the difference.",
         "scene": "On the house phone he hears a shout in the background. His body tags it as danger. On the next early leave pass he labels the same sound: kid looking for a shoe. Same noise. New meaning. Shoulders stay down.",
-        "in_room": "You train the difference between there (program rules, high alert) and home with concrete sounds and scenes. Rehearsal gives the body a new meaning before the live test. Same skill after service.",
+        "in_room": "You train the difference between there (program rules, high alert) and home with concrete sounds and scenes. Rehearsal gives the body a new meaning before the live test.",
         "leave_with": "You can catch a home sound and label it as home on purpose.",
         "practice": "Name two home sounds that used to mean threat and rehearse a calm home label for each.",
         "science": "Retraining meaning reduces false alarms when old cues meet a safe setting.",
@@ -208,7 +208,7 @@
         "title": "Plan Around the Wave",
         "quote": "Plan around the wave. Do not grade yourself by it.",
         "scene": "Day nine after his first overnight pass. He slept badly, snapped over spilled cereal, and by noon he is quietly deciding he is failing his kids and his partner. He is not failing. He is in a wave, and the plan says what to do on wave days.",
-        "in_room": "Energy, mood, and sleep run in waves in the early weeks of any return from a program or from service. That is expected. You plan around it instead of reading it as a verdict on the reconnect.",
+        "in_room": "Energy, mood, and sleep run in waves in the early weeks of any return from a program. That is expected. You plan around it instead of reading it as a verdict on the reconnect.",
         "leave_with": "You can expect the low weeks, plan around them, and stop grading yourself by them.",
         "practice": "Write a wave-day rule: sleep anchor, fewer commitments, and one recovery move.",
         "science": "Early-return waves in sleep and mood are common while a body leaves an imposed routine.",
@@ -221,7 +221,7 @@
         "title": "Few Promises, Kept",
         "quote": "Few commitments, kept without fail.",
         "scene": "He wants to promise everything on the first call home. He picks two standing call times the program phone will allow, and keeps both. By week three his child and his significant other stop asking if he means it.",
-        "in_room": "Distance and early return punish over-promising. You choose a short list you can keep from where you actually are (program rules, court orders, duty schedule), then keep it without fail.",
+        "in_room": "Distance and early return punish over-promising. You choose a short list you can keep from where you actually are (program rules, court orders), then keep it without fail.",
         "leave_with": "You can make fewer promises and keep every one you make.",
         "practice": "Choose at most three commitments you can keep this week and keep a written record.",
         "science": "Reliability beats volume; each kept promise is evidence.",
@@ -238,7 +238,7 @@
         "leave_with": "You can recalibrate to the child who exists today.",
         "practice": "Build a one-page current picture and draft questions that are only questions.",
         "science": "Children hit growth milestones on a clock; knowing the present child is the base of attunement.",
-        "before_return": "Build a one-page current picture from photos, letters, calls, and what others report. Draft ten questions with no advice attached. Use as many as one permitted call or visit allows.",
+        "before_return": "Build a one-page current picture from photos, letters, and what others report. Draft ten questions with no advice attached. Paper is the pass. A permitted call can use them later.",
         "after_return": "Hold one ten-minute questions-only conversation. Log three things you learned.",
         "length_label": "~6 MIN"
       },
@@ -251,7 +251,7 @@
         "leave_with": "You can ask once and listen longer than you talk.",
         "practice": "Ask one real question and reflect one thing you heard without fixing.",
         "science": "Listening longer than you talk rebuilds a current map of the child and the home.",
-        "before_return": "On a permitted call or visit, ask one question and listen longer than you talk. Where no contact is permitted, rehearse with a cohort partner and write the question for day one.",
+        "before_return": "Write one real question. Rehearse listening longer than you talk. Paper is the pass. Where a permitted call exists, you may ask it there.",
         "after_return": "Ask one question in person, listen longer than you talk, and log what you reflected back.",
         "length_label": "~6 MIN"
       },
@@ -264,7 +264,7 @@
         "leave_with": "You can make daily small deposits and explain why they beat grand gestures.",
         "practice": "Catch and return three bids, or role-play five exchanges if contact is limited.",
         "science": "Serve and return: a child's bid met by a steady adult builds trust and brains.",
-        "before_return": "Use one 60-second settling routine before each call or visit. Catch and return three bids during one permitted contact. Where no contact is permitted, role-play five exchanges with a cohort partner.",
+        "before_return": "Write a 60-second settling routine on paper and rehearse it. Catch and return bids on paper or with a cohort partner. Paper is the pass. Use it before a permitted call if you have one.",
         "after_return": "Settle first, then run five exchanges a day for a week and tally them.",
         "length_label": "~6 MIN"
       },
@@ -273,11 +273,11 @@
         "title": "Frequency Beats Intensity",
         "quote": "Show up short and steady.",
         "scene": "He used to wait for a perfect long visit after discharge. He switches to short, on-time calls the program schedule allows. The child starts setting a place for the call without being asked. His partner stops bracing for a miss.",
-        "in_room": "Predictable short contact beats rare dramatic presence. You design a frequency you can keep from where you stand: program phone rules, court orders, or duty windows.",
+        "in_room": "Predictable short contact beats rare dramatic presence. You design a frequency you can keep from where you stand: program phone rules, court orders.",
         "leave_with": "You can show up short and steady on a schedule the child and partner can trust.",
         "practice": "Set one repeatable short contact ritual inside the rules that govern you now.",
         "science": "Predictability lowers a child's background stress more than occasional intensity.",
-        "before_return": "Set one repeatable short contact ritual inside current rules. Where no contact is permitted, build the ritual on paper and file it for day one.",
+        "before_return": "Build the ritual on paper and file it for day one. That is the pass. Where current rules allow a short contact, you may run it.",
         "after_return": "Run the short ritual twice from home in one week and keep the times exact.",
         "length_label": "~6 MIN"
       },
@@ -312,7 +312,7 @@
         "title": "Reunion Day",
         "quote": "If the child pulls away, that is the start, not the answer.",
         "scene": "First hour home after the program. The younger one hides behind a leg. The older one shrugs off the hug. His significant other is careful, not cold. He keeps his voice low and offers the small plan he rehearsed: a walk to the corner and back, nothing more.",
-        "in_room": "You prepare for the first hours back with kids and/or a significant other, including early pull-away. You write and rehearse a low-pressure first-hour plan. Same climax work if you are coming home from service.",
+        "in_room": "You prepare for the first hours back with kids and/or a significant other, including early pull-away. You write and rehearse a low-pressure first-hour plan.",
         "leave_with": "You leave with a realistic, rehearsed first-hour plan and the patience to let it be imperfect.",
         "practice": "Write and rehearse a low-pressure first-hour plan.",
         "science": "Early pull-away at reunions is common and often temporary; patience is a skill.",
@@ -383,12 +383,12 @@
       {
         "ord": 3,
         "title": "Flooded Means Pause",
-        "quote": "Flooded means pause. Twenty minutes, then resume.",
+        "quote": "Flooded means pause. Then come back.",
         "scene": "The message thread heats up and he can feel his heartbeat in his ears. He names the pause, puts the phone face down, and walks. Later he comes back, and the conversation works.",
-        "in_room": "When your heart is racing, the thinking brain goes offline. You train recognizing flood and pausing about twenty minutes before you resume.",
+        "in_room": "When your heart is racing, the thinking brain goes offline. You train recognizing flood, pausing, then coming back.",
         "leave_with": "You can recognize flooding in yourself and pause before you make it worse.",
         "practice": "Rehearse the pause rule once. Use it on any heated exchange this week and log both ends.",
-        "science": "Past a racing heartbeat nobody absorbs a word; the body needs about twenty minutes to come down.",
+        "science": "Past a racing heartbeat nobody absorbs a word. Pause. Come back when you can think.",
         "length_label": "~6 MIN"
       },
       {
@@ -526,7 +526,7 @@
         "practice": "Complete the free assessment before Session 1.",
         "science": "Assessment first so growth targets are personal, not generic.",
         "session_label": "INTRO",
-        "length_label": "part of 1.1h course"
+        "length_label": "one session"
       },
       {
         "ord": 1,
@@ -538,7 +538,7 @@
         "practice": "Name one physical, one emotional, and one spiritual way you will show up this week.",
         "science": "Commitment builds trust and lays the foundation for lasting influence.",
         "session_label": "SESSION 1",
-        "length_label": "part of 1.1h course"
+        "length_label": "one session"
       },
       {
         "ord": 2,
@@ -550,7 +550,7 @@
         "practice": "Write a one-page profile of who this child is now (personality, fears, current passions, next six months), with the mother or caregiver if that channel is safe. No visit required.",
         "science": "Understanding uniqueness opens the door to deeper connection.",
         "session_label": "SESSION 2",
-        "length_label": "part of 1.1h course"
+        "length_label": "one session"
       },
       {
         "ord": 3,
@@ -562,7 +562,7 @@
         "practice": "Pick one action, one value, and one discipline habit you will keep the same this week.",
         "science": "Children thrive on stability; consistency builds confidence.",
         "session_label": "SESSION 3",
-        "length_label": "part of 1.1h course"
+        "length_label": "one session"
       },
       {
         "ord": 4,
@@ -574,7 +574,7 @@
         "practice": "Name one protective move and one provision move you will make this week.",
         "science": "Protection and provision communicate value to the child.",
         "session_label": "SESSION 4",
-        "length_label": "part of 1.1h course"
+        "length_label": "one session"
       },
       {
         "ord": 5,
@@ -586,7 +586,7 @@
         "practice": "Write one sentence you will not say about their mother this week. If a coparent channel is safe, send one short civil note about the child. If it is not, keep the sentence in your notes.",
         "science": "Children should not have to choose a side or hear you tear her down.",
         "session_label": "SESSION 5",
-        "length_label": "part of 1.1h course"
+        "length_label": "one session"
       },
       {
         "ord": 6,
@@ -598,7 +598,7 @@
         "practice": "Put the phone face down for one real conversation this week (program peer, coparent, a call you already have). After, write what they actually said, not what you planned to say.",
         "science": "Full attention is the skill. Advice can wait.",
         "session_label": "SESSION 6",
-        "length_label": "part of 1.1h course"
+        "length_label": "one session"
       },
       {
         "ord": 7,
@@ -610,7 +610,7 @@
         "practice": "Name one conviction you will live in the open this week at work, in the program, or at home. If faith is yours, live it. If it is not, keep your word anyway.",
         "science": "Kids watch what you live. This is not a required chapel track.",
         "session_label": "SESSION 7",
-        "length_label": "part of 1.1h course"
+        "length_label": "one session"
       }
     ],
     "disclaimer": ""

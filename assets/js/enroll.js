@@ -10,7 +10,7 @@
 
   var slug  = (qs('cert') || 'fundamentals').toLowerCase();
   var title = qs('title') || 'Fathering Fundamentals';
-  var hours = qs('hours') || '10.0';
+  var hours = qs('hours') || 'Facilitator-attested completion';
 
   setText('certTitle', title);
   setText('certTitleSum', title);
