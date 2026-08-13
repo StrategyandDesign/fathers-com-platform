@@ -1,9 +1,9 @@
 // review_award (WP-F): the approval path. circle_leader / org_admin / admin only, legal
 // transitions only, contact hours and attestation frozen at approval, the
 // serial minted at signing, every action audited with the reviewer as actor.
-// Queue is claim-scoped: org_admin sees their org, circle_leader sees men they
-// claimed, platform admin stays global. Checkpoint payloads return completion
-// Y/N only — never right/total or answer bodies.
+// Queue joins awards.user_id to the caller's active participant_claims:
+// org_admin by org, circle_leader by circle if those claims exist else org,
+// platform admin global. snapshot_checkpoints is video-id keys only.
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // CORS helpers inlined so this function deploys as a single pasted file
@@ -37,12 +37,16 @@ function json(req: Request, body: unknown, status = 200): Response {
 
 
 type RoleRow = { role: string; org_id?: string | null };
-type ClaimRow = { user_id?: string | null; org_id?: string | null; facilitator_user_id?: string | null; circle_id?: string | null };
+type ClaimRow = { user_id?: string | null };
 
-/** Keys only. Never right/total or answer bodies. UI counts Object.keys. */
+/** Keys only. Never {right, total} or answer bodies. UI counts Object.keys. */
 function scrubCheckpoints(raw: unknown): string[] {
   if (!raw || typeof raw !== "object") return [];
   return Object.keys(raw as Record<string, unknown>);
+}
+
+function idsFromClaims(rows: ClaimRow[] | null | undefined): string[] {
+  return [...new Set((rows ?? []).map((c) => c.user_id).filter((id): id is string => !!id))];
 }
 
 async function reviewerScope(
@@ -57,17 +61,46 @@ async function reviewerScope(
   if (!isAdmin && !isOrg && !isLeader) return { allowed: false, isAdmin: false, userIds: [] };
   if (isAdmin) return { allowed: true, isAdmin: true, userIds: null };
 
-  const orgIds = new Set(rows.filter((r) => r.role === "org_admin" && r.org_id).map((r) => r.org_id as string));
-  const { data: claims } = await svc.from("participant_claims")
-    .select("user_id,org_id,circle_id,facilitator_user_id")
-    .eq("status", "active");
-  const mine = ((claims ?? []) as ClaimRow[]).filter((c) => {
-    if (isLeader && c.facilitator_user_id === reviewer) return true;
-    if (isOrg && c.org_id && orgIds.has(c.org_id)) return true;
-    return false;
-  });
-  const userIds = [...new Set(mine.map((c) => c.user_id).filter((id): id is string => !!id))];
-  return { allowed: true, isAdmin: false, userIds };
+  const orgIds = [...new Set(rows.filter((r) => r.org_id && (r.role === "org_admin" || r.role === "circle_leader")).map((r) => r.org_id as string))];
+
+  // Join awards.user_id to the caller's active participant_claims (queried, not a global dump).
+  if (isOrg && orgIds.length) {
+    const { data: claims } = await svc.from("participant_claims")
+      .select("user_id")
+      .eq("status", "active")
+      .in("org_id", orgIds);
+    return { allowed: true, isAdmin: false, userIds: idsFromClaims(claims as ClaimRow[]) };
+  }
+
+  if (isLeader) {
+    const { data: memberships } = await svc.from("circle_members")
+      .select("circle_id")
+      .eq("user_id", reviewer)
+      .eq("role", "leader");
+    const circleIds = [...new Set((memberships ?? []).map((m: { circle_id?: string }) => m.circle_id).filter((id): id is string => !!id))];
+    if (circleIds.length) {
+      const { data: circleClaims } = await svc.from("participant_claims")
+        .select("user_id")
+        .eq("status", "active")
+        .in("circle_id", circleIds);
+      const circleIdsFound = idsFromClaims(circleClaims as ClaimRow[]);
+      if (circleIdsFound.length) return { allowed: true, isAdmin: false, userIds: circleIdsFound };
+    }
+    if (orgIds.length) {
+      const { data: orgClaims } = await svc.from("participant_claims")
+        .select("user_id")
+        .eq("status", "active")
+        .in("org_id", orgIds);
+      return { allowed: true, isAdmin: false, userIds: idsFromClaims(orgClaims as ClaimRow[]) };
+    }
+    const { data: own } = await svc.from("participant_claims")
+      .select("user_id")
+      .eq("status", "active")
+      .eq("facilitator_user_id", reviewer);
+    return { allowed: true, isAdmin: false, userIds: idsFromClaims(own as ClaimRow[]) };
+  }
+
+  return { allowed: true, isAdmin: false, userIds: [] };
 }
 
 function inScope(scope: { isAdmin: boolean; userIds: string[] | null }, userId: string): boolean {
