@@ -1,10 +1,19 @@
 # SQL archive (historical record)
 
-These files were applied by hand to production before migration discipline was
-adopted. They are kept for the record and are the reference for what the
-baseline migration should contain. Do not run them again blindly; most are
-idempotent, but the source of truth going forward is supabase/migrations/.
+Hand-applied to production before `supabase/migrations/` became the only path.
+Kept so a reviewer can see what the baseline contains.
 
-Applied set: schema.sql, schema_keystone.sql, schema_rbac.sql,
-veterans_schema.sql, circles_setup.sql, seed_certificate_courses.sql,
-certificate_accountability.sql.
+**Do not run these files.** Apply schema through `supabase db push` only.
+
+| File | What it was |
+|---|---|
+| schema.sql | Original public schema |
+| schema_keystone.sql | Keystone instruments and results |
+| schema_rbac.sql | `user_roles` and RLS |
+| circles_setup.sql | Circles, weeks, announcements |
+| certificate_accountability.sql | Awards, serials, checkpoints |
+| seed_certificate_courses.sql | Course seed |
+| seed_partner_examples.sql | Partner examples |
+| veterans_schema.sql | Veteran hub (surface is dark: `SHOW_MILITARY=False`) |
+
+Live migrations: `../migrations/`.

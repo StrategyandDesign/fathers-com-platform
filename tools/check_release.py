@@ -33,11 +33,11 @@ ITEMCOUNT_RE = r"\b\d{2,3}\s+(?:items|questions)\b"
 WORDCOUNT_RE = r"\b(?:twenty|forty|hundred)[a-z\- ]*\b(?:questions|items)\b"
 CLINICAL_BAN = ["diagnos", "therapy", "therapist", "screening tool",
                 "counseling", "behavioral health", "support group"]
-STUBS = {"stories.html", "story.html", "employers.html",
-         "gatherings.html", "share.html", "voice.html", "veterans.html",
+STUBS = {"employers.html",
+         "gatherings.html", "veterans.html",
          "veterans-hub.html", "veterans-start.html", "veterans-checkin.html",
          "veterans-module.html", "veterans-resources.html",
-         "find-a-program.html", "gift.html"}
+         "find-a-program.html"}
 
 
 def pages():

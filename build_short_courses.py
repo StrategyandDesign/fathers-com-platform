@@ -227,7 +227,9 @@ def path_rail_html(course: dict) -> str:
         f'<p class="fine ash" style="margin:0 0 14px;max-width:46ch">{_q(first["quote"])}</p>'
         f'<div class="course-pip-rail" aria-label="Course progress">{pips}</div>'
         '<p class="fine ash" style="margin:10px 0 16px;max-width:46ch">'
-        'One week at a time. Watch the film, pass the checkpoint, complete the practice. Then the next one opens.</p>'
+        + ('One session at a time. Watch the film, pass the checkpoint, complete the practice. Then the next one opens.</p>'
+           if first_ord == 0 else
+           'One week at a time. Watch the film, pass the checkpoint, complete the practice. Then the next one opens.</p>')
         + (f'<p class="fine" style="margin:0 0 10px"><a class="link" href="{demo_href}&amp;welcome=1">Start here with Ken and Micah</a></p>' if course.get("welcome") else "") +
         f'<div class="course-focus-cta"><a class="btn btn-yellow" href="{demo_href}">{cta_label}</a></div>'
         f'<details class="course-full-path"><summary class="fine">See the full path ({n} sessions)</summary>'

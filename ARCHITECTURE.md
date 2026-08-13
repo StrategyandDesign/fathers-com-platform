@@ -5,7 +5,7 @@ Companion documents: CONTRIBUTING.md (process), FC-REQ-001 (Phase 1 requirements
 
 ## 1. The architecture in one paragraph
 
-Fathers.com is a generated static front-end served by Vercel, backed by Supabase (Postgres, Auth, Storage) where row-level security is the enforcement boundary, with Supabase Edge Functions as the only home for secrets and money. Pages are generated from Python builders (`build_pages.py`, `build_dashboards.py`) and committed; the deploy is a git push. This is deliberate: minimal attack surface, near-zero hosting cost for a nonprofit, instant rollback (static files), and security enforced in the database rather than in browser code.
+Fathers.com is a generated static front-end served by Vercel, backed by Supabase (Postgres, Auth, Storage) where row-level security is the enforcement boundary, with Supabase Edge Functions as the only home for secrets and money. Pages are generated from Python builders (`build_pages.py`, `build_dashboards.py`, `build_short_courses.py`) and committed; the deploy is a git push. This is deliberate: minimal attack surface, near-zero hosting cost for a nonprofit, instant rollback (static files), and security enforced in the database rather than in browser code.
 
 ## 2. Principles (what a reviewer should hold us to)
 
@@ -22,7 +22,7 @@ Fathers.com is a generated static front-end served by Vercel, backed by Supabase
 - **Auth**: Supabase Auth, email and password only. Account creation, sign-in, and reset all use the password flow; the magic link is retired platform-wide. `?next=` redirects are sanitized against an allowlist pattern.
 - **Data**: Supabase Postgres. Schema history lives in `supabase/migrations/` (see §5). RLS on every table.
 - **Storage**: private `voice` bucket, per-user folder policies.
-- **Edge functions**: `checkout` (the sole enrollment path: verifies the participant claim, reads price from the database, fulfills at zero dollars; priced rows route to Stripe when enabled), `checkout-webhook` and `stripe-webhook` (signature-verified Stripe fulfillment), `issue-certificate`, `esign-bridge` (holds the e-sign API token; re-authorizes server-side against `certificate_awards`), and `send-email` (Resend).
+- **Edge functions**: `checkout` (the sole enrollment path: verifies the participant claim, reads price from the database, fulfills at zero dollars; priced rows route to Stripe when enabled), `checkout-webhook` and `stripe-webhook` (signature-verified Stripe fulfillment), `checkpoint_submit`, `progress_beat`, `submit_award`, `review_award`, `issue-certificate`, `esign-bridge` (holds the e-sign API token; re-authorizes server-side against `certificate_awards`), `send-email` (Resend), and `verify_serial`.
 - **CI**: GitHub Actions (`.github/workflows/ci.yml`): config integrity, build determinism, JS syntax, offline e2e smoke tests.
 
 ## 4. Environments

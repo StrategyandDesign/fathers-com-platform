@@ -12,8 +12,8 @@ OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 # changelog.html. Bump BOTH constants on every release, add a CHANGELOG entry
 # below, regenerate, and upload. The stamp is the answer to "what version is
 # live": read any page footer.
-PLATFORM_VERSION = "4.16.4"
-VERSION_DATE = "2026-08-12"
+PLATFORM_VERSION = "4.16.5"
+VERSION_DATE = "2026-08-13"
 
 # v4.0 reposition flags (ADR-4: rollout is a data change, not a redesign).
 # SHOW_MILITARY dark-launches the entire veteran surface: pages are not generated,
@@ -181,6 +181,12 @@ PAGES = {}
 # Release notes rendered on changelog.html. Newest first. Public copy:
 # POSITIONING.md section 9 language rules apply.
 CHANGELOG = [
+    ("4.16.5", "2026-08-13",
+     "Friday cleanup. Same Team is live. The reviewer queue is scoped to "
+     "the caller's org or circle; platform admin stays global; checkpoint "
+     "scores leave the reviewer payload. Manhood stays dark while the "
+     "flag is off. The old class and player catalog redirects to the live "
+     "course pages."),
     ("4.16.4", "2026-08-12",
      "Vocabulary lock lands on current main after later PRs: Sponsor "
      "means certification funding only; Library membership (Founding "
@@ -361,8 +367,8 @@ CHANGELOG = [
      "The version stamp. Every page now carries its release number in the "
      "footer, linked to this page."),
     ("4.5.0", "2026-08-10",
-     "Same Team, a fourth course on co-parenting, joins the catalog as coming "
-     "soon. The education line enters the positioning record: we certify "
+     "Same Team, a fourth course on co-parenting, joins the catalog. "
+     "The education line enters the positioning record: we certify "
      "education, and the boundaries are written down. Partner and operations "
      "documents enter the repository. Retired pages now route home."),
     ("4.0", "2026-07",
@@ -846,133 +852,17 @@ PAGES['classes.html'] = dict(title='The Courses', desc='Four courses, free to ev
 <p class="center fine" style="padding:60px 0">The classes now live inside the courses. <a class="link" href="certificates.html">Continue to The Courses &rarr;</a></p>
 ''')
 
-PAGES['class.html'] = dict(title='The Fundamentals of Fathering', desc='The flagship class on presence, taught by Dr. Ken Canfield.', active='Classes', mode='public', body='''
-<div class="billboard">
-  <div class="slot r-21x9 flush filled" data-slot="IMG-P4-DET-01" style="max-height:64vh"><img src="assets/img/photos/community-02.jpg" alt="Fathers who took the course"></div>
-  <div class="overlay container" style="left:50%;transform:translateX(-50%);max-width:var(--max)">
-    <div class="eyebrow" style="margin-bottom:10px">THE OPEN · FREE &middot; THE 7 SECRETS OF EFFECTIVE FATHERS</div>
-    <h1 class="d-48">The Fundamentals of Fathering</h1>
-<p class="fine mono" style="letter-spacing:.08em;margin:10px 0 0;color:var(--ash)">FOR EVERY MAN, ON EITHER TRACK</p>
-    <p class="small" style="margin-top:10px">Dr. Ken Canfield. Founder, National Center for Fathering, since 1990. One standard.</p>
-  </div>
-</div>
-<div class="nav" style="top:72px;z-index:50"><div class="container nav-inner" style="height:60px">
-  <b style="font-size:15px">The Fundamentals of Fathering</b>
-  <div class="nav-right"><a class="btn btn-yellow btn-sm" href="profile.html">Get your baseline</a></div>
-</div></div>
-
-<section class="tight"><div class="container" style="display:grid;grid-template-columns:1.45fr .85fr;gap:56px;align-items:start">
-  <div>
-    <h2 class="d-22" style="font-family:var(--font-display);font-size:22px;margin-bottom:18px">What you will train</h2>
-    <div class="stack-8" style="margin-bottom:44px">
-      <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Read your kids' inner weather.</div></div>
-      <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Build a schedule they can trust.</div></div>
-      <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Say what you stand for out loud.</div></div>
-      <div class="actionrow"><span class="checkmark">&rarr;</span><div class="txt">Repair fast when you blow it.</div></div>
-    </div>
-    <h2 style="font-family:var(--font-display);font-size:22px;margin-bottom:8px">The five sessions</h2>
-    <p class="fine" style="margin-bottom:14px">Five filmed sessions. Each ends in a checkpoint, and the course closes with the written Final Q&amp;A your facilitator reads.</p>
-    <details open><summary><span><b class="mono ash" style="margin-right:14px">01</b>Why Presence Wins</span><span class="tag">17:16</span></summary>
-      <div class="body"><div class="row" style="align-items:flex-start;gap:18px"><div class="slot r-16x9" data-slot="IMG-P4-DET-02" style="flex:0 0 180px"></div>
-      <p style="font-size:14px">The research case for father presence, and your four Keystone scores read honestly. What your kids get when you show up, what it costs when you don't, and where you actually stand today.</p></div></div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">02</b>A Schedule They Can Trust</span><span class="tag">18:51</span></summary><div class="body">Consistency mechanics: standing time, the calendar as a promise, and the distracted father. Attention your kids can feel.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">03</b>Enter Their World</span><span class="tag">17:07</span></summary><div class="body">Awareness training: friends' names, inner weather, questions without fixing.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">04</b>Repair Fast, Stand for Something</span><span class="tag">18:15</span></summary><div class="body">The 24-hour repair standard, values out loud, and discipline that builds instead of frightens.</div></details>
-    <details><summary><span><b class="mono ash" style="margin-right:14px">05</b>Your Own Father, Your Ninety Days</span><span class="tag">19:12</span></summary><div class="body">What you inherited and what stops with you. Why no man holds a standard alone. Locking the plan and the retake.</div></details>
-    <div class="row" style="align-items:flex-start;gap:20px;margin-top:44px">
-      <div class="slot r-1x1" data-slot="IMG-P4-DET-03" style="flex:0 0 96px;border-radius:50%"></div>
-      <div><h3 style="margin-bottom:8px">About Ken</h3>
-      <p class="small" style="max-width:56ch">Dr. Ken Canfield founded the National Center for Fathering and built the research base behind the Keystone framework. Since 1990, thousands of fathers studied, one conclusion: presence is a trainable skill. He is a father of five and a grandfather, and he teaches like it.</p></div>
-    </div>
-  </div>
-  <aside class="stack-24" style="position:sticky;top:160px">
-    <div class="card"><div class="row" style="gap:16px"><span style="font-size:28px">▤</span>
-      <div><b style="font-size:15px">The Fundamentals Workbook</b><p class="fine" style="margin-top:4px">28 pages</p></div></div>
-      <span class="fine" style="display:block;margin-top:16px;color:var(--ash)">Included free with the course.</span></div>
-    <div class="card"><div class="eyebrow" style="margin-bottom:14px">FREE WITH THE COURSE</div>
-      <div class="stack-8">
-        <div class="check"><span class="checkmark">&check;</span><span class="small">Every film and written session as they publish; films uploading as they finish</span></div>
-        <div class="check"><span class="checkmark">&check;</span><span class="small">Your baseline and twelve-week plan</span></div>
-        <div class="check"><span class="checkmark">&check;</span><span class="small">The written final, read by your facilitator</span></div>
-        <div class="check"><span class="checkmark">&check;</span><span class="small">Your Certificate of Completion, at no cost</span></div>
-      </div></div>
-    <div class="card brass-card"><p class="small" style="margin-bottom:12px">Need proof someone else can check? Finish this course and your Certificate of Completion is issued at no cost.</p><p class="fine" style="margin:10px 0 0">Whether a certificate satisfies a court, agency, or program requirement is decided by that body. Confirm with yours before enrolling.</p>
-      <div class="row wrap" style="gap:14px;align-items:center">
-        <a class="btn btn-yellow btn-sm" href="course-fathering-fundamentals.html">Earn the certificate</a>
-        <button class="link brass" id="seeCert" data-cert-course="The Fundamentals of Fathering" data-cert-hours="10.0" style="font-size:14px;background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px">See the Certificate</button></div></div>
-  </aside>
-</div></section>
-
-<section class="band tight"><div class="container">
-  <h2 style="font-family:var(--font-display);font-size:24px;margin-bottom:20px">Keep training. The other three.</h2>
-  <div class="rowscroll" data-repeat="3" data-prefix="IMG-P4-REL-" data-ratio="r-2x3" data-href="certificates.html#catalog"
-    data-titles="Steady Under Pressure|Coming Home Present|Same Team"
-    data-subs="Steadiness, trained|Reconnect after a program|One team for your children"
-    data-metas="12 sessions &middot; Certificate of Completion|12 sessions &middot; Certificate of Completion|12 sessions &middot; Certificate of Completion"></div>
-</div></section>
-<script src="assets/js/cert-preview.js"></script>
+PAGES['class.html'] = dict(title='Fathering Fundamentals', desc='The Seven Secrets course. Redirects to the live course page.', active='Courses', mode='public', nochrome=True, body='''
+<meta http-equiv="refresh" content="0;url=course-fathering-fundamentals.html">
+<script>location.replace('course-fathering-fundamentals.html');</script>
+<p class="center fine" style="padding:60px 0">This course now lives on the Fundamentals page. <a class="link" href="course-fathering-fundamentals.html">Continue to Fathering Fundamentals &rarr;</a></p>
 ''')
 
 # ================================================== player.html (P5)
-PAGES['player.html'] = dict(title='Session 4 &middot; The Fundamentals of Fathering', desc='Session player.', active='Classes', mode='app', body='''
-<section class="tight" style="padding-top:36px"><div class="container">
-  <p class="tag" style="margin-bottom:14px">The Fundamentals of Fathering / Lesson 4</p>
-  <div style="display:grid;grid-template-columns:1.55fr .75fr;gap:32px;align-items:start">
-    <div>
-      <div class="slot r-16x9 filled" data-slot="IMG-P5-PLY-01" id="stage"><img src="assets/img/photos/action-01.jpg" alt="Lesson still"></div>
-      <div class="card" style="margin-top:14px;padding:14px 18px">
-        <div class="row" style="gap:18px">
-          <span class="mono small">06:12 / 18:15</span>
-          <div class="progress-track" style="flex:1"><div class="progress-fill" style="width:36%"></div></div>
-          <span class="chip" style="padding:4px 12px;font-size:12px" onclick="document.getElementById('audiobar').style.display='flex'">Audio</span>
-        </div>
-      </div>
-      <div id="audiobar" class="card" style="display:none;margin-top:10px;padding:12px 16px;align-items:center;gap:14px">
-        <div class="slot r-1x1" data-slot="IMG-P5-AUD-01" style="width:44px"></div>
-        <b style="font-size:14px">Session 4 &middot; Repair Fast, Stand for Something</b>
-        <span class="mono fine" style="margin-left:auto">Audio mode</span>
-      </div>
-      <div data-tabs style="margin-top:28px">
-        <div class="tabs"><button class="active">Overview</button><button>Workbook</button><button>Notes</button></div>
-        <div class="tabpanel active">
-          <p class="small" style="max-width:64ch;margin-bottom:20px">Awareness is the skill of knowing your kids' inner weather before they announce it. This lesson trains three habits: learn the names, ask without fixing, and watch the transitions. Ten minutes now; practice it at your table this week.</p>
-          <p class="quote" style="font-size:22px">"Consistency is love the kids can set a clock by."</p>
-        </div>
-        <div class="tabpanel">
-          <div class="card" style="max-width:420px"><b style="font-size:15px">The Fundamentals Workbook</b><p class="fine" style="margin:6px 0 14px">Pages 12-15 pair with this session. Print them for the week.</p>
-          <button class="btn btn-secondary btn-sm" data-print>Print the pages</button></div>
-        </div>
-        <div class="tabpanel">
-          <div class="stack-16" style="max-width:560px">
-            <div class="card" style="padding:16px"><span class="mono fine" style="display:inline-block;margin-bottom:8px">06:12</span><p class="small">Names of their three closest friends. I know one. One.</p></div>
-            <div class="card" style="padding:16px"><span class="mono fine" style="display:inline-block;margin-bottom:8px">07:48</span><p class="small">Ask about the bus ride, not the grades.</p></div>
-            <p class="fine">Notes save to your plan. Write like nobody's grading it.</p>
-          </div>
-        </div>
-      </div>
-      <div class="card" style="margin-top:30px;padding:28px">
-        <div class="row between wrap">
-          <div><div class="row" style="gap:10px;margin-bottom:8px"><span class="checkmark">&check;</span><b>Session 4 complete</b></div>
-            <p class="small">Up next: Session 5, Your Own Father, Your Ninety Days</p></div>
-          <div class="row"><button class="btn btn-primary btn-sm">Play now</button><button class="btn btn-secondary btn-sm" onclick="this.closest('.card').style.display='none'">Not now</button></div>
-        </div>
-        <hr class="hr" style="margin:20px 0">
-        <p class="small">This week's action from your plan: <b class="bone">Eat breakfast with your kids twice.</b> Mark it done in My Plan. <a class="link ash" href="plan.html" style="font-size:13px">Go to My Plan</a></p>
-      </div>
-    </div>
-    <aside class="card" style="padding:20px">
-      <b style="font-size:15px">The Fundamentals of Fathering</b>
-      <div class="row" style="margin:12px 0 20px"><div class="progress-track" style="flex:1"><div class="progress-fill pine" style="width:70%"></div></div><span class="mono fine">4 of 5</span></div>
-      <div class="stack-8" style="font-size:14px">
-        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 01 Why Presence Wins</span><span class="tag">17:16</span></div>
-        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 02 A Schedule They Can Trust</span><span class="tag">18:51</span></div>
-        <div class="row between" style="padding:10px 12px;border-radius:6px;background:var(--coal-2)"><span><span class="checkmark" style="width:16px;height:16px;font-size:9px;flex:0 0 16px">&check;</span> 03 Enter Their World</span><span class="tag">17:07</span></div>
-        <div class="row between" style="padding:10px 12px;border-left:3px solid var(--ember);border-radius:6px;background:var(--coal-2)"><b>04 Repair Fast, Stand for Something</b><span class="tag">18:15</span></div>
-        <div class="row between" style="padding:10px 12px"><span class="ash">05 Your Own Father, Your Ninety Days</span><span class="tag">19:12</span></div>
-      </div>
-    </aside>
-  </div>
-</div></section>
+PAGES['player.html'] = dict(title='Course player', desc='Session player. Redirects to the live course player.', active='Courses', mode='app', nochrome=True, body='''
+<meta http-equiv="refresh" content="0;url=course.html">
+<script>location.replace('course.html');</script>
+<p class="center fine" style="padding:60px 0">The player now lives with the courses. <a class="link" href="course.html">Continue to the course player &rarr;</a></p>
 ''')
 
 # ================================================== plan.html (P6)
@@ -1344,7 +1234,7 @@ PAGES['certificates.html'] = dict(title='The Courses and the Certificate of Comp
   </div>
   <style>#tracks .cert-card{display:flex;flex-direction:column}#tracks .cert-card .sess-peek{margin-top:auto}#tracks .cert-card .cert-card-foot{margin-top:12px}#tracks .cert-card > p{margin-bottom:12px}</style>
   <div class="cert-cards" id="tracks">
-                                                                                <div class="cert-card" style="cursor:default" data-motion="fade-up" data-cert="fundamentals" data-title="Fathering Fundamentals" data-hours="1.1" data-desc="The Seven Secrets of Effective Fathers Assessment and Course. Self-paced sessions with checkpoints, a free assessment, and a Certified Facilitator available for questions.">
+                                                                                    <div class="cert-card" style="cursor:default" data-motion="fade-up" data-cert="fundamentals" data-title="Fathering Fundamentals" data-hours="1.1" data-desc="The Seven Secrets of Effective Fathers Assessment and Course. Self-paced sessions with checkpoints, a free assessment, and a Certified Facilitator available for questions.">
       <div class="course-card-media">
         <img src="assets/img/photos/action-01.jpg" alt="">
         <div class="ccm-overlay"></div>
@@ -1361,7 +1251,7 @@ PAGES['certificates.html'] = dict(title='The Courses and the Certificate of Comp
       <details class="sess-peek" style="margin-top:4px"><summary class="fine" style="cursor:pointer;color:var(--brass,#c9a227)">All 8 sessions</summary><ol class="small" style="margin:8px 0 2px;padding-left:18px"><li style="margin:5px 0"><b>Introduction</b> <span style="color:var(--ash)">&middot; &ldquo;Welcome, overview, and take the assessment.&rdquo;</span></li><li style="margin:5px 0"><b>First Secret: Commitment</b> <span style="color:var(--ash)">&middot; &ldquo;Present physically, emotionally, spiritually; commitment builds trust.&rdquo;</span></li><li style="margin:5px 0"><b>Second Secret: Knowing Your Child</b> <span style="color:var(--ash)">&middot; &ldquo;Unique personality, needs, and interests open deeper connection.&rdquo;</span></li><li style="margin:5px 0"><b>Third Secret: Showing Up Consistently</b> <span style="color:var(--ash)">&middot; &ldquo;Stability through consistent actions, values, and discipline.&rdquo;</span></li><li style="margin:5px 0"><b>Fourth Secret: Protecting and Providing Security</b> <span style="color:var(--ash)">&middot; &ldquo;Physical, emotional, and spiritual safety and provision.&rdquo;</span></li><li style="margin:5px 0"><b>Fifth Secret: Loving Their Mother</b> <span style="color:var(--ash)">&middot; &ldquo;Honor their mother. Civil if you are not together. Never undercut her.&rdquo;</span></li><li style="margin:5px 0"><b>Sixth Secret: Active Listening</b> <span style="color:var(--ash)">&middot; &ldquo;Two-way. Full attention. Not an interrogation.&rdquo;</span></li><li style="margin:5px 0"><b>Seventh Secret: Spiritual Equipping</b> <span style="color:var(--ash)">&middot; &ldquo;Live convictions a child can trust. Faith is welcome. This is not a chapel course.&rdquo;</span></li></ol><p class="fine" style="margin:6px 0 0"><a class="link" href="course-fathering-fundamentals.html">Open the course &rarr;</a></p></details>
       <div class="cert-card-foot"><span class="mono">Free</span><a class="cert-card-go" href="course-fathering-fundamentals.html">Open the course &rarr;</a></div>
     </div>
-                                                                            <div class="cert-card" style="cursor:default" data-motion="fade-up" data-cert="reentry" data-title="Coming Home Present" data-hours="2.4" data-desc="For fathers in rehab or treatment preparing to reconnect with children and/or a significant other; also for service members returning home. Self-paced film with a Certified Facilitator available for questions, checkpoints, and a certificate a court or program can trust.">
+                                                                                <div class="cert-card" style="cursor:default" data-motion="fade-up" data-cert="reentry" data-title="Coming Home Present" data-hours="2.4" data-desc="For fathers in rehab or treatment preparing to reconnect with children and/or a significant other; also for service members returning home. Self-paced film with a Certified Facilitator available for questions, checkpoints, and a certificate a court or program can trust.">
       <div class="course-card-media">
         <img src="assets/img/photos/hero-03.jpg" alt="">
         <div class="ccm-overlay"></div>
@@ -1378,7 +1268,7 @@ PAGES['certificates.html'] = dict(title='The Courses and the Certificate of Comp
       <details class="sess-peek" style="margin-top:4px"><summary class="fine" style="cursor:pointer;color:var(--brass,#c9a227)">All 12 sessions</summary><ol class="small" style="margin:8px 0 2px;padding-left:18px"><li style="margin:5px 0"><b>The Body You Bring Home</b> <span style="color:var(--ash)">&middot; &ldquo;Your body did its job there. Now teach it that home is not there.&rdquo;</span></li><li style="margin:5px 0"><b>Home Is Not There</b> <span style="color:var(--ash)">&middot; &ldquo;Same noise, new meaning. Train the difference.&rdquo;</span></li><li style="margin:5px 0"><b>Plan Around the Wave</b> <span style="color:var(--ash)">&middot; &ldquo;Plan around the wave. Do not grade yourself by it.&rdquo;</span></li><li style="margin:5px 0"><b>Few Promises, Kept</b> <span style="color:var(--ash)">&middot; &ldquo;Few commitments, kept without fail.&rdquo;</span></li><li style="margin:5px 0"><b>The Child Who Grew</b> <span style="color:var(--ash)">&middot; &ldquo;Meet the child in front of you, not the one you left.&rdquo;</span></li><li style="margin:5px 0"><b>Ask Before You Assume</b> <span style="color:var(--ash)">&middot; &ldquo;Ask once. Listen longer than you talk.&rdquo;</span></li><li style="margin:5px 0"><b>Small Deposits</b> <span style="color:var(--ash)">&middot; &ldquo;Small and often beats big and rare.&rdquo;</span></li><li style="margin:5px 0"><b>Frequency Beats Intensity</b> <span style="color:var(--ash)">&middot; &ldquo;Show up short and steady.&rdquo;</span></li><li style="margin:5px 0"><b>When It Breaks</b> <span style="color:var(--ash)">&middot; &ldquo;Rupture is normal. Repair is the skill.&rdquo;</span></li><li style="margin:5px 0"><b>Repair Without Pride</b> <span style="color:var(--ash)">&middot; &ldquo;Go first. Keep it short.&rdquo;</span></li><li style="margin:5px 0"><b>Reunion Day</b> <span style="color:var(--ash)">&middot; &ldquo;If the child pulls away, that is the start, not the answer.&rdquo;</span></li><li style="margin:5px 0"><b>The Season of Return</b> <span style="color:var(--ash)">&middot; &ldquo;The return is a season, not a day.&rdquo;</span></li></ol><p class="fine" style="margin:6px 0 0"><a class="link" href="course-coming-home-present.html">Open the course &rarr;</a></p></details>
       <div class="cert-card-foot"><span class="mono">Free</span><a class="cert-card-go" href="course-coming-home-present.html">Open the course &rarr;</a></div>
     </div>
-                                                                            <div class="cert-card" style="cursor:default" data-motion="fade-up" data-cert="anger" data-title="Steady Under Pressure" data-hours="2.4" data-desc="Steadiness, trained on film: the pause, the repair, and the habits underneath them. Self-paced, with a Certified Facilitator available for questions. Sessions logged, checkpoints, and a final assessment at eighty percent to pass.">
+                                                                                <div class="cert-card" style="cursor:default" data-motion="fade-up" data-cert="anger" data-title="Steady Under Pressure" data-hours="2.4" data-desc="Steadiness, trained on film: the pause, the repair, and the habits underneath them. Self-paced, with a Certified Facilitator available for questions. Sessions logged, checkpoints, and a final assessment at eighty percent to pass.">
       <div class="course-card-media">
         <img src="assets/img/photos/action-01.jpg" alt="">
         <div class="ccm-overlay"></div>
@@ -1396,7 +1286,7 @@ PAGES['certificates.html'] = dict(title='The Courses and the Certificate of Comp
       <details class="sess-peek" style="margin-top:4px"><summary class="fine" style="cursor:pointer;color:var(--brass,#c9a227)">All 12 sessions</summary><ol class="small" style="margin:8px 0 2px;padding-left:18px"><li style="margin:5px 0"><b>The Surge Is a Signal</b> <span style="color:var(--ash)">&middot; &ldquo;The surge is a signal, not an order.&rdquo;</span></li><li style="margin:5px 0"><b>Know Your Early Cues</b> <span style="color:var(--ash)">&middot; &ldquo;Catch it in the jaw, not the shout.&rdquo;</span></li><li style="margin:5px 0"><b>Six Seconds</b> <span style="color:var(--ash)">&middot; &ldquo;Six seconds buy your judgment back.&rdquo;</span></li><li style="margin:5px 0"><b>The Long Exhale</b> <span style="color:var(--ash)">&middot; &ldquo;A long exhale stands the body down.&rdquo;</span></li><li style="margin:5px 0"><b>Step Away to Come Back</b> <span style="color:var(--ash)">&middot; &ldquo;Step away to come back.&rdquo;</span></li><li style="margin:5px 0"><b>The Line You Leave On</b> <span style="color:var(--ash)">&middot; &ldquo;Say the line, then leave the room.&rdquo;</span></li><li style="margin:5px 0"><b>Name the Feeling</b> <span style="color:var(--ash)">&middot; &ldquo;Say the feeling so you do not have to show it.&rdquo;</span></li><li style="margin:5px 0"><b>Feelings Without Weapons</b> <span style="color:var(--ash)">&middot; &ldquo;Name it without loading it.&rdquo;</span></li><li style="margin:5px 0"><b>Own It Same Day</b> <span style="color:var(--ash)">&middot; &ldquo;Own it out loud, same day.&rdquo;</span></li><li style="margin:5px 0"><b>The Short Apology</b> <span style="color:var(--ash)">&middot; &ldquo;Short, specific, no defense.&rdquo;</span></li><li style="margin:5px 0"><b>Sleep, Food, Movement</b> <span style="color:var(--ash)">&middot; &ldquo;Steadiness is built in the boring hours.&rdquo;</span></li><li style="margin:5px 0"><b>Your Steady Week</b> <span style="color:var(--ash)">&middot; &ldquo;Stack the small things until they hold.&rdquo;</span></li></ol><p class="fine" style="margin:6px 0 0"><a class="link" href="course-steady-under-pressure.html">Open the course &rarr;</a></p></details>
       <div class="cert-card-foot"><span class="mono">Free</span><a class="cert-card-go" href="course-steady-under-pressure.html">Open the course &rarr;</a></div>
     </div>
-                                                                            <div class="cert-card" style="cursor:default" data-motion="fade-up" data-cert="coparenting" data-title="Same Team" data-hours="2.4" data-desc="Co-parenting, trained on film. One team for your children, whatever the arrangement between you. Self-paced, with a Certified Facilitator available for questions. Sessions logged, checkpoints, and a final assessment at eighty percent to pass.">
+                                                                                <div class="cert-card" style="cursor:default" data-motion="fade-up" data-cert="coparenting" data-title="Same Team" data-hours="2.4" data-desc="Co-parenting, trained on film. One team for your children, whatever the arrangement between you. Self-paced, with a Certified Facilitator available for questions. Sessions logged, checkpoints, and a final assessment at eighty percent to pass.">
       <div class="course-card-media">
         <img src="assets/img/photos/community-02.jpg" alt="">
         <div class="ccm-overlay"></div>
@@ -2969,6 +2859,13 @@ if not SHOW_EMPLOYERS:
     _strip_employers()
 
 
+
+if not SHOW_MANHOOD_COURSE:
+    _mh_tag = '<script src="assets/js/keystone-manhood-data.js"></script>\n'
+    for _fname, _p in PAGES.items():
+        if _mh_tag in _p.get('body', ''):
+            _p['body'] = _p['body'].replace(_mh_tag, '')
+
 if __name__ == '__main__':
     out = os.path.dirname(os.path.abspath(__file__))
     if not SHOW_GATHERINGS:
@@ -3016,9 +2913,10 @@ if __name__ == '__main__':
             html += p['body']
             html += '\n<script src="assets/js/config.js"></script>\n<script src="assets/js/supabase-client.js"></script>\n<script src="assets/js/app.js"></script>\n<script src="assets/js/help.js"></script>\n'
             if fname == 'profile.html':
-                html += ('<script src="assets/js/keystone-data.js"></script>\n'
-                         '<script src="assets/js/keystone-manhood-data.js"></script>\n'
-                         '<script src="assets/js/assessment-registry.js"></script>\n'
+                html += '<script src="assets/js/keystone-data.js"></script>\n'
+                if SHOW_MANHOOD_COURSE:
+                    html += '<script src="assets/js/keystone-manhood-data.js"></script>\n'
+                html += ('<script src="assets/js/assessment-registry.js"></script>\n'
                          '<script src="assets/js/keystone-full.js"></script>\n'
                          '<script src="assets/js/keystone-ui.js"></script>\n')
         else:

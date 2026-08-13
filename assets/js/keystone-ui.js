@@ -209,6 +209,11 @@
   }
 
   function beginManhoodQuick(){
+    if(!SHOW_MANHOOD_COURSE){
+      activateInstrument('keystone-father-profile');
+      beginQuickStart();
+      return;
+    }
     if(!activateInstrument('keystone-manhood-profile')){
       // Fall back only if manhood data is missing; keep legacy childhood path alive.
       KS.setPath('preparing');
@@ -255,7 +260,10 @@
     var intent = null;
     try { intent = localStorage.getItem('fc_intent_path'); if(intent) localStorage.removeItem('fc_intent_path'); } catch(e){}
     // Legacy preparing intent now lands on Manhood Dimensions quick (real instrument).
-    if(intent === 'preparing'){ beginManhoodQuick(); return; }
+    if(intent === 'preparing'){
+      if(SHOW_MANHOOD_COURSE){ beginManhoodQuick(); return; }
+      KS.setPath('father'); servedGate(chooseMode); return;
+    }
     // 'full' and 'father' both mean the complete instrument. 'father' is kept
     // because it is already sitting in returning visitors' localStorage and in
     // existing links; 'full' is the honest name now that the complete path is
@@ -345,7 +353,10 @@
     var pre = null;
     try { pre = localStorage.getItem('fc_intent_path'); localStorage.removeItem('fc_intent_path'); } catch(e){}
     if(pre === 'father'){ KS.setPath('father'); chooseMode(); return; }
-    if(pre === 'preparing'){ beginManhoodQuick(); return; }
+    if(pre === 'preparing'){
+      if(SHOW_MANHOOD_COURSE){ beginManhoodQuick(); return; }
+      KS.setPath('father'); chooseMode(); return;
+    }
     gate();  // no pre-selection: show the full gate question
   }
 

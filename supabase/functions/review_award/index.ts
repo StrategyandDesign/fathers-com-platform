@@ -1,6 +1,9 @@
 // review_award (WP-F): the approval path. circle_leader / org_admin / admin only, legal
 // transitions only, contact hours and attestation frozen at approval, the
 // serial minted at signing, every action audited with the reviewer as actor.
+// Queue is claim-scoped: org_admin sees their org, circle_leader sees men they
+// claimed, platform admin stays global. Checkpoint payloads return completion
+// Y/N only — never right/total or answer bodies.
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // CORS helpers inlined so this function deploys as a single pasted file
@@ -32,6 +35,46 @@ function json(req: Request, body: unknown, status = 200): Response {
 }
 
 
+
+type RoleRow = { role: string; org_id?: string | null };
+type ClaimRow = { user_id?: string | null; org_id?: string | null; facilitator_user_id?: string | null; circle_id?: string | null };
+
+/** Keys only. Never right/total or answer bodies. UI counts Object.keys. */
+function scrubCheckpoints(raw: unknown): string[] {
+  if (!raw || typeof raw !== "object") return [];
+  return Object.keys(raw as Record<string, unknown>);
+}
+
+async function reviewerScope(
+  svc: ReturnType<typeof createClient>,
+  reviewer: string,
+): Promise<{ allowed: boolean; isAdmin: boolean; userIds: string[] | null }> {
+  const { data: roles } = await svc.from("user_roles").select("role,org_id").eq("user_id", reviewer);
+  const rows = (roles ?? []) as RoleRow[];
+  const isAdmin = rows.some((r) => r.role === "admin");
+  const isOrg = rows.some((r) => r.role === "org_admin");
+  const isLeader = rows.some((r) => r.role === "circle_leader");
+  if (!isAdmin && !isOrg && !isLeader) return { allowed: false, isAdmin: false, userIds: [] };
+  if (isAdmin) return { allowed: true, isAdmin: true, userIds: null };
+
+  const orgIds = new Set(rows.filter((r) => r.role === "org_admin" && r.org_id).map((r) => r.org_id as string));
+  const { data: claims } = await svc.from("participant_claims")
+    .select("user_id,org_id,circle_id,facilitator_user_id")
+    .eq("status", "active");
+  const mine = ((claims ?? []) as ClaimRow[]).filter((c) => {
+    if (isLeader && c.facilitator_user_id === reviewer) return true;
+    if (isOrg && c.org_id && orgIds.has(c.org_id)) return true;
+    return false;
+  });
+  const userIds = [...new Set(mine.map((c) => c.user_id).filter((id): id is string => !!id))];
+  return { allowed: true, isAdmin: false, userIds };
+}
+
+function inScope(scope: { isAdmin: boolean; userIds: string[] | null }, userId: string): boolean {
+  if (scope.isAdmin) return true;
+  return !!(scope.userIds && scope.userIds.includes(userId));
+}
+
 serve(async (req) => {
   const pf = preflight(req); if (pf) return pf;
   const auth = req.headers.get("Authorization") ?? "";
@@ -41,9 +84,8 @@ serve(async (req) => {
   if (!reviewer) return json(req, { error: "not signed in" }, 401);
 
   const svc = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-  const { data: roles } = await svc.from("user_roles").select("role").eq("user_id", reviewer);
-  const allowed = (roles ?? []).some((r: { role: string }) => ["circle_leader", "org_admin", "admin"].includes(r.role));
-  if (!allowed) return json(req, { error: "reviewer role required" }, 403);
+  const scope = await reviewerScope(svc, reviewer);
+  if (!scope.allowed) return json(req, { error: "reviewer role required" }, 403);
 
   let body: { user_id?: string; course_id?: string; action?: string; note?: string; contact_hours?: number; attestation_method?: string; integrity_cleared?: boolean };
   try { body = await req.json(); } catch { return json(req, { error: "malformed body" }, 400); }
@@ -54,14 +96,31 @@ serve(async (req) => {
   // 72-hour absence list. Reads run with the service role because RLS scopes
   // participants to their own rows; the role gate above is the authority here.
   if (action === "queue") {
-    const { data: subs } = await svc.from("certificate_awards").select("user_id,course_id,status,record_integrity,recipient_display,snapshot_independent_seconds,snapshot_checkpoints,snapshot_final_answers_count,snapshot_at").eq("status", "submitted");
-    const { data: flags } = await svc.from("integrity_flags").select("user_id,course_id,reason");
+    const scopedIds = scope.userIds;
+    if (!scope.isAdmin && (!scopedIds || scopedIds.length === 0)) {
+      return json(req, { data: { submitted: [], flags: [], absent: [] } });
+    }
+    let awardsQ = svc.from("certificate_awards").select("user_id,course_id,status,record_integrity,recipient_display,snapshot_independent_seconds,snapshot_checkpoints,snapshot_final_answers_count,snapshot_at").eq("status", "submitted");
+    let flagsQ = svc.from("integrity_flags").select("user_id,course_id,reason");
+    let enrsQ = svc.from("certificate_enrollments").select("user_id,course_id,state,last_activity_at").in("state", ["enrolled", "in_progress"]);
+    if (scopedIds) {
+      awardsQ = awardsQ.in("user_id", scopedIds);
+      flagsQ = flagsQ.in("user_id", scopedIds);
+      enrsQ = enrsQ.in("user_id", scopedIds);
+    }
+    const { data: subs } = await awardsQ;
+    const { data: flags } = await flagsQ;
     const cutoff = new Date(Date.now() - 72 * 3600_000).toISOString();
-    const { data: enrs } = await svc.from("certificate_enrollments").select("user_id,course_id,state,last_activity_at").in("state", ["enrolled", "in_progress"]);
+    const { data: enrs } = await enrsQ;
     const absent = (enrs ?? []).filter((e: { last_activity_at?: string }) => !e.last_activity_at || e.last_activity_at < cutoff);
-    return json(req, { data: { submitted: subs ?? [], flags: flags ?? [], absent } });
+    const submitted = (subs ?? []).map((s: Record<string, unknown>) => ({
+      ...s,
+      snapshot_checkpoints: scrubCheckpoints(s.snapshot_checkpoints),
+    }));
+    return json(req, { data: { submitted, flags: flags ?? [], absent } });
   }
   if (!user_id || !course_id || !action) return json(req, { error: "bad request" }, 400);
+  if (!inScope(scope, user_id)) return json(req, { error: "not your roster" }, 403);
 
   const { data: cur } = await svc.from("certificate_awards").select("*").eq("user_id", user_id).eq("course_id", course_id).maybeSingle();
   if (!cur) return json(req, { error: "no award" }, 404);

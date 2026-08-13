@@ -4,7 +4,7 @@ This repository ships a live platform. The process below is what keeps a push sa
 
 ## The rules
 
-1. Edit sources, never generated HTML. Pages come from `build_pages.py` and `build_dashboards.py`. CI rejects drift.
+1. Edit sources, never generated HTML. Pages come from `build_pages.py`, `build_dashboards.py`, and `build_short_courses.py`. CI rejects drift.
 2. Never touch `assets/js/config.js`. It holds the live public keys. If keys are rotated deliberately, update the pinned md5 in `.github/workflows/ci.yml` in the same PR and say why.
 3. Every database change is a new file in `supabase/migrations/` (see the README there). No dashboard-only SQL after the baseline.
 4. Money, secrets, approvals: server-side only (edge functions). The browser never computes a price or holds a token.
@@ -13,7 +13,7 @@ This repository ships a live platform. The process below is what keeps a push sa
 ## Local loop
 
 ```bash
-python3 build_pages.py && python3 build_dashboards.py     # rebuild
+python3 build_pages.py && python3 build_dashboards.py && python3 build_short_courses.py     # rebuild
 for f in $(find assets/js -name '*.js'); do node --check "$f"; done
 pip install -r requirements-dev.txt && python3 -m playwright install chromium   # once
 python3 -m pytest tests/e2e -q                             # smoke tests
