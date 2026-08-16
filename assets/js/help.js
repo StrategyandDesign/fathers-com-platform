@@ -62,7 +62,7 @@
   if (rh) {
     FIRST['returning-home.html'] = { s: 'Your trainings are open. Pick one and watch.', a: 'Start the trainings', h: 'rh-desk.html' };
     FIRST['rh-desk.html'] = { s: 'Start the training your report named. The other two stay open.', a: 'Start here', h: '.rh-film.is-start, .rh-film' };
-    FIRST['rh-home.html'] = { s: 'This is your home. The report, the trainings, and the work you have written.', a: 'Open a training', h: '.rh-home-row' };
+    FIRST['rh-home.html'] = { s: 'This is your home. The report, the next session, and the work you have written.', a: 'Continue', h: '.rh-home-cont-go, .rh-home-row' };
     FIRST['profile.html'] = { s: 'This takes eight minutes. Then you know where you stand. Nobody is grading you.', a: 'Begin', h: '#ks-rh-begin' };
     FIRST['report.html'] = { s: 'This is where you stand. Start the training it named.', a: 'Start the training', h: '.btn-yellow, .rp-btn-yellow' };
     FIRST['login.html'] = { s: 'Sign in to keep your trainings and your report with you.', a: 'Sign in', h: '#authEmail' };

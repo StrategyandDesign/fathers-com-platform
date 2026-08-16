@@ -235,13 +235,6 @@
           '<span class="rh-film-go">'+(start?'Start':'Watch')+'</span></a>';
       }).join('');
       paintRhDeskCopy(rec);
-      var row = root.parentNode;
-      if (row && !row.querySelector('.rh-desk-cert')){
-        var cert = document.createElement('p');
-        cert.className = 'rh-desk-cert';
-        cert.textContent = 'A certificate needs a claimed seat later.';
-        root.insertAdjacentElement('afterend', cert);
-      }
       return;
     }
     root.innerHTML='Your trainings, free: '+list.map(function(c,i){

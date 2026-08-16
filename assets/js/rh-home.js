@@ -1,5 +1,6 @@
-/* Returning Home homebase. One room after login: his name, the report,
-   the three trainings with Session N of N, and the writings. */
+/* Returning Home homebase. After login this is the room: his name, the
+   report glance, one Continue, the other trainings behind a disclose,
+   and the writings. Assessment never gates the trainings. */
 (function(){
   var root = document.getElementById('rhHome');
   if(!root) return;
@@ -9,15 +10,29 @@
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
-  function firstName(){
-    var s = window.FC && FC.session;
-    var u = s && s.user;
-    var meta = u && u.user_metadata;
-    var n = (meta && (meta.full_name || meta.name)) || (u && u.email) || '';
-    n = String(n).trim();
+  function humanizeHandle(raw){
+    var token = String(raw||'').split(/[._+\-]/)[0] || '';
+    if(!token) return '';
+    return token.charAt(0).toUpperCase() + token.slice(1);
+  }
+  function firstNameFrom(raw){
+    var n = String(raw||'').trim();
     if(!n) return '';
-    if(n.indexOf('@')>=0) return n.split('@')[0];
-    return n.split(/\s+/)[0];
+    if(n.indexOf('@')>=0) return humanizeHandle(n.split('@')[0]);
+    var first = n.split(/\s+/)[0];
+    if(!/\s/.test(n) && first === first.toLowerCase() && first.length >= 8 && !/[._-]/.test(first)){
+      return humanizeHandle(first);
+    }
+    if(/[._-]/.test(first) && first === first.toLowerCase()) return humanizeHandle(first);
+    return first.charAt(0).toUpperCase() + first.slice(1);
+  }
+  function firstName(){
+    return firstNameFrom(profileName) || firstNameFrom((function(){
+      var s = window.FC && FC.session;
+      var u = s && s.user;
+      var meta = u && u.user_metadata;
+      return (meta && (meta.full_name || meta.name)) || (u && u.email) || '';
+    })());
   }
   function fmt(iso){
     try { return new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric'}); }
@@ -59,9 +74,12 @@
     var pack = packFor(slug);
     return (pack && pack.title) || slug;
   }
-
   var serverBySlug = {};
   var serverWritings = [];
+  var profileName = '';
+  var loadedResult = undefined;
+  var loadedState = null;
+  var reportPaintedFor = null;
 
   function mergeServer(rows){
     (rows||[]).forEach(function(row){
@@ -122,53 +140,170 @@
     return out;
   }
 
-  function paint(){
-    var name = firstName();
-    var signed = !!(window.FC && FC.uid && FC.uid());
-    var rec = (window.FCPath && FCPath.hasReport && FCPath.hasReport() && FCPath.courseForFocus)
-      ? FCPath.courseForFocus(FCPath.focusKey && FCPath.focusKey())
-      : null;
-    var hasReport = !!(window.FCPath && FCPath.hasReport && FCPath.hasReport());
-
-    var h1 = name ? ('Welcome back, '+name+'.') : 'Welcome back.';
-    document.getElementById('rhHomeH').textContent = h1;
-
-    var report = document.getElementById('rhHomeReport');
-    if(hasReport && rec){
-      report.innerHTML =
-        '<p class="rh-home-k">Your report</p>'+
-        '<p class="rh-home-copy">Your report named '+esc(rec.title)+'. That is the next training.</p>'+
-        '<p class="rh-home-links"><a href="report.html">Read the report</a> · <a href="'+esc(playerHref(rec.slug))+'">Start '+esc(rec.title)+'</a></p>';
-    } else {
-      report.innerHTML =
-        '<p class="rh-home-k">Your report</p>'+
-        '<p class="rh-home-copy">The Profile is a short set of honest questions. You get a private report of where you stand as a father. It takes eight minutes. Nobody is grading you.</p>'+
-        '<p class="rh-home-links"><a href="profile.html?start=quick&amp;path=rh">Take the Profile</a></p>';
+  function lastLineFor(slug){
+    var writes = writingsList();
+    var i, w, line;
+    for(i=0;i<writes.length;i++){
+      if(slug && writes[i].slug !== slug) continue;
+      w = writes[i];
+      line = w.apply || w.meaning || w.learned || w.share || '';
+      if(line) return line;
     }
+    if(slug){
+      for(i=0;i<writes.length;i++){
+        w = writes[i];
+        line = w.apply || w.meaning || w.learned || w.share || '';
+        if(line) return line;
+      }
+    }
+    return '';
+  }
 
-    var train = document.getElementById('rhHomeTrainings');
-    var list = courses().slice();
-    if(rec){
-      list.sort(function(a,b){
-        if(a.slug===rec.slug) return -1;
-        if(b.slug===rec.slug) return 1;
-        return 0;
+  function namedCourse(){
+    if(loadedResult && loadedResult.gap_scale && window.FCPath && FCPath.courseForFocus){
+      return FCPath.courseForFocus(loadedResult.gap_scale);
+    }
+    if(window.FCPath && FCPath.hasReport && FCPath.hasReport() && FCPath.courseForFocus){
+      return FCPath.courseForFocus(FCPath.focusKey && FCPath.focusKey());
+    }
+    return null;
+  }
+
+  function lastTouchedSlug(rec){
+    var writes = writingsList();
+    if(writes.length) return writes[0].slug;
+    var best = null, bestN = 0;
+    courses().forEach(function(c){
+      var p = progressFor(c.slug);
+      if(p.done > bestN){ bestN = p.done; best = c.slug; }
+    });
+    if(best) return best;
+    return rec ? rec.slug : null;
+  }
+
+  function continueTarget(){
+    var rec = namedCourse();
+    var slug = lastTouchedSlug(rec);
+    if(!slug && rec) slug = rec.slug;
+    if(!slug) return null;
+    var list = courses();
+    var course = null;
+    for(var i=0;i<list.length;i++){ if(list[i].slug===slug) course = list[i]; }
+    if(!course && rec) course = rec;
+    if(!course) return null;
+    return { course: course, p: progressFor(course.slug), named: !!(rec && rec.slug===course.slug) };
+  }
+
+  function clipLine(s){
+    s = String(s||'').replace(/\s+/g,' ').trim();
+    if(s.length > 160) s = s.slice(0,157).replace(/\s+\S*$/,'')+'…';
+    return s;
+  }
+
+  function trainingRow(c, opts){
+    opts = opts || {};
+    var p = progressFor(c.slug);
+    var quiet = !!opts.quiet;
+    var label = '';
+    if(!quiet){
+      if(p.total && p.done>=p.total) label = 'Finished. '+p.total+' of '+p.total;
+      else if(p.total) label = 'Session '+Math.min(p.done+1, p.total)+' of '+p.total;
+      else label = c.span || '';
+    } else if(p.done && p.total){
+      label = 'Session '+Math.min(p.done+1, p.total)+' of '+p.total;
+    }
+    var go = p.done ? 'Resume' : 'Start';
+    return '<a class="rh-home-row'+(quiet?' is-quiet':'')+'" href="'+esc(playerHref(c.slug))+'">'+
+      '<span><span class="rh-home-row-t">'+esc(c.title)+'</span>'+
+      (label?'<span class="rh-home-row-m">'+esc(label)+'</span>':'')+'</span>'+
+      '<span class="rh-home-go">'+esc(go)+'</span></a>';
+  }
+
+  function paintReport(){
+    var report = document.getElementById('rhHomeReport');
+    if(!report) return;
+    if(loadedResult === undefined){
+      if(reportPaintedFor !== 'wait'){
+        reportPaintedFor = 'wait';
+        report.innerHTML = '<p class="rh-home-k">Your report</p><p class="rh-home-copy">One moment.</p>';
+      }
+      return;
+    }
+    if(!loadedResult){
+      if(reportPaintedFor !== 'empty'){
+        reportPaintedFor = 'empty';
+        report.innerHTML =
+          '<p class="rh-home-k">Your report</p>'+
+          '<p class="rh-home-copy">The Profile is a short set of honest questions. You get a private report of where you stand as a father. It takes eight minutes. Nobody is grading you.</p>'+
+          '<p class="rh-home-links"><a href="profile.html?start=quick&amp;path=rh">Take the Profile</a></p>';
+      }
+      return;
+    }
+    var key = String(loadedResult.completed_at||'')+'|'+String(loadedResult.gap_scale||'')+'|'+String(loadedResult.overall_pct||'');
+    if(reportPaintedFor === key) return;
+    reportPaintedFor = key;
+    report.innerHTML = '<p class="rh-home-k">Your report</p><div id="rhReport"></div>';
+    var host = document.getElementById('rhReport');
+    if(host && window.FCReport && FCReport.render){
+      FCReport.render(host, {
+        result: loadedResult,
+        state: loadedState || 'live',
+        collapse: true,
+        embed: true
       });
     }
-    train.innerHTML = '<p class="rh-home-k">Your trainings</p>'+list.map(function(c){
-      var p = progressFor(c.slug);
-      var start = !!(rec && c.slug===rec.slug);
-      var label = p.total ? ('Session '+Math.min(p.done+1, p.total)+' of '+p.total) : (c.span||'');
-      if(p.done>=p.total && p.total) label = 'Finished. '+p.total+' of '+p.total;
-      else if(p.done) label = 'Session '+(p.done+1)+' of '+p.total;
-      var go = p.done ? 'Resume' : (start ? 'Start here' : 'Start');
-      return '<a class="rh-home-row'+(start?' is-start':'')+'" href="'+esc(playerHref(c.slug))+'">'+
-        '<span><span class="rh-home-row-t">'+esc(c.title)+'</span>'+
-        '<span class="rh-home-row-m">'+esc(label)+'</span></span>'+
-        '<span class="rh-home-go">'+esc(go)+'</span></a>';
-    }).join('');
+  }
 
+  function paintContinue(){
+    var box = document.getElementById('rhHomeContinue');
+    if(!box) return;
+    var target = continueTarget();
+    if(!target){ box.innerHTML = ''; return; }
+    var c = target.course;
+    var p = target.p;
+    var finished = !!(p.total && p.done>=p.total);
+    var sessionN = p.total ? Math.min(p.done+1, p.total) : 0;
+    var label = finished
+      ? ('Finished. '+p.total+' of '+p.total)
+      : (p.total ? ('Session '+sessionN+' of '+p.total) : (c.span||''));
+    var go = finished ? 'Open again' : (p.done ? 'Resume' : 'Start here');
+    var pct = p.total ? Math.round((p.done/p.total)*100) : 0;
+    if(!finished && p.total) pct = Math.max(pct, Math.round((Math.min(p.done, p.total-1)/p.total)*100));
+    var wrote = clipLine(lastLineFor(c.slug));
+    box.innerHTML =
+      '<p class="rh-home-k">Continue</p>'+
+      '<div class="rh-home-cont">'+
+        '<p class="rh-home-cont-t">'+esc(c.title)+'</p>'+
+        '<p class="rh-home-cont-m">'+esc(label)+'</p>'+
+        (p.total ? '<div class="rh-home-bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+p.total+'" aria-valuenow="'+p.done+'"><i style="width:'+pct+'%"></i></div>' : '')+
+        (wrote ? '<p class="rh-home-wrote">You wrote: '+esc(wrote)+'</p>' : '')+
+        '<a class="rh-home-go rh-home-cont-go" href="'+esc(playerHref(c.slug))+'">'+esc(go)+'</a>'+
+      '</div>';
+  }
+
+  function paintTrainings(){
+    var train = document.getElementById('rhHomeTrainings');
+    if(!train) return;
+    var cont = continueTarget();
+    var hideSlug = cont ? cont.course.slug : null;
+    var others = courses().filter(function(c){ return !hideSlug || c.slug !== hideSlug; });
+    if(!others.length){ train.innerHTML = ''; return; }
+    if(cont){
+      train.innerHTML =
+        '<details class="rh-home-more">'+
+          '<summary>Your other trainings</summary>'+
+          others.map(function(c){ return trainingRow(c, { quiet:true }); }).join('')+
+        '</details>';
+    } else {
+      train.innerHTML = '<p class="rh-home-k">Your trainings</p>'+
+        others.map(function(c){ return trainingRow(c, { quiet:true }); }).join('');
+    }
+  }
+
+  function paintWork(){
     var work = document.getElementById('rhHomeWork');
+    if(!work) return;
+    var signed = !!(window.FC && FC.uid && FC.uid());
     var writes = writingsList();
     var keep = signed
       ? 'Saved to your account and this device.'
@@ -189,32 +324,83 @@
         '</article>';
       }).join('')+'<p class="rh-home-keep">'+esc(keep)+'</p>';
     }
+  }
 
+  function paintGuest(){
     var guest = document.getElementById('rhHomeGuest');
-    if(guest){
-      if(signed) guest.hidden = true;
-      else {
-        guest.hidden = false;
-        guest.innerHTML = 'An account keeps this home. <a href="login.html?path=rh&amp;next=rh-home.html">Log in</a> · <a href="login.html?path=rh&amp;mode=signup&amp;next=rh-home.html">Create account</a>';
-      }
+    if(!guest) return;
+    var signed = !!(window.FC && FC.uid && FC.uid());
+    if(signed) guest.hidden = true;
+    else {
+      guest.hidden = false;
+      guest.innerHTML = 'An account keeps this home. <a href="login.html?path=rh&amp;next=rh-home.html">Log in</a> · <a href="login.html?path=rh&amp;mode=signup&amp;next=rh-home.html">Create account</a>';
     }
+  }
+
+  function paint(){
+    var name = firstName();
+    var h1 = name ? ('Welcome back, '+name+'.') : 'Welcome back.';
+    var h = document.getElementById('rhHomeH');
+    if(h) h.textContent = h1;
+    paintReport();
+    paintContinue();
+    paintTrainings();
+    paintWork();
+    paintGuest();
+  }
+
+  function acceptResult(result, state){
+    loadedResult = result || null;
+    loadedState = state || null;
+    if(result && result.gap_scale && window.FCPath && FCPath.markReport){
+      FCPath.markReport(result.gap_scale);
+    }
+    paint();
+  }
+
+  function loadProfileName(then){
+    var s = window.FC && FC.session;
+    var u = s && s.user;
+    var meta = u && u.user_metadata;
+    profileName = (meta && (meta.full_name || meta.name)) || '';
+    var uid = window.FC && FC.uid && FC.uid();
+    if(!uid || !FC.sb){ then(); return; }
+    FC.sb.from('profiles').select('full_name,name').eq('id', uid).maybeSingle()
+      .then(function(r){
+        var row = r && r.data;
+        if(row && (row.full_name || row.name)) profileName = row.full_name || row.name;
+        then();
+      }, function(){ then(); });
   }
 
   function loadServerThenPaint(){
     paint();
-    if(!window.FC || !FC.ready) return;
-    FC.ready.then(function(){
-      paint();
-      var uid = FC.uid && FC.uid();
-      if(!uid || !FC.sb) return;
-      FC.sb.from('session_writings')
-        .select('course_slug,session_ord,session_title,learned,meaning,apply,share,saved_at,video_id')
-        .eq('user_id', uid)
-        .then(function(r){
-          if(r && r.data) mergeServer(r.data);
-          paint();
-        }, function(){ paint(); });
-    });
+    function afterAuth(){
+      loadProfileName(function(){
+        paint();
+        if(window.FCReport && FCReport.load){
+          FCReport.load(function(result, state){ acceptResult(result, state); });
+        } else {
+          acceptResult(null, null);
+        }
+        var uid = FC.uid && FC.uid();
+        if(!uid || !FC.sb) return;
+        FC.sb.from('session_writings')
+          .select('course_slug,session_ord,session_title,learned,meaning,apply,share,saved_at,video_id')
+          .eq('user_id', uid)
+          .then(function(r){
+            if(r && r.data) mergeServer(r.data);
+            paint();
+          }, function(){ paint(); });
+      });
+    }
+    if(window.FC && FC.ready){
+      FC.ready.then(afterAuth, afterAuth);
+    } else if(window.FCReport && FCReport.load){
+      FCReport.load(function(result, state){ acceptResult(result, state); });
+    } else {
+      acceptResult(null, null);
+    }
   }
 
   loadServerThenPaint();

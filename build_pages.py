@@ -12,7 +12,7 @@ OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 # changelog.html. Bump BOTH constants on every release, add a CHANGELOG entry
 # below, regenerate, and upload. The stamp is the answer to "what version is
 # live": read any page footer.
-PLATFORM_VERSION = "4.16.20"
+PLATFORM_VERSION = "4.16.21"
 VERSION_DATE = "2026-08-14"
 
 # v4.0 reposition flags (ADR-4: rollout is a data change, not a redesign).
@@ -174,6 +174,8 @@ PAGES = {}
 # Release notes rendered on changelog.html. Newest first. Public copy:
 # POSITIONING.md section 9 language rules apply.
 CHANGELOG = [
+    ("4.16.21", "2026-08-14",
+     "Returning Home after the Profile is a room. The report sits on the home, one training is Continue, and the others wait behind a disclose. A guest who writes is asked to keep the work. The desk drops the claimed-seat line."),
     ("4.16.20", "2026-08-14",
      "Returning Home no longer drops a light-dark switch on the header. Log in and Sign out stay visible."),
     ("4.16.19", "2026-08-14",
@@ -1193,7 +1195,7 @@ PAGES['account.html'] = dict(title='Your settings', desc='Your name, how we reac
 
 # ================================================== certificates.html (P10 screens 1-3)
 PAGE_SCRIPTS = {'index.html': ['vendor/anime.min.js', 'motion.js'],
-                'rh-home.html': ['course-demo-data.js', 'rh-home.js'],
+                'rh-home.html': ['course-demo-data.js', 'keystone-data.js', 'keystone-full.js', 'assessment-registry.js', 'plan-engine.js', 'keystone-report.js', 'rh-home.js'],
                 'certificates.html': ['vendor/anime.min.js', 'motion.js', 'course-catalog.js'],
                 'account.html': ['account-prefs.js'],
                 'plan.html': ['journey.js'],
@@ -1695,7 +1697,8 @@ PAGES['rh-home.html'] = dict(title='Your home', desc='Your Returning Home. The r
     <p class="rh-door-eye">Returning Home · Home</p>
     <h1 class="rh-home-h" id="rhHomeH">Welcome back.</h1>
     <p class="rh-home-lead">This is your room. The report, the trainings, and the work.</p>
-    <div class="rh-home-block" id="rhHomeReport"></div>
+    <div class="rh-home-block rh-home-report" id="rhHomeReport"></div>
+    <div class="rh-home-block" id="rhHomeContinue"></div>
     <div class="rh-home-block" id="rhHomeTrainings"></div>
     <div class="rh-home-block" id="rhHomeWork"></div>
     <p class="rh-home-guest" id="rhHomeGuest"></p>

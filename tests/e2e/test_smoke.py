@@ -492,7 +492,8 @@ def test_returning_home_path_opens_films(page, server):
         "Steadiness when the moments get loud.",
         "Improving your most important relationships.",
     ]
-    assert "A certificate needs a claimed seat later." in desk_body
+    assert "A certificate needs a claimed seat later." not in desk_body
+    assert "claimed seat" not in desk_body.lower()
     assert "Not a week" not in desk_body
     assert "Watch first. An account keeps your progress." in desk_body
     for el in page.query_selector_all(".rh-film-l"):
@@ -516,6 +517,9 @@ def test_rh_homebase_is_the_room(page, server):
     assert "Welcome back." in home
     assert "This is your room." in home
     assert "rh-home.js" in home
+    assert "keystone-report.js" in home
+    assert "id=\"rhHomeContinue\"" in home
+    assert "id=\"rhHomeReport\"" in home
     assert "next=rh-home.html" in home
     door = _fetch(server, "returning-home.html")
     assert "next=rh-home.html" in door
@@ -524,7 +528,7 @@ def test_rh_homebase_is_the_room(page, server):
     assert "[['Home','rh-home.html']" in app
     page.add_init_script("localStorage.setItem('fc_path','returning-home');")
     page.goto(f"{server}/rh-home.html", wait_until="load")
-    page.wait_for_timeout(500)
+    page.wait_for_function("() => document.body.innerText.includes('Take the Profile')", timeout=8000)
     body = page.inner_text("body")
     assert "Welcome back." in body
     assert "Your trainings" in body
@@ -532,8 +536,70 @@ def test_rh_homebase_is_the_room(page, server):
     assert "Steady Under Pressure" in body
     assert "Coming Home Present" in body
     assert "Same Team" not in body
+    assert "Your report named" not in body
     assert "Finish a session. The four answers live here." in body
-    assert page.query_selector_all("a.rh-home-row")
+    assert "Take the Profile" in body
+    assert page.query_selector(".rh-home-cont-go") is None
+    rows = page.query_selector_all("a.rh-home-row")
+    assert len(rows) == 3
+    assert page.query_selector_all("a.rh-home-row.is-start") == []
+    assert _no_app_errors(page)
+
+def test_rh_homebase_shows_report_glance(page, server):
+    page.add_init_script("""
+      localStorage.setItem('fc_path','returning-home');
+      localStorage.setItem('fc_rh_profile_done','1');
+      localStorage.setItem('fc_rh_next_focus','consistency');
+      localStorage.setItem('fc_pending_result', JSON.stringify({
+        scored: {
+          overall: 58,
+          scales: {
+            involvement: {label:'Involvement', pct:81, band:{label:'Strong'}, section:'dimensions'},
+            consistency: {label:'Consistency', pct:34, band:{label:'Building'}, section:'dimensions'},
+            awareness: {label:'Awareness', pct:55, band:{label:'Developing'}, section:'dimensions'},
+            nurturance: {label:'Nurturance', pct:60, band:{label:'Solid'}, section:'dimensions'}
+          },
+          gap: 'consistency',
+          strength: 'involvement'
+        },
+        at: Date.now(),
+        assessment_slug: 'keystone-father-profile',
+        completion_tier: 'quick'
+      }));
+      localStorage.setItem('fc-cw-preview-anger-writings', JSON.stringify({
+        'demo-anger-1': {
+          learned: 'The surge is a signal.',
+          meaning: 'I can catch it.',
+          apply: 'I will name the heat and step away.',
+          share: '',
+          savedAt: new Date().toISOString()
+        }
+      }));
+    """)
+    page.goto(f"{server}/rh-home.html", wait_until="load")
+    page.wait_for_selector(".rp-gcard", timeout=8000)
+    body = page.inner_text("body")
+    assert "Your report named" not in body
+    assert "Your strongest ground" in body
+    assert "Your standing" in body
+    assert "Your next move" in body
+    assert "Involvement" in body
+    assert "Consistency" in body
+    assert "Open the full report" in body
+    assert "Start Coming Home Present" not in body
+    go = page.query_selector("#rhHomeContinue .rh-home-cont-go")
+    assert go is not None
+    assert go.inner_text().strip() in ("Resume", "Start here")
+    assert "Steady Under Pressure" in page.inner_text("#rhHomeContinue")
+    assert "Session " in page.inner_text("#rhHomeContinue")
+    assert page.query_selector("#rhHomeContinue .rh-home-bar") is not None
+    assert "You wrote: I will name the heat and step away." in body
+    more = page.query_selector("details.rh-home-more")
+    assert more is not None
+    assert "Your other trainings" in (more.inner_text() or "")
+    assert page.query_selector_all("#rhHomeContinue .rh-home-cont-go") == [go]
+    assert page.query_selector_all("a.rh-home-row.is-start") == []
+    assert "Same Team" not in body
     assert _no_app_errors(page)
 
 def test_rh_desk_after_report_names_training(page, server):
@@ -624,4 +690,8 @@ def test_session_writing_saves_on_device(page, server):
     page.wait_for_timeout(400)
     stored = page.evaluate("() => localStorage.getItem('fc-cw-preview-fundamentals-writings')")
     assert stored and "Presence is the work." in stored
-    assert "An account keeps it." in page.inner_text("body") or "Your writing" in page.inner_text("body").lower() or "First Secret" in page.inner_text("body")
+    body = page.inner_text("body")
+    assert "This stays with you." in body
+    assert "Create account" in body
+    assert "login.html?path=rh" in (page.content() or "")
+    assert page.query_selector("#cw-w-keep") is not None
