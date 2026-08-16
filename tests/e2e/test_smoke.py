@@ -315,7 +315,8 @@ def test_returning_home_is_one_door(page, server):
     html = _fetch(server, "returning-home.html")
     assert "Show up for your kids." in html
     assert "Present from here" not in html
-    assert "They are waiting for you." in html
+    assert "Build the kind of relationship you want with your child." in html
+    assert "They are waiting for you." not in html
     assert "Walk in" not in html
     assert "Not a week" not in html
     assert "In production" not in html
@@ -333,15 +334,17 @@ def test_returning_home_is_one_door(page, server):
     assert "Start Profile" not in html
     assert "Twelve weeks of small moves" not in html
     assert "The Profile is a short set of honest questions." in html
-    assert "where you stand as a father" in html
+    assert "private starting point" in html
+    assert "where you stand as a father" not in html
     assert "It takes eight minutes." in html
-    assert "Nobody is grading you." in html
+    assert "There are no right answers." in html
+    assert "Nobody is grading you." not in html
     assert "Take the Profile" in html
     assert "rh-door-profile" in html
-    assert "Where you stand" in html
+    assert "Your starting point" in html
+    assert "Where you stand" not in html
     assert "The Profile takes eight minutes." not in html
     assert "Give your kids eight minutes." not in html
-    assert "private report" in html
     assert "Start the trainings" in html
     assert "Watch the films" not in html
     assert "Your trainings are open." in html
@@ -349,16 +352,17 @@ def test_returning_home_is_one_door(page, server):
     page.wait_for_timeout(400)
     body = page.inner_text("body")
     assert "Show up for your kids." in body
-    assert "They are waiting for you." in body
+    assert "Build the kind of relationship you want with your child." in body
+    assert "They are waiting for you." not in body
     assert "Walk in" not in body
     assert "A call counts" not in body
     assert "Same Team" not in body
     assert "all four" not in body.lower()
     assert "The Profile is a short set of honest questions." in body
-    assert "where you stand as a father" in body
+    assert "private starting point" in body
+    assert "where you stand as a father" not in body
     assert "It takes eight minutes." in body
     assert "Give your kids eight minutes." not in body
-    assert "private report" in body
     assert page.query_selector("a.rh-door-profile-go") is not None
     assert page.query_selector("aside.rh-door-profile a.btn-yellow") is None
     names = [a.inner_text() for a in page.query_selector_all("[data-rh-courses] a")]
@@ -382,10 +386,12 @@ def test_rh_profile_opens_with_a_beat(page, server):
     page.goto(f"{server}/profile.html?start=quick&path=rh", wait_until="load")
     page.wait_for_timeout(500)
     body = page.inner_text("body")
-    assert "This takes eight minutes. Then you know where you stand." in body
+    assert "This takes eight minutes. Then you have a starting point." in body
+    assert "This takes eight minutes. Then you know where you stand." not in body
     assert "Give your kids eight minutes." not in body
-    assert "private report of where you stand" in body
-    assert "Nobody is grading you." in body
+    assert "private starting point" in body
+    assert "There are no right answers." in body
+    assert "Nobody is grading you." not in body
     assert "An account keeps the report, the trainings, and the work." in body
     assert "Start the questions now" in body
     assert "Walk in" not in body
@@ -398,14 +404,16 @@ def test_rh_profile_opens_with_a_beat(page, server):
     assert page.query_selector(".ks-prompt") is None
     begin.click()
     page.wait_for_timeout(500)
+    asked = page.inner_text("body")
     assert page.query_selector(".ks-prompt") is not None
-    assert "This takes eight minutes. Then you know where you stand." not in page.inner_text("body")
+    assert "This takes eight minutes. Then you have a starting point." not in asked
+    assert "Answer for how it is now." in asked
     assert _no_app_errors(page)
 
 def test_returning_home_path_opens_films(page, server):
     ui = _fetch(server, "assets/js/keystone-ui.js")
     assert "Start \"+esc(rec.title)" in ui
-    assert "Here is where you stand. Start " in ui
+    assert "Here is your starting point. Start " in ui
     assert "Saved on this device. An account keeps it." in ui
     assert "Your home" in ui
     assert "Open your trainings" not in ui
@@ -434,7 +442,7 @@ def test_returning_home_path_opens_films(page, server):
     assert "Start the training your report named. The other two stay open." in help
     assert "Pick a training. Watch. No order." not in help
     assert "Open your films" not in help
-    assert "This takes eight minutes. Then you know where you stand." in help
+    assert "This takes eight minutes. Then you have a starting point." in help
     assert "Same Team" not in help
     assert "all four" not in help.lower()
     assert "four courses" not in help
@@ -451,7 +459,7 @@ def test_returning_home_path_opens_films(page, server):
     assert "Want a baseline" not in desk
     assert "all four" not in desk.lower()
     assert "Same Team" not in desk
-    assert "See where you stand. The Profile takes eight minutes. Nobody is grading you." in desk
+    assert "See your starting point. The Profile takes eight minutes. Answer honestly so this can fit you." in desk
     assert "rh-ticker" in desk
     assert "Watch first. An account keeps your progress." in desk
     assert "rh-door-login" in desk
@@ -476,7 +484,8 @@ def test_returning_home_path_opens_films(page, server):
     assert "Pick a training and watch." in desk_body
     assert "Same Team" not in desk_body
     assert "all four" not in desk_body.lower()
-    assert "See where you stand" in desk_body
+    assert "See your starting point" in desk_body
+    assert "See where you stand" not in desk_body
     cards = [a.query_selector(".rh-film-t").inner_text() for a in page.query_selector_all("a.rh-film")]
     assert cards == ["Fathering Fundamentals", "Steady Under Pressure", "Coming Home Present"]
     assert page.query_selector("a.rh-film .rh-film-go") is not None
@@ -581,8 +590,11 @@ def test_rh_homebase_shows_report_glance(page, server):
     body = page.inner_text("body")
     assert "Your report named" not in body
     assert "Your strongest ground" in body
-    assert "Your standing" in body
-    assert "Your next move" in body
+    assert "Your starting point" in body
+    assert "What to strengthen" in body
+    assert "Your standing" not in body
+    assert "56 questions" in body
+    assert "128 questions" not in body
     assert "Involvement" in body
     assert "Consistency" in body
     assert "Open the full report" in body
@@ -602,6 +614,34 @@ def test_rh_homebase_shows_report_glance(page, server):
     assert "Same Team" not in body
     assert _no_app_errors(page)
 
+def test_rh_quick_report_counts_answered_questions(page, server):
+    page.add_init_script("""
+      localStorage.setItem('fc_path','returning-home');
+      localStorage.setItem('fc_rh_profile_done','1');
+      localStorage.setItem('fc_pending_result', JSON.stringify({
+        scored: {
+          overall: 58,
+          scales: {
+            involvement: {label:'Involvement', pct:81, band:{label:'Strong'}, section:'dimensions'},
+            consistency: {label:'Consistency', pct:34, band:{label:'Building'}, section:'dimensions'}
+          },
+          gap: 'consistency',
+          strength: 'involvement'
+        },
+        at: Date.now(),
+        assessment_slug: 'keystone-father-profile',
+        completion_tier: 'quick'
+      }));
+    """)
+    page.goto(f"{server}/report.html", wait_until="load")
+    page.wait_for_function("() => document.body.innerText.includes('questions you answered')", timeout=8000)
+    body = page.inner_text("body")
+    assert "56" in body
+    assert "questions you answered" in body
+    assert "128 questions" not in body
+    assert "Fathering Practices" not in body
+    assert _no_app_errors(page)
+
 def test_rh_desk_after_report_names_training(page, server):
     page.add_init_script("""
       localStorage.setItem('fc_path','returning-home');
@@ -613,6 +653,7 @@ def test_rh_desk_after_report_names_training(page, server):
     body = page.inner_text("body")
     assert page.query_selector(".rh-ticker") is None
     assert "See where you stand" not in body
+    assert "See your starting point" not in body
     assert "Eight minutes" not in body
     assert "No order" not in body
     assert "Start here." in body

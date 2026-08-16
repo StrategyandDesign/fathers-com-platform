@@ -234,7 +234,7 @@
         reportPaintedFor = 'empty';
         report.innerHTML =
           '<p class="rh-home-k">Your report</p>'+
-          '<p class="rh-home-copy">The Profile is a short set of honest questions. You get a private report of where you stand as a father. It takes eight minutes. Nobody is grading you.</p>'+
+          '<p class="rh-home-copy">The Profile is a short set of honest questions. You get a private starting point. It takes eight minutes. There are no right answers. Answer honestly so this can fit you.</p>'+
           '<p class="rh-home-links"><a href="profile.html?start=quick&amp;path=rh">Take the Profile</a></p>';
       }
       return;

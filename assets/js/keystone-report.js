@@ -79,7 +79,9 @@
         assessment_slug: p.assessment_slug || null,
         overall_pct: p.scored.overall, scale_scores: p.scored.scales,
         gap_scale: p.scored.gap, strength_scale: p.scored.strength,
-        completed_at: new Date(p.at||Date.now()).toISOString()
+        completed_at: new Date(p.at||Date.now()).toISOString(),
+        completion_tier: p.completion_tier || null,
+        answered_count: p.answered_count || (p.scored && p.scored.answered) || null
       };
     } catch(e){ return null; }
   }
@@ -481,11 +483,39 @@
       moves+'</div>';
   }
 
+  function scaleAnswered(sc){
+    if(!sc) return false;
+    if(typeof sc.n === 'number') return sc.n > 0;
+    if(sc.raw===0 && sc.pct===0 && sc.mean==null) return false;
+    return true;
+  }
+
+  function answeredQuestionN(result){
+    if(result && result.answered_count) return result.answered_count;
+    var sc = (result && result.scale_scores) || {};
+    var n = 0, hasN = false;
+    Object.keys(sc).forEach(function(k){
+      if(sc[k] && typeof sc[k].n === 'number'){ hasN = true; n += sc[k].n; }
+    });
+    if(hasN) return n;
+    if(result && result.completion_tier === 'quick' && ACTIVE){
+      var q = 0;
+      (ACTIVE.sections||[]).forEach(function(s){
+        if(s.key !== 'dimensions') return;
+        (s.scales||[]).forEach(function(x){ q += (x.items||[]).length; });
+      });
+      if(q) return q;
+    }
+    var itemN = 0;
+    if(ACTIVE && ACTIVE.sections){ ACTIVE.sections.forEach(function(s){ s.scales.forEach(function(x){ itemN += (x.items||[]).length; }); }); }
+    return itemN;
+  }
+
   function chapterHtml(sec, idx, result, brand){
     var meta=SEC[sec.key]||{cls:'',theme:'',pracA:''};
     // Instrument may override the practice call-out, which is father-worded by default.
     if(sec.key==='practices' && ACTIVE && ACTIVE.practice_callout){ meta = Object.assign({}, meta, {pracA: ACTIVE.practice_callout}); }
-    var scalesIn=sec.scales.filter(function(x){return (result.scale_scores||{})[x.key];});
+    var scalesIn=sec.scales.filter(function(x){return scaleAnswered((result.scale_scores||{})[x.key]);});
     if(!scalesIn.length) return '';
     var rows=scalesIn.map(function(x,i){return scaleRow(x,i===0,result);}).join('');
     // practical panel: dimensions references the gap's first move; others use their own line
@@ -658,12 +688,13 @@
         ? '<p class="rp-brandnote rp-noprint">Saved to your account.</p>'
         : '<p class="rp-brandnote rp-noprint" id="rpMsg"></p>';
 
+      var rhView = !!(window.FCPath && FCPath.isRH());
       var glance='<section id="rp-glance" class="rp-glance">'+
         '<article class="rp-gcard rp-gcard-str"><div class="rp-geyebrow">Your strongest ground</div>'+
           '<div class="rp-gbig">'+esc(strength?strength.label:'You showed up')+'</div><p class="rp-gline">'+esc(strCopy.s||'')+'</p></article>'+
-        '<article class="rp-gcard rp-gcard-stand"><div class="rp-geyebrow">Your standing</div>'+
+        '<article class="rp-gcard rp-gcard-stand"><div class="rp-geyebrow">'+(rhView?'Your starting point':'Your standing')+'</div>'+
           '<div class="rp-gbig">'+esc(band.label)+'</div><p class="rp-gline">'+esc(BAND_LINE[band.label]||'')+'</p></article>'+
-        '<article class="rp-gcard rp-gcard-gap"><div class="rp-geyebrow">Your next move</div>'+
+        '<article class="rp-gcard rp-gcard-gap"><div class="rp-geyebrow">'+(rhView?'What to strengthen':'Your next move')+'</div>'+
           '<div class="rp-gbig">'+esc(gap?gap.label:'')+'</div><p class="rp-gline">'+esc(gapCopy.g||'')+'</p></article></section>';
 
       // An instrument without norms must not borrow another instrument's. When
@@ -676,8 +707,7 @@
       var normStat = normed ? (ACTIVE.norms_printable === true ? ACTIVE.norms_n.toLocaleString() : 'thousands') : null;
       var groupN  = (ACTIVE && ACTIVE.norm_group_noun) || 'fathers';
       var subjN   = (ACTIVE && ACTIVE.subject_noun) || 'your fathering';
-      var itemN   = 0;
-      if(ACTIVE && ACTIVE.sections){ ACTIVE.sections.forEach(function(s){ s.scales.forEach(function(x){ itemN += (x.items||[]).length; }); }); }
+      var itemN   = answeredQuestionN(result);
       var firstStat = normed
         ? '<div class="rp-stat"><div class="rp-stat-n">'+normStat+'</div><div class="rp-stat-l">'+esc(groupN)+' in your norm group</div></div>'
         : '<div class="rp-stat"><div class="rp-stat-n">'+itemN+'</div><div class="rp-stat-l">questions you answered</div></div>';
@@ -691,13 +721,14 @@
         stripSvg(result)+'</section>';
 
       var howto = normed
-        ? '<section class="rp-howto"><b>How to read this.</b> Each bar shows where you stand on that scale today. Standings are words, not grades: A starting point, Building, Developing, Solid, Strong. This is a self-report. It is a mirror, not a verdict, and every line in it can move.</section>'
+        ? '<section class="rp-howto"><b>How to read this.</b> Each bar shows where you placed yourself on that scale today. These are words, not grades: A starting point, Building, Developing, Solid, Strong. This is a self-report. It is a mirror, not a verdict, and every line in it can move.</section>'
         : '<section class="rp-howto"><b>How to read this.</b> Each bar shows where you placed yourself on that part of '+esc(subjN)+', not how you compare to other '+esc(groupN)+'. This profile does not yet have a norm group, so nothing here ranks you against anyone. Standings are words, not grades: A starting point, Building, Developing, Solid, Strong. This is a self-report. It is a mirror, not a verdict, and every line in it can move.</section>';
 
       var chapters = ACTIVE.sections.map(function(sec,idx){
         var html = chapterHtml(sec,idx,result,brand);
         if(!html) return '';
-        var n = sec.scales.filter(function(x){ return (result.scale_scores||{})[x.key]; }).length;
+        var n = sec.scales.filter(function(x){ return scaleAnswered((result.scale_scores||{})[x.key]); }).length;
+        if(!n) return '';
         return '<details class="rp-fold" id="rp-fold-'+esc(sec.key)+'">'+
           '<summary class="rp-fold-sum">'+
             '<span class="rp-fold-n">'+('0'+(idx+1)).slice(-2)+'</span>'+
@@ -710,7 +741,7 @@
       var next90='<section id="rp-next90" class="rp-next90">'+
         '<div class="rp-n90-eyebrow">This week</div>'+
         '<h2 class="rp-n90-title">'+esc(gap?gap.label:'Your plan')+', one move at a time.</h2>'+
-        '<p class="rp-n90-line">Your plan concentrates here. Not because you are failing, but because growth here changes the most.</p>'+
+        '<p class="rp-n90-line">Your plan concentrates here. Growth here changes the most.</p>'+
         '<div class="rp-moves rp-n90-moves">'+(((planMoves(result)||{}).actions || gapCopy.m || []).map(function(m,i){return '<div class="rp-move"><span class="rp-move-n">'+(i+1)+'</span>'+esc(m)+'</div>';}).join(''))+'</div>'+
         (EMBED ? '' : (
         /* The end of the report is the handoff. A man who has just read it needs
@@ -735,13 +766,13 @@
         '<div class="rp-colo-lines">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit, since 1990.<br>Your results are yours alone. We never share them.</div></footer>';
 
       if(COLLAPSE){
-        var nScales = Object.keys(result.scale_scores||{}).length;
+        var nAsked = answeredQuestionN(result);
         var brief = '<header class="rp-brief">'+
             '<div class="rp-brief-l">'+
               '<div class="rp-eyebrow">Your written report</div>'+
               '<h2 class="rp-brief-t">'+esc(title)+'</h2>'+
               '<p class="rp-brief-m">'+(state==='sample' ? 'A sample report' : 'Completed '+esc(fmtDate(result.completed_at)))+
-                ' &middot; '+nScales+' scales</p>'+
+                ' &middot; '+nAsked+' questions</p>'+
             '</div>'+
             '<div class="rp-brief-r rp-noprint">'+
               '<button type="button" class="rp-fold-all" id="rpFoldAll" aria-expanded="false">Expand all</button>'+

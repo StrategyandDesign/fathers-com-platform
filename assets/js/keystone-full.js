@@ -205,7 +205,7 @@ window.KS = window.KS || {};
           if(sc.reverse) v = (max+1) - v;
           raw += v; n++;
         });
-        if(n===0){ scaleScores[sc.key] = {raw:0, pct:0, band:bandFor(0), label:sc.label, section:sec.key}; return; }
+        if(n===0){ scaleScores[sc.key] = {raw:0, pct:0, n:0, band:bandFor(0), label:sc.label, section:sec.key}; return; }
         // scale to full item count if partially answered (keeps comparability to norm sum)
         var fullRaw = raw * (sc.items.length / n);
         var pct;
@@ -223,7 +223,7 @@ window.KS = window.KS || {};
           pct = Math.round(((fullRaw - lo) / (hi - lo)) * 100);
           pct = Math.max(0, Math.min(100, pct));
         }
-        scaleScores[sc.key] = {raw: Math.round(fullRaw), pct: pct, band: bandFor(pct), label: sc.label, section: sec.key, mean: sc.mean};
+        scaleScores[sc.key] = {raw: Math.round(fullRaw), pct: pct, n: n, band: bandFor(pct), label: sc.label, section: sec.key, mean: sc.mean};
         secPcts.push(pct); allPcts.push(pct);
       });
       sectionSums[sec.key] = secPcts.length ? Math.round(secPcts.reduce(function(a,b){return a+b;},0)/secPcts.length) : 0;
@@ -238,7 +238,9 @@ window.KS = window.KS || {};
       if(p>strV){strV=p;str=k;}
     });
     if(!str){ var ks=Object.keys(scaleScores); str=ks[0]; gap=ks[0]; }
-    return { overall: overall, sections: sectionSums, scales: scaleScores, gap: gap, strength: str };
+    var answered = 0;
+    Object.keys(scaleScores).forEach(function(k){ answered += (scaleScores[k].n || 0); });
+    return { overall: overall, sections: sectionSums, scales: scaleScores, gap: gap, strength: str, answered: answered };
   };
 
   KS.saveResult = function(scored, tier){

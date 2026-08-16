@@ -12,8 +12,8 @@ OG_IMAGE = SITE_URL + "/assets/img/og-image.jpg"
 # changelog.html. Bump BOTH constants on every release, add a CHANGELOG entry
 # below, regenerate, and upload. The stamp is the answer to "what version is
 # live": read any page footer.
-PLATFORM_VERSION = "4.16.21"
-VERSION_DATE = "2026-08-14"
+PLATFORM_VERSION = "4.16.22"
+VERSION_DATE = "2026-08-16"
 
 # v4.0 reposition flags (ADR-4: rollout is a data change, not a redesign).
 # SHOW_MILITARY dark-launches the entire veteran surface: pages are not generated,
@@ -174,6 +174,8 @@ PAGES = {}
 # Release notes rendered on changelog.html. Newest first. Public copy:
 # POSITIONING.md section 9 language rules apply.
 CHANGELOG = [
+    ("4.16.22", "2026-08-16",
+     "Returning Home drops verdict language. The Profile is a starting point, not a grade, and the report counts the questions he answered. The door asks him to build the relationship he wants. The items stay; Micah still owns whether they change."),
     ("4.16.21", "2026-08-14",
      "Returning Home after the Profile is a room. The report sits on the home, one training is Continue, and the others wait behind a disclose. A guest who writes is asked to keep the work. The desk drops the claimed-seat line."),
     ("4.16.20", "2026-08-14",
@@ -1628,13 +1630,13 @@ PAGES['returning-home.html'] = dict(title='Returning Home', desc='A private path
   <main class="rh-door-main">
     <p class="rh-door-eye">Returning Home · Huntsville, Arkansas</p>
     <h1 class="rh-door-h">Show up for your kids.</h1>
-    <p class="rh-door-lead">They are not waiting for a perfect man. They are waiting for you.</p>
+    <p class="rh-door-lead">Build the kind of relationship you want with your child.</p>
     <p class="rh-door-next">Your trainings are open.</p>
     <a class="btn btn-yellow rh-door-cta" href="rh-desk.html">Start the trainings</a>
     <p class="rh-door-resume">Already here? <a href="login.html?path=rh&amp;next=rh-home.html">Log in</a></p>
     <aside class="rh-door-profile">
-      <p class="rh-door-profile-label">Where you stand</p>
-      <p class="rh-door-profile-copy">The Profile is a short set of honest questions. You get a private report of where you stand as a father. It takes eight minutes. Nobody is grading you.</p>
+      <p class="rh-door-profile-label">Your starting point</p>
+      <p class="rh-door-profile-copy">The Profile is a short set of honest questions. You get a private starting point. It takes eight minutes. There are no right answers. Answer honestly so this can fit you.</p>
       <a class="rh-door-profile-go" href="profile.html?start=quick&amp;path=rh">Take the Profile</a>
     </aside>
     <p class="rh-door-courses" data-rh-courses="line"></p>
@@ -1661,7 +1663,7 @@ PAGES['rh-desk.html'] = dict(title='Your trainings', desc='Your trainings, open 
     <a class="rh-door-login" href="login.html?path=rh&amp;next=rh-home.html">Log in</a>
   </header>
   <div class="rh-ticker" role="region" aria-label="Profile">
-    <p class="rh-ticker-copy">See where you stand. The Profile takes eight minutes. Nobody is grading you.</p>
+    <p class="rh-ticker-copy">See your starting point. The Profile takes eight minutes. Answer honestly so this can fit you.</p>
     <a class="rh-ticker-go" href="profile.html?start=quick&amp;path=rh">Start</a>
   </div>
   <script>try{if(localStorage.getItem("fc_rh_profile_done")==="1"||localStorage.getItem("fc_pending_result")){var t=document.querySelector(".rh-ticker");if(t)t.remove();}}catch(e){}</script>

@@ -633,6 +633,7 @@ footer{border-top:1px solid var(--hairline);padding:72px 0 48px;margin-top:32px}
 .ks-seg.done{background:var(--pine-hi)}
 .ks-seg.active{background:var(--ember)}
 .ks-scalelabel{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);margin-bottom:14px}
+.ks-rh-frame{margin:0 0 14px;max-width:46ch;line-height:1.45}
 .ks-prompt{font-size:clamp(22px,3vw,30px);line-height:1.25;margin-bottom:32px}
 .ks-opts{display:grid;gap:10px}
 .ks-opt{display:flex;align-items:center;gap:14px;background:transparent;border:1.5px solid var(--hairline-strong);border-radius:var(--r-btn);padding:16px 18px;cursor:pointer;font-family:var(--font-ui);font-size:15px;color:var(--bone);text-align:left;transition:all .12s}

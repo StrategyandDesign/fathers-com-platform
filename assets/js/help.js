@@ -48,7 +48,7 @@
   var FIRST = {
     'index.html': { s: 'This trains four things you can practice: involvement, consistency, awareness, and nurturance.', a: 'Start your Profile', h: 'profile.html' },
     'login.html': { s: 'Welcome back. Pick up your plan.', a: 'Sign in', h: '#authEmail' },
-    'profile.html': { s: 'Honest questions about your fathering. Nobody is grading you.', a: 'Begin', h: '#ks-start' },
+    'profile.html': { s: 'Honest questions about your fathering. Answer honestly so this can fit you.', a: 'Begin', h: '#ks-start' },
     'report.html': { s: 'Your Keystone is yours. Strength, a focus, and the rest behind a fold.', a: 'Open your plan', h: 'plan.html' },
     'plan.html': { s: 'One next thing for this season, from the Profile you took.', a: 'Open your course', h: 'certificates.html' },
     'certificates.html': { s: 'Pick the course for this season. Films are open. A certificate needs a claimed seat.', a: 'Open a course', h: '.cert-card a, .cert-card' },
@@ -63,8 +63,8 @@
     FIRST['returning-home.html'] = { s: 'Your trainings are open. Pick one and watch.', a: 'Start the trainings', h: 'rh-desk.html' };
     FIRST['rh-desk.html'] = { s: 'Start the training your report named. The other two stay open.', a: 'Start here', h: '.rh-film.is-start, .rh-film' };
     FIRST['rh-home.html'] = { s: 'This is your home. The report, the next session, and the work you have written.', a: 'Continue', h: '.rh-home-cont-go, .rh-home-row' };
-    FIRST['profile.html'] = { s: 'This takes eight minutes. Then you know where you stand. Nobody is grading you.', a: 'Begin', h: '#ks-rh-begin' };
-    FIRST['report.html'] = { s: 'This is where you stand. Start the training it named.', a: 'Start the training', h: '.btn-yellow, .rp-btn-yellow' };
+    FIRST['profile.html'] = { s: 'This takes eight minutes. Then you have a starting point. There are no right answers.', a: 'Begin', h: '#ks-rh-begin' };
+    FIRST['report.html'] = { s: 'This is your starting point. Start the training it named.', a: 'Start the training', h: '.btn-yellow, .rp-btn-yellow' };
     FIRST['login.html'] = { s: 'Sign in to keep your trainings and your report with you.', a: 'Sign in', h: '#authEmail' };
     FIRST['course.html'] = { s: 'Watch this session. Your trainings are still yours when you are done.', a: 'Play', h: '#player, [data-play], .btn-primary' };
     FIRST['privacy.html'] = { s: 'Your answers stay private. This page is the policy.', a: 'Back to your home', h: 'rh-home.html' };
@@ -94,7 +94,7 @@
   }
 
   var MORE = rh ? [
-    'The Profile is a short set of honest questions. You get a private report of where you stand.',
+    'The Profile is a short set of honest questions. You get a private starting point.',
     'Your trainings are open. Start the one your report named, or pick another.',
     'Profile answers stay private. The four answers you write after a session are the proof your case worker can see.',
     'Being present from where you are is enough. Nobody has to walk through a door.',

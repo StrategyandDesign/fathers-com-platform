@@ -246,7 +246,7 @@
 
   function rhTickerHtml(){
     return '<div class="rh-ticker" role="region" aria-label="Profile">'+
-      '<p class="rh-ticker-copy">See where you stand. The Profile takes eight minutes. Nobody is grading you.</p>'+
+      '<p class="rh-ticker-copy">See your starting point. The Profile takes eight minutes. Answer honestly so this can fit you.</p>'+
       '<a class="rh-ticker-go" href="profile.html?start=quick&amp;path=rh">Start</a></div>';
   }
   function paintRhTicker(){
