@@ -13,11 +13,13 @@ export function NudgeForm({
   defaultTemplate = "continue",
   returnTo,
   compact = false,
+  submitLabel,
 }: {
   fatherId: string;
   defaultTemplate?: NudgeTemplateKey;
-  returnTo?: "list" | "detail";
+  returnTo?: "list" | "detail" | "dashboard";
   compact?: boolean;
+  submitLabel?: string;
 }) {
   const t = useT();
   return (
@@ -44,7 +46,8 @@ export function NudgeForm({
         </label>
       )}
       <Button type="submit" variant={compact ? "outline" : "default"} className="w-full sm:w-auto">
-        {compact ? t("manager.nudge.sendReminder") : t("manager.nudge.sendNudge")}
+        {submitLabel ??
+          (compact ? t("manager.nudge.sendReminder") : t("manager.nudge.sendNudge"))}
       </Button>
     </form>
   );

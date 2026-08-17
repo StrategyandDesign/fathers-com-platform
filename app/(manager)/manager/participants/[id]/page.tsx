@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CertificateDownloadLink } from "@/components/certificates/download-link";
+import { CompanionNudgeSuggest } from "@/components/manager/companion-nudge-suggest";
 import { Flash } from "@/components/manager/flash";
 import { NudgeForm } from "@/components/manager/nudge-form";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import {
   markTrainingComplete,
   previewCertificate,
 } from "@/lib/manager/actions";
+import { buildQuietSuggestion } from "@/lib/manager/companion";
 import { loadManagedParticipant } from "@/lib/manager/data";
 import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
 import { clearParticipantNote, saveParticipantNote } from "@/lib/manager/note-actions";
@@ -87,6 +89,15 @@ export default async function ManagerParticipantDetailPage({
   const historyUnavailable = historyByFather.unavailable;
   const quiet = needsNudge(participant.lastActivity, progress);
   const cooldown = cooldownRemaining(nudgeHistory);
+  const companionSuggestion = quiet
+    ? buildQuietSuggestion(
+        participant,
+        progress,
+        nudgeHistory,
+        remindersAllowed,
+        historyUnavailable
+      )
+    : null;
   const assignable = progress.filter((card) =>
     isTrainingAssignable(
       card.training,
@@ -175,6 +186,48 @@ export default async function ManagerParticipantDetailPage({
         </form>
       </section>
 
+      {quiet || withoutCert.length > 0 ? (
+        <section className="rounded-xl border border-primary/35 bg-card p-4 sm:p-6">
+          <p className="text-xs tracking-[0.16em] text-muted-foreground uppercase">
+            {t("manager.companion.eyebrow")}
+          </p>
+          <h2 className="font-heading mt-2 text-lg font-semibold">
+            {t("manager.companion.detailTitle")}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("manager.companion.detailLead")}
+          </p>
+          {withoutCert[0] ? (
+            <div className="mt-5 rounded-lg border border-border bg-black/30 px-4 py-3">
+              <p className="text-sm text-muted-foreground">
+                {t("manager.companion.detailCert", { title: withoutCert[0].training.title })}
+              </p>
+              <Link
+                href={`/manager/participants/${participant.fatherId}/certificates/${withoutCert[0].training.id}`}
+                className={cn(buttonVariants({ variant: "outline" }), "mt-3 w-full sm:w-auto")}
+              >
+                {t("manager.participants.previewCertificate")}
+              </Link>
+            </div>
+          ) : null}
+          {companionSuggestion ? (
+            <div className="mt-5">
+              <CompanionNudgeSuggest
+                fatherId={participant.fatherId}
+                template={companionSuggestion.template}
+                reason={companionSuggestion.reason}
+                whyTemplate={companionSuggestion.whyTemplate}
+                canNudge={companionSuggestion.canNudge}
+                block={companionSuggestion.block}
+                cooldownDays={companionSuggestion.cooldownDays}
+                returnTo="detail"
+                defaultOpen
+              />
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
       <section
         id="nudge"
         className="rounded-xl border border-border bg-card p-4 sm:p-6"
@@ -203,7 +256,10 @@ export default async function ManagerParticipantDetailPage({
           </p>
         ) : (
           <div className="mt-5">
-            <NudgeForm fatherId={participant.fatherId} />
+            <NudgeForm
+              fatherId={participant.fatherId}
+              defaultTemplate={companionSuggestion?.template ?? "continue"}
+            />
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               {(["continue", "encouragement", "welcome_back"] as const).map((key) => {
                 const template = translateNudgeTemplate(key, t);

@@ -572,6 +572,78 @@ export const en = {
       sessionInProgress: "Session in progress: {title}",
       readyCert: "Ready for certificate: {title}",
     },
+    companion: {
+      eyebrow: "Companion",
+      title: "Companion",
+      lead: "A calm read of your group. Nothing sends or assigns until you confirm.",
+      collapse: "Hide companion",
+      expand: "Show companion",
+      narrateEmpty:
+        "No fathers have joined {org} yet. Share the invite code — this companion will narrate progress and draft funder language as soon as someone starts.",
+      narrate:
+        "{org} has {fathers} fathers. {startedPct}% have started training. {quiet} need a calm check-in, and {certs} certificates are ready to issue.",
+      narrateClear:
+        "{org} has {fathers} fathers. {startedPct}% have started training. Nobody is sitting quiet, and {certs} certificates are ready to issue.",
+      questionsTitle: "What this is doing for you",
+      fundingTitle: "Does this help us raise money?",
+      fundingBody:
+        "Yes. {certsIssued} certificates on file and a {startedPct}% start rate are documented participation a funder or board can cite. Draft the paragraph on Impact Snapshot.",
+      fundingEmpty:
+        "Yes — once fathers begin, completion and certificates become the proof you take to a funder. Nothing extra to assemble.",
+      savingsTitle: "Does this save us money?",
+      savingsBody:
+        "{quiet} assigned seats are going quiet. A confirmed nudge takes a moment and protects the program time you already paid for.",
+      savingsClear:
+        "Assigned seats are being used. You are not losing program cost to silent drop-off right now.",
+      timeTitle: "Does this save me time?",
+      timeBody:
+        "The companion already ranked who needs you. Open a name, confirm a nudge, or issue a certificate — no hunting through the roster.",
+      timeClear:
+        "No one is waiting on you. The roster and Impact Snapshot stay one click away when you need them.",
+      extraTitle: "Does this take my time?",
+      extraBody:
+        "No. The companion never sends or assigns on its own. You confirm or dismiss. Your existing tools stay where they are.",
+      viewQuiet: "Review quiet participants",
+      viewImpact: "Draft funder narrative",
+      issueCerts: "Certificates ready",
+      noNext: "You’re caught up. Nothing is waiting on a confirmation.",
+      attentionTitle: "Needs attention",
+      attentionLead:
+        "Quiet or stalled fathers, with a reason and a suggested nudge. Nothing emails until you confirm.",
+      suggestNudge: "Suggest nudge",
+      dismiss: "Dismiss",
+      confirmSend: "Send this nudge",
+      suggestedNote: "Suggested note",
+      remindersOff: "He turned off session reminders. The companion will not offer a send.",
+      cooldown: "A reminder already went out. You can send another in {days} days.",
+      cooldownTomorrow: "A reminder already went out. You can send another tomorrow.",
+      historyFailed: "Couldn’t check recent reminders. Try again in a moment.",
+      youConfirm: "You still confirm before anything is sent.",
+      reasonQuietDays: "No activity in {days} days",
+      reasonQuietOne: "No activity in 1 day",
+      reasonNoActivity: "No activity yet",
+      reasonStalledTitle: "Stalled on Session {n}: {title}",
+      whyContinue: "The next session is still open. A gentle continue respects his pace.",
+      whyEncouragement: "He already started. Encouragement names the progress without pressure.",
+      whyWelcomeBack: "It’s been a longer stretch. Welcome back treats the gap as normal.",
+      detailTitle: "Companion suggestion",
+      detailLead: "Shown only because this father is quiet, stalled, or ready for a certificate. You confirm any send.",
+      detailCert: "A certificate is ready for {title}. Preview it — nothing issues until you confirm on the next screen.",
+      narrativeTitle: "Draft funder narrative",
+      narrativeLead: "Anonymized. No names. Copy it into a board or funder update.",
+      narrativeEmpty:
+        "{org} does not have enrollment to describe yet. When fathers join, this paragraph will write the last {days} days in funder language — still without names.",
+      narrative:
+        "Over the last {days} days, {org} enrolled {enrolled} fathers. {startedPct}% started training, {onePct}% completed at least one session, and {fullyPct}% finished a training. {certs} certificates were issued.",
+      trendUp:
+        "Session completions rose from {previous} to {current} versus the prior {days} days. These are documented participation numbers a funder or board can use — no individual names.",
+      trendDown:
+        "Session completions moved from {previous} to {current} versus the prior {days} days. These are documented participation numbers a funder or board can use — no individual names.",
+      trendSame:
+        "Session completions held steady versus the prior {days} days. These are documented participation numbers a funder or board can use — no individual names.",
+      copyNarrative: "Copy narrative",
+      copiedNarrative: "Copied",
+    },
     participants: {
       title: "Participants",
       lead: "Fathers in your group. Open anyone, or select several for a reviewed bulk action.",

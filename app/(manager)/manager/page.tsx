@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CompanionPanel } from "@/components/manager/companion-panel";
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
 import { ReviewStatusBadge } from "@/components/manager/review-decision-forms";
@@ -10,7 +11,12 @@ import { requireRole } from "@/lib/auth/session";
 import { translateAttention } from "@/lib/i18n/flash";
 import { getI18n } from "@/lib/i18n/server";
 import { createGroup } from "@/lib/manager/actions";
+import {
+  buildCompanionBriefing,
+  organizationLabel,
+} from "@/lib/manager/companion";
 import { loadManagerWorkspace } from "@/lib/manager/data";
+import { loadNudgeHistory, loadReminderPrefs, needsNudge } from "@/lib/manager/nudges";
 import { loadReviewQueue } from "@/lib/manager/reviews";
 import { cn } from "@/lib/utils";
 
@@ -22,10 +28,32 @@ export default async function ManagerHomePage({
   const params = await searchParams;
   const { user } = await requireRole("manager");
   const { t } = await getI18n();
-  const [{ groups, summary, needsAttention }, reviews] = await Promise.all([
+  const [workspace, reviews] = await Promise.all([
     loadManagerWorkspace(user.id),
     loadReviewQueue(user.id),
   ]);
+  const { groups, summary, needsAttention, participants, trainingProgressFor, certificates } =
+    workspace;
+  const quietIds = participants
+    .filter((participant) =>
+      needsNudge(participant.lastActivity, trainingProgressFor(participant.fatherId))
+    )
+    .map((participant) => participant.fatherId);
+  const [{ byFather: historyByFather, unavailable: historyUnavailable }, reminderPrefs] =
+    await Promise.all([loadNudgeHistory(quietIds), loadReminderPrefs(quietIds)]);
+  const companion = buildCompanionBriefing({
+    organizationName: organizationLabel(
+      groups.map((group) => group.name),
+      t("manager.impact.yourOrg")
+    ),
+    participants,
+    trainingProgressFor,
+    certificatesIssued: certificates.length,
+    historyByFather,
+    reminderPrefs,
+    historyUnavailable,
+    limit: 4,
+  });
 
   const stats = [
     { label: t("manager.dashboard.active"), value: summary.activeParticipants },
@@ -73,6 +101,7 @@ export default async function ManagerHomePage({
         </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
+      <CompanionPanel briefing={companion} t={t} />
 
       {reviews.pending.length > 0 || reviews.unread.length > 0 ? (
         <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">

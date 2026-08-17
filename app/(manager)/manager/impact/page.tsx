@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CompanionNarrative } from "@/components/manager/companion-narrative";
 import { Flash } from "@/components/manager/flash";
 import { PrintButton } from "@/components/manager/print-button";
 import { buttonVariants } from "@/components/ui/button";
@@ -135,6 +136,7 @@ export default async function ManagerImpactPage({
         </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
+      <CompanionNarrative snapshot={snapshot} organization={organization} t={t} />
 
       {snapshot.enrolled === 0 ? (
         <EmptyState

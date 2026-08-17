@@ -29,7 +29,11 @@ export async function sendNudge(formData: FormData) {
   const templateKey = String(formData.get("template") ?? "").trim();
   const returnTo = String(formData.get("return_to") ?? "").trim();
   const path =
-    returnTo === "list" ? "/manager/participants" : `/manager/participants/${fatherId}`;
+    returnTo === "list"
+      ? "/manager/participants"
+      : returnTo === "dashboard"
+        ? "/manager"
+        : `/manager/participants/${fatherId}`;
 
   if (!fatherId) {
     fail("/manager/participants", "Choose a participant to nudge.");

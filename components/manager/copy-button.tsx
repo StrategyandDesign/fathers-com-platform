@@ -8,9 +8,13 @@ import { Button } from "@/components/ui/button";
 export function CopyButton({
   value,
   className,
+  label,
+  copiedLabel,
 }: {
   value: string;
   className?: string;
+  label?: string;
+  copiedLabel?: string;
 }) {
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
   const t = useT();
@@ -29,10 +33,10 @@ export function CopyButton({
   return (
     <Button type="button" variant="inverse" className={className} onClick={copy}>
       {status === "copied"
-        ? t("common.copied")
+        ? copiedLabel ?? t("common.copied")
         : status === "error"
           ? t("common.copyFailed")
-          : t("common.copy")}
+          : label ?? t("common.copy")}
     </Button>
   );
 }

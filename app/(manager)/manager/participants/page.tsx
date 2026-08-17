@@ -1,21 +1,20 @@
 import Link from "next/link";
 
+import { CompanionNudgeSuggest } from "@/components/manager/companion-nudge-suggest";
 import { Flash } from "@/components/manager/flash";
-import { NudgeForm } from "@/components/manager/nudge-form";
 import { ParticipantBulkList } from "@/components/manager/participant-bulk-list";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
+import { buildQuietSuggestion } from "@/lib/manager/companion";
 import {
-  cooldownRemaining,
   latestSentAt,
   loadNudgeHistory,
   loadReminderPrefs,
   needsNudge,
 } from "@/lib/manager/nudges";
-import { translateQuietLabel } from "@/lib/i18n/flash";
 import { formatShortDate } from "@/lib/manager/types";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -50,21 +49,31 @@ export default async function ManagerParticipantsPage({
       <Flash error={params.error} notice={params.notice} />
 
       {quiet.length > 0 ? (
-        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">{t("manager.participants.goneQuiet")}</h2>
+        <section className="rounded-xl border border-primary/35 bg-card p-4 sm:p-6">
+          <p className="text-xs tracking-[0.16em] text-muted-foreground uppercase">
+            {t("manager.companion.eyebrow")}
+          </p>
+          <h2 className="font-heading mt-2 text-lg font-semibold">
+            {t("manager.companion.attentionTitle")}
+          </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.participants.goneQuietLead")}
+            {t("manager.companion.attentionLead")}
           </p>
           <ul className="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
             {quiet.map((participant) => {
               const history = historyByFather.get(participant.fatherId) ?? [];
-              const remaining = cooldownRemaining(history);
               const lastSent = latestSentAt(history);
-              const remindersAllowed = reminderPrefs.get(participant.fatherId);
+              const suggestion = buildQuietSuggestion(
+                participant,
+                trainingProgressFor(participant.fatherId),
+                history,
+                reminderPrefs.get(participant.fatherId) ?? null,
+                historyUnavailable
+              );
               return (
                 <li
                   key={participant.fatherId}
-                  className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-start sm:justify-between"
                 >
                   <div className="min-w-0">
                     <Link
@@ -73,33 +82,25 @@ export default async function ManagerParticipantsPage({
                     >
                       {participant.name}
                     </Link>
-                    <p className="text-sm text-muted-foreground">
-                      {translateQuietLabel(participant.lastActivity, t)}
-                      {lastSent
-                        ? ` · ${t("manager.participants.lastNudge", { date: formatShortDate(lastSent) })}`
-                        : ""}
-                    </p>
+                    {lastSent ? (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {t("manager.participants.lastNudge", { date: formatShortDate(lastSent) })}
+                      </p>
+                    ) : null}
                   </div>
-                  {historyUnavailable ? (
-                    <p className="text-sm text-muted-foreground">
-                      {t("manager.participants.checkFailed")}
-                    </p>
-                  ) : remindersAllowed === false ? (
-                    <p className="text-sm text-muted-foreground">{t("manager.participants.remindersOff")}</p>
-                  ) : remaining > 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      {remaining === 1
-                        ? t("manager.participants.anotherTomorrow")
-                        : t("manager.participants.anotherInDays", { days: remaining })}
-                    </p>
-                  ) : (
-                    <NudgeForm
+                  <div className="sm:max-w-sm">
+                    <CompanionNudgeSuggest
                       fatherId={participant.fatherId}
-                      defaultTemplate="continue"
+                      template={suggestion.template}
+                      reason={suggestion.reason}
+                      whyTemplate={suggestion.whyTemplate}
+                      canNudge={suggestion.canNudge}
+                      block={suggestion.block}
+                      cooldownDays={suggestion.cooldownDays}
                       returnTo="list"
                       compact
                     />
-                  )}
+                  </div>
                 </li>
               );
             })}
