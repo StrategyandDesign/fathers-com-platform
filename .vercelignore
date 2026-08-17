@@ -1,0 +1,16 @@
+# Old static HTML platform — do not upload to the Next.js pilot project.
+*.html
+assets/
+content/
+emails/
+partner-kit/
+next-scaffold/
+tools/
+*.py
+__pycache__/
+.pytest_cache/
+docs/
+*.md
+!PILOT.md
+.env*
+!.env.example
