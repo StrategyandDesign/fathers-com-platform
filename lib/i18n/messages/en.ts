@@ -67,6 +67,115 @@ export const en = {
     legal: "Legal",
     legalAndHelp: "Legal and help",
     copyright: "© 2026 Fathers.com",
+    disclaimer:
+      "This page is a template for counsel review. It describes how Fathers.com intends to operate. It is not legal advice and is not a final policy.",
+    updated: "Last updated August 17, 2026",
+    privacyPage: {
+      title: "Privacy Policy",
+      metaTitle: "Privacy Policy | Fathers.com",
+      metaDescription: "How Fathers.com handles your information.",
+      commitment: "Our commitment",
+      commitmentBody:
+        "Fathers.com is a program of the National Center for Fathering. Your account, Father Profile answers, session notes, assessments, and certificates are personal. We treat them with care and we do not sell them.",
+      collect: "What we collect",
+      collectIntro: "When you use the service, we may collect:",
+      collectEmail: "The email and password you use to sign in.",
+      collectInvite:
+        "The invite code you enter, which places you in an organization group managed by your administrator.",
+      collectProfile:
+        "Your Father Profile answers and results, session check-in and action notes, and any custom assessments your manager assigns.",
+      collectProgress:
+        "Training progress, certificates your manager issues, an optional account photo, and the notification preferences you choose.",
+      collectTechnical:
+        "Basic technical data needed to run the service, such as sign-in activity and error reports.",
+      use: "How we use it",
+      useBody:
+        "We use this information to operate your account, deliver trainings, save your progress, issue certificates, and send the emails you have allowed. We do not use your assessment answers or session notes for advertising.",
+      emails: "Emails",
+      emailsBody:
+        "Fathers.com may send account and security messages, training assignments, and certificate notices. You can turn most of these off on your Account page. Account and security alerts may still be required to keep the service safe. Confirm and reset messages are sent through the sign-in provider.",
+      analytics: "Analytics and error monitoring",
+      analyticsBody:
+        "If error monitoring is enabled, we may use Sentry to record technical details such as the page you were on, browser type, and the error itself. That helps us keep the service reliable. We do not send your Profile answers, session notes, or assessment responses to Sentry as a matter of product design.",
+      notDo: "What we do not do",
+      notDoBody:
+        "We do not sell your personal information. We do not share your individual Profile answers, session notes, or assessment responses with employers, courts, or programs unless you ask us to, or the law requires it. We do not use your reflections about your family for any purpose beyond serving you and the organization that invited you.",
+      sharing: "Sharing",
+      sharingProviders:
+        "We share data with service providers who help us run the platform (for example, hosting, file storage, email delivery, and error monitoring), under agreements that require them to protect it.",
+      sharingOrg:
+        "If you join through an invite code, your organization administrator (manager) can see your name, photo if you upload one, training progress, Profile summary, custom assessment responses, and certificates. Reviewers see cohort totals only, not your name or individual answers. Super-admins operate the platform catalog and organizations; they are not a substitute for your organization administrator.",
+      sharingLegal:
+        "If we receive a subpoena or court order, we are required to respond. We will tell you before we do unless the law forbids it. If you would rather not write something down, do not write it down; completion never depends on what you disclose in a free-text note.",
+      choices: "Your choices",
+      choicesBody:
+        "You can update your photo and notification preferences in Account. For access, correction, or deletion of your account and results, contact your organization administrator. They can reach Fathers.com on your behalf.",
+      children: "Children’s privacy",
+      childrenBody:
+        "This service is built for adult fathers, future fathers, and mentors. You must be at least 18 years old to create an account. We do not knowingly collect personal information from children.",
+      retention: "Data retention",
+      retentionBody:
+        "We keep your results, progress, and certificates while your account is active so you and your manager can use them. Photos and certificate files are stored in private buckets and are not public links. If you ask your organization administrator to delete your account, we remove personal data on a reasonable schedule, except where we must keep a record.",
+      security: "Security",
+      securityBody:
+        "We protect your data with access controls, signed file downloads, and encryption in transit. Certificates and photos are not served as public URLs.",
+      stateRights: "State privacy rights",
+      stateRightsBody:
+        "Depending on where you live, you may have additional rights (for example, under California law) to access, delete, or restrict use of your information. Contact your organization administrator to exercise them.",
+      changes: "Changes",
+      changesBody:
+        "We may update this policy. Material changes will be posted here with a new date.",
+      contact: "Contact",
+      contactLead:
+        "Privacy questions: contact your organization administrator, or reach Fathers.com at",
+      contactAlso: ". See also the",
+      termsLink: "Terms of Service",
+      contactEnd: ".",
+    },
+    termsPage: {
+      title: "Terms of Service",
+      metaTitle: "Terms of Service | Fathers.com",
+      metaDescription: "The terms for using Fathers.com.",
+      agreement: "1. Agreement to terms",
+      agreementBody:
+        "By using Fathers.com, you agree to these terms. Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit. If you do not agree, do not use the service. This page is a template for counsel review and is not a final agreement.",
+      who: "2. Who can use Fathers.com",
+      whoBody:
+        "You must be at least 18 years old to create an account. The service is built for fathers, future fathers, and mentors. Content is intended for adults.",
+      account: "3. Your account and invite codes",
+      accountLead:
+        "You create an account with an invite code from your organization administrator. You are responsible for your account and for keeping your sign-in secure. Do not share your password. Your Profile results, session notes, and assessments are yours; your manager can see the progress and responses described in the ",
+      privacyLink: "Privacy Policy",
+      accountEnd: ".",
+      profile: "4. Father Profile and assessments",
+      profileBody:
+        "The Father Profile (also called the Keystone Profile) is an educational assessment grounded in the published research of the National Center for Fathering. Custom assessments are written by your organization. Neither is a clinical, diagnostic, legal, or medical instrument, and results should not be used as a substitute for professional advice.",
+      trainings: "5. Trainings and certificates",
+      trainingsBody:
+        "Trainings include films, check-ins, and weekly actions. Certificates of Completion are issued by your manager after the stated requirements are met. Certificates attest to completion of a Fathers.com training. Acceptance by any court, agency, or program is at that body’s discretion; we do not guarantee acceptance. Do not forge or alter a certificate.",
+      fees: "6. Organizations and fees",
+      feesBody:
+        "Access is through a participating organization. Any fees, if they exist, are between you and that organization. Fathers.com does not collect payment on these pages.",
+      emails: "7. Emails and notifications",
+      emailsBody:
+        "We may email you about assignments, certificates, and account security. You can change most notification preferences in Account. Turning a preference off means we will not send that message.",
+      use: "8. Acceptable use",
+      useBody:
+        "Do not misuse the service, attempt to forge certificates, share your account, upload unlawful content, or use the service to harm others. We may suspend accounts that violate these terms.",
+      ip: "9. Content and intellectual property",
+      ipBody:
+        "The trainings, films, assessment, and materials on Fathers.com are owned by the National Center for Fathering or its licensors. You may use them for your own growth, not for redistribution.",
+      liability: "10. Disclaimers and limitation of liability",
+      liabilityBody:
+        "The service is provided as is. To the fullest extent permitted by law, the National Center for Fathering is not liable for indirect or consequential damages arising from your use of the service.",
+      changes: "11. Changes to these terms",
+      changesBody:
+        "We may update these terms. Material changes will be posted here with a new date. Continued use after changes means you accept them.",
+      contact: "12. Contact",
+      contactLead:
+        "Questions about these terms: contact your organization administrator, or reach Fathers.com at",
+      contactEnd: ".",
+    },
   },
   auth: {
     signIn: "Sign In",

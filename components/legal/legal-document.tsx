@@ -1,7 +1,8 @@
 import { BrandLogo } from "@/components/brand/logo";
 import { LegalLinks } from "@/components/legal/legal-links";
+import { getI18n } from "@/lib/i18n/server";
 
-export function LegalDocument({
+export async function LegalDocument({
   title,
   updated,
   children,
@@ -10,6 +11,8 @@ export function LegalDocument({
   updated: string;
   children: React.ReactNode;
 }) {
+  const { t } = await getI18n();
+
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-2xl flex-col px-4 py-5 sm:px-5 md:px-6 md:py-6 lg:px-8 lg:py-8">
       <header>
@@ -26,9 +29,7 @@ export function LegalDocument({
 
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <p className="text-sm leading-relaxed text-muted-foreground">
-            This page is a template for counsel review. It describes how
-            Fathers.com intends to operate. It is not legal advice and is not a
-            final policy.
+            {t("legal.disclaimer")}
           </p>
         </div>
 
