@@ -10,7 +10,7 @@ import { ProgressBar } from "@/components/ui/progress";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
-import { BRAND_PHOTOS, sessionCover } from "@/lib/brand/photos";
+import { BRAND_PHOTOS, sessionCover, trainingCover } from "@/lib/brand/photos";
 import { startProfile } from "@/lib/father/profile-actions";
 import { loadFatherHome } from "@/lib/father/data";
 import {
@@ -347,22 +347,27 @@ export default async function FatherHomePage() {
                       : "/father/trainings"
                   }
                   className={cn(
-                    "rounded-xl border border-border bg-card p-4 sm:p-5",
+                    "overflow-hidden rounded-xl border border-border bg-card",
                     interactiveSurfaceClassName
                   )}
                 >
-                  <p className="font-heading text-sm font-semibold sm:text-base">
-                    {training.title}
-                  </p>
-                  <div className="mt-4 space-y-2">
-                    <ProgressBar value={percent} />
-                    <p className="text-sm text-muted-foreground">
-                      {total === 0
-                        ? "Sessions will appear when this training is ready."
-                        : complete
-                          ? "Complete"
-                          : `${completed} of ${total} sessions`}
+                  <div className="h-28 overflow-hidden rounded-t-xl bg-[#101510] sm:h-32">
+                    <CoverPhoto src={trainingCover(training.slug)} />
+                  </div>
+                  <div className="p-4 sm:p-5">
+                    <p className="font-heading text-sm font-semibold sm:text-base">
+                      {training.title}
                     </p>
+                    <div className="mt-4 space-y-2">
+                      <ProgressBar value={percent} />
+                      <p className="text-sm text-muted-foreground">
+                        {total === 0
+                          ? "Sessions will appear when this training is ready."
+                          : complete
+                            ? "Complete"
+                            : `${completed} of ${total} sessions`}
+                      </p>
+                    </div>
                   </div>
                 </Link>
               );

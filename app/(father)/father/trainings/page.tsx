@@ -35,7 +35,7 @@ export default async function FatherTrainingsPage() {
           they do.
         </EmptyState>
       ) : (
-        <div className="space-y-4">
+        <div className="grid gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-6">
           {trainingCards.map(({ training, completed, total, next, nextProgress, sessionDots, certificate }) => {
             const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
             return (
@@ -43,24 +43,49 @@ export default async function FatherTrainingsPage() {
                 key={training.id}
                 className="overflow-hidden rounded-xl border border-border bg-card"
               >
-                <div className="h-24 overflow-hidden bg-[#101510] sm:h-36">
+                <div className="aspect-video overflow-hidden rounded-t-xl bg-[#101510]">
                   <CoverPhoto src={trainingCover(training.slug)} />
                 </div>
-                <div className="grid gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-6 lg:p-6">
-                  <div className="space-y-3">
+                <div className="space-y-4 p-4 sm:p-5 lg:p-6">
+                  <div className="space-y-2">
                     <h2 className="font-heading text-xl font-semibold tracking-tight">
                       {training.title}
                     </h2>
-                    <p className="text-sm text-muted-foreground">
-                      {total === 0
-                        ? "Sessions will appear when this training is ready."
-                        : `${total} session${total === 1 ? "" : "s"}`}
-                    </p>
                     {training.description ? (
-                      <p className="max-w-xl text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         {training.description}
                       </p>
+                    ) : total === 0 ? (
+                      <p className="text-sm text-muted-foreground">
+                        Sessions will appear when this training is ready.
+                      </p>
                     ) : null}
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm tabular-nums text-muted-foreground">
+                      {completed}/{total} Sessions Complete
+                    </p>
+                    <ProgressBar value={percent} />
+                  </div>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(2.75rem,2.75rem))] gap-2">
+                      {sessionDots.map((dot) => (
+                        <Link
+                          key={dot.id}
+                          href={`/father/sessions/${dot.id}`}
+                          title={dot.title}
+                          aria-label={`Session ${dot.number}: ${dot.title}`}
+                          className={cn(
+                            sessionDotClassName,
+                            dot.done
+                              ? "bg-primary text-primary-foreground hover:bg-primary/85"
+                              : "bg-white/8 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                          )}
+                        >
+                          {dot.number}
+                        </Link>
+                      ))}
+                    </div>
                     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                       {next ? (
                         <Link
@@ -82,36 +107,6 @@ export default async function FatherTrainingsPage() {
                           Download certificate
                         </a>
                       ) : null}
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">Progress</span>
-                      <span className="shrink-0 tabular-nums">
-                        {completed}/{total} Sessions Complete
-                      </span>
-                    </div>
-                    <ProgressBar value={percent} />
-                    <div>
-                      <p className="mb-2 text-sm text-muted-foreground">Sessions</p>
-                      <div className="grid grid-cols-[repeat(auto-fill,minmax(2.75rem,2.75rem))] gap-2">
-                        {sessionDots.map((dot) => (
-                          <Link
-                            key={dot.id}
-                            href={`/father/sessions/${dot.id}`}
-                            title={dot.title}
-                            aria-label={`Session ${dot.number}: ${dot.title}`}
-                            className={cn(
-                              sessionDotClassName,
-                              dot.done
-                                ? "bg-primary text-primary-foreground hover:bg-primary/85"
-                                : "bg-white/8 text-muted-foreground hover:bg-white/10 hover:text-foreground"
-                            )}
-                          >
-                            {dot.number}
-                          </Link>
-                        ))}
-                      </div>
                     </div>
                   </div>
                 </div>
