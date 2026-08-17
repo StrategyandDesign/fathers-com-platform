@@ -1,4 +1,6 @@
 import type { Training } from "@/lib/father/types";
+import { dateLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { createTranslator, type Translate } from "@/lib/i18n/translate";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import {
   formatShortDate,
@@ -118,18 +120,70 @@ export function reportFilename(format: "csv" | "pdf") {
   return `fathers-com-report-${new Date().toISOString().slice(0, 10)}.${format}`;
 }
 
-export function filterSummary(filters: ReportFilters, trainings: Training[]) {
+export function filterSummary(
+  filters: ReportFilters,
+  trainings: Training[],
+  locale: Locale = DEFAULT_LOCALE
+) {
+  if (locale !== "he") {
+    const training =
+      filters.trainingId == null
+        ? "All trainings"
+        : trainings.find((row) => row.id === filters.trainingId)?.title ?? "Unknown training";
+    const status = filters.status ? COMPLETION_STATUS_LABEL[filters.status] : "All statuses";
+    const range =
+      filters.from || filters.to
+        ? `${filters.from ?? "…"} to ${filters.to ?? "…"}`
+        : "Any last-activity date";
+    return { training, status, range };
+  }
+
+  const t = createTranslator(locale);
   const training =
     filters.trainingId == null
-      ? "All trainings"
-      : trainings.find((row) => row.id === filters.trainingId)?.title ?? "Unknown training";
-  const status = filters.status ? COMPLETION_STATUS_LABEL[filters.status] : "All statuses";
+      ? t("manager.reports.allTrainings")
+      : trainings.find((row) => row.id === filters.trainingId)?.title ??
+        t("manager.reports.unknownTraining");
+  const status = filters.status
+    ? statusLabel(filters.status, t)
+    : t("manager.reports.allStatuses");
   const range =
     filters.from || filters.to
-      ? `${filters.from ?? "…"} to ${filters.to ?? "…"}`
-      : "Any last-activity date";
+      ? t("manager.reports.rangeTo", { from: filters.from ?? "…", to: filters.to ?? "…" })
+      : t("manager.reports.anyActivity");
 
   return { training, status, range };
+}
+
+function statusLabel(
+  status: CompletionStatus | ParticipantRow["profileStatus"],
+  t: Translate
+) {
+  if (status === "completed") return t("manager.reports.completed");
+  if (status === "in_progress") return t("manager.reports.inProgress");
+  return t("manager.reports.notStarted");
+}
+
+function localizeProgressDetail(detail: string, t: Translate) {
+  if (detail === "None assigned") return t("manager.reports.noneAssigned");
+  const sessions = detail.match(/^(\d+)\/(\d+) sessions$/);
+  if (sessions) {
+    return t("manager.reports.sessionsProgress", {
+      completed: sessions[1],
+      total: sessions[2],
+    });
+  }
+  return detail;
+}
+
+function formatReportDate(value: string | null, locale: Locale) {
+  if (locale !== "he") return formatShortDate(value);
+  if (!value) return "—";
+  return new Date(value).toLocaleDateString(dateLocale(locale), {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 function trainingStatus(card: TrainingProgress | undefined): CompletionStatus {
@@ -244,16 +298,50 @@ function csvCell(value: string) {
   return value;
 }
 
-export function rowsToCsv(rows: ReportRow[]) {
+export function rowsToCsv(rows: ReportRow[], locale: Locale = DEFAULT_LOCALE) {
+  if (locale !== "he") {
+    const header = [
+      "Name",
+      "Group",
+      "Profile status",
+      "Training assignments",
+      "Completion status",
+      "Session progress",
+      "Certificate serials",
+      "Last activity",
+    ];
+
+    const lines = [
+      header.map(csvCell).join(","),
+      ...rows.map((row) =>
+        [
+          row.name,
+          row.groupName,
+          PROFILE_STATUS_LABEL[row.profileStatus],
+          row.assignmentTitles.join("; ") || "None assigned",
+          COMPLETION_STATUS_LABEL[row.completionStatus],
+          row.progressDetail,
+          row.certificateSerials,
+          formatShortDate(row.lastActivity),
+        ]
+          .map(csvCell)
+          .join(",")
+      ),
+    ];
+
+    return `\uFEFF${lines.join("\r\n")}\r\n`;
+  }
+
+  const t = createTranslator(locale);
   const header = [
-    "Name",
-    "Group",
-    "Profile status",
-    "Training assignments",
-    "Completion status",
-    "Session progress",
-    "Certificate serials",
-    "Last activity",
+    t("manager.reports.name"),
+    t("manager.reports.csvGroup"),
+    t("manager.reports.csvProfileStatus"),
+    t("manager.reports.csvAssignments"),
+    t("manager.reports.csvCompletion"),
+    t("manager.reports.csvProgress"),
+    t("manager.reports.csvSerials"),
+    t("manager.reports.lastActivity"),
   ];
 
   const lines = [
@@ -262,12 +350,12 @@ export function rowsToCsv(rows: ReportRow[]) {
       [
         row.name,
         row.groupName,
-        PROFILE_STATUS_LABEL[row.profileStatus],
-        row.assignmentTitles.join("; ") || "None assigned",
-        COMPLETION_STATUS_LABEL[row.completionStatus],
-        row.progressDetail,
+        statusLabel(row.profileStatus, t),
+        row.assignmentTitles.join("; ") || t("manager.reports.noneAssigned"),
+        statusLabel(row.completionStatus, t),
+        localizeProgressDetail(row.progressDetail, t),
         row.certificateSerials,
-        formatShortDate(row.lastActivity),
+        formatReportDate(row.lastActivity, locale),
       ]
         .map(csvCell)
         .join(",")

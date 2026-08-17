@@ -1,4 +1,6 @@
 import { isSessionComplete, type SessionProgress } from "@/lib/father/types";
+import { dateLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { createTranslator } from "@/lib/i18n/translate";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import type { TrainingProgress } from "@/lib/manager/types";
 
@@ -52,19 +54,20 @@ function addUtcDays(date: Date, days: number) {
   return next;
 }
 
-function formatRange(start: Date, endExclusive: Date) {
+function formatRange(start: Date, endExclusive: Date, locale: Locale = DEFAULT_LOCALE) {
   const end = addUtcDays(endExclusive, -1);
   const options: Intl.DateTimeFormatOptions = {
     month: "short",
     day: "numeric",
     timeZone: "UTC",
   };
+  const loc = locale === "he" ? dateLocale(locale) : "en-US";
   const sameYear = start.getUTCFullYear() === end.getUTCFullYear();
-  const startLabel = start.toLocaleDateString("en-US", {
+  const startLabel = start.toLocaleDateString(loc, {
     ...options,
     year: sameYear ? undefined : "numeric",
   });
-  const endLabel = end.toLocaleDateString("en-US", { ...options, year: "numeric" });
+  const endLabel = end.toLocaleDateString(loc, { ...options, year: "numeric" });
   return `${startLabel}–${endLabel}`;
 }
 
@@ -97,18 +100,31 @@ export function fullyCompletedTraining(cards: TrainingProgress[]) {
   return cards.some((card) => card.total > 0 && card.completed === card.total);
 }
 
-export function trendLabel(current: number, previous: number) {
+export function trendLabel(
+  current: number,
+  previous: number,
+  locale: Locale = DEFAULT_LOCALE
+) {
   const delta = current - previous;
-  if (delta === 0) return "Same as previous 30 days";
-  if (delta > 0) return `+${delta} vs previous 30 days`;
-  return `${delta} vs previous 30 days`;
+  if (locale !== "he") {
+    if (delta === 0) return "Same as previous 30 days";
+    if (delta > 0) return `+${delta} vs previous 30 days`;
+    return `${delta} vs previous 30 days`;
+  }
+  const t = createTranslator(locale);
+  if (delta === 0) return t("manager.impact.same");
+  if (delta > 0) return t("manager.impact.plus", { n: delta });
+  return t("manager.impact.minus", { n: Math.abs(delta) });
 }
 
 export function impactFilename() {
   return `fathers-com-impact-${new Date().toISOString().slice(0, 10)}.pdf`;
 }
 
-export async function loadManagerImpact(managerId: string): Promise<ImpactSnapshot> {
+export async function loadManagerImpact(
+  managerId: string,
+  locale: Locale = DEFAULT_LOCALE
+): Promise<ImpactSnapshot> {
   const workspace = await loadManagerWorkspace(managerId);
   const { groups, trainings, participants, progress, certificates, trainingProgressFor } =
     workspace;
@@ -174,8 +190,8 @@ export async function loadManagerImpact(managerId: string): Promise<ImpactSnapsh
     organizationNames: groups.map((group) => group.name).filter(Boolean),
     generatedAt: now.toISOString(),
     periodDays: IMPACT_PERIOD_DAYS,
-    currentRangeLabel: formatRange(currentStart, currentEnd),
-    previousRangeLabel: formatRange(previousStart, currentStart),
+    currentRangeLabel: formatRange(currentStart, currentEnd, locale),
+    previousRangeLabel: formatRange(previousStart, currentStart, locale),
     enrolled,
     startedTraining: started,
     startedTrainingPct: percent(started, enrolled),

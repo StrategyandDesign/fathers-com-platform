@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
+import { createTranslator } from "@/lib/i18n/translate";
+import { resolveManagerExportLocale } from "@/lib/i18n/org-locale";
 import {
   confirmToken,
   formatBulkNotice,
@@ -65,6 +67,8 @@ export async function runBulkAction(formData: FormData) {
     reviewFail("Too many bulk actions just now. Try again in a few minutes.", formData);
   }
 
+  const locale = await resolveManagerExportLocale(user.id);
+  const t = createTranslator(locale);
   const workspace = await loadManagerWorkspace(user.id);
   const training = workspace.trainings.find((row) => row.id === trainingId);
   if (!training) {
@@ -132,11 +136,17 @@ export async function runBulkAction(formData: FormData) {
     ok,
     skipped,
     failed,
+    locale,
   });
 
   const params = new URLSearchParams({ notice });
   if (failed.length > 0) {
-    params.set("error", `${failed.length} participant${failed.length === 1 ? "" : "s"} need a closer look.`);
+    params.set(
+      "error",
+      failed.length === 1
+        ? t("manager.bulk.closerLook")
+        : t("manager.bulk.closerLookMany", { n: failed.length })
+    );
   }
   redirect(`/manager/participants?${params.toString()}`);
 }

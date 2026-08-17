@@ -1,4 +1,7 @@
 import { isTrainingAssignable, type Session, type Training } from "@/lib/father/types";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { translateBulkReason } from "@/lib/i18n/flash";
+import { createTranslator } from "@/lib/i18n/translate";
 import type { TrainingProgress } from "@/lib/manager/types";
 
 export const BULK_ACTIONS = ["assign", "complete", "certificates"] as const;
@@ -100,33 +103,81 @@ export function formatBulkNotice(input: {
   ok: string[];
   skipped: Array<{ name: string; reason: string }>;
   failed: Array<{ name: string; reason: string }>;
+  locale?: Locale;
 }) {
+  const locale = input.locale ?? DEFAULT_LOCALE;
+  if (locale !== "he") {
+    const target = input.sessionTitle
+      ? `${input.sessionTitle} in ${input.trainingTitle}`
+      : input.trainingTitle;
+    const verb =
+      input.action === "assign"
+        ? "Assigned"
+        : input.action === "complete"
+          ? "Marked complete"
+          : "Issued certificates for";
+    const lines = [
+      `${verb} ${target} for ${input.ok.length} participant${input.ok.length === 1 ? "" : "s"}.`,
+    ];
+    if (input.skipped.length > 0) {
+      lines.push(
+        `Skipped ${input.skipped.length}: ${input.skipped
+          .slice(0, 8)
+          .map((row) => `${row.name} (${row.reason})`)
+          .join("; ")}${input.skipped.length > 8 ? "…" : ""}`
+      );
+    }
+    if (input.failed.length > 0) {
+      lines.push(
+        `Failed ${input.failed.length}: ${input.failed
+          .slice(0, 8)
+          .map((row) => `${row.name} (${row.reason})`)
+          .join("; ")}${input.failed.length > 8 ? "…" : ""}`
+      );
+    }
+    return lines.join(" ");
+  }
+
+  const t = createTranslator(locale);
   const target = input.sessionTitle
-    ? `${input.sessionTitle} in ${input.trainingTitle}`
+    ? t("manager.bulk.inTraining", {
+        session: input.sessionTitle,
+        training: input.trainingTitle,
+      })
     : input.trainingTitle;
-  const verb =
+  const noticeKey =
     input.action === "assign"
-      ? "Assigned"
+      ? input.ok.length === 1
+        ? "manager.bulk.noticeAssign"
+        : "manager.bulk.noticeAssignMany"
       : input.action === "complete"
-        ? "Marked complete"
-        : "Issued certificates for";
-  const lines = [
-    `${verb} ${target} for ${input.ok.length} participant${input.ok.length === 1 ? "" : "s"}.`,
-  ];
+        ? input.ok.length === 1
+          ? "manager.bulk.noticeComplete"
+          : "manager.bulk.noticeCompleteMany"
+        : input.ok.length === 1
+          ? "manager.bulk.noticeCerts"
+          : "manager.bulk.noticeCertsMany";
+  const lines = [t(noticeKey, { target, n: input.ok.length })];
+  const named = (row: { name: string; reason: string }) =>
+    `${translateBulkReason(row.name, t) || row.name} (${translateBulkReason(row.reason, t)})`;
   if (input.skipped.length > 0) {
     lines.push(
-      `Skipped ${input.skipped.length}: ${input.skipped
-        .slice(0, 8)
-        .map((row) => `${row.name} (${row.reason})`)
-        .join("; ")}${input.skipped.length > 8 ? "…" : ""}`
+      t("manager.bulk.skipped", {
+        n: input.skipped.length,
+        list: `${input.skipped.slice(0, 8).map(named).join("; ")}${
+          input.skipped.length > 8 ? "…" : ""
+        }`,
+      })
     );
   }
   if (input.failed.length > 0) {
     lines.push(
-      `Failed ${input.failed.length}: ${input.failed
-        .slice(0, 8)
-        .map((row) => `${row.name} (${row.reason})`)
-        .join("; ")}${input.failed.length > 8 ? "…" : ""}`
+      t("manager.bulk.failed", {
+        n: input.failed.length,
+        list: `${input.failed.slice(0, 8).map(named).join("; ")}${
+          input.failed.length > 8 ? "…" : ""
+        }`,
+      })
     );
   }
   return lines.join(" ");

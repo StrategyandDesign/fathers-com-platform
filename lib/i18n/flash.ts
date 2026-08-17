@@ -90,6 +90,8 @@ const EXACT: Record<string, string> = {
   "A session can only be chosen when marking complete.": "flash.sessionOnlyWhenComplete",
   "Choose a bulk action.": "flash.chooseBulkAction",
   "Choose a training.": "flash.chooseTraining",
+  "Too many bulk actions just now. Try again in a few minutes.": "manager.bulk.tooMany",
+  "1 participant needs a closer look.": "manager.bulk.closerLook",
 };
 
 const BULK_REASON: Record<string, string> = {
@@ -102,6 +104,26 @@ const BULK_REASON: Record<string, string> = {
   "That training is already complete.": "manager.bulk.reasonAlreadyComplete",
   "Training is not fully complete.": "manager.bulk.reasonNotComplete",
   "A certificate is already on file.": "manager.bulk.reasonCertOnFile",
+  "Couldn’t load that training.": "manager.bulk.reasonLoadTraining",
+  "Couldn’t verify this participant.": "manager.bulk.reasonVerify",
+  "That participant is not in your group.": "flash.participantNotInGroup",
+  "Couldn’t check this training’s review.": "manager.bulk.reasonCheckReview",
+  "This training is not available for your organization yet.": "manager.bulk.reasonNotAvailableOrg",
+  "This training is not available to assign.": "manager.bulk.reasonNotAvailableAssign",
+  "The assignment didn’t save.": "flash.assignmentSaveFailed",
+  "Couldn’t load sessions for that training.": "manager.bulk.reasonLoadSessions",
+  "Couldn’t load current progress.": "manager.bulk.reasonLoadProgress",
+  "That session is already complete.": "manager.bulk.reasonSessionComplete",
+  "Progress didn’t save.": "manager.bulk.reasonProgressSave",
+  "Couldn’t check for an existing certificate.": "manager.bulk.reasonCheckCert",
+  "Couldn’t load progress.": "manager.bulk.reasonLoadProgress",
+  "Couldn’t load this certificate.": "manager.bulk.reasonLoadCert",
+  "The PDF didn’t generate.": "manager.bulk.reasonPdfGenerate",
+  "The certificate PDF didn’t save.": "manager.bulk.reasonPdfSave",
+  "The certificate didn’t save.": "manager.bulk.reasonCertSave",
+  "Unknown participant": "manager.bulk.unknown",
+  "Skipped.": "manager.bulk.skippedFallback",
+  "Failed.": "manager.bulk.failedFallback",
 };
 
 const THEME_LABEL: Record<string, string> = {
@@ -174,6 +196,10 @@ export function translateFlash(message: string | undefined, t: Translate) {
   if (reminderSent) return t("flash.reminderSent", { name: reminderSent[1] });
   const noteLength = message.match(/^Keep the note under (\d+) characters\.$/);
   if (noteLength) return t("flash.noteTooLong", { n: noteLength[1] });
+  const typeConfirm = message.match(/^Type (.+) to confirm\.$/);
+  if (typeConfirm) return t("manager.bulk.typeConfirm", { word: typeConfirm[1] });
+  const closerLook = message.match(/^(\d+) participants need a closer look\.$/);
+  if (closerLook) return t("manager.bulk.closerLookMany", { n: closerLook[1] });
 
   return message;
 }

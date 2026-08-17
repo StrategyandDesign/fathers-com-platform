@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
+import { resolveManagerExportLocale } from "@/lib/i18n/org-locale";
 import { allowRequestRateLimit } from "@/lib/security/rate-limit";
 import { renderReportPdf } from "@/lib/manager/report-pdf";
 import {
@@ -49,8 +50,10 @@ export async function GET(request: Request) {
     fail(report.error, parsed.filters);
   }
 
+  const locale = await resolveManagerExportLocale(user.id);
+
   if (format === "csv") {
-    return new Response(rowsToCsv(report.rows), {
+    return new Response(rowsToCsv(report.rows, locale), {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
         "Content-Disposition": `attachment; filename="${reportFilename("csv")}"`,
@@ -60,7 +63,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const bytes = await renderReportPdf(report.rows, parsed.filters, report.trainings);
+    const bytes = await renderReportPdf(report.rows, parsed.filters, report.trainings, locale);
     return new Response(Buffer.from(bytes), {
       headers: {
         "Content-Type": "application/pdf",

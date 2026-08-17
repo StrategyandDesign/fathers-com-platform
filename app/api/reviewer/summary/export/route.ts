@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth/session";
 import { insightQuery, parseInsightSearchParams } from "@/lib/reviewer/insights";
 import { renderReviewerSummaryPdf } from "@/lib/reviewer/summary-pdf";
-import { loadReviewerImpactSummary, summaryFilename } from "@/lib/reviewer/summary";
+import { loadReviewerImpactSummaryExport, summaryFilename } from "@/lib/reviewer/summary";
 import { allowRequestRateLimit } from "@/lib/security/rate-limit";
 
 export const runtime = "nodejs";
@@ -42,7 +42,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const { insights, summary, certificateError } = await loadReviewerImpactSummary(
+    const { insights, summary, certificateError, locale } = await loadReviewerImpactSummaryExport(
       parsed.filters
     );
     if (insights.error) {
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
     if (certificateError) {
       fail(certificateError, parsed.filters);
     }
-    const bytes = await renderReviewerSummaryPdf(summary);
+    const bytes = await renderReviewerSummaryPdf(summary, locale);
     return new Response(Buffer.from(bytes), {
       headers: {
         "Content-Type": "application/pdf",

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
+import { resolveManagerExportLocale } from "@/lib/i18n/org-locale";
 import { renderImpactPdf } from "@/lib/manager/impact-pdf";
 import { impactFilename, loadManagerImpact } from "@/lib/manager/impact";
 import { allowRequestRateLimit } from "@/lib/security/rate-limit";
@@ -19,8 +20,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    const snapshot = await loadManagerImpact(user.id);
-    const bytes = await renderImpactPdf(snapshot);
+    const locale = await resolveManagerExportLocale(user.id);
+    const snapshot = await loadManagerImpact(user.id, locale);
+    const bytes = await renderImpactPdf(snapshot, locale);
     return new Response(Buffer.from(bytes), {
       headers: {
         "Content-Type": "application/pdf",

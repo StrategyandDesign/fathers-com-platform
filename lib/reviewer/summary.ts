@@ -1,3 +1,6 @@
+import { dateLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { resolveGroupsExportLocale } from "@/lib/i18n/org-locale";
+import { createTranslator, type Translate } from "@/lib/i18n/translate";
 import { createClient } from "@/lib/supabase/server";
 import {
   COMPLETION_STATUS_LABEL,
@@ -52,10 +55,10 @@ function fullyCompleted(row: InsightRow) {
   return row.completionStatus === "completed";
 }
 
-function formatDay(value: string) {
+function formatDay(value: string, locale: Locale = DEFAULT_LOCALE) {
   const date = new Date(`${value}T00:00:00Z`);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString(locale === "he" ? dateLocale(locale) : "en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -63,42 +66,86 @@ function formatDay(value: string) {
   });
 }
 
-function formatWeekLabel(value: string) {
+function formatWeekLabel(value: string, locale: Locale = DEFAULT_LOCALE) {
   const date = new Date(`${value}T00:00:00`);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return date.toLocaleDateString(locale === "he" ? dateLocale(locale) : "en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function statusCopy(status: NonNullable<InsightFilters["status"]>, t: Translate) {
+  if (status === "completed") return t("reviewer.completed");
+  if (status === "in_progress") return t("reviewer.inProgress");
+  return t("reviewer.notStarted");
 }
 
 export function filterSummaryLines(
   filters: InsightFilters,
-  insights: Pick<ReviewerInsights, "groups" | "trainings">
+  insights: Pick<ReviewerInsights, "groups" | "trainings">,
+  locale: Locale = DEFAULT_LOCALE
 ) {
+  if (locale !== "he") {
+    const group =
+      filters.groupId == null
+        ? "All groups"
+        : insights.groups.find((row) => row.id === filters.groupId)?.label ?? "Selected group";
+    const training =
+      filters.trainingId == null
+        ? "All trainings"
+        : insights.trainings.find((row) => row.id === filters.trainingId)?.title ??
+          "Selected training";
+    const status = filters.status
+      ? COMPLETION_STATUS_LABEL[filters.status]
+      : "All completion statuses";
+    const range =
+      filters.from || filters.to
+        ? `${filters.from ? formatDay(filters.from) : "…"} to ${filters.to ? formatDay(filters.to) : "…"}`
+        : "Any last-activity date";
+
+    return [
+      `Group: ${group}`,
+      `Training: ${training}`,
+      `Status: ${status}`,
+      `Last activity: ${range}`,
+    ];
+  }
+
+  const t = createTranslator(locale);
   const group =
     filters.groupId == null
-      ? "All groups"
-      : insights.groups.find((row) => row.id === filters.groupId)?.label ?? "Selected group";
+      ? t("reviewer.allGroups")
+      : insights.groups.find((row) => row.id === filters.groupId)?.label ??
+        t("reviewer.summary.selectedGroup");
   const training =
     filters.trainingId == null
-      ? "All trainings"
+      ? t("reviewer.allTrainings")
       : insights.trainings.find((row) => row.id === filters.trainingId)?.title ??
-        "Selected training";
-  const status = filters.status
-    ? COMPLETION_STATUS_LABEL[filters.status]
-    : "All completion statuses";
+        t("reviewer.summary.selectedTraining");
+  const status = filters.status ? statusCopy(filters.status, t) : t("reviewer.summary.allStatuses");
   const range =
     filters.from || filters.to
-      ? `${filters.from ? formatDay(filters.from) : "…"} to ${filters.to ? formatDay(filters.to) : "…"}`
-      : "Any last-activity date";
+      ? t("reviewer.summary.rangeTo", {
+          from: filters.from ? formatDay(filters.from, locale) : "…",
+          to: filters.to ? formatDay(filters.to, locale) : "…",
+        })
+      : t("reviewer.summary.anyDate");
 
   return [
-    `Group: ${group}`,
-    `Training: ${training}`,
-    `Status: ${status}`,
-    `Last activity: ${range}`,
+    t("reviewer.summary.groupLine", { value: group }),
+    t("reviewer.summary.trainingLine", { value: training }),
+    t("reviewer.summary.statusLine", { value: status }),
+    t("reviewer.summary.lastActivity", { range }),
   ];
 }
 
-function buildTrend(insights: ReviewerInsights, rows: InsightRow[]) {
+function buildTrend(
+  insights: ReviewerInsights,
+  rows: InsightRow[],
+  locale: Locale = DEFAULT_LOCALE
+) {
+  const t = createTranslator(locale);
   const weeks = [
     ...new Set(rows.map((row) => row.activityWeek).filter((value): value is string => Boolean(value))),
   ].sort();
@@ -109,11 +156,17 @@ function buildTrend(insights: ReviewerInsights, rows: InsightRow[]) {
     const later = rows.filter((row) => row.activityWeek && row.activityWeek >= mid);
     if (earlier.length > 0 && later.length > 0) {
       return {
-        leftLabel: `Through week of ${formatWeekLabel(weeks[0])}`,
-        rightLabel: `From week of ${formatWeekLabel(mid)}`,
+        leftLabel:
+          locale === "he"
+            ? t("reviewer.summary.throughWeek", { date: formatWeekLabel(weeks[0], locale) })
+            : `Through week of ${formatWeekLabel(weeks[0])}`,
+        rightLabel:
+          locale === "he"
+            ? t("reviewer.summary.fromWeek", { date: formatWeekLabel(mid, locale) })
+            : `From week of ${formatWeekLabel(mid)}`,
         left: percent(earlier.filter(fullyCompleted).length, earlier.length),
         right: percent(later.filter(fullyCompleted).length, later.length),
-        unit: "completion rate",
+        unit: locale === "he" ? t("reviewer.summary.completionRate") : "completion rate",
       };
     }
   }
@@ -124,11 +177,11 @@ function buildTrend(insights: ReviewerInsights, rows: InsightRow[]) {
     const earlier = trend.slice(0, mid);
     const later = trend.slice(mid);
     return {
-      leftLabel: `${formatWeekLabel(earlier[0].week)}–${formatWeekLabel(earlier.at(-1)?.week ?? earlier[0].week)}`,
-      rightLabel: `${formatWeekLabel(later[0].week)}–${formatWeekLabel(later.at(-1)?.week ?? later[0].week)}`,
+      leftLabel: `${formatWeekLabel(earlier[0].week, locale)}–${formatWeekLabel(earlier.at(-1)?.week ?? earlier[0].week, locale)}`,
+      rightLabel: `${formatWeekLabel(later[0].week, locale)}–${formatWeekLabel(later.at(-1)?.week ?? later[0].week, locale)}`,
       left: earlier.reduce((sum, point) => sum + point.count, 0),
       right: later.reduce((sum, point) => sum + point.count, 0),
-      unit: "profile completions",
+      unit: locale === "he" ? t("reviewer.summary.profileCompletions") : "profile completions",
     };
   }
 
@@ -138,7 +191,8 @@ function buildTrend(insights: ReviewerInsights, rows: InsightRow[]) {
 export function buildReviewerImpactSummary(
   insights: ReviewerInsights,
   filters: InsightFilters,
-  certificatesIssued: number
+  certificatesIssued: number,
+  locale: Locale = DEFAULT_LOCALE
 ): ReviewerImpactSummary {
   const rows = insights.rows;
   const total = rows.length;
@@ -166,7 +220,7 @@ export function buildReviewerImpactSummary(
 
   return {
     generatedAt: new Date().toISOString(),
-    filterLines: filterSummaryLines(filters, insights),
+    filterLines: filterSummaryLines(filters, insights, locale),
     totalParticipants: total,
     startedCount,
     startedPct: percent(startedCount, total),
@@ -175,7 +229,7 @@ export function buildReviewerImpactSummary(
     fullyCompletedCount,
     fullyCompletedPct: percent(fullyCompletedCount, total),
     certificatesIssued,
-    trend: buildTrend(insights, rows),
+    trend: buildTrend(insights, rows, locale),
     groups,
   };
 }
@@ -201,15 +255,34 @@ export async function loadCertificateCount(filters: InsightFilters) {
   }
 }
 
-export async function loadReviewerImpactSummary(filters: InsightFilters) {
+export async function loadReviewerImpactSummary(
+  filters: InsightFilters,
+  locale: Locale = DEFAULT_LOCALE
+) {
   const [insights, certificates] = await Promise.all([
     loadReviewerInsights(filters),
     loadCertificateCount(filters),
   ]);
   return {
     insights,
-    summary: buildReviewerImpactSummary(insights, filters, certificates.count),
+    summary: buildReviewerImpactSummary(insights, filters, certificates.count, locale),
     certificateError: certificates.error,
+  };
+}
+
+export async function loadReviewerImpactSummaryExport(filters: InsightFilters) {
+  const [insights, certificates] = await Promise.all([
+    loadReviewerInsights(filters),
+    loadCertificateCount(filters),
+  ]);
+  const locale = await resolveGroupsExportLocale(
+    filters.groupId ? [filters.groupId] : insights.groups.map((group) => group.id)
+  );
+  return {
+    insights,
+    summary: buildReviewerImpactSummary(insights, filters, certificates.count, locale),
+    certificateError: certificates.error,
+    locale,
   };
 }
 
