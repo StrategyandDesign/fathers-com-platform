@@ -11,7 +11,6 @@ import {
 } from "@/lib/father/profile";
 import {
   PROFILE_QUESTION_COUNT,
-  getProfileQuestion,
   parseAnswers,
 } from "@/lib/father/questions";
 
