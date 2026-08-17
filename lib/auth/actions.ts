@@ -47,7 +47,7 @@ export async function signIn(formData: FormData) {
     redirect(`/login?error=${encodeURIComponent("Too many attempts. Wait a few minutes and try again.")}`);
   }
 
-  const email = String(formData.get("email") ?? "");
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const next = safeInternalPath(formData.get("next"));
 
@@ -84,7 +84,7 @@ export async function signUp(formData: FormData) {
     redirect(`/signup?error=${encodeURIComponent("Too many attempts. Wait a few minutes and try again.")}`);
   }
 
-  const email = String(formData.get("email") ?? "");
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   const inviteCode = String(formData.get("invite_code") ?? "").trim();
 
