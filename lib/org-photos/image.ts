@@ -1,5 +1,3 @@
-import type { OrgPhotoGuidance } from "@/lib/org-photos/slots";
-
 export type ImageMeta = {
   width: number;
   height: number;
@@ -89,21 +87,12 @@ export function readImageMeta(bytes: Uint8Array): ImageMeta | null {
   return readPng(bytes) ?? readJpeg(bytes) ?? readWebp(bytes);
 }
 
-export function validateOrgPhoto(
-  meta: ImageMeta | null,
-  guidance: OrgPhotoGuidance
-): string | null {
+export function validateOrgPhoto(meta: ImageMeta | null): string | null {
   if (!meta || meta.width < 1 || meta.height < 1) {
     return "That file doesn’t look like a photo. Use a JPEG, PNG, or WebP.";
   }
-  if (meta.width < guidance.minWidth || meta.height < guidance.minHeight) {
-    return `Use a photo at least ${guidance.minWidth}×${guidance.minHeight} pixels.`;
-  }
-  const aspect = meta.width / meta.height;
-  if (aspect < guidance.minAspect || aspect > guidance.maxAspect) {
-    return guidance.kind === "home_hero"
-      ? "Use a wide landscape photo for the Home card."
-      : "Use a landscape photo for training cards.";
+  if (meta.width < 64 || meta.height < 64) {
+    return "Use a clearer photo. That one is too small.";
   }
   return null;
 }

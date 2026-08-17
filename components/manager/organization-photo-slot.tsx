@@ -1,26 +1,16 @@
 "use client";
 
-import { useRef, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 
 import { CoverPhoto } from "@/components/brand/cover";
+import { Flash } from "@/components/manager/flash";
 import { Button } from "@/components/ui/button";
 import {
   resetOrganizationPhoto,
   uploadOrganizationPhoto,
 } from "@/lib/org-photos/actions";
+import { fitOrgPhotoFile } from "@/lib/org-photos/fit-image";
 import type { OrganizationPhotoSlotView } from "@/lib/org-photos/slots";
-import { cn } from "@/lib/utils";
-
-function SafeZone({ className }: { className?: string }) {
-  return (
-    <div
-      aria-hidden
-      className={cn("pointer-events-none absolute inset-0", className)}
-    >
-      <div className="absolute inset-x-[12%] inset-y-[16%] rounded-md border border-dashed border-white/40" />
-    </div>
-  );
-}
 
 export function OrganizationPhotoSlot({
   groupId,
@@ -33,6 +23,7 @@ export function OrganizationPhotoSlot({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
+  const [fitError, setFitError] = useState<string | null>(null);
   const preview = view.previewUrl || view.defaultUrl;
   const name = orgName.trim() || "this organization";
 
@@ -54,7 +45,6 @@ export function OrganizationPhotoSlot({
             <p className="mb-2 text-xs text-muted-foreground">{view.previewLabel} · Home</p>
             <div className="relative h-24 overflow-hidden rounded-lg bg-[#101510] sm:h-36 lg:h-44">
               <CoverPhoto src={preview} />
-              <SafeZone />
             </div>
           </div>
         ) : (
@@ -63,46 +53,61 @@ export function OrganizationPhotoSlot({
               <p className="mb-2 text-xs text-muted-foreground">{view.previewLabel} · Home</p>
               <div className="relative h-28 overflow-hidden rounded-lg bg-[#101510] sm:h-32">
                 <CoverPhoto src={preview} />
-                <SafeZone />
               </div>
             </div>
             <div>
               <p className="mb-2 text-xs text-muted-foreground">{view.previewLabel} · Trainings</p>
               <div className="relative aspect-video overflow-hidden rounded-lg bg-[#101510]">
                 <CoverPhoto src={preview} />
-                <SafeZone />
               </div>
             </div>
           </div>
         )}
         <p className="text-sm text-muted-foreground">{view.guidance.aspectLabel}</p>
-        <p className="text-xs text-muted-foreground">
-          Keep faces inside the dashed area. Edges may crop. {view.guidance.fileHint}
-        </p>
+        <p className="text-xs text-muted-foreground">{view.guidance.fileHint}</p>
       </div>
 
       <div className="space-y-3 border-t border-border px-4 py-4 sm:px-6">
         <form
-          action={(formData) => {
-            startTransition(() => {
-              void uploadOrganizationPhoto(formData);
-            });
-          }}
+          onSubmit={(event) => event.preventDefault()}
           className="flex flex-col gap-2 sm:flex-row sm:flex-wrap"
         >
-          <input type="hidden" name="group_id" value={groupId} />
-          <input type="hidden" name="slot" value={view.slot} />
           <input
             ref={inputRef}
             type="file"
-            name="photo"
             accept="image/jpeg,image/png,image/webp"
             className="sr-only"
             disabled={pending}
             onChange={(event) => {
-              if (event.currentTarget.files?.length) {
-                event.currentTarget.form?.requestSubmit();
-              }
+              const file = event.currentTarget.files?.[0];
+              event.currentTarget.value = "";
+              if (!file) return;
+              setFitError(null);
+              startTransition(async () => {
+                try {
+                  const fitted = await fitOrgPhotoFile(file, view.guidance.kind);
+                  const data = new FormData();
+                  data.set("group_id", groupId);
+                  data.set("slot", view.slot);
+                  data.set("photo", fitted);
+                  await uploadOrganizationPhoto(data);
+                } catch (error) {
+                  if (
+                    typeof error === "object" &&
+                    error &&
+                    "digest" in error &&
+                    typeof error.digest === "string" &&
+                    error.digest.startsWith("NEXT_REDIRECT")
+                  ) {
+                    throw error;
+                  }
+                  setFitError(
+                    error instanceof Error
+                      ? error.message
+                      : "Couldn’t use that photo. Try another."
+                  );
+                }
+              });
             }}
           />
           <Button
@@ -111,9 +116,10 @@ export function OrganizationPhotoSlot({
             className="w-full sm:w-auto"
             onClick={() => inputRef.current?.click()}
           >
-            {pending ? "Saving…" : "Replace Photo"}
+            {pending ? "Fitting photo…" : "Replace Photo"}
           </Button>
         </form>
+        <Flash error={fitError ?? undefined} />
 
         <form
           action={(formData) => {

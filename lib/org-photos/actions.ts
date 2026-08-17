@@ -6,16 +6,7 @@ import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth/session";
 import { loadCatalogTrainings } from "@/lib/org-photos/data";
 import { readImageMeta, validateOrgPhoto } from "@/lib/org-photos/image";
-import {
-  HOME_HERO_SLOT,
-  homeHeroGuidance,
-  isOrgPhotoSlot,
-  orgPhotoObjectPath,
-  parseTrainingSlug,
-  trainingCardGuidance,
-  type OrgPhotoGuidance,
-  type OrgPhotoSlot,
-} from "@/lib/org-photos/slots";
+import { isOrgPhotoSlot, orgPhotoObjectPath } from "@/lib/org-photos/slots";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import {
   ORG_PHOTO_MAX_BYTES,
@@ -39,16 +30,6 @@ function revalidateOrgPhotos() {
   revalidatePath("/manager/account");
   revalidatePath("/father");
   revalidatePath("/father/trainings");
-}
-
-async function guidanceForSlot(
-  slot: OrgPhotoSlot,
-  trainings: Array<{ slug: string; title: string }>
-): Promise<OrgPhotoGuidance> {
-  if (slot === HOME_HERO_SLOT) return homeHeroGuidance();
-  const slug = parseTrainingSlug(slot);
-  const training = trainings.find((row) => row.slug === slug);
-  return trainingCardGuidance(slug ?? slot, training?.title ?? "Training");
 }
 
 async function requireManagedGroup(groupId: string) {
@@ -85,7 +66,6 @@ export async function uploadOrganizationPhoto(formData: FormData) {
     fail("That photo slot isn’t available.");
   }
   const slot = slotValue;
-  const guidance = await guidanceForSlot(slot, trainings);
 
   const file = formData.get("photo");
   if (!(file instanceof File) || file.size === 0) {
@@ -99,7 +79,7 @@ export async function uploadOrganizationPhoto(formData: FormData) {
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());
-  const invalid = validateOrgPhoto(readImageMeta(bytes), guidance);
+  const invalid = validateOrgPhoto(readImageMeta(bytes));
   if (invalid) fail(invalid);
 
   const supabase = await createClient();

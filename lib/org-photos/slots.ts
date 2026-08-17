@@ -53,7 +53,7 @@ export function homeHeroGuidance(): OrgPhotoGuidance {
     minHeight: 360,
     minAspect: 1.6,
     maxAspect: 4.5,
-    aspectLabel: "Wide banner, about 3:1. Keep faces in the center; the top and bottom crop on phones.",
+    aspectLabel: "Any photo works. We crop it to fit this card.",
     fileHint: FILE_HINT,
   };
 }
@@ -67,8 +67,7 @@ export function trainingCardGuidance(slug: string, title: string): OrgPhotoGuida
     minHeight: 450,
     minAspect: 1.2,
     maxAspect: 2.8,
-    aspectLabel:
-      "16:9 landscape. Home cards use a shorter crop of the same photo — keep the subject in the center.",
+    aspectLabel: "Any photo works. We crop it to fit the training cards.",
     fileHint: FILE_HINT,
   };
 }
