@@ -491,7 +491,8 @@ export const he = {
       actionLabel: "מענה על בדיקת המיומנות",
       stepComplete: "(הושלם)",
       continueCheckin: "המשך לצ'ק-אין",
-      iWatched: "צפיתי בזה",
+      continueAction: "המשך לפעולה",
+      iWatched: "אני מוכן",
       noteLabel: "הערות אופציונליות",
       notePlaceholder: "נקודת הוראה במילים שלך — בלי פרטים אישיים.",
       savedHint:

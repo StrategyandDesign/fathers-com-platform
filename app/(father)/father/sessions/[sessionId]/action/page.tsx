@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { SessionAdvanceButton } from "@/components/father/session-advance-button";
 import { SessionHeader } from "@/components/father/session-header";
 import { SkillPromptField } from "@/components/father/skill-prompt";
 import { Flash } from "@/components/manager/flash";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
 import { completeAction } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
@@ -50,9 +51,10 @@ export default async function SessionActionPage({
   const prompt = sessionAction(session, training);
   const parsed = parseSkillPrompt(prompt);
   const alreadyDone = Boolean(progress?.action_completed);
+  const hasChoices = Boolean(parsed.choices?.length);
 
   return (
-    <div className="mx-auto max-w-xl space-y-6 lg:space-y-10">
+    <div className="mx-auto max-w-xl space-y-5 lg:space-y-8">
       <SessionHeader
         training={training}
         session={session}
@@ -63,7 +65,7 @@ export default async function SessionActionPage({
       <Flash error={error} />
 
       {alreadyDone ? (
-        <div className="space-y-6">
+        <div className="space-y-5">
           <p className="rounded-xl border border-border bg-card px-4 py-5 text-center text-lg font-semibold leading-snug sm:px-5 sm:py-6 sm:text-xl lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:text-2xl">
             {parsed.stem}
           </p>
@@ -80,14 +82,15 @@ export default async function SessionActionPage({
           </div>
         </div>
       ) : (
-        <form action={completeAction} className="space-y-6">
+        <form action={completeAction} className="space-y-5">
           <input type="hidden" name="session_id" value={session.id} />
-          {parsed.choices ? (
+          {hasChoices ? (
             <SkillPromptField
               name={ACTION_ANSWER_KEY}
               prompt={prompt}
               defaultValue={progress?.action_note ?? undefined}
               invalid={Boolean(error)}
+              autoAdvance
             />
           ) : (
             <div className="space-y-3">
@@ -107,24 +110,22 @@ export default async function SessionActionPage({
               </label>
             </div>
           )}
-          <div className="flex flex-col gap-3 lg:items-center">
-            <Button type="submit" variant="inverse" size="lg" className={sessionCtaClassName}>
-              {t("father.session.completeAction")}
-            </Button>
-            <Link
-              href="/father"
-              className={cn(
-                buttonVariants({ variant: "secondary", size: "lg" }),
-                "w-full min-h-11 max-lg:border-border max-lg:bg-transparent max-lg:text-foreground max-lg:hover:bg-white/5 lg:w-auto"
-              )}
-            >
-              {t("father.session.doLater")}
-            </Link>
-          </div>
+          <SessionAdvanceButton
+            label={t("father.session.completeAction")}
+            visuallyHidden={hasChoices}
+          />
         </form>
       )}
 
-      <p className="text-center">
+      <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center">
+        {!alreadyDone ? (
+          <Link
+            href="/father"
+            className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
+          >
+            {t("father.session.doLater")}
+          </Link>
+        ) : null}
         <Link
           href={`/father/sessions/${sessionId}`}
           className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}

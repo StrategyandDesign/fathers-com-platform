@@ -1,10 +1,12 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { CoverPhoto } from "@/components/brand/cover";
+import { SessionAdvanceButton } from "@/components/father/session-advance-button";
 import { SessionCrumbNote, SessionHeader } from "@/components/father/session-header";
 import { SessionSteps } from "@/components/father/session-steps";
 import { Flash } from "@/components/manager/flash";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
 import { sessionCover } from "@/lib/brand/photos";
@@ -14,6 +16,7 @@ import { loadFatherOrgPhotoCovers } from "@/lib/org-photos/data";
 import { youtubeEmbedUrl } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { sessionCtaClassName } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
 export default async function SessionViewerPage({
   params,
@@ -77,6 +80,24 @@ export default async function SessionViewerPage({
         )}
       </div>
 
+      <Flash error={error} />
+
+      {filmDone ? (
+        <div className="flex justify-center max-lg:block">
+          <Link
+            href={`/father/sessions/${session.id}/checkin`}
+            className={cn(buttonVariants({ variant: "inverse", size: "lg" }), sessionCtaClassName)}
+          >
+            {t("father.session.continueCheckin")}
+          </Link>
+        </div>
+      ) : (
+        <form action={markFilmWatched}>
+          <input type="hidden" name="session_id" value={session.id} />
+          <SessionAdvanceButton label={t("father.session.iWatched")} />
+        </form>
+      )}
+
       <ProgressBar value={percent} className="hidden lg:block" />
 
       <SessionSteps
@@ -88,15 +109,6 @@ export default async function SessionViewerPage({
       />
 
       <SessionCrumbNote />
-
-      <Flash error={error} />
-
-      <form action={markFilmWatched} className="flex justify-center max-lg:block">
-        <input type="hidden" name="session_id" value={session.id} />
-        <Button type="submit" variant="inverse" size="lg" className={sessionCtaClassName}>
-          {filmDone ? t("father.session.continueCheckin") : t("father.session.iWatched")}
-        </Button>
-      </form>
     </div>
   );
 }

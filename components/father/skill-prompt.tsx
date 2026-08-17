@@ -1,21 +1,22 @@
-import { choiceIsSelected, parseSkillPrompt } from "@/lib/father/session-questions";
-import { getI18n } from "@/lib/i18n/server";
-import { radioOptionClassName, textareaClassName } from "@/lib/ui";
+import { SkillChoiceRadios } from "@/components/father/skill-choice-radios";
+import { parseSkillPrompt } from "@/lib/father/session-questions";
+import { textareaClassName } from "@/lib/ui";
 
-export async function SkillPromptField({
+export function SkillPromptField({
   name,
   prompt,
   defaultValue,
   invalid,
   required = true,
+  autoAdvance = false,
 }: {
   name: string;
   prompt: string;
   defaultValue?: string;
   invalid?: boolean;
   required?: boolean;
+  autoAdvance?: boolean;
 }) {
-  const { t } = await getI18n();
   const parsed = parseSkillPrompt(prompt);
 
   return (
@@ -24,24 +25,14 @@ export async function SkillPromptField({
         {parsed.stem}
       </p>
       {parsed.choices ? (
-        <fieldset className="space-y-1" aria-invalid={invalid || undefined}>
-          <legend className="sr-only">{t("father.session.chooseTeaching")}</legend>
-          {parsed.choices.map((choice) => (
-            <label key={choice.value} className={radioOptionClassName}>
-              <input
-                type="radio"
-                name={name}
-                value={choice.value}
-                required={required}
-                defaultChecked={choiceIsSelected(defaultValue, choice)}
-                className="size-4 accent-primary"
-              />
-              <span>
-                {choice.value}) {choice.label}
-              </span>
-            </label>
-          ))}
-        </fieldset>
+        <SkillChoiceRadios
+          name={name}
+          choices={parsed.choices}
+          defaultValue={defaultValue}
+          autoAdvance={autoAdvance}
+          invalid={invalid}
+          required={required}
+        />
       ) : (
         <textarea
           className={textareaClassName}

@@ -507,7 +507,8 @@ export const en = {
       actionLabel: "Answer the skill check",
       stepComplete: "(Complete)",
       continueCheckin: "Continue to Check-in",
-      iWatched: "I watched this",
+      continueAction: "Continue to Action",
+      iWatched: "I'm ready",
       noteLabel: "Optional notes",
       notePlaceholder: "A teaching point in your own words — no personal details.",
       savedHint:

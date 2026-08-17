@@ -125,18 +125,25 @@ export async function submitCheckin(formData: FormData) {
     );
   }
 
-  const notes = String(formData.get(CHECKIN_NOTE_KEY) ?? "")
-    .trim()
-    .slice(0, CHECKIN_NOTE_MAX_LENGTH);
-
   const answers: Record<string, string> = { [CHECKIN_CHOICE_KEY]: choice };
+  const progressPatch: {
+    checkin_completed: true;
+    checkin_answers: Record<string, string>;
+    session_note?: string | null;
+  } = {
+    checkin_completed: true,
+    checkin_answers: answers,
+  };
+
+  if (formData.has(CHECKIN_NOTE_KEY)) {
+    const notes = String(formData.get(CHECKIN_NOTE_KEY) ?? "")
+      .trim()
+      .slice(0, CHECKIN_NOTE_MAX_LENGTH);
+    progressPatch.session_note = notes || null;
+  }
 
   try {
-    await saveProgress(user.id, sessionId, {
-      checkin_completed: true,
-      checkin_answers: answers,
-      session_note: notes || null,
-    });
+    await saveProgress(user.id, sessionId, progressPatch);
   } catch {
     redirect(
       `/father/sessions/${sessionId}/checkin?error=${encodeURIComponent("Your check-in didn’t save. Try again.")}`

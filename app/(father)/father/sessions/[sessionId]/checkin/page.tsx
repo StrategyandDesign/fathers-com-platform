@@ -1,20 +1,17 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { SessionAdvanceButton } from "@/components/father/session-advance-button";
 import { SessionHeader } from "@/components/father/session-header";
 import { SkillPromptField } from "@/components/father/skill-prompt";
 import { Flash } from "@/components/manager/flash";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
 import { submitCheckin } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
-import {
-  CHECKIN_NOTE_KEY,
-  CHECKIN_NOTE_MAX_LENGTH,
-  checkinQuestionsFor,
-} from "@/lib/father/session-questions";
+import { checkinQuestionsFor, parseSkillPrompt } from "@/lib/father/session-questions";
 import { getI18n } from "@/lib/i18n/server";
-import { interactiveUnderlineClassName, sessionCtaClassName, textareaClassName } from "@/lib/ui";
+import { interactiveUnderlineClassName, sessionCtaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export default async function SessionCheckinPage({
@@ -44,9 +41,12 @@ export default async function SessionCheckinPage({
   const { t } = await getI18n();
   const { session, training, progress } = context;
   const questions = checkinQuestionsFor(session, training);
+  const alreadyDone = Boolean(progress?.checkin_completed);
+  const canAutoAdvance =
+    questions.length === 1 && Boolean(parseSkillPrompt(questions[0].label).choices);
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 lg:space-y-8">
+    <div className="mx-auto max-w-2xl space-y-5 lg:space-y-6">
       <SessionHeader
         training={training}
         session={session}
@@ -54,37 +54,36 @@ export default async function SessionCheckinPage({
         backHref={`/father/sessions/${sessionId}`}
       />
 
-      <form action={submitCheckin} className="space-y-6 lg:space-y-8">
-        <input type="hidden" name="session_id" value={session.id} />
-        {questions.map((question) => (
-          <SkillPromptField
-            key={question.key}
-            name={question.key}
-            prompt={question.label}
-            defaultValue={progress?.checkin_answers?.[question.key]}
-            invalid={Boolean(error)}
-          />
-        ))}
-        <label className="block space-y-2">
-          <span className="text-sm text-muted-foreground">{t("father.session.noteLabel")}</span>
-          <textarea
-            className={textareaClassName}
-            name={CHECKIN_NOTE_KEY}
-            maxLength={CHECKIN_NOTE_MAX_LENGTH}
-            placeholder={t("father.session.notePlaceholder")}
-            defaultValue={progress?.session_note ?? ""}
-          />
-        </label>
-        <Flash error={error} />
-        <p className="text-center text-sm text-muted-foreground">
-          {t("father.session.savedHint")}
-        </p>
+      <Flash error={error} />
+
+      {alreadyDone ? (
         <div className="flex justify-center max-lg:block">
-          <Button type="submit" variant="inverse" size="lg" className={sessionCtaClassName}>
-            {progress?.checkin_completed ? t("father.session.saveContinue") : t("common.next")}
-          </Button>
+          <Link
+            href={`/father/sessions/${session.id}/action`}
+            className={cn(buttonVariants({ variant: "inverse", size: "lg" }), sessionCtaClassName)}
+          >
+            {t("father.session.continueAction")}
+          </Link>
         </div>
-      </form>
+      ) : (
+        <form action={submitCheckin} className="space-y-5 lg:space-y-6">
+          <input type="hidden" name="session_id" value={session.id} />
+          {questions.map((question) => (
+            <SkillPromptField
+              key={question.key}
+              name={question.key}
+              prompt={question.label}
+              defaultValue={progress?.checkin_answers?.[question.key]}
+              invalid={Boolean(error)}
+              autoAdvance={canAutoAdvance}
+            />
+          ))}
+          <SessionAdvanceButton
+            label={t("common.next")}
+            visuallyHidden={canAutoAdvance}
+          />
+        </form>
+      )}
 
       <p className="text-center">
         <Link
