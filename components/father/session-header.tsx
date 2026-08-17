@@ -3,8 +3,10 @@ import { ChevronLeft } from "lucide-react";
 
 import type { Session, Training } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
-import { interactiveIconClassName, interactiveLinkClassName } from "@/lib/ui";
+import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+
+type StepKey = "film" | "checkin" | "action";
 
 export async function SessionHeader({
   training,
@@ -13,57 +15,108 @@ export async function SessionHeader({
   completedCount,
   sessionTotal,
   backHref,
+  filmCompleted = false,
+  checkinCompleted = false,
 }: {
   training: Training;
   session: Session;
-  current: "film" | "checkin" | "action";
+  current: StepKey;
   completedCount?: number;
   sessionTotal?: number;
   backHref: string;
+  filmCompleted?: boolean;
+  checkinCompleted?: boolean;
 }) {
   const { t } = await getI18n();
-  const detail = session.keyline ?? session.title;
   const total = sessionTotal ?? training.session_count;
-  const stepLabel = t(`father.session.${current}`);
-  const sessionLine = detail
-    ? t("father.session.sessionDetail", { n: session.session_number, detail })
-    : t("father.session.sessionN", { n: session.session_number });
+  const subtitle =
+    session.keyline && session.keyline !== session.title ? session.keyline : null;
+  const steps: Array<{ key: StepKey; href: string; unlocked: boolean }> = [
+    {
+      key: "film",
+      href: `/father/sessions/${session.id}`,
+      unlocked: true,
+    },
+    {
+      key: "checkin",
+      href: `/father/sessions/${session.id}/checkin`,
+      unlocked: filmCompleted,
+    },
+    {
+      key: "action",
+      href: `/father/sessions/${session.id}/action`,
+      unlocked: checkinCompleted,
+    },
+  ];
 
   return (
-    <div className="flex items-start gap-1">
+    <div className="space-y-4">
       <Link
         href={backHref}
-        aria-label={t("common.back")}
         className={cn(
-          "flex size-11 shrink-0 items-center justify-center rounded-lg text-foreground lg:hidden",
-          interactiveIconClassName
+          "inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground",
+          interactiveLinkClassName
         )}
       >
-        <ChevronLeft className="size-6 rtl:rotate-180" />
+        <ChevronLeft className="size-4 rtl:rotate-180" />
+        {t("common.back")}
       </Link>
-      <div className="min-w-0 flex-1 pt-2 lg:pt-0">
-        <div className="lg:hidden">
-          <p className="truncate text-xs text-muted-foreground">{training.title}</p>
-          <p className="mt-0.5 text-sm font-medium leading-snug">{sessionLine}</p>
-          <p className="mt-1 text-sm text-muted-foreground">{stepLabel}</p>
-        </div>
-        <p className="hidden text-center text-sm text-muted-foreground lg:block">
+
+      <div className="space-y-1">
+        <p className="text-xs text-muted-foreground">
           <Link href="/father/trainings" className={interactiveLinkClassName}>
             {training.title}
           </Link>
-          <span className="px-2 text-white/20">|</span>
-          <span>{sessionLine}</span>
-          <span className="px-2 text-white/20">|</span>
-          <span className="text-foreground">{stepLabel}</span>
-          {typeof completedCount === "number" ? (
-            <>
-              <span className="px-2 text-white/20">|</span>
-              <span>
-                {t("father.session.sessionsCount", { completed: completedCount, total })}
-              </span>
-            </>
-          ) : null}
         </p>
+        <h1 className="text-xl font-medium leading-snug tracking-tight sm:text-2xl">
+          {session.title}
+        </h1>
+        {subtitle ? (
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
+        ) : null}
+      </div>
+
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+        <nav
+          aria-label={t("father.session.steps")}
+          className="flex flex-wrap items-center text-sm"
+        >
+          {steps.map((step, index) => {
+            const label = t(`father.session.${step.key}`);
+            const isCurrent = step.key === current;
+            const className = cn(
+              isCurrent ? "font-medium text-foreground" : "text-muted-foreground",
+              step.unlocked && !isCurrent && interactiveLinkClassName
+            );
+
+            return (
+              <span key={step.key} className="inline-flex items-center">
+                {index > 0 ? (
+                  <span className="px-2 text-white/20" aria-hidden>
+                    ·
+                  </span>
+                ) : null}
+                {step.unlocked && !isCurrent ? (
+                  <Link href={step.href} className={className}>
+                    {label}
+                  </Link>
+                ) : (
+                  <span
+                    className={className}
+                    aria-current={isCurrent ? "step" : undefined}
+                  >
+                    {label}
+                  </span>
+                )}
+              </span>
+            );
+          })}
+        </nav>
+        {typeof completedCount === "number" ? (
+          <p className="text-xs text-muted-foreground">
+            {t("father.session.sessionsCount", { completed: completedCount, total })}
+          </p>
+        ) : null}
       </div>
     </div>
   );

@@ -61,7 +61,9 @@ export default async function SessionActionPage({
         training={training}
         session={session}
         current="action"
-        backHref={`/father/sessions/${sessionId}`}
+        backHref={`/father/sessions/${sessionId}/checkin`}
+        filmCompleted
+        checkinCompleted
       />
 
       <Flash error={error} />

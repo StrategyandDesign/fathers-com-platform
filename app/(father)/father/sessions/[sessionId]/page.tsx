@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { CoverPhoto } from "@/components/brand/cover";
 import { SessionAdvanceButton } from "@/components/father/session-advance-button";
-import { SessionCrumbNote, SessionHeader } from "@/components/father/session-header";
+import { SessionHeader } from "@/components/father/session-header";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
@@ -63,6 +63,8 @@ export default async function SessionViewerPage({
         completedCount={completedCount}
         sessionTotal={sessionTotal}
         backHref="/father"
+        filmCompleted={filmDone}
+        checkinCompleted={checkinDone}
       />
 
       <div className="overflow-hidden rounded-xl border border-border bg-black">
@@ -85,23 +87,32 @@ export default async function SessionViewerPage({
 
       <Flash error={error} />
 
-      {filmDone ? (
-        <div className="flex justify-center max-lg:block">
-          <Link
-            href={nextHref}
-            className={cn(buttonVariants({ variant: "inverse", size: "lg" }), sessionCtaClassName)}
-          >
-            {nextLabel}
-          </Link>
-        </div>
-      ) : (
-        <form action={markFilmWatched}>
-          <input type="hidden" name="session_id" value={session.id} />
-          <SessionAdvanceButton label={t("father.session.iWatched")} />
-        </form>
-      )}
-
-      <SessionCrumbNote />
+      <div className="mx-auto max-w-lg space-y-3 text-center">
+        {!checkinDone ? (
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {t("father.session.filmNextHint")}
+          </p>
+        ) : !actionDone ? (
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {t("father.session.actionNextHint")}
+          </p>
+        ) : null}
+        {filmDone ? (
+          <div className="flex justify-center max-lg:block">
+            <Link
+              href={nextHref}
+              className={cn(buttonVariants({ variant: "inverse", size: "lg" }), sessionCtaClassName)}
+            >
+              {nextLabel}
+            </Link>
+          </div>
+        ) : (
+          <form action={markFilmWatched}>
+            <input type="hidden" name="session_id" value={session.id} />
+            <SessionAdvanceButton label={t("father.session.continueCheckin")} />
+          </form>
+        )}
+      </div>
     </div>
   );
 }

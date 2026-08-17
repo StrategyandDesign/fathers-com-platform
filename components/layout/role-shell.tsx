@@ -4,7 +4,6 @@ import { BrandLogo } from "@/components/brand/logo";
 import { FatherGroupMembership } from "@/components/father/group-membership";
 import { AppNav } from "@/components/layout/app-nav";
 import { ManagerHeaderMenu } from "@/components/layout/manager-header-menu";
-import { ManagerViewActions } from "@/components/layout/manager-view-actions";
 import { StaffMenu } from "@/components/layout/staff-menu";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -18,14 +17,12 @@ export async function RoleShell({
   email,
   avatarUrl,
   organizationName,
-  pendingTrainings = 0,
   children,
 }: {
   role: AppRole;
   email?: string | null;
   avatarUrl?: string | null;
   organizationName?: string | null;
-  pendingTrainings?: number;
   children: React.ReactNode;
 }) {
   const { t } = await getI18n();
@@ -112,11 +109,6 @@ export async function RoleShell({
           )}
         >
           <FatherGroupMembership role={role} name={groupName} />
-          {role === "manager" ? (
-            <div className="mb-5">
-              <ManagerViewActions pendingTrainings={pendingTrainings} />
-            </div>
-          ) : null}
           {children}
         </div>
       </main>

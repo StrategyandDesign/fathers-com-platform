@@ -51,6 +51,8 @@ export default async function SessionCheckinPage({
         session={session}
         current="checkin"
         backHref={`/father/sessions/${sessionId}`}
+        filmCompleted
+        checkinCompleted={Boolean(progress?.checkin_completed)}
       />
 
       <Flash error={error} />
