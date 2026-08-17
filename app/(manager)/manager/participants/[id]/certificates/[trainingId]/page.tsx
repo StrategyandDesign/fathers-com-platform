@@ -10,7 +10,6 @@ import { formatCertificateDate } from "@/lib/certificates/types";
 import { sendCertificate } from "@/lib/manager/actions";
 import { loadCertificatePreview } from "@/lib/manager/data";
 import { getI18n } from "@/lib/i18n/server";
-import { formatShortDate } from "@/lib/manager/types";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -34,7 +33,7 @@ export default async function ManagerCertificatePage({
   const issued = preview.certificate;
   const completedOn = issued
     ? formatCertificateDate(issued.issued_at)
-    : formatShortDate(new Date().toISOString());
+    : formatCertificateDate(new Date().toISOString());
 
   return (
     <div className="space-y-6">

@@ -1,6 +1,11 @@
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage, type RGB } from "pdf-lib";
 
 import type { CertificatePayload } from "@/lib/certificates/types";
+import { embedExportFonts, shapePdfText } from "@/lib/pdf/fonts";
+
+function hasHebrew(text: string) {
+  return /[\u0590-\u05FF]/.test(text);
+}
 
 const FOREST = rgb(0x32 / 255, 0x66 / 255, 0x38 / 255);
 const INK = rgb(0x14 / 255, 0x12 / 255, 0x10 / 255);
@@ -23,6 +28,24 @@ export async function renderCertificatePdf(input: CertificatePayload): Promise<U
   const sans = await doc.embedFont(StandardFonts.Helvetica);
   const sansBold = await doc.embedFont(StandardFonts.HelveticaBold);
   const mono = await doc.embedFont(StandardFonts.Courier);
+  const needsHebrew = [input.fatherName, input.trainingName, input.managerName].some(hasHebrew);
+  let heebo: { regular: PDFFont; bold: PDFFont } | null = null;
+  if (needsHebrew) {
+    try {
+      heebo = await embedExportFonts(doc, "he");
+    } catch {
+      heebo = null;
+    }
+  }
+
+  function field(text: string, prefer: PDFFont, fallback: string) {
+    if (heebo && hasHebrew(text)) {
+      return { font: prefer === serif || prefer === serifItalic ? heebo.regular : heebo.bold, text: shapePdfText(text, "he") };
+    }
+    if (!hasHebrew(text)) return { font: prefer, text };
+    const safe = text.replace(/[\u0590-\u05FF]/g, "").replace(/\s+/g, " ").trim();
+    return { font: prefer, text: safe || fallback };
+  }
 
   page.drawRectangle({
     x: 0,
@@ -62,17 +85,25 @@ export async function renderCertificatePdf(input: CertificatePayload): Promise<U
   drawCentered(page, "National Center for Fathering", y, serifItalic, 11, MUTED);
 
   y -= 52;
-  const nameSize = fitSize(input.fatherName, serifBold, contentWidth, 36, 18);
-  drawCentered(page, input.fatherName, y, serifBold, nameSize, INK);
+  const father = field(input.fatherName, serifBold, "Father");
+  const nameSize = fitSize(father.text, father.font, contentWidth, 36, 18);
+  drawCentered(page, father.text, y, father.font, nameSize, INK);
 
   y -= 36;
   drawCentered(page, "has completed", y, serifItalic, 14, MUTED);
 
   y -= 28;
-  const titleLines = wrapLines(input.trainingName, serifBold, 18, contentWidth);
-  for (const line of titleLines) {
-    drawCentered(page, line, y, serifBold, 18, INK);
+  const training = field(input.trainingName, serifBold, "Training");
+  if (hasHebrew(input.trainingName) && heebo) {
+    const titleSize = fitSize(training.text, training.font, contentWidth, 18, 12);
+    drawCentered(page, training.text, y, training.font, titleSize, INK);
     y -= 24;
+  } else {
+    const titleLines = wrapLines(training.text, training.font, 18, contentWidth);
+    for (const line of titleLines) {
+      drawCentered(page, line, y, training.font, 18, INK);
+      y -= 24;
+    }
   }
 
   y -= 8;
@@ -99,7 +130,8 @@ export async function renderCertificatePdf(input: CertificatePayload): Promise<U
     color: INK,
   });
   drawCenteredIn(page, input.serialNumber, left + col, col, y, mono, 11, INK);
-  drawRight(page, input.managerName, left + col * 2, col, y, serif, 12, INK);
+  const issuer = field(input.managerName, serif, "Manager");
+  drawRight(page, issuer.text, left + col * 2, col, y, issuer.font, 12, INK);
 
   page.drawText("Fathers.com  ·  Presence is a skill.", {
     x: (PAGE_WIDTH - sans.widthOfTextAtSize("Fathers.com  ·  Presence is a skill.", 8)) / 2,

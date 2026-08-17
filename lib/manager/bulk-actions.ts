@@ -125,6 +125,10 @@ export async function runBulkAction(formData: FormData) {
 
   revalidatePath("/manager");
   revalidatePath("/manager/participants");
+  revalidatePath("/father");
+  revalidatePath("/father/certificates");
+  revalidatePath("/father/account");
+  revalidatePath("/father/trainings");
   for (const fatherId of fatherIds) {
     revalidatePath(`/manager/participants/${fatherId}`);
   }

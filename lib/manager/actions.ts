@@ -23,6 +23,10 @@ function ok(path: string, notice: string): never {
 function revalidateManager(fatherId?: string, trainingId?: string) {
   revalidatePath("/manager");
   revalidatePath("/manager/participants");
+  revalidatePath("/father");
+  revalidatePath("/father/certificates");
+  revalidatePath("/father/account");
+  revalidatePath("/father/trainings");
   if (fatherId) {
     revalidatePath(`/manager/participants/${fatherId}`);
   }
