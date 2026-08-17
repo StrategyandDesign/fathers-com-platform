@@ -11,6 +11,8 @@ export const he = {
     assessments: "הערכות",
     reports: "דוחות",
     impact: "תמונת השפעה",
+    compare: "השוואה",
+    dashboardMenu: "תצוגות לוח הבקרה",
     photos: "תמונות הארגון",
     account: "חשבון",
     insights: "תובנות",

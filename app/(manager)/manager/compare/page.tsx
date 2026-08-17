@@ -1,7 +1,5 @@
-import Link from "next/link";
-
 import { Flash } from "@/components/manager/flash";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
@@ -82,12 +80,6 @@ export default async function ManagerComparePage({
             {t("manager.compare.lead")}
           </p>
         </div>
-        <Link
-          href="/manager/impact"
-          className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
-        >
-          {t("manager.compare.impact")}
-        </Link>
       </div>
       <Flash error={params.error || comparison.error} />
 

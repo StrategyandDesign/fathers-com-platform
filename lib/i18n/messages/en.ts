@@ -9,6 +9,8 @@ export const en = {
     assessments: "Assessments",
     reports: "Reports",
     impact: "Impact Snapshot",
+    compare: "Compare",
+    dashboardMenu: "Dashboard views",
     photos: "Org Photos",
     account: "Account",
     insights: "Insights",

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand/logo";
 import { FatherGroupMembership } from "@/components/father/group-membership";
 import { AppNav } from "@/components/layout/app-nav";
+import { ManagerHeaderMenu } from "@/components/layout/manager-header-menu";
 import { StaffMenu } from "@/components/layout/staff-menu";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -32,8 +33,8 @@ export async function RoleShell({
 
   return (
     <div className="min-h-svh bg-background">
-      <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center justify-between border-b border-border bg-background/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden lg:px-5">
-        <div className="flex min-w-0 items-center gap-1.5 lg:gap-3">
+      <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-border bg-background/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden lg:px-5">
+        <div className="flex min-w-0 flex-1 items-center gap-1.5 lg:gap-3">
           {role !== "father" && role !== "manager" ? <StaffMenu role={role} /> : null}
           <BrandLogo href={ROLE_HOME[role]} />
           {chromeLabel ? (
@@ -42,24 +43,31 @@ export async function RoleShell({
             </Badge>
           ) : null}
         </div>
-        <Link
-          href={ROLE_ACCOUNT[role]}
-          className={cn(
-            "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full lg:border lg:border-border lg:bg-card lg:px-2 lg:py-1 lg:pe-3 lg:text-sm",
-            interactiveIconClassName
-          )}
-        >
-          <UserAvatar
-            name={email}
-            src={avatarUrl}
-            className="size-10 text-xs font-medium lg:size-7"
-          />
-          {email || chromeLabel ? (
-            <span className="hidden max-w-[12rem] truncate lg:inline">
-              {email ?? chromeLabel}
-            </span>
-          ) : null}
-        </Link>
+        {role === "manager" ? (
+          <div className="hidden min-w-0 justify-center lg:flex">
+            <ManagerHeaderMenu />
+          </div>
+        ) : null}
+        <div className="flex flex-1 justify-end">
+          <Link
+            href={ROLE_ACCOUNT[role]}
+            className={cn(
+              "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full lg:border lg:border-border lg:bg-card lg:px-2 lg:py-1 lg:pe-3 lg:text-sm",
+              interactiveIconClassName
+            )}
+          >
+            <UserAvatar
+              name={email}
+              src={avatarUrl}
+              className="size-10 text-xs font-medium lg:size-7"
+            />
+            {email || chromeLabel ? (
+              <span className="hidden max-w-[12rem] truncate lg:inline">
+                {email ?? chromeLabel}
+              </span>
+            ) : null}
+          </Link>
+        </div>
       </header>
 
       {managerMobileNav ? (
