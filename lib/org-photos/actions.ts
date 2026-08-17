@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
 import { loadCatalogTrainings } from "@/lib/org-photos/data";
@@ -15,18 +14,13 @@ import {
 } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 
-const PHOTOS_PATH = "/manager/account/photos";
-
-function fail(message: string): never {
-  redirect(`${PHOTOS_PATH}?error=${encodeURIComponent(message)}`);
-}
-
-function ok(notice: string): never {
-  redirect(`${PHOTOS_PATH}?notice=${encodeURIComponent(notice)}`);
-}
+export type OrganizationPhotoResult = {
+  error?: string;
+  notice?: string;
+};
 
 function revalidateOrgPhotos() {
-  revalidatePath(PHOTOS_PATH);
+  revalidatePath("/manager/account/photos");
   revalidatePath("/manager/account");
   revalidatePath("/father");
   revalidatePath("/father/trainings");
@@ -34,7 +28,7 @@ function revalidateOrgPhotos() {
 
 async function requireManagedGroup(groupId: string) {
   const { user } = await requireRole("manager");
-  if (!groupId) fail("Choose an organization.");
+  if (!groupId) return { error: "Choose an organization." } as const;
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -43,44 +37,51 @@ async function requireManagedGroup(groupId: string) {
     .eq("id", groupId)
     .maybeSingle();
 
-  if (error) fail("Couldn’t load that organization. Try again.");
+  if (error) return { error: "Couldn’t load that organization. Try again." } as const;
   if (!data || data.manager_id !== user.id) {
-    fail("That organization isn’t yours.");
+    return { error: "That organization isn’t yours." } as const;
   }
 
-  return { user, organization: data as { id: string; name: string; manager_id: string } };
+  return {
+    user,
+    organization: data as { id: string; name: string; manager_id: string },
+  };
 }
 
-export async function uploadOrganizationPhoto(formData: FormData) {
+export async function uploadOrganizationPhoto(
+  formData: FormData
+): Promise<OrganizationPhotoResult> {
   const groupId = String(formData.get("group_id") ?? "");
   const slotValue = String(formData.get("slot") ?? "");
-  const { user, organization } = await requireManagedGroup(groupId);
+  const access = await requireManagedGroup(groupId);
+  if ("error" in access) return access;
+  const { user, organization } = access;
 
   if (!(await allowActionRateLimit("account.org_photo"))) {
-    fail("Too many photo uploads. Wait a few minutes and try again.");
+    return { error: "Too many photo uploads. Wait a few minutes and try again." };
   }
 
   const trainings = await loadCatalogTrainings();
   const slugs = trainings.map((training) => training.slug);
   if (!isOrgPhotoSlot(slotValue, slugs)) {
-    fail("That photo slot isn’t available.");
+    return { error: "That photo slot isn’t available." };
   }
   const slot = slotValue;
 
   const file = formData.get("photo");
   if (!(file instanceof File) || file.size === 0) {
-    fail("Choose a photo to upload.");
+    return { error: "Choose a photo to upload." };
   }
   if (file.size > ORG_PHOTO_MAX_BYTES) {
-    fail("Photo must be 5 MB or smaller.");
+    return { error: "Photo must be 5 MB or smaller." };
   }
   if (!ORG_PHOTO_MIME_TYPES.includes(file.type as (typeof ORG_PHOTO_MIME_TYPES)[number])) {
-    fail("Use a JPEG, PNG, or WebP.");
+    return { error: "Use a JPEG, PNG, or WebP." };
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());
   const invalid = validateOrgPhoto(readImageMeta(bytes));
-  if (invalid) fail(invalid);
+  if (invalid) return { error: invalid };
 
   const supabase = await createClient();
   const objectPath = orgPhotoObjectPath(organization.id, slot);
@@ -92,7 +93,7 @@ export async function uploadOrganizationPhoto(formData: FormData) {
     });
 
   if (uploadError) {
-    fail("The photo didn’t save. Try a JPEG, PNG, or WebP under 5 MB.");
+    return { error: "The photo didn’t save. Try a JPEG, PNG, or WebP under 5 MB." };
   }
 
   const { error } = await supabase.from("organization_photos").upsert({
@@ -103,26 +104,30 @@ export async function uploadOrganizationPhoto(formData: FormData) {
   });
 
   if (error) {
-    fail("The photo didn’t save. Try again.");
+    return { error: "The photo didn’t save. Try again." };
   }
 
   revalidateOrgPhotos();
-  ok(`Photo updated for ${organization.name.trim() || "this organization"}.`);
+  return { notice: "Photo saved." };
 }
 
-export async function resetOrganizationPhoto(formData: FormData) {
+export async function resetOrganizationPhoto(
+  formData: FormData
+): Promise<OrganizationPhotoResult> {
   const groupId = String(formData.get("group_id") ?? "");
   const slotValue = String(formData.get("slot") ?? "");
-  const { organization } = await requireManagedGroup(groupId);
+  const access = await requireManagedGroup(groupId);
+  if ("error" in access) return access;
+  const { organization } = access;
 
   if (!(await allowActionRateLimit("account.org_photo"))) {
-    fail("Too many photo changes. Wait a few minutes and try again.");
+    return { error: "Too many photo changes. Wait a few minutes and try again." };
   }
 
   const trainings = await loadCatalogTrainings();
   const slugs = trainings.map((training) => training.slug);
   if (!isOrgPhotoSlot(slotValue, slugs)) {
-    fail("That photo slot isn’t available.");
+    return { error: "That photo slot isn’t available." };
   }
   const slot = slotValue;
   const objectPath = orgPhotoObjectPath(organization.id, slot);
@@ -135,11 +140,11 @@ export async function resetOrganizationPhoto(formData: FormData) {
     .eq("slot", slot);
 
   if (deleteRowError) {
-    fail("Couldn’t reset that photo. Try again.");
+    return { error: "Couldn’t reset that photo. Try again." };
   }
 
   await supabase.storage.from(ORG_PHOTOS_BUCKET).remove([objectPath]);
 
   revalidateOrgPhotos();
-  ok(`Reset to the platform default for ${organization.name.trim() || "this organization"}.`);
+  return { notice: "Reset to the platform default." };
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { CoverPhoto } from "@/components/brand/cover";
 import { Flash } from "@/components/manager/flash";
@@ -21,11 +22,21 @@ export function OrganizationPhotoSlot({
   orgName: string;
   view: OrganizationPhotoSlotView;
 }) {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
   const [fitError, setFitError] = useState<string | null>(null);
-  const preview = view.previewUrl || view.defaultUrl;
+  const [notice, setNotice] = useState<string | null>(null);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+  const preview = localPreview || view.previewUrl || view.defaultUrl;
+  const isCustom = Boolean(localPreview) || view.isCustom;
   const name = orgName.trim() || "this organization";
+
+  useEffect(() => {
+    return () => {
+      if (localPreview) URL.revokeObjectURL(localPreview);
+    };
+  }, [localPreview]);
 
   return (
     <article
@@ -83,24 +94,27 @@ export function OrganizationPhotoSlot({
               event.currentTarget.value = "";
               if (!file) return;
               setFitError(null);
+              setNotice(null);
               startTransition(async () => {
                 try {
                   const fitted = await fitOrgPhotoFile(file, view.guidance.kind);
+                  const previewUrl = URL.createObjectURL(fitted);
+                  setLocalPreview((current) => {
+                    if (current) URL.revokeObjectURL(current);
+                    return previewUrl;
+                  });
                   const data = new FormData();
                   data.set("group_id", groupId);
                   data.set("slot", view.slot);
                   data.set("photo", fitted);
-                  await uploadOrganizationPhoto(data);
-                } catch (error) {
-                  if (
-                    typeof error === "object" &&
-                    error &&
-                    "digest" in error &&
-                    typeof error.digest === "string" &&
-                    error.digest.startsWith("NEXT_REDIRECT")
-                  ) {
-                    throw error;
+                  const result = await uploadOrganizationPhoto(data);
+                  if (result.error) {
+                    setFitError(result.error);
+                    return;
                   }
+                  setNotice(result.notice ?? "Photo saved.");
+                  router.refresh();
+                } catch (error) {
                   setFitError(
                     error instanceof Error
                       ? error.message
@@ -116,15 +130,28 @@ export function OrganizationPhotoSlot({
             className="w-full sm:w-auto"
             onClick={() => inputRef.current?.click()}
           >
-            {pending ? "Fitting photo…" : "Replace Photo"}
+            {pending ? "Saving…" : "Replace Photo"}
           </Button>
         </form>
-        <Flash error={fitError ?? undefined} />
+        <p className="text-xs text-muted-foreground">Choosing a photo saves it.</p>
+        <Flash error={fitError ?? undefined} notice={notice ?? undefined} />
 
         <form
           action={(formData) => {
-            startTransition(() => {
-              void resetOrganizationPhoto(formData);
+            setFitError(null);
+            setNotice(null);
+            startTransition(async () => {
+              const result = await resetOrganizationPhoto(formData);
+              if (result.error) {
+                setFitError(result.error);
+                return;
+              }
+              setLocalPreview((current) => {
+                if (current) URL.revokeObjectURL(current);
+                return null;
+              });
+              setNotice(result.notice ?? "Reset to the platform default.");
+              router.refresh();
             });
           }}
           onSubmit={(event) => {
@@ -142,7 +169,7 @@ export function OrganizationPhotoSlot({
           <Button
             type="submit"
             variant="outline"
-            disabled={pending || !view.isCustom}
+            disabled={pending || !isCustom}
             className="w-full sm:w-auto"
           >
             Reset to Default
