@@ -1,9 +1,8 @@
 import { cache } from "react";
 
-import { readLocaleCookie } from "@/lib/i18n/cookie";
+import { peekLocaleCookie } from "@/lib/i18n/cookie";
 import { createTranslator, type Translate } from "@/lib/i18n/translate";
-import type { Locale } from "@/lib/i18n/config";
-import { dateLocale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, dateLocale, localeDir, type Locale } from "@/lib/i18n/config";
 
 export type I18n = {
   locale: Locale;
@@ -12,14 +11,35 @@ export type I18n = {
   dateLocale: string;
 };
 
-export const getI18n = cache(async (): Promise<I18n> => {
-  const locale = await readLocaleCookie();
+function makeI18n(locale: Locale): I18n {
   return {
     locale,
     t: createTranslator(locale),
-    dir: locale === "he" ? "rtl" : "ltr",
+    dir: localeDir(locale),
     dateLocale: dateLocale(locale),
   };
+}
+
+export const getI18n = cache(async (): Promise<I18n> => {
+  const cookieLocale = await peekLocaleCookie();
+  if (cookieLocale) return makeI18n(cookieLocale);
+
+  try {
+    const { createClient } = await import("@/lib/supabase/server");
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { resolveUserLocale } = await import("@/lib/i18n/resolve");
+      const resolved = await resolveUserLocale(user.id);
+      return makeI18n(resolved.locale);
+    }
+  } catch {
+    // Cookie and session are best-effort; fall back to English.
+  }
+
+  return makeI18n(DEFAULT_LOCALE);
 });
 
 export function formatLongDate(value: string | Date, locale: Locale) {

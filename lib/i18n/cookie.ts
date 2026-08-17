@@ -4,7 +4,6 @@ import {
   DEFAULT_LOCALE,
   LOCALE_COOKIE,
   isLocale,
-  localeFromCookie,
   type Locale,
 } from "@/lib/i18n/config";
 
@@ -16,9 +15,14 @@ export function localeCookieOptions() {
   };
 }
 
-export async function readLocaleCookie(): Promise<Locale> {
+export async function peekLocaleCookie(): Promise<Locale | null> {
   const jar = await cookies();
-  return localeFromCookie(jar.get(LOCALE_COOKIE)?.value);
+  const value = jar.get(LOCALE_COOKIE)?.value;
+  return isLocale(value) ? value : null;
+}
+
+export async function readLocaleCookie(): Promise<Locale> {
+  return (await peekLocaleCookie()) ?? DEFAULT_LOCALE;
 }
 
 export async function writeLocaleCookie(locale: Locale) {

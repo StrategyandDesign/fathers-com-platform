@@ -9,13 +9,9 @@ import {
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { youtubeEmbedUrl } from "@/lib/father/types";
+import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { loadReviewDetail } from "@/lib/manager/reviews";
-import { formatShortDate } from "@/lib/manager/types";
 import { interactiveLinkClassName } from "@/lib/ui";
-
-function sessionLabel(count: number) {
-  return count === 1 ? "1 session" : `${count} sessions`;
-}
 
 export default async function ManagerTrainingReviewPage({
   params,
@@ -27,6 +23,7 @@ export default async function ManagerTrainingReviewPage({
   const { trainingId } = await params;
   const flash = await searchParams;
   const { user } = await requireRole("manager");
+  const { t, locale } = await getI18n();
   const detail = await loadReviewDetail(user.id, trainingId, flash.group);
 
   if (!detail) {
@@ -41,11 +38,11 @@ export default async function ManagerTrainingReviewPage({
     <div className="space-y-6">
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
         <Link href="/manager" className={interactiveLinkClassName}>
-          Dashboard
+          {t("manager.reviewDetail.dashboard")}
         </Link>
         <span className="text-white/20">|</span>
         <Link href="/manager/reviews" className={interactiveLinkClassName}>
-          New trainings
+          {t("manager.reviews.title")}
         </Link>
         <span className="text-white/20">|</span>
         <span className="min-w-0">{training.title}</span>
@@ -54,26 +51,23 @@ export default async function ManagerTrainingReviewPage({
 
       {previewing ? (
         <div className="rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 sm:px-5">
-          <p className="font-medium">Preview — not yet available to your cohort</p>
+          <p className="font-medium">{t("manager.reviewDetail.previewTitle")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Read-only. Accept to add this to Assign Training, or decline to keep
-            it hidden from {groupName}.
+            {t("manager.reviewDetail.previewLead", { org: groupName })}
           </p>
         </div>
       ) : declined ? (
         <div className="rounded-xl border border-border bg-card px-4 py-3 sm:px-5">
-          <p className="font-medium">Declined for your organization</p>
+          <p className="font-medium">{t("manager.reviewDetail.declinedTitle")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Hidden from new assignment. Type ACCEPT below to reverse this and
-            make it available to assign.
+            {t("manager.reviewDetail.declinedLead")}
           </p>
         </div>
       ) : (
         <div className="rounded-xl border border-border bg-card px-4 py-3 sm:px-5">
-          <p className="font-medium">Available to assign</p>
+          <p className="font-medium">{t("manager.reviewDetail.availableTitle")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Fathers are not enrolled until you assign this training. Decline if
-            you want to hide it from new assignment.
+            {t("manager.reviewDetail.availableLead")}
           </p>
         </div>
       )}
@@ -85,7 +79,9 @@ export default async function ManagerTrainingReviewPage({
               {training.title}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {sessionLabel(sessions.length)}
+              {sessions.length === 1
+                ? t("manager.dashboard.sessionOne")
+                : t("manager.dashboard.sessionMany", { count: sessions.length })}
               {otherGroups.length > 0 ? ` · ${groupName}` : ""}
             </p>
           </div>
@@ -96,8 +92,8 @@ export default async function ManagerTrainingReviewPage({
         ) : null}
         {review.decided_at ? (
           <p className="mt-4 text-sm text-muted-foreground">
-            {review.status === "accepted" ? "Accepted" : "Declined"}{" "}
-            {formatShortDate(review.decided_at)}
+            {review.status === "accepted" ? t("manager.reviews.accepted") : t("manager.reviews.declined")}{" "}
+            {formatShortDate(review.decided_at, locale)}
             {review.status === "declined" && review.decline_reason
               ? ` · ${review.decline_reason}`
               : ""}
@@ -115,16 +111,14 @@ export default async function ManagerTrainingReviewPage({
 
       <section className="space-y-4">
         <div>
-          <h2 className="font-heading text-lg font-semibold">Sessions</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.reviewDetail.sessions")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Full structure in order. You can watch the film. Nothing here can be
-            edited or marked complete.
+            {t("manager.reviewDetail.sessionsLead")}
           </p>
         </div>
         {sessions.length === 0 ? (
-          <EmptyState title="No sessions yet">
-            An admin still needs to add sessions. You can accept later once the
-            structure is ready.
+          <EmptyState title={t("manager.reviewDetail.noSessionsTitle")}>
+            {t("manager.reviewDetail.noSessionsBody")}
           </EmptyState>
         ) : (
           <ol className="space-y-4">
@@ -137,7 +131,7 @@ export default async function ManagerTrainingReviewPage({
                 >
                   <div className="p-4 sm:p-6">
                     <p className="text-sm text-muted-foreground">
-                      Session {session.session_number}
+                      {t("manager.reviewDetail.sessionN", { n: session.session_number })}
                     </p>
                     <h3 className="mt-1 font-heading text-lg font-semibold">
                       {session.title}

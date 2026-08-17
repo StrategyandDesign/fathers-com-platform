@@ -76,21 +76,21 @@ export default async function ManagerParticipantsPage({
                     <p className="text-sm text-muted-foreground">
                       {quietLabel(participant.lastActivity)}
                       {lastSent
-                        ? ` · Last nudge ${formatShortDate(lastSent)}`
+                        ? ` · ${t("manager.participants.lastNudge", { date: formatShortDate(lastSent) })}`
                         : ""}
                     </p>
                   </div>
                   {historyUnavailable ? (
                     <p className="text-sm text-muted-foreground">
-                      Couldn’t check recent reminders.
+                      {t("manager.participants.checkFailed")}
                     </p>
                   ) : remindersAllowed === false ? (
-                    <p className="text-sm text-muted-foreground">Reminders off</p>
+                    <p className="text-sm text-muted-foreground">{t("manager.participants.remindersOff")}</p>
                   ) : remaining > 0 ? (
                     <p className="text-sm text-muted-foreground">
                       {remaining === 1
-                        ? "Another reminder tomorrow"
-                        : `Another reminder in ${remaining} days`}
+                        ? t("manager.participants.anotherTomorrow")
+                        : t("manager.participants.anotherInDays", { days: remaining })}
                     </p>
                   ) : (
                     <NudgeForm
@@ -109,12 +109,11 @@ export default async function ManagerParticipantsPage({
 
       {participants.length === 0 ? (
         <EmptyState
-          title="No one has joined yet"
+          title={t("manager.participants.emptyTitle")}
           actionHref="/manager"
-          actionLabel="Open dashboard"
+          actionLabel={t("manager.participants.openDashboard")}
         >
-          Share your invite code from the Dashboard so fathers can create an
-          account.
+          {t("manager.participants.emptyBody")}
         </EmptyState>
       ) : (
         <ParticipantBulkList
@@ -124,7 +123,13 @@ export default async function ManagerParticipantsPage({
             avatarUrl: participant.avatarUrl,
             groupName: participant.groupName,
             profileStatus: participant.profileStatus,
-            progressLabel: participant.progressLabel,
+            progressLabel: participant.progressLabel === "None assigned"
+              ? t("manager.participants.noneAssigned")
+              : participant.progressLabel.endsWith(" complete")
+                ? t("manager.participants.trainingComplete", {
+                    title: participant.progressLabel.slice(0, -" complete".length),
+                  })
+                : participant.progressLabel,
             lastActivity: participant.lastActivity,
             quiet: needsNudge(
               participant.lastActivity,

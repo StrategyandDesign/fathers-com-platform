@@ -3,7 +3,7 @@ import { Geist_Mono, Heebo, Inter } from "next/font/google";
 
 import { LocaleProvider } from "@/components/i18n/locale-provider";
 import { localeDir } from "@/lib/i18n/config";
-import { readLocaleCookie } from "@/lib/i18n/cookie";
+import { getI18n } from "@/lib/i18n/server";
 
 import "./globals.css";
 
@@ -39,7 +39,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await readLocaleCookie();
+  const { locale } = await getI18n();
   const dir = localeDir(locale);
 
   return (

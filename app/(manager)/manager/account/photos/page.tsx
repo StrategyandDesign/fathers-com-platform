@@ -52,7 +52,7 @@ export default async function ManagerOrganizationPhotosPage({
       ) : (
         <div className="space-y-8">
           {sections.map((section) => {
-            const orgName = section.organization.name.trim() || "this organization";
+            const orgName = section.organization.name.trim() || t("manager.photos.thisOrg");
             return (
               <section key={section.organization.id} className="space-y-4">
                 {sections.length > 1 ? (

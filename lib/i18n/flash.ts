@@ -17,7 +17,22 @@ const EXACT: Record<string, string> = {
   "Preferences saved.": "flash.prefsSaved",
   "Language saved.": "flash.localeSaved",
   "Couldn’t save the language. Try again.": "flash.localeFailed",
+  "Photo saved.": "manager.photos.photoSaved",
+  "Reset to the platform default.": "manager.photos.photoReset",
+  "Couldn’t use that photo. Try another.": "manager.photos.photoFailed",
+  "That group is not in the cohort.": "reviewer.groupNotInCohort",
+  "That training is not in the catalog.": "reviewer.trainingNotInCatalog",
 };
+
+export function translateProgressLabel(label: string, t: Translate) {
+  if (label === "None assigned") return t("manager.participants.noneAssigned");
+  if (label.endsWith(" complete")) {
+    return t("manager.participants.trainingComplete", {
+      title: label.slice(0, -" complete".length),
+    });
+  }
+  return label;
+}
 
 export function translateFlash(message: string | undefined, t: Translate) {
   if (!message) return undefined;

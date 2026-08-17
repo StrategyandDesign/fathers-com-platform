@@ -1,5 +1,4 @@
 import {
-  BRAND_PHOTOS,
   photoPackForCode,
   profileCover,
   sessionCover,

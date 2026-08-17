@@ -30,7 +30,7 @@ import {
   needsNudge,
   quietLabel,
 } from "@/lib/manager/nudges";
-import { formatShortDate } from "@/lib/manager/types";
+import { formatShortDate } from "@/lib/i18n/server";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
   fieldClassName,
@@ -50,7 +50,7 @@ function Step({ done, label }: { done: boolean; label: string }) {
         )}
       />
       <span className={done ? "text-foreground" : "text-muted-foreground"}>
-        {done ? "Completed" : "Pending"} {label}
+        {label}
       </span>
     </span>
   );
@@ -66,7 +66,7 @@ export default async function ManagerParticipantDetailPage({
   const { id } = await params;
   const flash = await searchParams;
   const { user } = await requireRole("manager");
-  const { t } = await getI18n();
+  const { t, locale } = await getI18n();
   const detail = await loadManagedParticipant(user.id, id);
 
   if (!detail) {
@@ -122,40 +122,40 @@ export default async function ManagerParticipantDetailPage({
             {participant.name}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {participant.groupName} · Joined {formatShortDate(participant.joinedAt)}
+            {participant.groupName} · {t("manager.participants.joined", { date: formatShortDate(participant.joinedAt, locale) })}
             {quiet ? ` · ${quietLabel(participant.lastActivity)}` : ""}
           </p>
         </div>
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">Private note</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("manager.participants.privateNote")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Only managers of {participant.groupName} can see this. He never will.
+          {t("manager.participants.privateNoteLead", { name: participant.groupName })}
         </p>
         <form action={saveParticipantNote} className="mt-5 space-y-4">
           <input type="hidden" name="father_id" value={participant.fatherId} />
           <label className="block space-y-2">
-            <span className="sr-only">Private note</span>
+            <span className="sr-only">{t("manager.participants.privateNote")}</span>
             <textarea
               className={textareaClassName}
               name="body"
               maxLength={NOTE_MAX_LENGTH}
               rows={4}
               defaultValue={note?.body ?? ""}
-              placeholder="Spoke with him Tuesday."
+              placeholder={t("manager.participants.privateNotePlaceholder")}
               aria-invalid={Boolean(flash.error) || undefined}
             />
           </label>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
               {note
-                ? `Updated ${formatShortDate(note.updatedAt)}`
-                : "Not saved yet."}
+                ? t("manager.participants.noteUpdated", { date: formatShortDate(note.updatedAt, locale) })
+                : t("manager.participants.noteUnsaved")}
             </p>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button type="submit" className="w-full sm:w-auto">
-                Save note
+                {t("manager.participants.saveNote")}
               </Button>
               {note ? (
                 <Button
@@ -164,7 +164,7 @@ export default async function ManagerParticipantDetailPage({
                   variant="outline"
                   className="w-full sm:w-auto"
                 >
-                  Clear
+                  {t("manager.participants.clearNote")}
                 </Button>
               ) : null}
             </div>
@@ -176,25 +176,25 @@ export default async function ManagerParticipantDetailPage({
         id="nudge"
         className="rounded-xl border border-border bg-card p-4 sm:p-6"
       >
-        <h2 className="font-heading text-lg font-semibold">Send a nudge</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("manager.participants.sendNudge")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {quiet
-            ? `${quietLabel(participant.lastActivity)}. A short, respectful note — only if he left session reminders on.`
-            : "He’s been active recently. You can still send a calm note if you need to."}
+            ? t("manager.participants.nudgeQuiet", { quiet: quietLabel(participant.lastActivity) })
+            : t("manager.participants.nudgeActive")}
         </p>
         {historyUnavailable ? (
           <p className="mt-4 rounded-xl border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
-            Couldn’t check recent reminders. Try again in a moment.
+            {t("manager.participants.nudgeCheckFailed")}
           </p>
         ) : remindersAllowed === false ? (
           <p className="mt-4 rounded-xl border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
-            He turned off session reminders. A nudge will not be emailed.
+            {t("manager.participants.remindersOffLong")}
           </p>
         ) : cooldown > 0 ? (
           <p className="mt-4 text-sm text-muted-foreground">
             {cooldown === 1
-              ? "A reminder already went out. You can send another tomorrow."
-              : `A reminder already went out. You can send another in ${cooldown} days.`}
+              ? t("manager.participants.nudgeTomorrow")
+              : t("manager.participants.nudgeInDays", { days: cooldown })}
           </p>
         ) : (
           <div className="mt-5">
@@ -211,7 +211,7 @@ export default async function ManagerParticipantDetailPage({
         )}
         {nudgeHistory.length > 0 ? (
           <div className="mt-6">
-            <h3 className="text-sm font-medium">Nudge history</h3>
+            <h3 className="text-sm font-medium">{t("manager.participants.nudgeHistory")}</h3>
             <ul className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border">
               {nudgeHistory.map((row) => (
                 <li
@@ -224,41 +224,43 @@ export default async function ManagerParticipantDetailPage({
                       : row.template_key}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {NUDGE_STATUS_LABEL[row.status]} · {formatShortDate(row.sent_at)}
+                    {NUDGE_STATUS_LABEL[row.status]} · {formatShortDate(row.sent_at, locale)}
                   </p>
                 </li>
               ))}
             </ul>
           </div>
         ) : (
-          <p className="mt-5 text-sm text-muted-foreground">No nudges sent yet.</p>
+          <p className="mt-5 text-sm text-muted-foreground">{t("manager.participants.noNudges")}</p>
         )}
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">Father Profile</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("manager.participants.fatherProfile")}</h2>
         {participant.profile ? (
           <p className="mt-3 text-muted-foreground">
-            Completed {formatShortDate(participant.profile.taken_at)}
+            {t("manager.participants.profileCompleted", {
+              date: formatShortDate(participant.profile.taken_at, locale),
+            })}
             {participant.profile.primary_edge
-              ? ` · Primary Edge: ${participant.profile.primary_edge}`
+              ? ` · ${t("manager.participants.primaryEdge", { edge: participant.profile.primary_edge })}`
               : ""}
             {participant.profile.primary_determination
-              ? ` · Determination: ${participant.profile.primary_determination}`
+              ? ` · ${t("manager.participants.determination", { determination: participant.profile.primary_determination })}`
               : ""}
           </p>
         ) : (
           <p className="mt-3 text-muted-foreground">
             {participant.profileStatus === "in_progress"
-              ? "He started the Profile and hasn’t finished."
-              : "He hasn’t started the Profile yet."}
+              ? t("manager.participants.profileInProgress")
+              : t("manager.participants.profileNotStarted")}
           </p>
         )}
       </section>
 
       {customAssignments.length > 0 ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Custom assessments</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.participants.customAssessments")}</h2>
           <ul className="mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border">
             {customAssignments.map(({ assignment, assessment }) => (
               <li key={assignment.id}>
@@ -282,13 +284,13 @@ export default async function ManagerParticipantDetailPage({
 
       {progress.length === 0 ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Trainings</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.participants.trainings")}</h2>
           <EmptyState
             framed={false}
             className="mt-2 p-0"
-            title="No trainings in the catalog"
+            title={t("manager.participants.noCatalogTitle")}
           >
-            An admin needs to add a training before you can assign work.
+            {t("manager.participants.noCatalogBody")}
           </EmptyState>
         </section>
       ) : (
@@ -303,9 +305,12 @@ export default async function ManagerParticipantDetailPage({
                 <span className="shrink-0 text-sm tabular-nums text-muted-foreground">{percent}%</span>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                {card.completed} of {card.total} sessions
-                {card.assigned ? " · Assigned" : ""}
-                {card.certificate ? " · Certified" : ""}
+                {t("manager.participants.sessionsOf", {
+                  completed: card.completed,
+                  total: card.total,
+                })}
+                {card.assigned ? ` · ${t("manager.participants.assigned")}` : ""}
+                {card.certificate ? ` · ${t("manager.participants.certified")}` : ""}
               </p>
               <ProgressBar value={percent} className="mt-4" />
               {card.certificate ? (
@@ -322,7 +327,7 @@ export default async function ManagerParticipantDetailPage({
                       href={`/manager/participants/${participant.fatherId}/certificates/${card.training.id}`}
                       className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full sm:w-auto")}
                     >
-                      View
+                      {t("manager.participants.view")}
                     </Link>
                   </div>
                 </div>
@@ -334,16 +339,40 @@ export default async function ManagerParticipantDetailPage({
       )}
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">Current session</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("manager.participants.currentSession")}</h2>
         {current ? (
           <>
             <p className="mt-2 text-muted-foreground">
-              {current.session.title} · Session {current.session.session_number}
+              {current.session.title} · {t("manager.participants.sessionN", { n: current.session.session_number })}
             </p>
             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 sm:gap-5">
-              <Step done={current.progress?.film_completed ?? false} label="Film" />
-              <Step done={current.progress?.checkin_completed ?? false} label="Check-in" />
-              <Step done={current.progress?.action_completed ?? false} label="Action" />
+              <Step
+                done={current.progress?.film_completed ?? false}
+                label={t(
+                  current.progress?.film_completed
+                    ? "manager.participants.stepDone"
+                    : "manager.participants.stepPending",
+                  { label: t("father.session.film") }
+                )}
+              />
+              <Step
+                done={current.progress?.checkin_completed ?? false}
+                label={t(
+                  current.progress?.checkin_completed
+                    ? "manager.participants.stepDone"
+                    : "manager.participants.stepPending",
+                  { label: t("father.session.checkin") }
+                )}
+              />
+              <Step
+                done={current.progress?.action_completed ?? false}
+                label={t(
+                  current.progress?.action_completed
+                    ? "manager.participants.stepDone"
+                    : "manager.participants.stepPending",
+                  { label: t("father.session.action") }
+                )}
+              />
             </div>
           </>
         ) : (
@@ -352,17 +381,17 @@ export default async function ManagerParticipantDetailPage({
             className="mt-2 p-0"
             title={
               progress.length === 0
-                ? "No trainings to continue"
+                ? t("manager.participants.noContinueTitle")
                 : progress.some((card) => card.assigned)
-                  ? "All sessions complete"
-                  : "No training assigned"
+                  ? t("manager.participants.allCompleteTitle")
+                  : t("manager.participants.noAssignedTitle")
             }
           >
             {progress.length === 0
-              ? "An admin needs to add a training to the catalog first."
+              ? t("manager.participants.noContinueBody")
               : progress.some((card) => card.assigned)
-                ? "Every session in the catalog is complete. You can send a certificate below."
-                : "Assign a training below so he has a next session."}
+                ? t("manager.participants.allCompleteBody")
+                : t("manager.participants.noAssignedBody")}
           </EmptyState>
         )}
       </section>
@@ -370,17 +399,16 @@ export default async function ManagerParticipantDetailPage({
       <section className="grid gap-4 md:grid-cols-3">
         <form action={assignTraining} className="rounded-xl border border-border bg-card p-4 sm:p-5">
           <h2 className="font-heading font-semibold">{t("manager.participants.assignTraining")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Adds this training to his path.</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("manager.participants.assignLead")}</p>
           <input type="hidden" name="father_id" value={participant.fatherId} />
           <div className="mt-4">
             {assignable.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No trainings are available to assign yet. Review new releases
-                from the dashboard, or wait for an admin to publish one.
+                {t("manager.participants.noneAssignable")}
               </p>
             ) : unassigned.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Every available training is already assigned.
+                {t("manager.participants.allAssigned")}
               </p>
             ) : (
               <select
@@ -405,15 +433,15 @@ export default async function ManagerParticipantDetailPage({
         </form>
 
         <form action={markTrainingComplete} className="rounded-xl border border-border bg-card p-4 sm:p-5">
-          <h2 className="font-heading font-semibold">Mark Training Complete</h2>
+          <h2 className="font-heading font-semibold">{t("manager.participants.markComplete")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Marks every session in that training done.
+            {t("manager.participants.markCompleteLead")}
           </p>
           <input type="hidden" name="father_id" value={participant.fatherId} />
           <div className="mt-4">
             {progress.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No trainings in the catalog yet. An admin needs to add one.
+                {t("manager.participants.noCatalogYet")}
               </p>
             ) : (
               <select
@@ -425,7 +453,9 @@ export default async function ManagerParticipantDetailPage({
                 {progress.map((card) => (
                   <option key={card.training.id} value={card.training.id}>
                     {card.training.title}
-                    {card.completed === card.total && card.total > 0 ? " (done)" : ""}
+                    {card.completed === card.total && card.total > 0
+                      ? ` ${t("manager.participants.doneSuffix")}`
+                      : ""}
                   </option>
                 ))}
               </select>
@@ -433,28 +463,28 @@ export default async function ManagerParticipantDetailPage({
           </div>
           {progress.length > 0 ? (
             <Button type="submit" className="mt-4 w-full">
-              Mark Training Complete
+              {t("manager.participants.markComplete")}
             </Button>
           ) : null}
         </form>
 
         <form action={previewCertificate} className="rounded-xl border border-border bg-card p-4 sm:p-5">
-          <h2 className="font-heading font-semibold">Send Certificate</h2>
+          <h2 className="font-heading font-semibold">{t("manager.participants.sendCertificate")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Preview, then issue a serial and downloadable PDF.
+            {t("manager.participants.sendCertificateLead")}
           </p>
           <input type="hidden" name="father_id" value={participant.fatherId} />
           <div className="mt-4">
             {progress.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No trainings in the catalog yet. An admin needs to add one.
+                {t("manager.participants.noCatalogYet")}
               </p>
             ) : withoutCert.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Certificates are only issued after a training is fully complete.
+                {t("manager.participants.certOnlyComplete")}{" "}
                 {progress.some((card) => !card.certificate)
-                  ? " Finish the remaining sessions first."
-                  : " A certificate is already on file for each completed training."}
+                  ? t("manager.participants.finishSessions")
+                  : t("manager.participants.certOnFile")}
               </p>
             ) : (
               <select
@@ -473,7 +503,7 @@ export default async function ManagerParticipantDetailPage({
           </div>
           {withoutCert.length > 0 ? (
             <Button type="submit" className="mt-4 w-full">
-              Preview Certificate
+              {t("manager.participants.previewCertificate")}
             </Button>
           ) : null}
         </form>

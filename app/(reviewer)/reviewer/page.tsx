@@ -7,24 +7,49 @@ import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
 import { resolveUserLocale } from "@/lib/i18n/resolve";
+import { formatShortDate } from "@/lib/i18n/server";
 import {
-  COMPLETION_STATUS_LABEL,
   COMPLETION_STATUSES,
-  PROFILE_STATUS_LABEL,
-  formatActivityWeek,
   hasInsightFilters,
   insightQuery,
   loadReviewerInsights,
   parseInsightSearchParams,
-  progressLabel,
+  type InsightRow,
+  type ProfileStatus,
+  type CompletionStatus,
 } from "@/lib/reviewer/insights";
 import { fieldClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-function formatWeek(value: string) {
-  const date = new Date(`${value}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+function statusLabel(
+  status: ProfileStatus | CompletionStatus,
+  t: (key: string) => string
+) {
+  if (status === "completed") return t("reviewer.completed");
+  if (status === "in_progress") return t("reviewer.inProgress");
+  return t("reviewer.notStarted");
+}
+
+function groupLabel(label: string, t: (key: string, vars?: Record<string, string | number>) => string) {
+  const match = /^Group (.+)$/.exec(label);
+  return match ? t("reviewer.groupLabel", { n: match[1] }) : label;
+}
+
+function rowProgress(
+  row: InsightRow,
+  trainingId: string | null,
+  t: (key: string, vars?: Record<string, string | number>) => string
+) {
+  if (trainingId) {
+    return t("reviewer.sessionsProgress", {
+      completed: row.sessionsCompleted,
+      total: row.sessionsTotal,
+    });
+  }
+  return t("reviewer.trainingsProgress", {
+    completed: row.trainingsCompleted,
+    inProgress: row.trainingsInProgress,
+  });
 }
 
 function Bar({ value, max }: { value: number; max: number }) {
@@ -79,7 +104,7 @@ export default async function ReviewerInsightsPage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("reviewer");
-  const { t } = await getI18n();
+  const { t, locale } = await getI18n();
   const parsed = parseInsightSearchParams(params);
   const resolved = await resolveUserLocale(user.id);
   const scopedGroupId = resolved.homeGroupId;
@@ -150,7 +175,7 @@ export default async function ReviewerInsightsPage({
               {scopedGroupId ? null : <option value="">{t("reviewer.allGroups")}</option>}
               {insights.groups.map((group) => (
                 <option key={group.id} value={group.id}>
-                  {group.label}
+                  {groupLabel(group.label, t)}
                 </option>
               ))}
             </select>
@@ -246,26 +271,26 @@ export default async function ReviewerInsightsPage({
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Profile completion trend</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("reviewer.trendTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Weekly Profile completions, last six weeks.
+            {t("reviewer.trendLead")}
           </p>
           <div className="mt-5 space-y-3">
             {insights.completion_trend.length === 0 ? (
               <EmptyState
                 framed={false}
                 className="p-0"
-                title="No weekly totals yet"
+                title={t("reviewer.noWeeklyTitle")}
               >
                 {insights.total_participants === 0
-                  ? "These bars fill in after fathers finish a Profile."
-                  : "No Profile completions in the last six weeks."}
+                  ? t("reviewer.noWeeklyEmpty")
+                  : t("reviewer.noWeeklyRecent")}
               </EmptyState>
             ) : (
               insights.completion_trend.map((point) => (
                 <div key={point.week} className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
-                    <span>{formatWeek(point.week)}</span>
+                    <span>{formatShortDate(point.week, locale)}</span>
                     <span className="tabular-nums text-muted-foreground">{point.count}</span>
                   </div>
                   <Bar value={point.count} max={trendMax} />
@@ -276,20 +301,20 @@ export default async function ReviewerInsightsPage({
         </section>
 
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Most common Primary Edges</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("reviewer.edgesTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Counts from completed Profiles only.
+            {t("reviewer.edgesLead")}
           </p>
           <div className="mt-5 space-y-3">
             {insights.primary_edges.length === 0 ? (
               <EmptyState
                 framed={false}
                 className="p-0"
-                title="No Primary Edges yet"
+                title={t("reviewer.noEdgesTitle")}
               >
                 {insights.total_participants === 0
-                  ? "Edges appear after fathers complete a Profile."
-                  : "No completed Profiles in this filter have a Primary Edge yet."}
+                  ? t("reviewer.noEdgesEmpty")
+                  : t("reviewer.noEdgesFilter")}
               </EmptyState>
             ) : (
               insights.primary_edges.map((edge) => (
@@ -309,13 +334,13 @@ export default async function ReviewerInsightsPage({
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="font-heading text-lg font-semibold">Training progress distribution</h2>
+            <h2 className="font-heading text-lg font-semibold">{t("reviewer.distTitle")}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              How the cohort sits in each training.
+              {t("reviewer.distLead")}
             </p>
           </div>
           <p className="text-sm text-muted-foreground">
-            All data is anonymized and aggregated.
+            {t("reviewer.anonymized")}
           </p>
         </div>
         <div className="mt-5 space-y-5">
@@ -323,9 +348,9 @@ export default async function ReviewerInsightsPage({
             <EmptyState
               framed={false}
               className="p-0"
-              title="No trainings in the catalog"
+              title={t("reviewer.noDistTitle")}
             >
-              Distribution appears once trainings are published.
+              {t("reviewer.noDistBody")}
             </EmptyState>
           ) : (
             insights.training_distribution.map((training) => {
@@ -344,8 +369,11 @@ export default async function ReviewerInsightsPage({
                     completed={training.completed}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {training.completed} complete · {training.in_progress} in progress ·{" "}
-                    {training.not_started} not started
+                    {t("reviewer.distCounts", {
+                      completed: training.completed,
+                      inProgress: training.in_progress,
+                      notStarted: training.not_started,
+                    })}
                   </p>
                 </div>
               );
@@ -356,29 +384,32 @@ export default async function ReviewerInsightsPage({
 
       <section className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="border-b border-border px-4 py-4 sm:px-6">
-          <h2 className="font-heading text-lg font-semibold">Anonymized progress</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("reviewer.tableTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {insights.rows.length} of {insights.participantCount} participants
+            {t("reviewer.tableCount", {
+              shown: insights.rows.length,
+              total: insights.participantCount,
+            })}
+            {" · "}
             {parsed.filters.trainingId
-              ? " · status is for the selected training"
-              : " · status is across the catalog"}
+              ? t("reviewer.tableStatusSelected")
+              : t("reviewer.tableStatusCatalog")}
             .
           </p>
         </div>
         {insights.rows.length === 0 ? (
           insights.participantCount === 0 ? (
-            <EmptyState framed={false} title="No cohort data yet">
-              Totals stay at zero until fathers join a group and start a Profile
-              or training. This view stays anonymized.
+            <EmptyState framed={false} title={t("reviewer.noCohortTitle")}>
+              {t("reviewer.noCohortBody")}
             </EmptyState>
           ) : (
             <EmptyState
               framed={false}
-              title="No matching participants"
-              actionHref={filtered ? "/reviewer" : undefined}
-              actionLabel={filtered ? "Clear filters" : undefined}
+              title={t("reviewer.noMatchTitle")}
+              actionHref={filtered && !scopedGroupId ? "/reviewer" : undefined}
+              actionLabel={filtered && !scopedGroupId ? t("reviewer.clear") : undefined}
             >
-              No one matches these filters. Clear them to see the full cohort.
+              {t("reviewer.noMatchBody")}
             </EmptyState>
           )
         ) : (
@@ -395,31 +426,33 @@ export default async function ReviewerInsightsPage({
                         {row.participantLabel}
                       </span>
                       <span className="block truncate text-sm text-muted-foreground">
-                        {row.groupLabel}
+                        {groupLabel(row.groupLabel, t)}
                       </span>
                     </span>
                     <span className="flex items-baseline justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">Profile</span>
+                      <span className="text-muted-foreground">{t("reviewer.profile")}</span>
                       <span className="text-right text-muted-foreground">
-                        {PROFILE_STATUS_LABEL[row.profileStatus]}
+                        {statusLabel(row.profileStatus, t)}
                       </span>
                     </span>
                     <span className="flex items-baseline justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">Status</span>
+                      <span className="text-muted-foreground">{t("reviewer.statusCol")}</span>
                       <span className="text-right">
-                        {COMPLETION_STATUS_LABEL[row.completionStatus]}
+                        {statusLabel(row.completionStatus, t)}
                       </span>
                     </span>
                     <span className="flex items-baseline justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">Progress</span>
+                      <span className="text-muted-foreground">{t("reviewer.progress")}</span>
                       <span className="text-right">
-                        {progressLabel(row, parsed.filters.trainingId)}
+                        {rowProgress(row, parsed.filters.trainingId, t)}
                       </span>
                     </span>
                     <span className="flex items-baseline justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">Last active</span>
+                      <span className="text-muted-foreground">{t("reviewer.lastActive")}</span>
                       <span className="text-right text-muted-foreground">
-                        {formatActivityWeek(row.activityWeek)}
+                        {row.activityWeek
+                          ? t("reviewer.weekOf", { date: formatShortDate(row.activityWeek, locale) })
+                          : t("common.emDash")}
                       </span>
                     </span>
                   </div>
@@ -430,11 +463,11 @@ export default async function ReviewerInsightsPage({
               <table className="w-full min-w-[52rem] text-left text-sm">
                 <thead>
                   <tr className="border-b border-border text-xs tracking-wide text-muted-foreground uppercase">
-                    <th className="px-6 py-3 font-medium">Participant</th>
-                    <th className="px-4 py-3 font-medium">Profile</th>
-                    <th className="px-4 py-3 font-medium">Status</th>
-                    <th className="px-4 py-3 font-medium">Progress</th>
-                    <th className="px-6 py-3 font-medium">Last activity</th>
+                    <th className="px-6 py-3 font-medium">{t("reviewer.participant")}</th>
+                    <th className="px-4 py-3 font-medium">{t("reviewer.profile")}</th>
+                    <th className="px-4 py-3 font-medium">{t("reviewer.statusCol")}</th>
+                    <th className="px-4 py-3 font-medium">{t("reviewer.progress")}</th>
+                    <th className="px-6 py-3 font-medium">{t("reviewer.lastActivity")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -445,19 +478,21 @@ export default async function ReviewerInsightsPage({
                     >
                       <td className="px-6 py-3">
                         <p className="font-medium tabular-nums">{row.participantLabel}</p>
-                        <p className="text-muted-foreground">{row.groupLabel}</p>
+                        <p className="text-muted-foreground">{groupLabel(row.groupLabel, t)}</p>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
-                        {PROFILE_STATUS_LABEL[row.profileStatus]}
+                        {statusLabel(row.profileStatus, t)}
                       </td>
                       <td className="px-4 py-3">
-                        {COMPLETION_STATUS_LABEL[row.completionStatus]}
+                        {statusLabel(row.completionStatus, t)}
                       </td>
                       <td className="px-4 py-3">
-                        {progressLabel(row, parsed.filters.trainingId)}
+                        {rowProgress(row, parsed.filters.trainingId, t)}
                       </td>
                       <td className="px-6 py-3 text-muted-foreground">
-                        {formatActivityWeek(row.activityWeek)}
+                        {row.activityWeek
+                          ? t("reviewer.weekOf", { date: formatShortDate(row.activityWeek, locale) })
+                          : t("common.emDash")}
                       </td>
                     </tr>
                   ))}

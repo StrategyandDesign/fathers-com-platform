@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { CoverPhoto } from "@/components/brand/cover";
+import { useT } from "@/components/i18n/locale-provider";
 import { Flash } from "@/components/manager/flash";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,7 @@ export function OrganizationPhotoSlot({
   orgName: string;
   view: OrganizationPhotoSlotView;
 }) {
+  const t = useT();
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, startTransition] = useTransition();
@@ -30,7 +32,32 @@ export function OrganizationPhotoSlot({
   const [localPreview, setLocalPreview] = useState<string | null>(null);
   const preview = localPreview || view.previewUrl || view.defaultUrl;
   const isCustom = Boolean(localPreview) || view.isCustom;
-  const name = orgName.trim() || "this organization";
+  const name = orgName.trim() || t("manager.photos.thisOrg");
+  const previewLabel = isCustom
+    ? t("manager.photos.customFor", { name })
+    : view.guidance.kind === "home_hero"
+      ? t("manager.photos.platformNext")
+      : t("manager.photos.platformDefault");
+  const surface =
+    view.guidance.kind === "home_hero"
+      ? t("manager.photos.surfaceHero")
+      : view.guidance.kind === "home_profile"
+        ? t("manager.photos.surfaceProfile")
+        : t("manager.photos.surfaceTraining", {
+            title: view.guidance.surface.replace(/^Training card — /, ""),
+          });
+  const where =
+    view.guidance.kind === "home_hero"
+      ? t("manager.photos.whereHero", { name })
+      : view.guidance.kind === "home_profile"
+        ? t("manager.photos.whereProfile", { name })
+        : t("manager.photos.whereTraining", { name });
+  const aspect =
+    view.guidance.kind === "home_hero"
+      ? t("manager.photos.anyPhoto")
+      : view.guidance.kind === "home_profile"
+        ? t("manager.photos.anyPhotoProfile")
+        : t("manager.photos.anyPhotoTraining");
 
   useEffect(() => {
     return () => {
@@ -45,22 +72,22 @@ export function OrganizationPhotoSlot({
     >
       <div className="space-y-1 px-4 pt-4 sm:px-6 sm:pt-6">
         <h3 className="font-heading text-lg font-semibold tracking-tight">
-          {view.guidance.surface}
+          {surface}
         </h3>
-        <p className="mt-1 text-sm text-muted-foreground">{view.where}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{where}</p>
       </div>
 
       <div className="space-y-3 px-4 py-4 sm:px-6">
         {view.guidance.kind === "home_hero" ? (
           <div>
-            <p className="mb-2 text-xs text-muted-foreground">{view.previewLabel} · Home</p>
+            <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.home")}</p>
             <div className="relative h-24 overflow-hidden rounded-lg bg-[#101510] sm:h-36 lg:h-44">
               <CoverPhoto src={preview} />
             </div>
           </div>
         ) : view.guidance.kind === "home_profile" ? (
           <div>
-            <p className="mb-2 text-xs text-muted-foreground">{view.previewLabel} · Home Profile</p>
+            <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.homeProfile")}</p>
             <div className="relative min-h-56 overflow-hidden rounded-lg bg-[#101510] sm:min-h-64">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -72,10 +99,10 @@ export function OrganizationPhotoSlot({
               <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a]/50 via-[#0a0a0a]/25 to-transparent" />
               <div className="relative z-10 flex min-h-56 flex-col justify-end p-4 sm:min-h-64">
                 <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
-                  Profile
+                  {t("manager.photos.profile")}
                 </p>
                 <p className="font-heading mt-2 text-lg font-semibold tracking-tight">
-                  Behind the Profile card
+                  {t("manager.photos.behindProfile")}
                 </p>
               </div>
             </div>
@@ -83,21 +110,21 @@ export function OrganizationPhotoSlot({
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <p className="mb-2 text-xs text-muted-foreground">{view.previewLabel} · Home</p>
+              <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.home")}</p>
               <div className="relative h-28 overflow-hidden rounded-lg bg-[#101510] sm:h-32">
                 <CoverPhoto src={preview} />
               </div>
             </div>
             <div>
-              <p className="mb-2 text-xs text-muted-foreground">{view.previewLabel} · Trainings</p>
+              <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.trainings")}</p>
               <div className="relative aspect-video overflow-hidden rounded-lg bg-[#101510]">
                 <CoverPhoto src={preview} />
               </div>
             </div>
           </div>
         )}
-        <p className="text-sm text-muted-foreground">{view.guidance.aspectLabel}</p>
-        <p className="text-xs text-muted-foreground">{view.guidance.fileHint}</p>
+        <p className="text-sm text-muted-foreground">{aspect}</p>
+        <p className="text-xs text-muted-foreground">{t("manager.photos.fileHint")}</p>
       </div>
 
       <div className="space-y-3 border-t border-border px-4 py-4 sm:px-6">
@@ -134,13 +161,13 @@ export function OrganizationPhotoSlot({
                     setFitError(result.error);
                     return;
                   }
-                  setNotice(result.notice ?? "Photo saved.");
+                  setNotice(result.notice ?? t("manager.photos.photoSaved"));
                   router.refresh();
                 } catch (error) {
                   setFitError(
                     error instanceof Error
                       ? error.message
-                      : "Couldn’t use that photo. Try another."
+                      : t("manager.photos.photoFailed")
                   );
                 }
               });
@@ -152,10 +179,10 @@ export function OrganizationPhotoSlot({
             className="w-full sm:w-auto"
             onClick={() => inputRef.current?.click()}
           >
-            {pending ? "Saving…" : "Replace Photo"}
+            {pending ? t("common.saving") : t("manager.photos.replace")}
           </Button>
         </form>
-        <p className="text-xs text-muted-foreground">Choosing a photo saves it.</p>
+        <p className="text-xs text-muted-foreground">{t("manager.photos.choosingSaves")}</p>
         <Flash error={fitError ?? undefined} notice={notice ?? undefined} />
 
         <form
@@ -172,14 +199,14 @@ export function OrganizationPhotoSlot({
                 if (current) URL.revokeObjectURL(current);
                 return null;
               });
-              setNotice(result.notice ?? "Reset to the platform default.");
+              setNotice(result.notice ?? t("manager.photos.photoReset"));
               router.refresh();
             });
           }}
           onSubmit={(event) => {
             if (
               !confirm(
-                `Reset this photo to the platform default for ${name}?`
+                t("manager.photos.resetConfirm", { name })
               )
             ) {
               event.preventDefault();
@@ -194,11 +221,11 @@ export function OrganizationPhotoSlot({
             disabled={pending || !isCustom}
             className="w-full sm:w-auto"
           >
-            Reset to Default
+            {t("manager.photos.reset")}
           </Button>
         </form>
 
-        <p className="text-xs text-muted-foreground">{view.applies}</p>
+        <p className="text-xs text-muted-foreground">{t("manager.photos.appliesOnly", { name })}</p>
       </div>
     </article>
   );
