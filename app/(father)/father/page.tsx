@@ -244,10 +244,10 @@ export default async function FatherHomePage() {
               <img
                 src={BRAND_PHOTOS.profile}
                 alt=""
-                className="h-full w-full object-cover object-[center_62%] opacity-30"
+                className="h-full w-full object-cover object-[center_62%] opacity-55"
               />
-              <div className="absolute inset-0 bg-[#141414]/70" />
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a] via-[#0a0a0a]/55 to-transparent" />
+              <div className="absolute inset-0 bg-[#141414]/35" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a]/40 via-[#0a0a0a]/20 to-transparent" />
             </div>
           )}
           <div className="relative z-10 flex flex-1 flex-col p-4 sm:p-5">
