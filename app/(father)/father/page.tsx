@@ -1,12 +1,13 @@
 import Link from "next/link";
 
 import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
-import { SceneArt } from "@/components/brand/scene";
+import { CoverPhoto } from "@/components/brand/cover";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
+import { sessionCover } from "@/lib/brand/photos";
 import { startProfile } from "@/lib/father/profile-actions";
 import { loadFatherHome } from "@/lib/father/data";
 import { PROFILE_QUESTION_COUNT, firstUnanswered } from "@/lib/father/questions";
@@ -92,7 +93,7 @@ export default async function FatherHomePage() {
             <p className={eyebrowClassName}>{heroLabel}</p>
             <section className="overflow-hidden rounded-xl border border-border bg-card">
               <div className="h-24 overflow-hidden bg-[#101510] sm:h-36 lg:h-44">
-                <SceneArt />
+                <CoverPhoto src={sessionCover(next.session.session_number)} />
               </div>
               <div className="space-y-5 p-4 sm:p-5 lg:p-6">
                 <div>

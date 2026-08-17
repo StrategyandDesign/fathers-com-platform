@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
 
-import { SceneArt } from "@/components/brand/scene";
+import { CoverPhoto } from "@/components/brand/cover";
 import { SessionCrumbNote, SessionHeader } from "@/components/father/session-header";
 import { SessionSteps } from "@/components/father/session-steps";
 import { Flash } from "@/components/manager/flash";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
+import { sessionCover } from "@/lib/brand/photos";
 import { markFilmWatched } from "@/lib/father/actions";
 import { loadFatherHome, loadSessionContext } from "@/lib/father/data";
 import { youtubeEmbedUrl } from "@/lib/father/types";
@@ -61,7 +62,7 @@ export default async function SessionViewerPage({
           </div>
         ) : (
           <div className="relative aspect-video">
-            <SceneArt />
+            <CoverPhoto src={sessionCover(session.session_number)} />
           </div>
         )}
       </div>
