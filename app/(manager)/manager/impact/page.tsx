@@ -47,7 +47,7 @@ export default async function ManagerImpactPage({
   const params = await searchParams;
   const { user } = await requireRole("manager");
   const { t, locale } = await getI18n();
-  const snapshot = await loadManagerImpact(user.id);
+  const snapshot = await loadManagerImpact(user.id, locale);
   const organization =
     snapshot.organizationNames.length > 0
       ? snapshot.organizationNames.join(", ")

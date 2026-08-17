@@ -1,4 +1,6 @@
 import type { SessionProgress } from "@/lib/father/types";
+import { dateLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+import { createTranslator } from "@/lib/i18n/translate";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { fullyCompletedTraining, percent, startedTraining } from "@/lib/manager/impact";
 import type { Certificate, Group, ParticipantRow, TrainingProgress } from "@/lib/manager/types";
@@ -60,7 +62,7 @@ function inRange(value: string | null | undefined, start: Date, end: Date) {
   return time >= start.getTime() && time < end.getTime();
 }
 
-function formatRange(start: Date, endExclusive: Date) {
+function formatRange(start: Date, endExclusive: Date, locale: Locale = DEFAULT_LOCALE) {
   const end = addUtcDays(endExclusive, -1);
   const options: Intl.DateTimeFormatOptions = {
     month: "short",
@@ -68,29 +70,35 @@ function formatRange(start: Date, endExclusive: Date) {
     year: "numeric",
     timeZone: "UTC",
   };
-  return `${start.toLocaleDateString("en-US", options)}–${end.toLocaleDateString("en-US", options)}`;
+  const loc = dateLocale(locale);
+  return `${start.toLocaleDateString(loc, options)}–${end.toLocaleDateString(loc, options)}`;
 }
 
-function monthWindow(offset: number) {
+function monthWindow(offset: number, locale: Locale = DEFAULT_LOCALE) {
   const now = new Date();
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + offset, 1));
   const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + offset + 1, 1));
   return {
     start,
     end,
-    label: start.toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" }),
+    label: start.toLocaleDateString(dateLocale(locale), {
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    }),
   };
 }
 
-function rollingWindow(offset: number) {
+function rollingWindow(offset: number, locale: Locale = DEFAULT_LOCALE) {
+  const t = createTranslator(locale);
   const currentEnd = addUtcDays(startOfUtcDay(new Date()), 1);
   const end = addUtcDays(currentEnd, -offset * 30);
   const start = addUtcDays(end, -30);
   return {
     start,
     end,
-    label: offset === 0 ? "Last 30 days" : "Previous 30 days",
-    range: formatRange(start, end),
+    label: offset === 0 ? t("manager.compare.last30") : t("manager.compare.previous30"),
+    range: formatRange(start, end, locale),
   };
 }
 
@@ -238,7 +246,8 @@ export function compareRows(left: CompareSide, right: CompareSide): CompareRow[]
 
 export async function loadManagerCompare(
   managerId: string,
-  filters: ReturnType<typeof parseCompareSearchParams>
+  filters: ReturnType<typeof parseCompareSearchParams>,
+  locale: Locale = DEFAULT_LOCALE
 ) {
   const workspace = await loadManagerWorkspace(managerId);
   const { groups, participants, progress, certificates, trainingProgressFor } = workspace;
@@ -312,8 +321,8 @@ export async function loadManagerCompare(
   }
 
   if (filters.window === "30") {
-    const current = rollingWindow(0);
-    const previous = rollingWindow(1);
+    const current = rollingWindow(0, locale);
+    const previous = rollingWindow(1, locale);
     return {
       mode,
       window: filters.window,
@@ -344,8 +353,9 @@ export async function loadManagerCompare(
     };
   }
 
-  const thisMonth = monthWindow(0);
-  const lastMonth = monthWindow(-1);
+  const t = createTranslator(locale);
+  const thisMonth = monthWindow(0, locale);
+  const lastMonth = monthWindow(-1, locale);
   return {
     mode,
     window: filters.window,
@@ -353,7 +363,7 @@ export async function loadManagerCompare(
     left: periodSide(
       "this-month",
       thisMonth.label,
-      "Joined this month",
+      t("manager.compare.joinedThisMonth"),
       thisMonth.start,
       thisMonth.end,
       participants,
@@ -364,7 +374,7 @@ export async function loadManagerCompare(
     right: periodSide(
       "last-month",
       lastMonth.label,
-      "Joined last month",
+      t("manager.compare.joinedLastMonth"),
       lastMonth.start,
       lastMonth.end,
       participants,

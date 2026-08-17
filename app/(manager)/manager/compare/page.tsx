@@ -12,6 +12,10 @@ import { cn } from "@/lib/utils";
 
 function translateCompareDetail(detail: string, t: Translate) {
   if (detail === "Current members") return t("manager.compare.currentMembers");
+  if (detail === "Last 30 days") return t("manager.compare.last30");
+  if (detail === "Previous 30 days") return t("manager.compare.previous30");
+  if (detail === "Joined this month") return t("manager.compare.joinedThisMonth");
+  if (detail === "Joined last month") return t("manager.compare.joinedLastMonth");
   return detail;
 }
 
@@ -59,9 +63,9 @@ export default async function ManagerComparePage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
-  const { t } = await getI18n();
+  const { t, locale } = await getI18n();
   const filters = parseCompareSearchParams(params);
-  const comparison = await loadManagerCompare(user.id, filters);
+  const comparison = await loadManagerCompare(user.id, filters, locale);
   const rows =
     comparison.left && comparison.right
       ? compareRows(comparison.left, comparison.right)
@@ -162,7 +166,7 @@ export default async function ManagerComparePage({
                 {t("manager.compare.left")}
               </p>
               <h2 className="font-heading mt-2 text-xl font-semibold tracking-tight">
-                {comparison.left.label}
+                {translateCompareDetail(comparison.left.label, t)}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 {translateCompareDetail(comparison.left.detail, t)}
@@ -173,7 +177,7 @@ export default async function ManagerComparePage({
                 {t("manager.compare.right")}
               </p>
               <h2 className="font-heading mt-2 text-xl font-semibold tracking-tight">
-                {comparison.right.label}
+                {translateCompareDetail(comparison.right.label, t)}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 {translateCompareDetail(comparison.right.detail, t)}
@@ -185,8 +189,8 @@ export default async function ManagerComparePage({
             <div className="border-b border-border px-4 py-4 sm:px-6">
               <h2 className="font-heading text-lg font-semibold">
                 {t("manager.compare.vs", {
-                  left: comparison.left.label,
-                  right: comparison.right.label,
+                  left: translateCompareDetail(comparison.left.label, t),
+                  right: translateCompareDetail(comparison.right.label, t),
                 })}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">

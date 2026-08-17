@@ -37,7 +37,8 @@ export default async function ReviewerImpactSummaryPage({
   const { t, locale } = await getI18n();
   const parsed = parseInsightSearchParams(params);
   const { insights, summary, certificateError } = await loadReviewerImpactSummary(
-    parsed.filters
+    parsed.filters,
+    locale
   );
   const query = insightQuery(parsed.filters);
   const exportQuery = query ? `${query}&` : "";
@@ -175,7 +176,8 @@ export default async function ReviewerImpactSummaryPage({
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">{t("reviewer.summary.periodTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {summary.trend.unit === "completion rate"
+            {summary.trend.unit === "completion rate" ||
+            summary.trend.unit === t("reviewer.summary.completionRate")
               ? t("reviewer.summary.periodCompletion")
               : t("reviewer.summary.periodProfiles")}
           </p>
@@ -184,14 +186,20 @@ export default async function ReviewerImpactSummaryPage({
               <p className="text-sm text-muted-foreground">{summary.trend.leftLabel}</p>
               <p className="mt-2 text-3xl font-semibold tabular-nums">
                 {summary.trend.left}
-                {summary.trend.unit === "completion rate" ? "%" : ""}
+                {summary.trend.unit === "completion rate" ||
+                summary.trend.unit === t("reviewer.summary.completionRate")
+                  ? "%"
+                  : ""}
               </p>
             </div>
             <div className="rounded-lg border border-border px-4 py-4">
               <p className="text-sm text-muted-foreground">{summary.trend.rightLabel}</p>
               <p className="mt-2 text-3xl font-semibold tabular-nums">
                 {summary.trend.right}
-                {summary.trend.unit === "completion rate" ? "%" : ""}
+                {summary.trend.unit === "completion rate" ||
+                summary.trend.unit === t("reviewer.summary.completionRate")
+                  ? "%"
+                  : ""}
               </p>
             </div>
           </div>

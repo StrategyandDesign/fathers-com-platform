@@ -757,6 +757,10 @@ export const en = {
       right: "Right",
       update: "Update comparison",
       currentMembers: "Current members",
+      last30: "Last 30 days",
+      previous30: "Previous 30 days",
+      joinedThisMonth: "Joined this month",
+      joinedLastMonth: "Joined last month",
       membersLead: "Current members in each group.",
       periodLead:
         "Enrollment is who joined in each window. Start and completion rates are lifetime progress for that join cohort. Certificates count issues in the window.",
