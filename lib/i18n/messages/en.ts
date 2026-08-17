@@ -407,6 +407,7 @@ export const en = {
       profileReminder: "Your Profile gives you a clearer picture of your fathering strengths.",
       takeProfileTitle: "Take your Profile",
       takeProfileBody: "Optional. About twenty minutes, one question at a time.",
+      profileLater: "Optional. You can take this after you start.",
       yourTrainings: "Your trainings",
       viewCertificates: "View certificates",
       sessionsReady: "Sessions will appear when this training is ready.",

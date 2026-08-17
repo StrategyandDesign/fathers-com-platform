@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import Link from "next/link";
 
 import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
@@ -19,10 +18,6 @@ import {
   resolveHomeProfileCover,
   resolveTrainingCardCover,
 } from "@/lib/org-photos/data";
-import {
-  FATHERS_INTRO_SEEN_KEY,
-  isFathersIntroSeenValue,
-} from "@/lib/father/intro-seen";
 import { PROFILE_QUESTION_COUNT, firstUnanswered } from "@/lib/father/questions";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
 import { readStoredDimensionScores } from "@/lib/profile/score";
@@ -87,15 +82,14 @@ export default async function FatherHomePage({
   const issuedCertificates = trainingCards.filter((card) => card.certificate);
   const nextInProgress = sessionInProgress(next?.progress ?? null);
   const neverStarted = Boolean(next) && nextCompleted === 0 && !nextInProgress;
-  const introSeen = isFathersIntroSeenValue(
-    (await cookies()).get(FATHERS_INTRO_SEEN_KEY)?.value
-  );
-  const showFirstVisitIntro = neverStarted && !introSeen;
-  const heroLabel = neverStarted
-    ? t("father.home.startHere")
-    : nextInProgress
-      ? t("father.home.continueTraining")
-      : t("father.home.upNext");
+  const firstSession =
+    nextCard?.sessions.find((session) => session.session_number === 1) ??
+    nextCard?.sessions[0] ??
+    next?.session;
+  const firstSessionHref = firstSession ? `/father/sessions/${firstSession.id}` : "";
+  const heroLabel = nextInProgress
+    ? t("father.home.continueTraining")
+    : t("father.home.upNext");
   const continueLabel = nextInProgress
     ? t("father.home.continueSession")
     : t("father.home.startSession");
@@ -151,16 +145,24 @@ export default async function FatherHomePage({
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,1fr)] lg:gap-8">
       {next ? (
-        <div className="order-1 min-w-0 lg:col-start-1 lg:row-start-1">
-          <FirstVisitIntro
-            eligible={showFirstVisitIntro}
-            href={continueHref(next.session.id, next.progress)}
-            trainingTitle={next.training.title}
-            total={nextTotal}
-            completed={nextCompleted}
-            percent={nextPercent}
-            coverSrc={heroCover}
-          >
+        <div
+          className={cn(
+            "order-1 min-w-0 lg:col-start-1 lg:row-start-1",
+            neverStarted && "max-lg:min-h-[calc(100svh-8.75rem)]"
+          )}
+        >
+          {neverStarted && firstSession ? (
+            <FirstVisitIntro
+              href={firstSessionHref}
+              trainingTitle={next.training.title}
+              sessionTitle={firstSession.title}
+              sessionNumber={firstSession.session_number}
+              total={nextTotal}
+              completed={nextCompleted}
+              percent={nextPercent}
+              coverSrc={heroCover}
+            />
+          ) : (
             <div className="min-w-0 space-y-2">
               {justFinished ? (
                 <SessionCompleteMark />
@@ -185,13 +187,9 @@ export default async function FatherHomePage({
                   ) : null}
                   <div>
                     <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
-                      {neverStarted ? next.training.title : next.session.title}
+                      {next.session.title}
                     </h1>
-                    {neverStarted ? (
-                      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                        {t("father.home.startRhythm")}
-                      </p>
-                    ) : next.session.keyline ? (
+                    {next.session.keyline ? (
                       <p className="mt-2 text-sm text-muted-foreground sm:text-base">
                         {next.session.keyline}
                       </p>
@@ -201,7 +199,7 @@ export default async function FatherHomePage({
                     href={continueHref(next.session.id, next.progress)}
                     className={primaryCtaClassName}
                   >
-                    {neverStarted ? t("father.home.startOverview") : continueLabel}
+                    {continueLabel}
                   </Link>
                   {!celebrateSameTraining && nextTotal > 0 ? (
                     <div className="space-y-2">
@@ -217,7 +215,7 @@ export default async function FatherHomePage({
                 </div>
               </section>
             </div>
-          </FirstVisitIntro>
+          )}
         </div>
       ) : (
         <section className="order-1 flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:col-start-1 lg:row-start-1 lg:p-8">
@@ -278,7 +276,8 @@ export default async function FatherHomePage({
       <section
         className={cn(
           "relative flex min-h-56 flex-col overflow-hidden rounded-xl border border-border bg-card",
-          next ? "order-3 lg:order-2" : "order-2",
+          next ? (neverStarted ? "order-2 lg:order-2" : "order-3 lg:order-2") : "order-2",
+          neverStarted && "max-lg:hidden",
           "lg:col-start-2 lg:row-start-1"
         )}
       >
@@ -329,6 +328,10 @@ export default async function FatherHomePage({
                   </div>
                 )}
               </>
+            ) : neverStarted ? (
+              <p className="mt-3 text-sm text-muted-foreground">
+                {t("father.home.profileLater")}
+              </p>
             ) : draft ? (
               <>
                 <h2 className="font-heading mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
@@ -377,7 +380,7 @@ export default async function FatherHomePage({
           </div>
         </section>
 
-      {trainingCards.length > 0 || customAssignments.length > 0 ? (
+      {!neverStarted && (trainingCards.length > 0 || customAssignments.length > 0) ? (
       <div
         className={cn(
           "space-y-8",

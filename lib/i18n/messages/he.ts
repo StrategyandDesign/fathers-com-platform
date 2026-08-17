@@ -393,6 +393,7 @@ export const he = {
       profileReminder: "הפרופיל נותן תמונה ברורה יותר של חוזקות האבהות שלך.",
       takeProfileTitle: "מילוי הפרופיל",
       takeProfileBody: "אופציונלי. כעשרים דקות, שאלה אחת בכל פעם.",
+      profileLater: "אופציונלי. אפשר למלא אחרי שמתחילים.",
       yourTrainings: "ההכשרות שלך",
       viewCertificates: "צפייה בתעודות",
       sessionsReady: "המפגשים יופיעו כשההכשרה תהיה מוכנה.",

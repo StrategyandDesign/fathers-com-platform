@@ -1,52 +1,35 @@
-"use client";
-
 import Link from "next/link";
-import { useLayoutEffect, useState, type ReactNode } from "react";
 
 import { CoverPhoto } from "@/components/brand/cover";
-import { useT } from "@/components/i18n/locale-provider";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
-import {
-  hasFathersIntroSeen,
-  markFathersIntroSeen,
-} from "@/lib/father/intro-seen";
+import { getI18n } from "@/lib/i18n/server";
 import { homePrimaryCtaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 const eyebrowClassName =
   "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
 
-export function FirstVisitIntro({
-  eligible,
+export async function FirstVisitIntro({
   href,
   trainingTitle,
+  sessionTitle,
+  sessionNumber,
   total,
   completed,
   percent,
   coverSrc,
-  children,
 }: {
-  eligible: boolean;
   href: string;
   trainingTitle: string;
+  sessionTitle: string;
+  sessionNumber: number;
   total: number;
   completed: number;
   percent: number;
   coverSrc?: string | null;
-  children: ReactNode;
 }) {
-  const [showFull, setShowFull] = useState(eligible);
-  const t = useT();
-
-  useLayoutEffect(() => {
-    if (!eligible) return;
-    if (hasFathersIntroSeen()) {
-      setShowFull(false);
-    }
-  }, [eligible]);
-
-  if (!eligible || !showFull) return children;
+  const { t } = await getI18n();
 
   return (
     <div className="min-w-0 space-y-2">
@@ -61,12 +44,21 @@ export function FirstVisitIntro({
               {trainingTitle}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+              {t("father.intro.fallbackBody", { title: trainingTitle })}
+            </p>
+            <p className="mt-3 text-sm font-medium text-foreground sm:text-base">
+              {t("father.home.sessionOfTraining", {
+                n: sessionNumber,
+                total: total || sessionNumber,
+                title: sessionTitle,
+              })}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground sm:text-base">
               {t("father.home.startRhythm")}
             </p>
           </div>
           <Link
             href={href}
-            onClick={markFathersIntroSeen}
             className={cn(buttonVariants({ variant: "default", size: "lg" }), homePrimaryCtaClassName)}
           >
             {t("father.home.startOverview")}
