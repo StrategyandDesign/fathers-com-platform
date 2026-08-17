@@ -76,12 +76,12 @@ export function homeProfileGuidance(): OrgPhotoGuidance {
   return {
     kind: "home_profile",
     slot: HOME_PROFILE_SLOT,
-    surface: "Home: Profile",
+    surface: "Home: Assessment",
     minWidth: 720,
     minHeight: 960,
     minAspect: 0.55,
     maxAspect: 1.2,
-    aspectLabel: "Any photo works. We crop it to fit the Profile card.",
+    aspectLabel: "Any photo works. We crop it to fit the Assessment card.",
     fileHint: FILE_HINT,
   };
 }
@@ -121,7 +121,7 @@ export function slotCopy(orgName: string, kind: OrgPhotoKind) {
   }
   if (kind === "home_profile") {
     return {
-      where: `${name} participants will see this behind the Profile card on Home.`,
+      where: `${name} participants will see this behind the Assessment card on Home.`,
       applies: `This change applies only to ${name}.`,
     };
   }

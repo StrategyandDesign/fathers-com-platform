@@ -1,18 +1,21 @@
 import Link from "next/link";
 
+import { AssessmentHomeCard } from "@/components/assessments/home-card";
 import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { CoverPhoto } from "@/components/brand/cover";
 import { FirstVisitIntro } from "@/components/father/first-visit-intro";
 import { SessionCompleteMark } from "@/components/father/session-complete-mark";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
+import { loadProfileFullName } from "@/lib/account/data";
 import { loadFatherAssignments } from "@/lib/assessments/data";
-import { takeHref } from "@/lib/assessments/types";
+import { pickFeaturedAssignment, takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
 import { loadFatherHome } from "@/lib/father/data";
 import {
   loadFatherOrgPhotoCovers,
   resolveHomeHeroCover,
+  resolveHomeProfileCover,
   resolveTrainingCardCover,
 } from "@/lib/org-photos/data";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
@@ -41,14 +44,18 @@ export default async function FatherHomePage({
   const { done } = await searchParams;
   const { user } = await requireRole("father");
   const { t } = await getI18n();
-  const [{ trainingCards, next }, customAssignments, orgPhotos] = await Promise.all([
+  const [{ trainingCards, next }, customAssignments, orgPhotos, fatherName] = await Promise.all([
     loadFatherHome(user.id),
     loadFatherAssignments(user.id),
     loadFatherOrgPhotoCovers(user.id),
+    loadProfileFullName(user.id),
   ]);
   const heroCover = next
     ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl, orgPhotos.photoPack)
     : null;
+  const assessmentCoverSrc = resolveHomeProfileCover(orgPhotos.profileUrl, orgPhotos.photoPack);
+  const featuredAssessment = pickFeaturedAssignment(customAssignments);
+  const showAssessmentCard = Boolean(featuredAssessment);
 
   const nextCard = next
     ? trainingCards.find((card) => card.training.id === next.training.id)
@@ -118,9 +125,20 @@ export default async function FatherHomePage({
   );
 
   return (
-    <div className="space-y-6">
+    <div
+      className={
+        showAssessmentCard
+          ? "grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,1fr)] lg:gap-8"
+          : "space-y-6"
+      }
+    >
       {next ? (
-        <div className={cn(neverStarted && "max-lg:min-h-[calc(100svh-8.75rem)]")}>
+        <div
+          className={cn(
+            showAssessmentCard && "order-1 lg:col-start-1 lg:row-start-1",
+            neverStarted && "max-lg:min-h-[calc(100svh-8.75rem)]"
+          )}
+        >
           {neverStarted && firstSession ? (
             <FirstVisitIntro
               href={firstSessionHref}
@@ -131,6 +149,7 @@ export default async function FatherHomePage({
               completed={nextCompleted}
               percent={nextPercent}
               coverSrc={heroCover}
+              assessmentLater={Boolean(pendingAssessment)}
             />
           ) : (
             <div className="min-w-0 space-y-2">
@@ -188,7 +207,12 @@ export default async function FatherHomePage({
           )}
         </div>
       ) : (
-        <section className="flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:p-8">
+        <section
+          className={cn(
+            "flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:p-8",
+            showAssessmentCard && "order-1 lg:col-start-1 lg:row-start-1"
+          )}
+        >
           {justFinished ? (
             <SessionCompleteMark />
           ) : (
@@ -221,8 +245,21 @@ export default async function FatherHomePage({
         </section>
       )}
 
+      {featuredAssessment ? (
+        <AssessmentHomeCard
+          card={featuredAssessment}
+          coverSrc={assessmentCoverSrc}
+          fatherName={fatherName}
+          className={cn(
+            next ? (neverStarted ? "order-2" : "order-3") : "order-2",
+            neverStarted && "max-lg:hidden",
+            "lg:col-start-2 lg:row-start-1"
+          )}
+        />
+      ) : null}
+
       {trainingCards.length > 0 || customAssignments.length > 0 ? (
-        <div className="space-y-8">
+        <div className={cn("space-y-8", showAssessmentCard && "order-4 lg:col-span-2")}>
           {trainingCards.length > 0 ? (
             <section className="space-y-3">
               <div className="flex items-end justify-between gap-3">

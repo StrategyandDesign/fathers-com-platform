@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Heebo, Inter } from "next/font/google";
+import { Geist_Mono, Heebo, Inter, Source_Serif_4 } from "next/font/google";
 
 import { LocaleProvider } from "@/components/i18n/locale-provider";
 import { localeDir } from "@/lib/i18n/config";
@@ -20,6 +20,12 @@ const heebo = Heebo({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const sourceSerif = Source_Serif_4({
+  variable: "--font-display-family",
+  subsets: ["latin"],
+  weight: ["400", "600"],
 });
 
 export const metadata: Metadata = {
@@ -46,7 +52,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={dir}
-      className={`dark ${inter.variable} ${heebo.variable} ${geistMono.variable}`}
+      className={`dark ${inter.variable} ${heebo.variable} ${geistMono.variable} ${sourceSerif.variable}`}
     >
       <body className="font-sans antialiased">
         <LocaleProvider locale={locale}>{children}</LocaleProvider>

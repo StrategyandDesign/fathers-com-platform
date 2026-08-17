@@ -37,6 +37,19 @@ export const loadOrganizationName = cache(async (userId: string) => {
   return names.length > 0 ? names.join(", ") : null;
 });
 
+export const loadProfileFullName = cache(async (userId: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  const name = typeof data?.full_name === "string" ? data.full_name.trim() : "";
+  return name || null;
+});
+
 export async function loadCurrentAvatarUrl(userId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase

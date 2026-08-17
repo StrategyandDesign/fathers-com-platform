@@ -91,6 +91,15 @@ export function asStringOptions(value: unknown): string[] | null {
   return options.length >= 2 ? options : null;
 }
 
+export function pickFeaturedAssignment(cards: FatherAssignmentCard[]) {
+  return (
+    cards.find((card) => card.assignment.status === "in_progress") ??
+    cards.find((card) => card.assignment.status === "not_started") ??
+    cards.find((card) => card.assignment.status === "completed") ??
+    null
+  );
+}
+
 export function takeHref(assignmentId: string, questionNumber?: number) {
   if (!questionNumber) return `/father/assessments/${assignmentId}`;
   return `/father/assessments/${assignmentId}?q=${questionNumber}`;
