@@ -18,10 +18,12 @@ export function OrganizationPhotoSlot({
   groupId,
   orgName,
   view,
+  usesPlaceholders = false,
 }: {
   groupId: string;
   orgName: string;
   view: OrganizationPhotoSlotView;
+  usesPlaceholders?: boolean;
 }) {
   const t = useT();
   const router = useRouter();
@@ -36,8 +38,8 @@ export function OrganizationPhotoSlot({
   const previewLabel = isCustom
     ? t("manager.photos.customFor", { name })
     : view.guidance.kind === "home_hero"
-      ? t("manager.photos.platformNext")
-      : t("manager.photos.platformDefault");
+      ? t(usesPlaceholders ? "manager.photos.placeholderNext" : "manager.photos.platformNext")
+      : t(usesPlaceholders ? "manager.photos.placeholder" : "manager.photos.platformDefault");
   const surface =
     view.guidance.kind === "home_hero"
       ? t("manager.photos.surfaceHero")
@@ -46,12 +48,27 @@ export function OrganizationPhotoSlot({
         : t("manager.photos.surfaceTraining", {
             title: view.guidance.surface.replace(/^Training card — /, ""),
           });
-  const where =
+  const until =
+    isCustom || view.guidance.kind === "training"
+      ? ""
+      : view.guidance.kind === "home_hero"
+        ? t(
+            usesPlaceholders
+              ? "manager.photos.untilHeroPlaceholder"
+              : "manager.photos.untilHero"
+          )
+        : t(
+            usesPlaceholders
+              ? "manager.photos.untilProfilePlaceholder"
+              : "manager.photos.untilProfile"
+          );
+  const where = `${
     view.guidance.kind === "home_hero"
       ? t("manager.photos.whereHero", { name })
       : view.guidance.kind === "home_profile"
         ? t("manager.photos.whereProfile", { name })
-        : t("manager.photos.whereTraining", { name });
+        : t("manager.photos.whereTraining", { name })
+  }${until ? ` ${until}` : ""}`;
   const aspect =
     view.guidance.kind === "home_hero"
       ? t("manager.photos.anyPhoto")
@@ -199,14 +216,26 @@ export function OrganizationPhotoSlot({
                 if (current) URL.revokeObjectURL(current);
                 return null;
               });
-              setNotice(result.notice ?? t("manager.photos.photoReset"));
+              setNotice(
+                result.notice ??
+                  t(
+                    usesPlaceholders
+                      ? "manager.photos.photoResetPlaceholder"
+                      : "manager.photos.photoReset"
+                  )
+              );
               router.refresh();
             });
           }}
           onSubmit={(event) => {
             if (
               !confirm(
-                t("manager.photos.resetConfirm", { name })
+                t(
+                  usesPlaceholders
+                    ? "manager.photos.resetConfirmPlaceholder"
+                    : "manager.photos.resetConfirm",
+                  { name }
+                )
               )
             ) {
               event.preventDefault();
@@ -221,7 +250,7 @@ export function OrganizationPhotoSlot({
             disabled={pending || !isCustom}
             className="w-full sm:w-auto"
           >
-            {t("manager.photos.reset")}
+            {t(usesPlaceholders ? "manager.photos.resetPlaceholder" : "manager.photos.reset")}
           </Button>
         </form>
 

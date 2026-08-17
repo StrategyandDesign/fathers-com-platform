@@ -101,6 +101,8 @@ export const en = {
     languageSave: "Save language",
     orgPhotos: "Organization Photos",
     orgPhotosOne: "Photos {name} participants see on Home, Profile, and Trainings.",
+    orgPhotosPlaceholder:
+      "Landscape placeholders for {name}. Replace them anytime — participants see your photos on Home, Profile, and Trainings.",
     orgPhotosMany: "Photos {names} participants see on Home, Profile, and Trainings.",
     orgPhotosFallback: "Photos your organization sees on Home, Profile, and Trainings.",
     managePhotos: "Manage photos",
@@ -452,6 +454,8 @@ export const en = {
       title: "Organization Photos",
       leadOne:
         "Replace the photos {name} participants see on Home, Profile, and Trainings. Any photo works — we fit it to the card.",
+      leadPlaceholder:
+        "The landscape photos are placeholders. Replace any of them — {name} participants will see your photos on Home, Profile, and Trainings.",
       leadMany:
         "Replace the photos each organization sees on Home, Profile, and Trainings. Any photo works — we fit it to the card.",
       emptyTitle: "No organization yet",
@@ -461,6 +465,8 @@ export const en = {
       customFor: "Custom for {name}",
       platformDefault: "Platform default",
       platformNext: "Platform default (next session’s photo)",
+      placeholder: "Landscape placeholder",
+      placeholderNext: "Landscape placeholder (next session’s photo)",
       thisOrg: "this organization",
       home: "Home",
       homeProfile: "Home Profile",
@@ -480,12 +486,18 @@ export const en = {
         "This photo appears on training cards for {name} — on Home under Your Trainings, and on the Trainings page.",
       untilHero: "Until you replace it, the card uses the platform photo for whichever session is next.",
       untilProfile: "Until you replace it, the card uses the platform photo.",
+      untilHeroPlaceholder:
+        "Until you replace it, this landscape placeholder is used for whichever session is next.",
+      untilProfilePlaceholder: "Until you replace it, this landscape placeholder is used.",
       replace: "Replace Photo",
-      choosingSaves: "Choosing a photo saves it.",
+      choosingSaves: "Choosing a photo saves it. You can change it again at any time.",
       reset: "Reset to Default",
+      resetPlaceholder: "Reset to Placeholder",
       resetConfirm: "Reset this photo to the platform default for {name}?",
+      resetConfirmPlaceholder: "Reset this photo to the landscape placeholder for {name}?",
       photoSaved: "Photo saved.",
       photoReset: "Reset to the platform default.",
+      photoResetPlaceholder: "Reset to the landscape placeholder.",
       photoFailed: "Couldn’t use that photo. Try another.",
     },
   },

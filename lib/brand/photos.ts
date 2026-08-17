@@ -9,7 +9,7 @@ export const BRAND_PHOTOS = {
   profile: "/brand/photos/profile-placeholder.png",
 } as const;
 
-/** Landscape placeholders for Unit 8200 (code IL) only. */
+/** Landscape placeholders for Unit 8200 (code IL) only. Managers can replace them. */
 export const IL_PHOTOS = {
   hero: "/brand/photos/il/hero.png",
   hills: "/brand/photos/il/hills.png",

@@ -19,6 +19,7 @@ const EXACT: Record<string, string> = {
   "Couldn’t save the language. Try again.": "flash.localeFailed",
   "Photo saved.": "manager.photos.photoSaved",
   "Reset to the platform default.": "manager.photos.photoReset",
+  "Reset to the landscape placeholder.": "manager.photos.photoResetPlaceholder",
   "Couldn’t use that photo. Try another.": "manager.photos.photoFailed",
   "That group is not in the cohort.": "reviewer.groupNotInCohort",
   "That training is not in the catalog.": "reviewer.trainingNotInCatalog",

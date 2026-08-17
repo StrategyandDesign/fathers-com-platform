@@ -9,6 +9,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { loadAccountState, loadOrganizationName } from "@/lib/account/data";
 import { signOut } from "@/lib/auth/actions";
 import { ROLE_HELP, type AppRole } from "@/lib/auth/roles";
+import { photoPackForCode } from "@/lib/brand/photos";
 import { getI18n } from "@/lib/i18n/server";
 import { loadManagerGroups } from "@/lib/manager/data";
 import { cn } from "@/lib/utils";
@@ -40,7 +41,12 @@ export async function AccountView({
     .filter(Boolean);
   const photosLabel =
     managedNames.length === 1
-      ? t("account.orgPhotosOne", { name: managedNames[0] })
+      ? t(
+          photoPackForCode(managedOrgs[0]?.code) === "il"
+            ? "account.orgPhotosPlaceholder"
+            : "account.orgPhotosOne",
+          { name: managedNames[0] }
+        )
       : managedNames.length > 1
         ? t("account.orgPhotosMany", { names: managedNames.join(" · ") })
         : t("account.orgPhotosFallback");

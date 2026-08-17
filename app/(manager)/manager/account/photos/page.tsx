@@ -5,6 +5,7 @@ import { Flash } from "@/components/manager/flash";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
+import { photoPackForCode } from "@/lib/brand/photos";
 import { loadManagerOrganizationPhotos } from "@/lib/org-photos/data";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,9 @@ export default async function ManagerOrganizationPhotosPage({
   const sections = await loadManagerOrganizationPhotos(user.id);
   const single = sections.length === 1 ? sections[0] : null;
   const singleName = single?.organization.name.trim();
+  const singleUsesPlaceholders = single
+    ? photoPackForCode(single.organization.code) === "il"
+    : false;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -35,7 +39,10 @@ export default async function ManagerOrganizationPhotosPage({
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {singleName
-            ? t("manager.photos.leadOne", { name: singleName })
+            ? t(
+                singleUsesPlaceholders ? "manager.photos.leadPlaceholder" : "manager.photos.leadOne",
+                { name: singleName }
+              )
             : t("manager.photos.leadMany")}
         </p>
       </div>
@@ -71,6 +78,7 @@ export default async function ManagerOrganizationPhotosPage({
                     groupId={section.organization.id}
                     orgName={orgName}
                     view={view}
+                    usesPlaceholders={photoPackForCode(section.organization.code) === "il"}
                   />
                 ))}
               </section>
