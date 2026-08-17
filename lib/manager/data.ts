@@ -1,4 +1,10 @@
-import { isSessionComplete, type Session, type SessionProgress, type Training } from "@/lib/father/types";
+import {
+  asSessionProgress,
+  isSessionComplete,
+  type Session,
+  type SessionProgress,
+  type Training,
+} from "@/lib/father/types";
 import { loadOrganizationReviews } from "@/lib/manager/reviews";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrls } from "@/lib/storage";
@@ -19,14 +25,7 @@ import {
 } from "@/lib/manager/types";
 
 function asProgress(row: SessionProgress): SessionProgress {
-  const answers = row.checkin_answers;
-  return {
-    ...row,
-    checkin_answers:
-      answers && typeof answers === "object" && !Array.isArray(answers)
-        ? (answers as Record<string, string>)
-        : {},
-  };
+  return asSessionProgress(row);
 }
 
 function emptyIn<T>(

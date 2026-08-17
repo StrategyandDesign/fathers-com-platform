@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
 import { loadFatherHome } from "@/lib/father/data";
+import { sessionNotePreview } from "@/lib/father/session-questions";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
 
 function sessionInProgress(progress: SessionProgress | null) {
@@ -18,7 +19,7 @@ function sessionInProgress(progress: SessionProgress | null) {
   );
 }
 import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
-import { sessionDotClassName } from "@/lib/ui";
+import { interactiveLinkClassName, sessionDotClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export default async function FatherTrainingsPage() {
@@ -51,6 +52,7 @@ export default async function FatherTrainingsPage() {
         <div className="grid gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-6">
           {trainingCards.map(({ training, completed, total, next, nextProgress, sessionDots, certificate }) => {
             const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+            const notes = sessionDots.filter((dot) => dot.note?.trim());
             return (
               <article
                 key={training.id}
@@ -120,6 +122,26 @@ export default async function FatherTrainingsPage() {
                         );
                       })}
                     </div>
+                    {notes.length > 0 ? (
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Notes</p>
+                        <ul className="space-y-1">
+                          {notes.map((dot) => (
+                            <li key={dot.id}>
+                              <Link
+                                href={`/father/sessions/${dot.id}/checkin`}
+                                className={cn(
+                                  "inline-flex min-h-11 items-center text-sm text-muted-foreground",
+                                  interactiveLinkClassName
+                                )}
+                              >
+                                Session {dot.number} · {sessionNotePreview(dot.note ?? "")}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
                     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                       {next ? (
                         <Link

@@ -30,6 +30,7 @@ type ProgressPatch = {
   action_completed?: boolean;
   checkin_answers?: Record<string, string>;
   action_note?: string | null;
+  session_note?: string | null;
 };
 
 async function saveProgress(
@@ -63,6 +64,10 @@ async function saveProgress(
       action_completed: action,
       checkin_answers: patch.checkin_answers ?? existing?.checkin_answers ?? {},
       action_note: patch.action_note ?? existing?.action_note ?? null,
+      session_note:
+        patch.session_note !== undefined
+          ? patch.session_note
+          : existing?.session_note ?? null,
       status: allDone ? "completed" : film || checkin || action ? "in_progress" : "not_started",
       completed_at: allDone
         ? (existing?.completed_at ?? new Date().toISOString())
@@ -76,6 +81,7 @@ async function saveProgress(
   }
 
   revalidatePath("/father");
+  revalidatePath("/father/trainings");
   revalidatePath(`/father/sessions/${sessionId}`);
   revalidatePath(`/father/sessions/${sessionId}/checkin`);
   revalidatePath(`/father/sessions/${sessionId}/action`);
@@ -124,14 +130,12 @@ export async function submitCheckin(formData: FormData) {
     .slice(0, CHECKIN_NOTE_MAX_LENGTH);
 
   const answers: Record<string, string> = { [CHECKIN_CHOICE_KEY]: choice };
-  if (notes) {
-    answers[CHECKIN_NOTE_KEY] = notes;
-  }
 
   try {
     await saveProgress(user.id, sessionId, {
       checkin_completed: true,
       checkin_answers: answers,
+      session_note: notes || null,
     });
   } catch {
     redirect(

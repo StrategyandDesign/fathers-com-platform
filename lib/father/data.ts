@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { loadProfileDraft } from "@/lib/father/profile";
 import {
+  asSessionProgress,
   catalogSessionTotal,
   isSessionComplete,
   isTrainingVisibleInCatalog,
@@ -13,14 +14,7 @@ import { loadAcceptedTrainingIds } from "@/lib/manager/reviews";
 import type { Certificate } from "@/lib/manager/types";
 
 function asProgress(row: SessionProgress): SessionProgress {
-  const answers = row.checkin_answers;
-  return {
-    ...row,
-    checkin_answers:
-      answers && typeof answers === "object" && !Array.isArray(answers)
-        ? (answers as Record<string, string>)
-        : {},
-  };
+  return asSessionProgress(row);
 }
 
 function sortByDisplay(a: Session, b: Session) {
@@ -158,6 +152,7 @@ export async function loadFatherHome(fatherId: string) {
         title: session.title,
         done: isSessionComplete(progressBySession.get(session.id) ?? null),
         unlocked: isSessionUnlocked(trainingSessions, progressBySession, session.id),
+        note: progressBySession.get(session.id)?.session_note ?? null,
       })),
       completed,
       total: catalogSessionTotal(training, trainingSessions.length),

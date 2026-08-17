@@ -89,9 +89,27 @@ export type SessionProgress = {
   action_completed: boolean;
   checkin_answers: Record<string, string>;
   action_note: string | null;
+  session_note: string | null;
   status: "not_started" | "in_progress" | "completed";
   completed_at: string | null;
 };
+
+export function asSessionProgress(row: SessionProgress): SessionProgress {
+  const raw = row.checkin_answers;
+  const answers =
+    raw && typeof raw === "object" && !Array.isArray(raw)
+      ? { ...(raw as Record<string, string>) }
+      : {};
+  const fromAnswers = typeof answers.notes === "string" ? answers.notes.trim() : "";
+  delete answers.notes;
+  const fromColumn = typeof row.session_note === "string" ? row.session_note.trim() : "";
+
+  return {
+    ...row,
+    checkin_answers: answers,
+    session_note: fromColumn || fromAnswers || null,
+  };
+}
 
 export type FatherProfileSummary = {
   id: string;

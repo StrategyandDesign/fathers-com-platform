@@ -72,7 +72,7 @@ export default async function SessionCheckinPage({
             name={CHECKIN_NOTE_KEY}
             maxLength={CHECKIN_NOTE_MAX_LENGTH}
             placeholder={CHECKIN_NOTE_PLACEHOLDER}
-            defaultValue={progress?.checkin_answers?.[CHECKIN_NOTE_KEY] ?? ""}
+            defaultValue={progress?.session_note ?? ""}
           />
         </label>
         <Flash error={error} />
