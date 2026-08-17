@@ -21,7 +21,6 @@ export function FirstVisitIntro({
   eligible,
   href,
   trainingTitle,
-  sessionNumber,
   total,
   completed,
   percent,
@@ -31,7 +30,6 @@ export function FirstVisitIntro({
   eligible: boolean;
   href: string;
   trainingTitle: string;
-  sessionNumber: number;
   total: number;
   completed: number;
   percent: number;
@@ -77,8 +75,6 @@ export function FirstVisitIntro({
             <div className="space-y-2">
               <ProgressBar value={percent} />
               <p className="text-sm text-muted-foreground">
-                {t("father.home.sessionOf", { n: sessionNumber, total })}
-                {" · "}
                 {t("father.home.sessionsComplete", { completed, total })}
               </p>
             </div>

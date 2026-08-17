@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { CoverPhoto } from "@/components/brand/cover";
 import { FirstVisitIntro } from "@/components/father/first-visit-intro";
+import { SessionCompleteMark } from "@/components/father/session-complete-mark";
 import { DimensionScores } from "@/components/profile/dimension-scores";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
@@ -43,7 +44,12 @@ function sessionInProgress(progress: SessionProgress | null) {
   );
 }
 
-export default async function FatherHomePage() {
+export default async function FatherHomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ done?: string }>;
+}) {
+  const { done } = await searchParams;
   const { user } = await requireRole("father");
   const { t, locale } = await getI18n();
   const [{ trainingCards, next, profile, draft }, customAssignments, orgPhotos] =
@@ -60,6 +66,13 @@ export default async function FatherHomePage() {
   const nextCard = next
     ? trainingCards.find((card) => card.training.id === next.training.id)
     : undefined;
+  const finishedCard = done
+    ? trainingCards.find((card) => card.sessionDots.some((dot) => dot.id === done && dot.done))
+    : undefined;
+  const justFinished = Boolean(finishedCard);
+  const celebrateSameTraining = Boolean(
+    justFinished && next && finishedCard && next.training.id === finishedCard.training.id
+  );
   const nextCompleted = nextCard?.completed ?? 0;
   const nextTotal = nextCard?.total ?? next?.training.session_count ?? 0;
   const nextPercent =
@@ -97,26 +110,38 @@ export default async function FatherHomePage() {
       ? trainingCards[0].training.title
       : t("father.home.allComplete")
     : t("father.home.noTraining");
-  const emptyTitle = hasTraining
-    ? t("father.home.caughtUp")
-    : profileIsPrimary
-      ? draft
-        ? t("father.home.continueProfile")
-        : t("father.home.takeProfile")
-      : assessmentIsPrimary
-        ? (pendingAssessment?.assessment.title ?? t("father.home.takeAssessment"))
-        : t("father.home.waitingManager");
-  const emptyBody = hasTraining
+  const emptyTitle = justFinished
+    ? t("father.home.doneForNow")
+    : hasTraining
+      ? t("father.home.caughtUp")
+      : profileIsPrimary
+        ? draft
+          ? t("father.home.continueProfile")
+          : t("father.home.takeProfile")
+        : assessmentIsPrimary
+          ? (pendingAssessment?.assessment.title ?? t("father.home.takeAssessment"))
+          : t("father.home.waitingManager");
+  const emptyBody = justFinished
     ? profileIsPrimary
       ? t("father.home.everyCompleteProfile")
       : assessmentIsPrimary
         ? t("father.home.everyCompleteAssessment")
-        : t("father.home.everyComplete")
-    : profileIsPrimary
-      ? t("father.home.waitProfile")
-      : assessmentIsPrimary
-        ? t("father.home.waitAssessment")
-        : t("father.home.waitEmpty");
+        : t("father.home.doneForNowBody")
+    : hasTraining
+      ? profileIsPrimary
+        ? t("father.home.everyCompleteProfile")
+        : assessmentIsPrimary
+          ? t("father.home.everyCompleteAssessment")
+          : t("father.home.everyComplete")
+      : profileIsPrimary
+        ? t("father.home.waitProfile")
+        : assessmentIsPrimary
+          ? t("father.home.waitAssessment")
+          : t("father.home.waitEmpty");
+  const finishedTotal = finishedCard?.total ?? 0;
+  const finishedCompleted = finishedCard?.completed ?? 0;
+  const finishedPercent =
+    finishedTotal > 0 ? Math.round((finishedCompleted / finishedTotal) * 100) : 0;
 
   const primaryCtaClassName = cn(
     buttonVariants({ variant: "default", size: "lg" }),
@@ -131,19 +156,33 @@ export default async function FatherHomePage() {
             eligible={showFirstVisitIntro}
             href={continueHref(next.session.id, next.progress)}
             trainingTitle={next.training.title}
-            sessionNumber={next.session.session_number}
             total={nextTotal}
             completed={nextCompleted}
             percent={nextPercent}
             coverSrc={heroCover}
           >
             <div className="min-w-0 space-y-2">
-              <p className={eyebrowClassName}>{heroLabel}</p>
+              {justFinished ? (
+                <SessionCompleteMark />
+              ) : (
+                <p className={eyebrowClassName}>{heroLabel}</p>
+              )}
               <section className="overflow-hidden rounded-xl border border-border bg-card">
                 <div className="h-20 overflow-hidden bg-[#101510] sm:h-32 lg:h-40">
                   <CoverPhoto src={heroCover} />
                 </div>
                 <div className="space-y-5 p-4 sm:p-5 lg:p-6">
+                  {celebrateSameTraining && nextTotal > 0 ? (
+                    <div className="space-y-2">
+                      <ProgressBar value={nextPercent} />
+                      <p className="text-sm text-muted-foreground">
+                        {t("father.home.sessionsComplete", {
+                          completed: nextCompleted,
+                          total: nextTotal,
+                        })}
+                      </p>
+                    </div>
+                  ) : null}
                   <div>
                     <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
                       {neverStarted ? next.training.title : next.session.title}
@@ -164,15 +203,10 @@ export default async function FatherHomePage() {
                   >
                     {neverStarted ? t("father.home.startOverview") : continueLabel}
                   </Link>
-                  {nextTotal > 0 ? (
+                  {!celebrateSameTraining && nextTotal > 0 ? (
                     <div className="space-y-2">
                       <ProgressBar value={nextPercent} />
                       <p className="text-sm text-muted-foreground">
-                        {t("father.home.sessionOf", {
-                          n: next.session.session_number,
-                          total: nextTotal,
-                        })}
-                        {" · "}
                         {t("father.home.sessionsComplete", {
                           completed: nextCompleted,
                           total: nextTotal,
@@ -187,10 +221,25 @@ export default async function FatherHomePage() {
         </div>
       ) : (
         <section className="order-1 flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:col-start-1 lg:row-start-1 lg:p-8">
-          <p className={eyebrowClassName}>{emptyEyebrow}</p>
+          {justFinished ? (
+            <SessionCompleteMark />
+          ) : (
+            <p className={eyebrowClassName}>{emptyEyebrow}</p>
+          )}
           <h1 className="font-heading mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
             {emptyTitle}
           </h1>
+          {justFinished && finishedTotal > 0 ? (
+            <div className="mt-4 space-y-2">
+              <ProgressBar value={finishedPercent} />
+              <p className="text-sm text-muted-foreground">
+                {t("father.home.sessionsComplete", {
+                  completed: finishedCompleted,
+                  total: finishedTotal,
+                })}
+              </p>
+            </div>
+          ) : null}
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">{emptyBody}</p>
           {profileIsPrimary ? (
             <div className="mt-6">
@@ -216,7 +265,7 @@ export default async function FatherHomePage() {
               </Link>
             </div>
           ) : null}
-          {!profileIsPrimary && !assessmentIsPrimary && profile ? (
+          {!justFinished && !profileIsPrimary && !assessmentIsPrimary && profile ? (
             <div className="mt-6">
               <Link href="/father/profile" className={primaryCtaClassName}>
                 {t("father.home.viewProfile")}
@@ -354,7 +403,6 @@ export default async function FatherHomePage() {
           <div className="grid gap-3 lg:grid-cols-3">
             {trainingCards.map(({ training, completed, total, next: trainingNext, nextProgress }) => {
               const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
-              const complete = total > 0 && completed === total;
               return (
                 <Link
                   key={training.id}
@@ -386,9 +434,7 @@ export default async function FatherHomePage() {
                       <p className="text-sm text-muted-foreground">
                         {total === 0
                           ? t("father.home.sessionsReady")
-                          : complete
-                            ? t("common.complete")
-                            : t("father.home.sessionsCount", { completed, total })}
+                          : t("father.home.sessionsCount", { completed, total })}
                       </p>
                     </div>
                   </div>

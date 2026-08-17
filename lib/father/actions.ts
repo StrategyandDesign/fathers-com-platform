@@ -163,7 +163,7 @@ export async function completeAction(formData: FormData) {
 
   const context = await requireReachableSession(user.id, sessionId);
   if (context.progress?.action_completed) {
-    redirect("/father");
+    redirect(`/father?done=${encodeURIComponent(sessionId)}`);
   }
 
   const answer = String(formData.get(ACTION_ANSWER_KEY) ?? "").trim();
@@ -185,5 +185,5 @@ export async function completeAction(formData: FormData) {
     );
   }
 
-  redirect("/father");
+  redirect(`/father?done=${encodeURIComponent(sessionId)}`);
 }
