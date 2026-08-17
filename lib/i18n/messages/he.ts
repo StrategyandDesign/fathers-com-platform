@@ -1235,6 +1235,27 @@ export const he = {
       throughWeek: "עד שבוע של {date}",
       fromWeek: "משבוע של {date}",
       footerPdf: "Fathers.com  ·  נוכחות היא מיומנות  ·  ספירות מעומעמות בלבד.",
+      narrativeKicker: "מעומעם",
+      narrativeTitle: "טיוטת ניסוח לקרן",
+      narrativeLead:
+        "הופך את הספירות למעלה לפסקה קצרה לדירקטוריון, לקרן או למייל הנהלה. בלי שמות. אפשר לערוך לפני ההעתקה.",
+      narrativeGenerate: "יצירת פסקת סיכום",
+      narrativeHint: "ערוך אם צריך, ואז העתק. עדיין ספירות בלבד — בלי שמות או אימיילים.",
+      narrativeReset: "איפוס הטיוטה",
+      copyNarrative: "העתקת הניסוח",
+      copiedNarrative: "הועתק",
+      narrativeEmpty:
+        "בתצוגה המסוננת הזו אין משתתפים לתאר. שנה את מסנני התובנות ופתח שוב את סיכום ההשפעה. העמוד עדיין לא כולל שמות או אימיילים.",
+      narrativeOpen: "הקוהורט המסונן הזה כולל {participants} משתתפים.",
+      narrativeStart: "{startedPct}% התחילו מפגש ({startedCount} מתוך {total}).",
+      narrativeProgress:
+        "{onePct}% סיימו לפחות מפגש אחד ({oneCount}), ו־{fullyPct}% סיימו הכשרה ({fullyCount}).",
+      narrativeCerts: "יש בתיק {certs} תעודות סיום.",
+      narrativeTrendCompletion:
+        "ההשלמה עברה מ־{left}% בחלון המוקדם ל־{right}% בחלון המאוחר.",
+      narrativeTrendProfiles:
+        "השלמות פרופיל עברו מ־{left} בחלון המוקדם ל־{right} בחלון המאוחר.",
+      narrativeClose: "אלה ספירות תוכנית מעומעמות — בלי שמות, אימיילים או מספרי תעודה.",
     },
   },
   help: {

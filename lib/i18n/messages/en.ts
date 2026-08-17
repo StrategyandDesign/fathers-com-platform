@@ -1284,6 +1284,29 @@ export const en = {
       throughWeek: "Through week of {date}",
       fromWeek: "From week of {date}",
       footerPdf: "Fathers.com  ·  Presence is a skill.  ·  Anonymized counts only.",
+      narrativeKicker: "Anonymized",
+      narrativeTitle: "Draft funder narrative",
+      narrativeLead:
+        "Turns the counts above into a short paragraph for a board, funder, or leadership email. No names. You can edit it before copying.",
+      narrativeGenerate: "Generate summary paragraph",
+      narrativeHint: "Edit if you want, then copy. Still counts only — no names or emails.",
+      narrativeReset: "Reset draft",
+      copyNarrative: "Copy narrative",
+      copiedNarrative: "Copied",
+      narrativeEmpty:
+        "This filtered view has no participants to describe. Adjust the Insights filters and open Impact Summary again. The page still contains no names or emails.",
+      narrativeOpen: "This filtered cohort includes {participants} participants.",
+      narrativeStart:
+        "{startedPct}% began a session ({startedCount} of {total}).",
+      narrativeProgress:
+        "{onePct}% finished at least one session ({oneCount}), and {fullyPct}% finished a training ({fullyCount}).",
+      narrativeCerts: "{certs} completion certificates are on file.",
+      narrativeTrendCompletion:
+        "Completion moved from {left}% in the earlier window to {right}% in the later window.",
+      narrativeTrendProfiles:
+        "Profile completions moved from {left} in the earlier window to {right} in the later window.",
+      narrativeClose:
+        "These are anonymized program counts — no names, emails, or certificate serials.",
     },
   },
   help: {

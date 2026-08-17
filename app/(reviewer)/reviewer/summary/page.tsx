@@ -2,12 +2,14 @@ import Link from "next/link";
 
 import { Flash } from "@/components/manager/flash";
 import { PrintButton } from "@/components/manager/print-button";
+import { ReviewerFunderNarrative } from "@/components/reviewer/funder-narrative";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
 import type { Translate } from "@/lib/i18n/translate";
 import { insightQuery, parseInsightSearchParams } from "@/lib/reviewer/insights";
+import { draftReviewerFunderNarrative } from "@/lib/reviewer/narrative";
 import { loadReviewerImpactSummary } from "@/lib/reviewer/summary";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -171,6 +173,8 @@ export default async function ReviewerImpactSummaryPage({
           ))}
         </section>
       )}
+
+      <ReviewerFunderNarrative draft={draftReviewerFunderNarrative(summary, t)} />
 
       {summary.trend ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
