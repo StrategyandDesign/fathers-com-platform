@@ -1,7 +1,8 @@
 import Link from "next/link";
 
-import { ROLE_ACCOUNT, ROLE_HOME, roleChromeLabel, type AppRole } from "@/lib/auth/roles";
+import { ROLE_ACCOUNT, ROLE_HOME, ROLE_LABEL, type AppRole } from "@/lib/auth/roles";
 import { BrandLogo } from "@/components/brand/logo";
+import { FatherGroupMembership } from "@/components/father/group-membership";
 import { AppNav } from "@/components/layout/app-nav";
 import { StaffMenu } from "@/components/layout/staff-menu";
 import { UserAvatar } from "@/components/layout/user-avatar";
@@ -23,7 +24,8 @@ export function RoleShell({
   children: React.ReactNode;
 }) {
   const fatherMobile = role === "father";
-  const chromeLabel = roleChromeLabel(role, organizationName);
+  const chromeLabel = role === "father" ? null : ROLE_LABEL[role];
+  const groupName = role === "father" ? organizationName?.trim() || null : null;
 
   return (
     <div className="min-h-svh bg-background">
@@ -76,7 +78,13 @@ export function RoleShell({
             : "max-lg:pb-6"
         )}
       >
-        <div className="mx-auto w-full min-w-0 max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-6 lg:px-8 lg:py-8">
+        <div
+          className={cn(
+            "mx-auto w-full min-w-0 max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-6 lg:px-8 lg:py-8",
+            groupName && "space-y-5 md:space-y-6"
+          )}
+        >
+          <FatherGroupMembership role={role} name={groupName} />
           {children}
         </div>
       </main>

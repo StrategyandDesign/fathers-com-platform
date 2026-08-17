@@ -9,7 +9,7 @@ export const ROLE_LABEL: Record<AppRole, string> = {
   admin: "Super-admin",
 };
 
-/** Father chrome shows the org name, not the role enum label. */
+/** Father identity uses the org name. Other roles use the role label. */
 export function roleChromeLabel(
   role: AppRole,
   organizationName?: string | null

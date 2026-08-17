@@ -7,7 +7,6 @@ import { FirstVisitIntro } from "@/components/father/first-visit-intro";
 import { DimensionScores } from "@/components/profile/dimension-scores";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
-import { loadOrganizationName } from "@/lib/account/data";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
@@ -47,11 +46,10 @@ function sessionInProgress(progress: SessionProgress | null) {
 
 export default async function FatherHomePage() {
   const { user } = await requireRole("father");
-  const [{ trainingCards, next, profile, draft }, customAssignments, organizationName, orgPhotos] =
+  const [{ trainingCards, next, profile, draft }, customAssignments, orgPhotos] =
     await Promise.all([
       loadFatherHome(user.id),
       loadFatherAssignments(user.id),
-      loadOrganizationName(user.id),
       loadFatherOrgPhotoCovers(user.id),
     ]);
   const heroCover = next
@@ -132,7 +130,6 @@ export default async function FatherHomePage() {
             completed={nextCompleted}
             percent={nextPercent}
             coverSrc={heroCover}
-            organizationName={organizationName}
           >
             <div className="min-w-0 space-y-2">
               <p className={eyebrowClassName}>{heroLabel}</p>
