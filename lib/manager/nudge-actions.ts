@@ -5,11 +5,11 @@ import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
 import { notifyManagerNudge } from "@/lib/email/events";
+import { loadNudgeHistory } from "@/lib/manager/nudge-data";
 import {
   NUDGE_TEMPLATE_COPY,
   cooldownRemaining,
   isNudgeTemplate,
-  loadNudgeHistory,
 } from "@/lib/manager/nudges";
 import { loadManagedParticipant } from "@/lib/manager/data";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";

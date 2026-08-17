@@ -21,13 +21,8 @@ import { loadManagedParticipant } from "@/lib/manager/data";
 import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
 import { saveParticipantNote } from "@/lib/manager/note-actions";
 import { NOTE_MAX_LENGTH, loadParticipantNotes } from "@/lib/manager/notes";
-import {
-  cooldownRemaining,
-  isNudgeTemplate,
-  loadNudgeHistory,
-  loadReminderPrefAllowed,
-  needsNudge,
-} from "@/lib/manager/nudges";
+import { loadNudgeHistory, loadReminderPrefAllowed } from "@/lib/manager/nudge-data";
+import { cooldownRemaining, isNudgeTemplate, needsNudge } from "@/lib/manager/nudges";
 import {
   translateAssignmentStatus,
   translateNudgeStatus,

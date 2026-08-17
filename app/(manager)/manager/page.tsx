@@ -16,7 +16,8 @@ import {
   organizationLabel,
 } from "@/lib/manager/companion";
 import { loadManagerWorkspace } from "@/lib/manager/data";
-import { loadNudgeHistory, loadReminderPrefs, needsNudge } from "@/lib/manager/nudges";
+import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
+import { needsNudge } from "@/lib/manager/nudges";
 import { loadReviewQueue } from "@/lib/manager/reviews";
 import { cn } from "@/lib/utils";
 

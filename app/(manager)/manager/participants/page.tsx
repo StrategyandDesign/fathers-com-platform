@@ -9,12 +9,8 @@ import { getI18n } from "@/lib/i18n/server";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
 import { buildQuietSuggestion } from "@/lib/manager/companion";
-import {
-  latestSentAt,
-  loadNudgeHistory,
-  loadReminderPrefs,
-  needsNudge,
-} from "@/lib/manager/nudges";
+import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
+import { latestSentAt, needsNudge } from "@/lib/manager/nudges";
 import { formatShortDate } from "@/lib/manager/types";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { useI18n } from "@/components/i18n/locale-provider";
-import { setLocaleCookie } from "@/lib/i18n/actions";
+import { setLocaleCookie } from "@/lib/i18n/set-locale-cookie";
 import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 

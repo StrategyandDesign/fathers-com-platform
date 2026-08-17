@@ -1,3 +1,5 @@
+"use client";
+
 import { useT } from "@/components/i18n/locale-provider";
 import { Button } from "@/components/ui/button";
 import { translateNudgeTemplate } from "@/lib/i18n/flash";

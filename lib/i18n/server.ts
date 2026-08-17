@@ -1,3 +1,5 @@
+import "server-only";
+
 import { cache } from "react";
 
 import { peekLocaleCookie } from "@/lib/i18n/cookie";
