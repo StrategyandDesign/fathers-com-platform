@@ -8,6 +8,9 @@ import { requireRole } from "@/lib/auth/session";
 import { loadFatherHome } from "@/lib/father/data";
 import { sessionNotePreview } from "@/lib/father/session-questions";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
+import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
+import { interactiveLinkClassName, interactiveSurfaceClassName, sessionDotClassName } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
 function sessionInProgress(progress: SessionProgress | null) {
   if (!progress) return false;
@@ -18,9 +21,6 @@ function sessionInProgress(progress: SessionProgress | null) {
     progress.status === "in_progress"
   );
 }
-import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
-import { interactiveLinkClassName, sessionDotClassName } from "@/lib/ui";
-import { cn } from "@/lib/utils";
 
 export default async function FatherTrainingsPage() {
   const { user } = await requireRole("father");
@@ -53,11 +53,34 @@ export default async function FatherTrainingsPage() {
           {trainingCards.map(({ training, completed, total, next, nextProgress, sessionDots, certificate }) => {
             const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
             const notes = sessionDots.filter((dot) => dot.note?.trim());
+            const lastOpen = [...sessionDots].reverse().find((dot) => dot.unlocked);
+            const cardHref = next
+              ? continueHref(next.id, nextProgress)
+              : lastOpen
+                ? `/father/sessions/${lastOpen.id}`
+                : null;
+            const cardLabel = next
+              ? completed === 0 && !sessionInProgress(nextProgress)
+                ? `Start ${training.title}`
+                : `Continue ${training.title}`
+              : lastOpen
+                ? `Open ${training.title}`
+                : null;
             return (
               <article
                 key={training.id}
-                className="overflow-hidden rounded-xl border border-border bg-card"
+                className={cn(
+                  "relative overflow-hidden rounded-xl border border-border bg-card",
+                  cardHref && interactiveSurfaceClassName
+                )}
               >
+                {cardHref && cardLabel ? (
+                  <Link
+                    href={cardHref}
+                    aria-label={cardLabel}
+                    className="absolute inset-0 z-0 rounded-xl"
+                  />
+                ) : null}
                 <div className="aspect-video overflow-hidden rounded-t-xl bg-[#101510]">
                   <CoverPhoto
                     src={resolveTrainingCardCover(
@@ -92,10 +115,11 @@ export default async function FatherTrainingsPage() {
                       {sessionDots.map((dot) => {
                         const className = cn(
                           sessionDotClassName,
+                          "relative z-10",
                           dot.done
                             ? "bg-primary text-primary-foreground hover:bg-primary/85"
                             : "bg-white/8 text-muted-foreground hover:bg-white/10 hover:text-foreground",
-                          !dot.unlocked && "cursor-not-allowed opacity-45 hover:bg-white/8 hover:text-muted-foreground"
+                          !dot.unlocked && "pointer-events-none cursor-not-allowed opacity-45 hover:bg-white/8 hover:text-muted-foreground"
                         );
                         if (!dot.unlocked) {
                           return (
@@ -131,7 +155,7 @@ export default async function FatherTrainingsPage() {
                               <Link
                                 href={`/father/sessions/${dot.id}/checkin`}
                                 className={cn(
-                                  "inline-flex min-h-11 items-center text-sm text-muted-foreground",
+                                  "relative z-10 inline-flex min-h-11 items-center text-sm text-muted-foreground",
                                   interactiveLinkClassName
                                 )}
                               >
@@ -144,23 +168,28 @@ export default async function FatherTrainingsPage() {
                     ) : null}
                     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                       {next ? (
-                        <Link
-                          href={continueHref(next.id, nextProgress)}
-                          className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+                        <span
+                          className={cn(
+                            buttonVariants({ variant: "outline" }),
+                            "pointer-events-none w-full sm:w-auto"
+                          )}
                         >
                           {completed === 0 && !sessionInProgress(nextProgress)
                             ? "Start Session 1"
                             : "Continue training"}
-                        </Link>
+                        </span>
                       ) : total === 0 ? null : (
-                        <p className="inline-flex min-h-11 items-center text-sm text-primary">
+                        <p className="pointer-events-none inline-flex min-h-11 items-center text-sm text-primary">
                           Complete
                         </p>
                       )}
                       {certificate ? (
                         <a
                           href={`/api/certificates/${certificate.id}/download`}
-                          className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+                          className={cn(
+                            buttonVariants({ variant: "outline" }),
+                            "relative z-10 w-full sm:w-auto"
+                          )}
                         >
                           Download certificate
                         </a>
