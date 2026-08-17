@@ -4,6 +4,7 @@ import { BrandLogo } from "@/components/brand/logo";
 import { FatherGroupMembership } from "@/components/father/group-membership";
 import { AppNav } from "@/components/layout/app-nav";
 import { ManagerHeaderMenu } from "@/components/layout/manager-header-menu";
+import { ManagerViewActions } from "@/components/layout/manager-view-actions";
 import { StaffMenu } from "@/components/layout/staff-menu";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -17,12 +18,14 @@ export async function RoleShell({
   email,
   avatarUrl,
   organizationName,
+  pendingTrainings = 0,
   children,
 }: {
   role: AppRole;
   email?: string | null;
   avatarUrl?: string | null;
   organizationName?: string | null;
+  pendingTrainings?: number;
   children: React.ReactNode;
 }) {
   const { t } = await getI18n();
@@ -34,7 +37,7 @@ export async function RoleShell({
   return (
     <div className="min-h-svh bg-background">
       <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-border bg-background/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden lg:px-5">
-        <div className="flex min-w-0 flex-1 items-center gap-1.5 lg:gap-3">
+        <div className="flex min-w-0 shrink-0 items-center gap-1.5 lg:gap-3">
           {role !== "father" && role !== "manager" ? <StaffMenu role={role} /> : null}
           <BrandLogo href={ROLE_HOME[role]} />
           {chromeLabel ? (
@@ -44,11 +47,15 @@ export async function RoleShell({
           ) : null}
         </div>
         {role === "manager" ? (
-          <div className="hidden min-w-0 justify-center lg:flex">
-            <ManagerHeaderMenu />
+          <div className="hidden min-w-0 flex-1 justify-end overflow-x-auto md:flex [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="shrink-0">
+              <ManagerHeaderMenu />
+            </div>
           </div>
-        ) : null}
-        <div className="flex flex-1 justify-end">
+        ) : (
+          <div className="hidden flex-1 md:block" />
+        )}
+        <div className="flex shrink-0 justify-end">
           <Link
             href={ROLE_ACCOUNT[role]}
             className={cn(
@@ -105,6 +112,11 @@ export async function RoleShell({
           )}
         >
           <FatherGroupMembership role={role} name={groupName} />
+          {role === "manager" ? (
+            <div className="mb-5">
+              <ManagerViewActions pendingTrainings={pendingTrainings} />
+            </div>
+          ) : null}
           {children}
         </div>
       </main>

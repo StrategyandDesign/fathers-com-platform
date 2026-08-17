@@ -27,7 +27,7 @@ export default async function AdminNewTrainingPage({
         <h1 className="font-heading text-2xl font-semibold tracking-tight">New training</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Add sessions on the next page. Leave unpublished until it is ready.
-          Publishing does not notify managers — release is a separate step.
+          Publishing does not notify managers. Release is a separate step.
         </p>
       </div>
       <Flash error={flash.error} notice={flash.notice} />

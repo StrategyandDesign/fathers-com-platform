@@ -42,7 +42,7 @@ export const PAGE_MAX_LENGTH = 200;
 export const PREVIEW_MAX_LENGTH = 80;
 
 export const SEND_FAILED_MESSAGE = "Unable to send right now. Please try again.";
-export const RECEIVED_NOTICE = "Thanks — we’ve received your report";
+export const RECEIVED_NOTICE = "Thanks. We’ve received your report";
 
 export type SupportReportRow = {
   id: string;

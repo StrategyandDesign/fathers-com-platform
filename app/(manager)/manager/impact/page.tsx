@@ -234,22 +234,22 @@ export default async function ManagerImpactPage({
         <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
           <li>
             <span className="font-medium text-foreground">{t("manager.impact.howStarted")}</span>
-            {" — "}
+            {". "}
             {t("manager.impact.howStartedBody")}
           </li>
           <li>
             <span className="font-medium text-foreground">{t("manager.impact.howOne")}</span>
-            {" — "}
+            {". "}
             {t("manager.impact.howOneBody")}
           </li>
           <li>
             <span className="font-medium text-foreground">{t("manager.impact.howFully")}</span>
-            {" — "}
+            {". "}
             {t("manager.impact.howFullyBody")}
           </li>
           <li>
             <span className="font-medium text-foreground">{t("manager.impact.howActive")}</span>
-            {" — "}
+            {". "}
             {t("manager.impact.howActiveBody", { days: snapshot.periodDays })}
           </li>
         </ul>

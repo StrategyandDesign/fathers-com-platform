@@ -93,7 +93,7 @@ export async function sendNudge(formData: FormData) {
     if (status === "sent") {
       ok(
         path,
-        `Reminder sent to ${detail.participant.name}. We couldn’t record it — wait a few days before sending another.`
+        `Reminder sent to ${detail.participant.name}. We couldn’t record it. Wait a few days before sending another.`
       );
     }
     fail(path, "The reminder didn’t save. Try again.");

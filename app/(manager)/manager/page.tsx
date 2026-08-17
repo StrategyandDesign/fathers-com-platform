@@ -73,27 +73,6 @@ export default async function ManagerHomePage({
             {t("manager.dashboard.lead")}
           </p>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Link
-            href="/manager/impact"
-            className={cn(buttonVariants(), "w-full sm:w-auto")}
-          >
-            {t("manager.dashboard.impact")}
-          </Link>
-          <Link
-            href="/manager/compare"
-            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
-          >
-            {t("manager.dashboard.compare")}
-          </Link>
-          <Link
-            href="/manager/trainings"
-            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
-          >
-            {t("nav.trainings")}
-            {reviews.pending.length > 0 ? ` (${reviews.pending.length})` : ""}
-          </Link>
-        </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
       <CompanionPanel briefing={companion} t={t} />

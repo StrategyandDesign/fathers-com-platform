@@ -62,14 +62,14 @@ export async function notifyCertificateIssued(input: {
     const appUrl = getAppUrl();
     await Promise.all([
       deliverIfAllowed(input.fatherId, "certificate_sent", {
-        subject: `Your certificate is ready — ${input.serial}`,
+        subject: `Your certificate is ready. ${input.serial}`,
         title: "Your certificate is ready.",
         body: `${input.trainingTitle} is complete. Serial ${input.serial}.\nSign in to download the PDF.`,
         ctaLabel: "View certificates",
         ctaHref: `${appUrl}/father/certificates`,
       }),
       deliverIfAllowed(input.managerId, "certificate_sent", {
-        subject: `Certificate issued — ${input.serial}`,
+        subject: `Certificate issued. ${input.serial}`,
         title: "Certificate sent.",
         body: `You issued ${input.serial} to ${input.fatherName} for ${input.trainingTitle}.`,
         ctaLabel: "Open participant",
@@ -94,7 +94,7 @@ export async function notifyTrainingReleased(input: {
     const appUrl = getAppUrl();
     const rendered = renderTransactionalEmail({
       title: "A new training is available for your review",
-      body: `${input.trainingTitle} is ready for your organization.\nPreview it, then accept to make it available to assign — or decline to keep it hidden. Fathers are not enrolled until you assign it.`,
+      body: `${input.trainingTitle} is ready for your organization.\nPreview it, then accept to make it available to assign, or decline to keep it hidden. Fathers are not enrolled until you assign it.`,
       ctaLabel: "Review training",
       ctaHref: `${appUrl}/manager/reviews/${input.trainingId}`,
     });

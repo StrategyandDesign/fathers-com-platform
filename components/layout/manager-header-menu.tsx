@@ -32,7 +32,7 @@ export function ManagerHeaderMenu() {
   return (
     <nav
       aria-label={t("nav.dashboardMenu")}
-      className="min-w-0 max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="shrink-0 max-w-full"
     >
       <div className="flex h-10 items-center gap-0.5 rounded-lg border border-border bg-card p-0.5">
         {ITEMS.map((item) => {

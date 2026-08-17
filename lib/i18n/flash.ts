@@ -157,6 +157,7 @@ const EXACT: Record<string, string> = {
   "Keep the description under 2000 characters.": "manager.request.descriptionTooLong",
   "Unable to send request. Please try again.": "manager.request.sendFailed",
   "Thanks — your request has been received": "manager.request.received",
+  "Thanks. Your request has been received": "manager.request.received",
   "Start date must be a valid date.": "manager.reports.startDateInvalid",
   "End date must be a valid date.": "manager.reports.endDateInvalid",
   "Completion status must be not started, in progress, or completed.":
@@ -168,6 +169,7 @@ const EXACT: Record<string, string> = {
   "Screenshot must be 2 MB or smaller.": "help.screenshotTooBig",
   "Unable to send right now. Please try again.": "help.sendFailed",
   "Thanks — we’ve received your report": "help.received",
+  "Thanks. We’ve received your report": "help.received",
 };
 
 const BULK_REASON: Record<string, string> = {
@@ -285,7 +287,7 @@ export function translateFlash(message: string | undefined, t: Translate) {
     return t("manager.participants.nudgeInDays", { days: reminderDays[1] });
   }
   const reminderUnrecorded = message.match(
-    /^Reminder sent to (.+)\. We couldn’t record it — wait a few days before sending another\.$/
+    /^Reminder sent to (.+)\. We couldn’t record it(?: —|\.) wait a few days before sending another\.$/i
   );
   if (reminderUnrecorded) {
     return t("flash.reminderSentUnrecorded", { name: reminderUnrecorded[1] });

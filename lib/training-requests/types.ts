@@ -22,7 +22,7 @@ export const AUDIENCE_MAX_LENGTH = 200;
 export const PREVIEW_MAX_LENGTH = 80;
 
 export const SEND_FAILED_MESSAGE = "Unable to send request. Please try again.";
-export const RECEIVED_NOTICE = "Thanks — your request has been received";
+export const RECEIVED_NOTICE = "Thanks. Your request has been received";
 
 export type TrainingRequestRow = {
   id: string;

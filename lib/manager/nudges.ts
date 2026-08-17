@@ -34,7 +34,7 @@ export const NUDGE_TEMPLATE_COPY: Record<NudgeTemplateKey, NudgeTemplate> = {
     subject: "Your next session is still here",
     title: "Whenever you’re ready.",
     body: (organizationName) =>
-      `There’s a session waiting when you have a few minutes.\nYour place in the ${organizationName} training is saved. Pick it up where you left off — nothing expired.`,
+      `There’s a session waiting when you have a few minutes.\nYour place in the ${organizationName} training is saved. Pick it up where you left off. Nothing expired.`,
     ctaLabel: "Continue training",
   },
   encouragement: {
@@ -61,7 +61,7 @@ export const NUDGE_TEMPLATE_COPY: Record<NudgeTemplateKey, NudgeTemplate> = {
 
 export const NUDGE_STATUS_LABEL: Record<NudgeLogRow["status"], string> = {
   sent: "Sent",
-  skipped_pref: "Not sent — reminders off",
+  skipped_pref: "Not sent. Reminders off",
   failed: "Didn’t send",
 };
 

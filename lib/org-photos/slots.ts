@@ -54,7 +54,7 @@ export function homeHeroGuidance(): OrgPhotoGuidance {
   return {
     kind: "home_hero",
     slot: HOME_HERO_SLOT,
-    surface: "Home — Up Next",
+    surface: "Home: Up Next",
     minWidth: 1200,
     minHeight: 360,
     minAspect: 1.6,
@@ -68,7 +68,7 @@ export function homeProfileGuidance(): OrgPhotoGuidance {
   return {
     kind: "home_profile",
     slot: HOME_PROFILE_SLOT,
-    surface: "Home — Profile",
+    surface: "Home: Profile",
     minWidth: 720,
     minHeight: 960,
     minAspect: 0.55,
@@ -82,7 +82,7 @@ export function trainingCardGuidance(slug: string, title: string): OrgPhotoGuida
   return {
     kind: "training",
     slot: trainingPhotoSlot(slug),
-    surface: `Training card — ${title}`,
+    surface: `Training card: ${title}`,
     minWidth: 800,
     minHeight: 450,
     minAspect: 1.2,
@@ -118,7 +118,7 @@ export function slotCopy(orgName: string, kind: OrgPhotoKind) {
     };
   }
   return {
-    where: `This photo appears on training cards for ${name} — on Home under Your Trainings, and on the Trainings page.`,
+    where: `This photo appears on training cards for ${name}, on Home under Your Trainings, and on the Trainings page.`,
     applies: `This change applies only to ${name}.`,
   };
 }

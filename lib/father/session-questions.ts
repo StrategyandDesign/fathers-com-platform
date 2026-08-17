@@ -6,7 +6,7 @@ export const CHECKIN_NOTE_MAX_LENGTH = 2000;
 
 export const CHECKIN_NOTE_LABEL = "Optional notes";
 export const CHECKIN_NOTE_PLACEHOLDER =
-  "A teaching point in your own words — no personal details.";
+  "A teaching point in your own words. No personal details.";
 export const SESSION_NOTE_PREVIEW_MAX = 80;
 
 export function sessionNotePreview(text: string, max = SESSION_NOTE_PREVIEW_MAX) {
@@ -33,7 +33,7 @@ const ACTION_NOTE_HINT =
 
 export const ACTION_NOTE_LABEL = ACTION_NOTE_HINT;
 export const ACTION_NOTE_PLACEHOLDER =
-  "Teaching point only — no personal details.";
+  "Teaching point only. No personal details.";
 export const ACTION_ANSWER_KEY = "action_answer";
 
 export type SkillChoice = {

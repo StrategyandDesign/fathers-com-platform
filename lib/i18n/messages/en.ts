@@ -296,7 +296,7 @@ export const en = {
     noteSaved: "Private note saved.",
     noteCleared: "Private note cleared.",
     reminderSentUnrecorded:
-      "Reminder sent to {name}. We couldn’t record it — wait a few days before sending another.",
+      "Reminder sent to {name}. We couldn’t record it. Wait a few days before sending another.",
     prefsSaveFailed: "Preferences didn’t save. Try again.",
     signInAgainPrefs: "Sign in again to save preferences.",
     compareNeedSecondGroup: "Add a second group to compare groups. Time periods still work.",
@@ -317,7 +317,7 @@ export const en = {
     orgPhotos: "Organization Photos",
     orgPhotosOne: "Photos {name} participants see on Home, Profile, and Trainings.",
     orgPhotosPlaceholder:
-      "Landscape placeholders for {name}. Replace them anytime — participants see your photos on Home, Profile, and Trainings.",
+      "Landscape placeholders for {name}. Replace them anytime. Participants see your photos on Home, Profile, and Trainings.",
     orgPhotosMany: "Photos {names} participants see on Home, Profile, and Trainings.",
     orgPhotosFallback: "Photos your organization sees on Home, Profile, and Trainings.",
     managePhotos: "Manage photos",
@@ -412,7 +412,7 @@ export const en = {
       taken: "Completed {date}",
       inProgress: "In progress",
       questionOf: "Question {n} of {total}",
-      profileReminder: "Optional. A reading of how you tend to father — not a test.",
+      profileReminder: "Optional. A reading of how you tend to father, not a test.",
       takeProfileTitle: "Start your Profile",
       takeProfileBody: "Optional. Four parts. About twenty minutes, one question at a time.",
       profileLater: "Optional. You can take this after you start.",
@@ -433,7 +433,7 @@ export const en = {
       continueTitle: "Continue {title}",
       openTitle: "Open {title}",
       sessionsComplete: "{completed} of {total} complete",
-      lockedTitle: "{title} — finish earlier sessions first",
+      lockedTitle: "{title}. Finish earlier sessions first",
       sessionLocked: "Session {n}: {title} (locked)",
       sessionLabel: "Session {n}: {title}",
       notes: "Notes",
@@ -468,7 +468,7 @@ export const en = {
       takeHint:
         "128 questions in four parts. One at a time. About twenty minutes. You can save and come back.",
       howToAnswer:
-        "Answer from the contact you have — a call, a letter, a visit. Not only days in the same house. If a line does not fit, choose Uncertain.",
+        "Answer from the contact you have: a call, a letter, a visit. Not only days in the same house. If a line does not fit, choose Uncertain.",
       sectionOf: "Part {n} of {total}",
       sectionProgress: "{n} of {size} in this part",
       sectionName1: "Most weeks",
@@ -494,9 +494,9 @@ export const en = {
       resultsDetermination: "Primary Determination: {value}",
       resultsEdge: "Primary Edge: {value}",
       determinationWhat:
-        "Primary Determination is the stance your answers point to — the work to keep in front of you.",
+        "Primary Determination is the stance your answers point to. It is the work to keep in front of you.",
       edgeWhat:
-        "Primary Edge is the strength that came through most clearly — how you tend to father.",
+        "Primary Edge is the strength that came through most clearly. It is how you tend to father.",
       meaningInvolvement:
         "You stay in your child’s life, not only the big moments. Being away does not have to mean being gone.",
       meaningConsistency:
@@ -506,7 +506,7 @@ export const en = {
       meaningNurturance:
         "You let your child know they matter. Warmth can be sent as clearly as it can be spoken in a room.",
       meaningPresence:
-        "When you are with your child — in person or on a line — you bring yourself, not the day you just had.",
+        "When you are with your child, in person or on a line, you bring yourself, not the day you just had.",
       meaningSteadiness:
         "You can feel pressure rise without handing it to your child. Steady is a skill you can practice from anywhere.",
       meaningRepair:
@@ -515,7 +515,7 @@ export const en = {
         "You keep showing up after you have been away. Return is a season of small deposits, not one grand gesture.",
       useThisTitle: "How to use this",
       useThis1:
-        "Hold your Determination as the standard when you make contact — a call, a letter, or the next time you are together.",
+        "Hold your Determination as the standard when you make contact: a call, a letter, or the next time you are together.",
       useThis2:
         "Lean on your Edge on purpose. It is already in these answers. Use it when you reach out.",
       scoresLead:
@@ -575,7 +575,7 @@ export const en = {
       continueAction: "Continue to Action",
       iWatched: "I'm ready",
       noteLabel: "Optional notes",
-      notePlaceholder: "A teaching point in your own words — no personal details.",
+      notePlaceholder: "A teaching point in your own words. No personal details.",
       savedHint:
         "Your answer is saved to this session’s progress. This is a skill check, not a personal journal. Notes are optional.",
       saveContinue: "Save and continue",
@@ -587,7 +587,7 @@ export const en = {
       doLater: "I’ll do this later",
       actionNoteLabel:
         "Optional: note the correct teaching point in your own words (do not include personal details).",
-      actionNotePlaceholder: "Teaching point only — no personal details.",
+      actionNotePlaceholder: "Teaching point only. No personal details.",
     },
     intro: {
       welcome: "Welcome",
@@ -604,7 +604,7 @@ export const en = {
       request: "Request a Training",
       reviewTitle: "New trainings to review",
       reviewLead:
-        "A new training is available. Open Trainings to preview it, then accept to make it available — or decline to keep it hidden.",
+        "A new training is available. Open Trainings to preview it, then accept to make it available, or decline to keep it hidden.",
       openQueue: "Open Trainings",
       trainingsLead: "Accept a release, assign it to fathers, or hide it from the group.",
       sessionOne: "1 session",
@@ -640,48 +640,46 @@ export const en = {
       readyCert: "Ready for certificate: {title}",
     },
     companion: {
-      eyebrow: "Companion",
-      title: "Companion",
-      lead: "A calm read of your group. Nothing sends or assigns until you confirm.",
-      collapse: "Hide companion",
-      expand: "Show companion",
+      eyebrow: "Assistant",
+      title: "Assistant",
+      lead: "A short read of your group. Nothing sends or assigns until you confirm.",
+      collapse: "Hide assistant",
+      expand: "Show assistant",
       narrateEmpty:
-        "No fathers have joined {org} yet. Share the invite code — this companion will narrate progress and draft funder language as soon as someone starts.",
+        "No fathers have joined {org} yet. Share the invite code. This assistant will describe progress and draft funder language when someone starts.",
       narrate:
         "{org} has {fathers} fathers. {startedPct}% have started training. {quiet} need a calm check-in, and {certs} certificates are ready to issue.",
       narrateClear:
         "{org} has {fathers} fathers. {startedPct}% have started training. Nobody is sitting quiet, and {certs} certificates are ready to issue.",
-      questionsTitle: "What this is doing for you",
-      fundingTitle: "Does this help us raise money?",
+      questionsTitle: "At a glance",
+      fundingTitle: "For a funder or board",
       fundingBody:
-        "Yes. {certsIssued} certificates on file and a {startedPct}% start rate are documented participation a funder or board can cite. Draft the paragraph on Impact Snapshot.",
+        "{certsIssued} certificates on file and a {startedPct}% start rate are documented participation. Draft the paragraph on Impact Snapshot.",
       fundingEmpty:
-        "Yes — once fathers begin, completion and certificates become the proof you take to a funder. Nothing extra to assemble.",
-      savingsTitle: "Does this save us money?",
+        "When fathers begin, completion and certificates become the proof you take to a funder. Nothing extra to assemble.",
+      savingsTitle: "Quiet seats",
       savingsBody:
-        "{quiet} assigned seats are going quiet. A confirmed nudge takes a moment and protects the program time you already paid for.",
+        "{quiet} assigned seats have gone quiet. A confirmed note takes a moment and protects program time you already paid for.",
       savingsClear:
         "Assigned seats are being used. You are not losing program cost to silent drop-off right now.",
-      timeTitle: "Does this save me time?",
-      timeBody:
-        "The companion already ranked who needs you. Open a name, confirm a nudge, or issue a certificate — no hunting through the roster.",
-      timeClear:
-        "No one is waiting on you. The roster and Impact Snapshot stay one click away when you need them.",
-      extraTitle: "Does this take my time?",
+      timeTitle: "What to do next",
+      timeBody: "Open a name, confirm a note, or issue a certificate. The list is already in front of you.",
+      timeClear: "No one is waiting on you. The roster and Impact Snapshot stay one click away.",
+      extraTitle: "You confirm first",
       extraBody:
-        "No. The companion never sends or assigns on its own. You confirm or dismiss. Your existing tools stay where they are.",
+        "Nothing sends or assigns on its own. You confirm or dismiss. Your existing tools stay where they are.",
       viewQuiet: "Review quiet participants",
       viewImpact: "Draft funder narrative",
       issueCerts: "Certificates ready",
       noNext: "You’re caught up. Nothing is waiting on a confirmation.",
       attentionTitle: "Needs attention",
       attentionLead:
-        "Quiet or stalled fathers, with a reason and a suggested nudge. Nothing emails until you confirm.",
-      suggestNudge: "Suggest nudge",
+        "Quiet or stalled fathers, with a reason and a suggested note. Nothing emails until you confirm.",
+      suggestNudge: "Suggest note",
       dismiss: "Dismiss",
-      confirmSend: "Send this nudge",
+      confirmSend: "Send this note",
       suggestedNote: "Suggested note",
-      remindersOff: "He turned off session reminders. The companion will not offer a send.",
+      remindersOff: "He turned off session reminders. A send will not be offered.",
       cooldown: "A reminder already went out. You can send another in {days} days.",
       cooldownTomorrow: "A reminder already went out. You can send another tomorrow.",
       historyFailed: "Couldn’t check recent reminders. Try again in a moment.",
@@ -693,21 +691,21 @@ export const en = {
       whyContinue: "The next session is still open. A gentle continue respects his pace.",
       whyEncouragement: "He already started. Encouragement names the progress without pressure.",
       whyWelcomeBack: "It’s been a longer stretch. Welcome back treats the gap as normal.",
-      detailTitle: "Companion suggestion",
-      detailLead: "Shown only because this father is quiet, stalled, or ready for a certificate. You confirm any send.",
-      detailCert: "A certificate is ready for {title}. Preview it — nothing issues until you confirm on the next screen.",
+      detailTitle: "Assistant suggestion",
+      detailLead: "Shown because this father is quiet, stalled, or ready for a certificate. You confirm any send.",
+      detailCert: "A certificate is ready for {title}. Preview it. Nothing issues until you confirm on the next screen.",
       narrativeTitle: "Draft funder narrative",
       narrativeLead: "Anonymized. No names. Copy it into a board or funder update.",
       narrativeEmpty:
-        "{org} does not have enrollment to describe yet. When fathers join, this paragraph will write the last {days} days in funder language — still without names.",
+        "{org} does not have enrollment to describe yet. When fathers join, this paragraph will write the last {days} days in funder language, still without names.",
       narrative:
         "Over the last {days} days, {org} enrolled {enrolled} fathers. {startedPct}% started training, {onePct}% completed at least one session, and {fullyPct}% finished a training. {certs} certificates were issued.",
       trendUp:
-        "Session completions rose from {previous} to {current} versus the prior {days} days. These are documented participation numbers a funder or board can use — no individual names.",
+        "Session completions rose from {previous} to {current} versus the prior {days} days. These are documented participation numbers a funder or board can use. No individual names.",
       trendDown:
-        "Session completions moved from {previous} to {current} versus the prior {days} days. These are documented participation numbers a funder or board can use — no individual names.",
+        "Session completions moved from {previous} to {current} versus the prior {days} days. These are documented participation numbers a funder or board can use. No individual names.",
       trendSame:
-        "Session completions held steady versus the prior {days} days. These are documented participation numbers a funder or board can use — no individual names.",
+        "Session completions held steady versus the prior {days} days. These are documented participation numbers a funder or board can use. No individual names.",
       copyNarrative: "Copy narrative",
       copiedNarrative: "Copied",
     },
@@ -746,7 +744,7 @@ export const en = {
       clearNote: "Clear",
       sendNudge: "Send a nudge",
       nudgeQuiet:
-        "{quiet}. A short, respectful note — only if he left session reminders on.",
+        "{quiet}. A short, respectful note, only if he left session reminders on.",
       nudgeActive: "He’s been active recently. You can still send a calm note if you need to.",
       nudgeCheckFailed: "Couldn’t check recent reminders. Try again in a moment.",
       remindersOffLong: "He turned off session reminders. A nudge will not be emailed.",
@@ -803,7 +801,7 @@ export const en = {
       welcomeBack: "Welcome back",
       welcomeBackPreview: "A light check-in after some time away. Adult and unhurried.",
       sent: "Sent",
-      skipped: "Not sent — reminders off",
+      skipped: "Not sent. Reminders off",
       failed: "Didn’t send",
       quietNone: "No activity yet",
       quietToday: "Active today",
@@ -872,7 +870,7 @@ export const en = {
     },
     request: {
       title: "Request a Training",
-      lead: "Suggest a topic we should source for your organization. No tracking — we’ll take it from here.",
+      lead: "Suggest a topic we should source for your organization. No tracking. We’ll take it from here.",
       topic: "Topic or suggested title",
       topicPlaceholder: "Co-parenting after separation",
       topicError: "Add a topic or suggested title.",
@@ -887,12 +885,12 @@ export const en = {
       topicTooLong: "Keep the topic under {n} characters.",
       descriptionTooLong: "Keep the description under 2000 characters.",
       sendFailed: "Unable to send request. Please try again.",
-      received: "Thanks — your request has been received",
+      received: "Thanks. Your request has been received",
     },
     reports: {
       title: "Reports",
       lead:
-        "Export fathers in your group. Date range filters last activity (join, profile, session, assignment, or certificate). Email is omitted — it is not on profiles, and managers cannot read auth emails under RLS.",
+        "Export fathers in your group. Date range filters last activity (join, profile, session, assignment, or certificate). Email is omitted. It is not on profiles, and managers cannot read auth emails under RLS.",
       impact: "Impact Snapshot",
       training: "Training",
       allTrainings: "All trainings",
@@ -1000,7 +998,7 @@ export const en = {
     },
     compare: {
       title: "Compare",
-      lead: "Two groups, or two time periods. Same numbers as Impact — no extra tracking.",
+      lead: "Two groups, or two time periods. Same numbers as Impact. No extra tracking.",
       impact: "Impact Snapshot",
       mode: "Compare",
       periods: "Time periods",
@@ -1122,7 +1120,7 @@ export const en = {
     },
     reviewDetail: {
       dashboard: "Dashboard",
-      previewTitle: "Preview — not yet available to your cohort",
+      previewTitle: "Preview. Not yet available to your cohort",
       previewLead:
         "Read-only. Accept to make it available to assign, or decline to keep it hidden from {org}.",
       declinedTitle: "Declined for your organization",
@@ -1142,7 +1140,7 @@ export const en = {
     reviews: {
       crumb: "New trainings",
       title: "New trainings",
-      lead: "Preview a release, then accept to make it available to assign — or decline to keep it hidden from {org}.",
+      lead: "Preview a release, then accept to make it available to assign, or decline to keep it hidden from {org}.",
       request: "Request a Training",
       notifications: "Notifications",
       waitingOne: "One training is waiting on your review.",
@@ -1186,7 +1184,7 @@ export const en = {
       lead: "Accept a release to make it available to {org}. Assign it when you want fathers to receive it.",
       waitingTitle: "Waiting on you",
       waitingLead:
-        "Preview, then accept to make it available to assign — or decline to keep it hidden.",
+        "Preview, then accept to make it available to assign, or decline to keep it hidden.",
       waitingEmptyTitle: "You’re caught up",
       waitingEmptyBody: "No new trainings are waiting.",
       cohortTitle: "In your cohort",
@@ -1209,11 +1207,11 @@ export const en = {
     photos: {
       title: "Organization Photos",
       leadOne:
-        "Replace the photos {name} participants see on Home, Profile, and Trainings. Any photo works — we fit it to the card.",
+        "Replace the photos {name} participants see on Home, Profile, and Trainings. Any photo works. We fit it to the card.",
       leadPlaceholder:
-        "The landscape photos are placeholders. Replace any of them — {name} participants will see your photos on Home, Profile, and Trainings.",
+        "The landscape photos are placeholders. Replace any of them. {name} participants will see your photos on Home, Profile, and Trainings.",
       leadMany:
-        "Replace the photos each organization sees on Home, Profile, and Trainings. Any photo works — we fit it to the card.",
+        "Replace the photos each organization sees on Home, Profile, and Trainings. Any photo works. We fit it to the card.",
       emptyTitle: "No organization yet",
       emptyBody: "Create a group on the Dashboard first. Photos are scoped to that organization.",
       openDashboard: "Open Dashboard",
@@ -1229,9 +1227,9 @@ export const en = {
       trainings: "Trainings",
       profile: "Profile",
       behindProfile: "Behind the Profile card",
-      surfaceHero: "Home — Up Next",
-      surfaceProfile: "Home — Profile",
-      surfaceTraining: "Training card — {title}",
+      surfaceHero: "Home: Up Next",
+      surfaceProfile: "Home: Profile",
+      surfaceTraining: "Training card: {title}",
       anyPhoto: "Any photo works. We crop it to fit this card.",
       anyPhotoProfile: "Any photo works. We crop it to fit the Profile card.",
       anyPhotoTraining: "Any photo works. We crop it to fit the training cards.",
@@ -1239,7 +1237,7 @@ export const en = {
       whereHero: "{name} participants will see this on Home, in the Up Next card.",
       whereProfile: "{name} participants will see this behind the Profile card on Home.",
       whereTraining:
-        "This photo appears on training cards for {name} — on Home under Your Trainings, and on the Trainings page.",
+        "This photo appears on training cards for {name}, on Home under Your Trainings, and on the Trainings page.",
       untilHero: "Until you replace it, the card uses the platform photo for whichever session is next.",
       untilProfile: "Until you replace it, the card uses the platform photo.",
       untilHeroPlaceholder:
@@ -1270,7 +1268,7 @@ export const en = {
   },
   reviewer: {
     title: "Insights",
-    lead: "Anonymized cohort view. No names or emails. Use Impact Summary for a funder or board. The CSV is internal — it uses coded labels, not names.",
+    lead: "Anonymized cohort view. No names or emails. Use Impact Summary for a funder or board. The CSV is internal. It uses coded labels, not names.",
     impact: "Impact Summary",
     group: "Group",
     allGroups: "All groups",
@@ -1387,7 +1385,7 @@ export const en = {
       narrativeLead:
         "Turns the counts above into a short paragraph for a board, funder, or leadership email. No names. You can edit it before copying.",
       narrativeGenerate: "Generate summary paragraph",
-      narrativeHint: "Edit if you want, then copy. Still counts only — no names or emails.",
+      narrativeHint: "Edit if you want, then copy. Still counts only. No names or emails.",
       narrativeReset: "Reset draft",
       copyNarrative: "Copy narrative",
       copiedNarrative: "Copied",
@@ -1404,12 +1402,12 @@ export const en = {
       narrativeTrendProfiles:
         "Profile completions moved from {left} in the earlier window to {right} in the later window.",
       narrativeClose:
-        "These are anonymized program counts — no names, emails, or certificate serials.",
+        "These are anonymized program counts. No names, emails, or certificate serials.",
     },
   },
   help: {
     title: "Report a Problem",
-    lead: "Tell us what happened. We read every note — no ticket number, no chat.",
+    lead: "Tell us what happened. We read every note. No ticket number, no chat.",
     category: "Category",
     page: "Page or feature (optional)",
     pagePlaceholder: "Home, a training, Account…",
@@ -1424,7 +1422,7 @@ export const en = {
     screenshotTooBig: "Screenshot must be 2 MB or smaller.",
     screenshotType: "Use a JPEG, PNG, or WebP.",
     sendFailed: "Unable to send right now. Please try again.",
-    received: "Thanks — we’ve received your report",
+    received: "Thanks. We’ve received your report",
     bug: "Bug",
     notWorking: "Something not working",
     question: "Question",

@@ -46,7 +46,7 @@ export function OrganizationPhotoSlot({
       : view.guidance.kind === "home_profile"
         ? t("manager.photos.surfaceProfile")
         : t("manager.photos.surfaceTraining", {
-            title: view.guidance.surface.replace(/^Training card — /, ""),
+            title: view.guidance.surface.replace(/^Training card(?::| —) /, ""),
           });
   const until =
     isCustom || view.guidance.kind === "training"

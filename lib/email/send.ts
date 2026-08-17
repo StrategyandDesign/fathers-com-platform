@@ -41,7 +41,7 @@ export function renderTransactionalEmail({
   if (ctaLabel && ctaHref) {
     textLines.push("", `${ctaLabel}: ${ctaHref}`);
   }
-  textLines.push("", "Fathers.com — National Center for Fathering");
+  textLines.push("", "Fathers.com  ·  National Center for Fathering");
 
   const htmlBody = paragraphs
     .map(
