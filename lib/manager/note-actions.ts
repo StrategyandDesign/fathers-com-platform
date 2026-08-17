@@ -37,6 +37,9 @@ export async function saveParticipantNote(formData: FormData) {
   if (!(await allowActionRateLimit("manager.note"))) {
     fail(path, "Too many note saves just now. Try again in a minute.");
   }
+  if (!body) {
+    fail(path, "Write a note before you save.");
+  }
   if (body.length > NOTE_MAX_LENGTH) {
     fail(path, `Keep the note under ${NOTE_MAX_LENGTH} characters.`);
   }
@@ -44,50 +47,14 @@ export async function saveParticipantNote(formData: FormData) {
   await requireManagedFather(user.id, fatherId);
   const supabase = await createClient();
 
-  if (!body) {
-    const { error } = await supabase
-      .from("manager_participant_notes")
-      .delete()
-      .eq("father_id", fatherId);
-    if (error) fail(path, "The note didn’t clear. Try again.");
-    revalidatePath(path);
-    ok(path, "Private note cleared.");
-  }
-
-  const { error } = await supabase.from("manager_participant_notes").upsert(
-    {
-      father_id: fatherId,
-      body,
-      updated_by: user.id,
-    },
-    { onConflict: "father_id" }
-  );
+  const { error } = await supabase.from("manager_participant_notes").insert({
+    father_id: fatherId,
+    body,
+    created_by: user.id,
+    updated_by: user.id,
+  });
 
   if (error) fail(path, "The note didn’t save. Try again.");
   revalidatePath(path);
   ok(path, "Private note saved.");
-}
-
-export async function clearParticipantNote(formData: FormData) {
-  const { user } = await requireRole("manager");
-  const fatherId = String(formData.get("father_id") ?? "").trim();
-  const path = `/manager/participants/${fatherId}`;
-
-  if (!fatherId) {
-    fail("/manager/participants", "Choose a participant first.");
-  }
-  if (!(await allowActionRateLimit("manager.note"))) {
-    fail(path, "Too many note saves just now. Try again in a minute.");
-  }
-
-  await requireManagedFather(user.id, fatherId);
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("manager_participant_notes")
-    .delete()
-    .eq("father_id", fatherId);
-
-  if (error) fail(path, "The note didn’t clear. Try again.");
-  revalidatePath(path);
-  ok(path, "Private note cleared.");
 }

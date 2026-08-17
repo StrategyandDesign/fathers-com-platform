@@ -109,6 +109,7 @@ const EXACT: Record<string, string> = {
   "Assessment updated.": "flash.assessmentUpdated",
   "Private note saved.": "flash.noteSaved",
   "Private note cleared.": "flash.noteCleared",
+  "Write a note before you save.": "flash.noteEmpty",
   "Preferences didn’t save. Try again.": "flash.prefsSaveFailed",
   "Sign in again to save preferences.": "flash.signInAgainPrefs",
   "Add a second group to compare groups. Time periods still work.": "flash.compareNeedSecondGroup",

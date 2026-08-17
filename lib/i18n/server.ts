@@ -62,3 +62,16 @@ export function formatShortDate(value: string | Date | null | undefined, locale:
     day: "numeric",
   });
 }
+
+export function formatShortDateTime(value: string | Date | null | undefined, locale: Locale) {
+  if (!value) return "—";
+  const date = typeof value === "string" ? new Date(value) : value;
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleString(dateLocale(locale), {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}

@@ -19,8 +19,8 @@ import {
 import { buildQuietSuggestion } from "@/lib/manager/companion";
 import { loadManagedParticipant } from "@/lib/manager/data";
 import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
-import { clearParticipantNote, saveParticipantNote } from "@/lib/manager/note-actions";
-import { NOTE_MAX_LENGTH, loadParticipantNote } from "@/lib/manager/notes";
+import { saveParticipantNote } from "@/lib/manager/note-actions";
+import { NOTE_MAX_LENGTH, loadParticipantNotes } from "@/lib/manager/notes";
 import {
   cooldownRemaining,
   isNudgeTemplate,
@@ -35,7 +35,7 @@ import {
   translateQuietLabel,
   translateThemeLabel,
 } from "@/lib/i18n/flash";
-import { formatShortDate } from "@/lib/i18n/server";
+import { formatShortDate, formatShortDateTime } from "@/lib/i18n/server";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
   fieldClassName,
@@ -79,11 +79,11 @@ export default async function ManagerParticipantDetailPage({
   }
 
   const { participant, progress, reviews } = detail;
-  const [customAssignments, historyByFather, remindersAllowed, note] = await Promise.all([
+  const [customAssignments, historyByFather, remindersAllowed, notes] = await Promise.all([
     loadParticipantCustomAssignments(user.id, id),
     loadNudgeHistory([id]),
     loadReminderPrefAllowed(id),
-    loadParticipantNote(id),
+    loadParticipantNotes(id),
   ]);
   const nudgeHistory = historyByFather.byFather.get(id) ?? [];
   const historyUnavailable = historyByFather.unavailable;
@@ -147,43 +147,51 @@ export default async function ManagerParticipantDetailPage({
         <p className="mt-1 text-sm text-muted-foreground">
           {t("manager.participants.privateNoteLead", { name: participant.groupName })}
         </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t("manager.participants.noteComposerLead")}
+        </p>
         <form action={saveParticipantNote} className="mt-5 space-y-4">
           <input type="hidden" name="father_id" value={participant.fatherId} />
           <label className="block space-y-2">
             <span className="sr-only">{t("manager.participants.privateNote")}</span>
             <textarea
+              key={notes[0]?.id ?? "new"}
               className={textareaClassName}
               name="body"
               maxLength={NOTE_MAX_LENGTH}
               rows={4}
-              defaultValue={note?.body ?? ""}
+              defaultValue=""
               placeholder={t("manager.participants.privateNotePlaceholder")}
               aria-invalid={Boolean(flash.error) || undefined}
             />
           </label>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-muted-foreground">
-              {note
-                ? t("manager.participants.noteUpdated", { date: formatShortDate(note.updatedAt, locale) })
-                : t("manager.participants.noteUnsaved")}
-            </p>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Button type="submit" className="w-full sm:w-auto">
-                {t("manager.participants.saveNote")}
-              </Button>
-              {note ? (
-                <Button
-                  formAction={clearParticipantNote}
-                  type="submit"
-                  variant="outline"
-                  className="w-full sm:w-auto"
-                >
-                  {t("manager.participants.clearNote")}
-                </Button>
-              ) : null}
-            </div>
+          <div className="flex justify-end">
+            <Button type="submit" className="w-full sm:w-auto">
+              {t("manager.participants.saveNote")}
+            </Button>
           </div>
         </form>
+        {notes.length > 0 ? (
+          <div className="mt-6">
+            <h3 className="text-sm font-medium">{t("manager.participants.notesLog")}</h3>
+            <ul className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border">
+              {notes.map((entry) => (
+                <li key={entry.id} className="px-4 py-3">
+                  <p className="text-sm whitespace-pre-wrap">{entry.body}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {t("manager.participants.noteSavedAt", {
+                      date: formatShortDateTime(entry.createdAt, locale),
+                    })}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="mt-5 text-sm text-muted-foreground">
+            {t("manager.participants.notesEmpty")}
+          </p>
+        )}
       </section>
 
       {quiet || withoutCert.length > 0 ? (
