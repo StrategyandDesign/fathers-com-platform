@@ -42,6 +42,8 @@ export default function GlobalError({
             Refresh the page. If it happens again, sign out and sign back in.
           </p>
           <p style={{ marginTop: 24 }}>
+            {/* global-error replaces the root document; next/link is not available here */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a href="/" style={{ color: "#ffffff", textDecoration: "underline" }}>
               Back to Fathers.com
             </a>
