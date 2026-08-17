@@ -11,9 +11,12 @@ import { ensureProfileDraft, loadLatestProfile, loadProfileDraft } from "@/lib/f
 import {
   PROFILE_QUESTION_COUNT,
   PROFILE_SCALE,
-  answeredCount,
+  PROFILE_SECTION_COUNT,
   getProfileQuestion,
+  isProfileSectionStart,
   profileProgressMilestone,
+  profileSectionForQuestion,
+  profileSectionPosition,
 } from "@/lib/father/questions";
 import { translateProfileScale } from "@/lib/i18n/flash";
 import { getI18n } from "@/lib/i18n/server";
@@ -49,9 +52,19 @@ export default async function FatherProfileTakePage({
   }
 
   const saved = draft.answers[String(question.id)];
-  const answered = answeredCount(draft.answers);
   const isLast = question.id === PROFILE_QUESTION_COUNT;
-  const percent = Math.round((answered / PROFILE_QUESTION_COUNT) * 100);
+  const section = profileSectionForQuestion(question.id);
+  const sectionPosition = profileSectionPosition(question.id, section);
+  const sectionPercent = Math.round((sectionPosition / section.size) * 100);
+  const sectionStart = isProfileSectionStart(question.id, section);
+  const sectionLead =
+    section.index === 1
+      ? t("father.profile.section1Lead")
+      : section.index === 2
+        ? t("father.profile.section2Lead")
+        : section.index === 3
+          ? t("father.profile.section3Lead")
+          : t("father.profile.section4Lead");
   const milestone = profileProgressMilestone(question.id);
   const milestoneText =
     milestone === "quarter"
@@ -65,10 +78,18 @@ export default async function FatherProfileTakePage({
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div className="space-y-3">
+        <p className="text-sm font-medium">
+          {t("father.profile.sectionOf", { n: section.index, total: PROFILE_SECTION_COUNT })}
+        </p>
+        {sectionStart ? (
+          <p className="text-sm leading-6 text-muted-foreground">{sectionLead}</p>
+        ) : null}
         <p className="text-sm text-muted-foreground">
+          {t("father.profile.sectionProgress", { n: sectionPosition, size: section.size })}
+          {" · "}
           {t("father.home.questionOf", { n: question.id, total: PROFILE_QUESTION_COUNT })}
         </p>
-        <ProgressBar value={percent} />
+        <ProgressBar value={sectionPercent} />
         {milestoneText ? (
           <p role="status" className="text-sm leading-6 text-foreground">
             {milestoneText}

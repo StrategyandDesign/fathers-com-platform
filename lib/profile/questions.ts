@@ -167,3 +167,42 @@ export function profileProgressMilestone(
   if (questionId === Math.round(total * 0.75)) return "threeQuarters";
   return null;
 }
+
+/**
+ * UI-only chapters. Question order and scoring stay unchanged.
+ * Four equal parts follow the instrument’s qualifier blocks.
+ */
+export const PROFILE_SECTION_COUNT = 4;
+export const PROFILE_SECTION_SIZE = PROFILE_QUESTION_COUNT / PROFILE_SECTION_COUNT;
+
+export type ProfileSection = {
+  index: number;
+  startId: number;
+  endId: number;
+  size: number;
+};
+
+export function profileSectionForQuestion(
+  questionId: number,
+  total = PROFILE_QUESTION_COUNT,
+  sectionCount = PROFILE_SECTION_COUNT
+): ProfileSection {
+  const size = total / sectionCount;
+  const clamped = Math.min(total, Math.max(1, questionId));
+  const index = Math.min(sectionCount, Math.max(1, Math.ceil(clamped / size)));
+  const startId = (index - 1) * size + 1;
+  return {
+    index,
+    startId,
+    endId: index * size,
+    size,
+  };
+}
+
+export function profileSectionPosition(questionId: number, section: ProfileSection) {
+  return questionId - section.startId + 1;
+}
+
+export function isProfileSectionStart(questionId: number, section = profileSectionForQuestion(questionId)) {
+  return questionId === section.startId;
+}
