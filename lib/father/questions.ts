@@ -10,6 +10,8 @@ export {
   answeredCount,
   firstUnanswered,
   hasAllAnswers,
+  profileProgressMilestone,
+  type ProfileProgressMilestone,
   type ProfileTheme,
   type ProfileThemeKind,
   type ProfileQuestion,

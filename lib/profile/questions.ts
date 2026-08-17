@@ -154,3 +154,16 @@ export function firstUnanswered(answers: AnswerMap) {
 export function hasAllAnswers(answers: AnswerMap) {
   return answeredCount(answers) === PROFILE_QUESTION_COUNT;
 }
+
+export type ProfileProgressMilestone = "quarter" | "half" | "threeQuarters";
+
+/** Quiet markers at 25%, 50%, and 75% of the instrument. Not a score. */
+export function profileProgressMilestone(
+  questionId: number,
+  total = PROFILE_QUESTION_COUNT
+): ProfileProgressMilestone | null {
+  if (questionId === Math.round(total * 0.25)) return "quarter";
+  if (questionId === Math.round(total * 0.5)) return "half";
+  if (questionId === Math.round(total * 0.75)) return "threeQuarters";
+  return null;
+}

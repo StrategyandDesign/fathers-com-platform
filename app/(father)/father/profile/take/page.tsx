@@ -13,6 +13,7 @@ import {
   PROFILE_SCALE,
   answeredCount,
   getProfileQuestion,
+  profileProgressMilestone,
 } from "@/lib/father/questions";
 import { translateProfileScale } from "@/lib/i18n/flash";
 import { getI18n } from "@/lib/i18n/server";
@@ -51,6 +52,15 @@ export default async function FatherProfileTakePage({
   const answered = answeredCount(draft.answers);
   const isLast = question.id === PROFILE_QUESTION_COUNT;
   const percent = Math.round((answered / PROFILE_QUESTION_COUNT) * 100);
+  const milestone = profileProgressMilestone(question.id);
+  const milestoneText =
+    milestone === "quarter"
+      ? t("father.profile.markerQuarter")
+      : milestone === "half"
+        ? t("father.profile.markerHalf")
+        : milestone === "threeQuarters"
+          ? t("father.profile.markerThreeQuarters")
+          : null;
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
@@ -59,6 +69,11 @@ export default async function FatherProfileTakePage({
           {t("father.home.questionOf", { n: question.id, total: PROFILE_QUESTION_COUNT })}
         </p>
         <ProgressBar value={percent} />
+        {milestoneText ? (
+          <p role="status" className="text-sm leading-6 text-foreground">
+            {milestoneText}
+          </p>
+        ) : null}
       </div>
 
       <form
