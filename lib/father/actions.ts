@@ -5,7 +5,12 @@ import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
 import { loadSessionContext } from "@/lib/father/data";
-import { ACTION_ANSWER_KEY, CHECKIN_ANSWER_KEYS } from "@/lib/father/session-questions";
+import {
+  ACTION_ANSWER_KEY,
+  CHECKIN_CHOICE_KEY,
+  CHECKIN_NOTE_KEY,
+  CHECKIN_NOTE_MAX_LENGTH,
+} from "@/lib/father/session-questions";
 import { createClient } from "@/lib/supabase/server";
 
 async function requireReachableSession(fatherId: string, sessionId: string) {
@@ -107,15 +112,20 @@ export async function submitCheckin(formData: FormData) {
 
   await requireReachableSession(user.id, sessionId);
 
-  const answers: Record<string, string> = {};
-  for (const key of CHECKIN_ANSWER_KEYS) {
-    const value = String(formData.get(key) ?? "").trim();
-    if (!value) {
-      redirect(
-        `/father/sessions/${sessionId}/checkin?error=${encodeURIComponent("Answer all three questions to continue.")}`
-      );
-    }
-    answers[key] = value;
+  const choice = String(formData.get(CHECKIN_CHOICE_KEY) ?? "").trim();
+  if (!choice) {
+    redirect(
+      `/father/sessions/${sessionId}/checkin?error=${encodeURIComponent("Choose an answer to continue.")}`
+    );
+  }
+
+  const notes = String(formData.get(CHECKIN_NOTE_KEY) ?? "")
+    .trim()
+    .slice(0, CHECKIN_NOTE_MAX_LENGTH);
+
+  const answers: Record<string, string> = { [CHECKIN_CHOICE_KEY]: choice };
+  if (notes) {
+    answers[CHECKIN_NOTE_KEY] = notes;
   }
 
   try {

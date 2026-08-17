@@ -17,12 +17,14 @@ export async function AccountView({
   email,
   error,
   notice,
+  children,
 }: {
   role: AppRole;
   userId: string;
   email?: string | null;
   error?: string;
   notice?: string;
+  children?: React.ReactNode;
 }) {
   const [account, organizationName, managedOrgs] = await Promise.all([
     loadAccountState(userId),
@@ -41,19 +43,26 @@ export async function AccountView({
         : "Photos your organization sees on Home and Trainings.";
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
+    <div className="mx-auto max-w-2xl space-y-8">
+      <header>
         <h1 className="font-heading text-2xl font-semibold tracking-tight">Account</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {role === "manager"
-            ? "Your photo, organization photos, notifications, and sign out."
-            : "Photo, notifications, and sign out."}
+            ? "Your photo, organization photos, and notifications."
+            : role === "father"
+              ? "Your photo, certificates, and notifications."
+              : "Your photo and notifications."}
         </p>
-      </div>
+      </header>
       <Flash error={error} notice={notice} />
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <AvatarUpload name={account.fullName} email={email} avatarUrl={account.avatarUrl} />
+        <AvatarUpload
+          name={account.fullName}
+          email={email}
+          avatarUrl={account.avatarUrl}
+          caption={identityLabel}
+        />
       </section>
 
       {role === "manager" ? (
@@ -69,10 +78,20 @@ export async function AccountView({
         </section>
       ) : null}
 
-      {identityLabel ? (
+      {children}
+
+      {role === "manager" ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Role</h2>
-          <p className="mt-3 text-base font-medium">{identityLabel}</p>
+          <h2 className="font-heading text-lg font-semibold">Request a Training</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Suggest a topic we should source for your organization.
+          </p>
+          <Link
+            href="/manager/request"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
+            Request a Training
+          </Link>
         </section>
       ) : null}
 
@@ -82,7 +101,7 @@ export async function AccountView({
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Support Inbox</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Reports from fathers, managers, and reviewers.
+            Problem reports and training requests from the network.
           </p>
           <Link
             href="/admin/support"
@@ -107,13 +126,16 @@ export async function AccountView({
         </section>
       )}
 
-      <form action={signOut}>
-        <Button type="submit" variant="destructive" className="w-full sm:w-auto">
-          Sign Out
-        </Button>
-      </form>
-
-      <LegalLinks helpHref={role === "admin" ? undefined : ROLE_HELP[role]} />
+      <footer className="border-t border-border pt-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <form action={signOut}>
+            <Button type="submit" variant="destructive" className="w-full sm:w-auto">
+              Sign Out
+            </Button>
+          </form>
+          <LegalLinks />
+        </div>
+      </footer>
     </div>
   );
 }

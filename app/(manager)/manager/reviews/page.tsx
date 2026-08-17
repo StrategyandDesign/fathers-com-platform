@@ -35,14 +35,22 @@ export default async function ManagerReviewsPage({
         <span className="text-white/20">|</span>
         <span>New trainings</span>
       </p>
-      <div>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">
-          New trainings
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Preview a release, then accept to make it available to assign — or
-          decline to keep it hidden from {groups[0]?.name ?? "your organization"}.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">
+            New trainings
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Preview a release, then accept to make it available to assign — or
+            decline to keep it hidden from {groups[0]?.name ?? "your organization"}.
+          </p>
+        </div>
+        <Link
+          href="/manager/request"
+          className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+        >
+          Request a Training
+        </Link>
       </div>
       <Flash error={params.error} notice={params.notice} />
 

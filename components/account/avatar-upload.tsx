@@ -12,10 +12,12 @@ export function AvatarUpload({
   name,
   email,
   avatarUrl,
+  caption,
 }: {
   name?: string | null;
   email?: string | null;
   avatarUrl?: string | null;
+  caption?: string | null;
 }) {
   const [pending, startTransition] = useTransition();
 
@@ -57,7 +59,9 @@ export function AvatarUpload({
         <p className="font-heading truncate text-xl font-semibold tracking-tight sm:text-2xl">
           {name || email?.split("@")[0] || "Account"}
         </p>
-        <p className="truncate text-sm text-muted-foreground">{email}</p>
+        <p className="truncate text-sm text-muted-foreground">
+          {[email, caption].filter(Boolean).join(" · ")}
+        </p>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button type="submit" variant="outline" className="w-full sm:w-auto" disabled={pending}>
             {pending ? "Saving…" : "Upload photo"}

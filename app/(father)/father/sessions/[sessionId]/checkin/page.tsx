@@ -8,8 +8,14 @@ import { Button } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
 import { submitCheckin } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
-import { checkinQuestionsFor } from "@/lib/father/session-questions";
-import { interactiveUnderlineClassName, sessionCtaClassName } from "@/lib/ui";
+import {
+  CHECKIN_NOTE_KEY,
+  CHECKIN_NOTE_LABEL,
+  CHECKIN_NOTE_MAX_LENGTH,
+  CHECKIN_NOTE_PLACEHOLDER,
+  checkinQuestionsFor,
+} from "@/lib/father/session-questions";
+import { interactiveUnderlineClassName, sessionCtaClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export default async function SessionCheckinPage({
@@ -50,23 +56,29 @@ export default async function SessionCheckinPage({
 
       <form action={submitCheckin} className="space-y-6 lg:space-y-8">
         <input type="hidden" name="session_id" value={session.id} />
-        {questions.map((question, index) => (
-          <div key={question.key} className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Question {index + 1} of {questions.length}
-            </p>
-            <SkillPromptField
-              name={question.key}
-              prompt={question.label}
-              defaultValue={progress?.checkin_answers?.[question.key]}
-              invalid={Boolean(error)}
-            />
-          </div>
+        {questions.map((question) => (
+          <SkillPromptField
+            key={question.key}
+            name={question.key}
+            prompt={question.label}
+            defaultValue={progress?.checkin_answers?.[question.key]}
+            invalid={Boolean(error)}
+          />
         ))}
+        <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">{CHECKIN_NOTE_LABEL}</span>
+          <textarea
+            className={textareaClassName}
+            name={CHECKIN_NOTE_KEY}
+            maxLength={CHECKIN_NOTE_MAX_LENGTH}
+            placeholder={CHECKIN_NOTE_PLACEHOLDER}
+            defaultValue={progress?.checkin_answers?.[CHECKIN_NOTE_KEY] ?? ""}
+          />
+        </label>
         <Flash error={error} />
         <p className="text-center text-sm text-muted-foreground">
-          Your answers are saved to this session’s progress. They are a skill
-          check, not a personal journal.
+          Your answer is saved to this session’s progress. This is a skill
+          check, not a personal journal. Notes are optional.
         </p>
         <div className="flex justify-center max-lg:block">
           <Button type="submit" variant="inverse" size="lg" className={sessionCtaClassName}>

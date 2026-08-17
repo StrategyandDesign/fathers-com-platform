@@ -17,15 +17,14 @@ export default async function FatherAccountPage({
   const certificates = await loadFatherCertificates(user.id);
 
   return (
-    <div className="space-y-6">
-      <AccountView
-        role={role}
-        userId={user.id}
-        email={user.email}
-        error={flash.error}
-        notice={flash.notice}
-      />
-      <section className="mx-auto max-w-2xl space-y-4">
+    <AccountView
+      role={role}
+      userId={user.id}
+      email={user.email}
+      error={flash.error}
+      notice={flash.notice}
+    >
+      <section className="space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
           <div className="min-w-0">
             <h2 className="font-heading text-lg font-semibold">Certificates</h2>
@@ -50,6 +49,6 @@ export default async function FatherAccountPage({
           actionLabel="View trainings"
         />
       </section>
-    </div>
+    </AccountView>
   );
 }

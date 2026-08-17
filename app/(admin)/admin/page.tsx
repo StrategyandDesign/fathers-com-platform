@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { loadAdminDashboard } from "@/lib/admin/data";
 import { requireRole } from "@/lib/auth/session";
 import { loadOpenSupportCount } from "@/lib/support/data";
+import { loadOpenTrainingRequestCount } from "@/lib/training-requests/data";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -15,9 +16,10 @@ export default async function AdminHomePage({
 }) {
   const params = await searchParams;
   await requireRole("admin");
-  const [summary, openSupportCount] = await Promise.all([
+  const [summary, openSupportCount, openRequestCount] = await Promise.all([
     loadAdminDashboard(),
     loadOpenSupportCount(),
+    loadOpenTrainingRequestCount(),
   ]);
 
   const stats = [
@@ -94,20 +96,39 @@ export default async function AdminHomePage({
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Support Inbox</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {openSupportCount == null
-              ? "Reports from fathers, managers, and reviewers."
-              : openSupportCount === 0
-                ? "No open reports."
-                : openSupportCount === 1
-                  ? "1 open report."
-                  : `${openSupportCount} open reports.`}
+            {[
+              openSupportCount == null
+                ? "Reports from the network."
+                : openSupportCount === 0
+                  ? "No open reports."
+                  : openSupportCount === 1
+                    ? "1 open report."
+                    : `${openSupportCount} open reports.`,
+              openRequestCount == null
+                ? null
+                : openRequestCount === 0
+                  ? "No open training requests."
+                  : openRequestCount === 1
+                    ? "1 open training request."
+                    : `${openRequestCount} open training requests.`,
+            ]
+              .filter(Boolean)
+              .join(" ")}
           </p>
-          <Link
-            href="/admin/support"
-            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
-          >
-            Open inbox
-          </Link>
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+            <Link
+              href="/admin/support"
+              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            >
+              Reports
+            </Link>
+            <Link
+              href="/admin/support/requests"
+              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            >
+              Training Requests
+            </Link>
+          </div>
         </div>
       </section>
     </div>

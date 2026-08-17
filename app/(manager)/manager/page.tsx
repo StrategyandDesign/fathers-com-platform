@@ -61,6 +61,12 @@ export default async function ManagerHomePage({
             New trainings
             {reviews.pending.length > 0 ? ` (${reviews.pending.length})` : ""}
           </Link>
+          <Link
+            href="/manager/request"
+            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+          >
+            Request a Training
+          </Link>
         </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
@@ -77,12 +83,20 @@ export default async function ManagerHomePage({
                 accept to assign — or decline to keep it hidden.
               </p>
             </div>
-            <Link
-              href="/manager/reviews"
-              className={cn(buttonVariants(), "w-full shrink-0 sm:w-auto")}
-            >
-              Open review queue
-            </Link>
+            <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto">
+              <Link
+                href="/manager/reviews"
+                className={cn(buttonVariants(), "w-full sm:w-auto")}
+              >
+                Open review queue
+              </Link>
+              <Link
+                href="/manager/request"
+                className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+              >
+                Request a Training
+              </Link>
+            </div>
           </div>
           {reviews.unread.length > 0 ? (
             <ul className="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
