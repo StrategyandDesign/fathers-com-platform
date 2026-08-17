@@ -19,14 +19,30 @@ function redirectWithSession(supabaseResponse: NextResponse, url: URL) {
   return response;
 }
 
+function supabasePublicConfig() {
+  try {
+    return {
+      url: getSupabaseUrl(),
+      key: getSupabasePublishableKey(),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
 
+  const config = supabasePublicConfig();
+  if (!config) {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
-    getSupabaseUrl(),
-    getSupabasePublishableKey(),
+    config.url,
+    config.key,
     {
       cookies: {
         getAll() {
