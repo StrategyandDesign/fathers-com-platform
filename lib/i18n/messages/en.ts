@@ -23,6 +23,7 @@ export const en = {
   role: {
     father: "Father Participant",
     manager: "Manager",
+    leader: "Leader",
     reviewer: "Reviewer",
     admin: "Super-admin",
   },
@@ -214,6 +215,8 @@ export const en = {
     prefsSaved: "Preferences saved.",
     localeSaved: "Language saved.",
     localeFailed: "Couldn’t save the language. Try again.",
+    displayTitleSaved: "How you are named was saved.",
+    displayTitleFailed: "That designation didn’t save. Try again.",
     progressSaveFailed: "Your progress didn’t save. Try again.",
     chooseAnswer: "Choose an answer to continue.",
     checkinSaveFailed: "Your check-in didn’t save. Try again.",
@@ -308,7 +311,14 @@ export const en = {
   account: {
     title: "Account",
     fatherLead: "Your certificates, language, and notifications.",
-    managerLead: "Your language, organization mark, notifications, and training requests.",
+    managerLead:
+      "Your designation, language, organization mark, notifications, and training requests.",
+    displayTitleTitle: "How you are named",
+    displayTitleLead:
+      "This is how this space refers to you. It does not change what you can do.",
+    displayTitleManagerHint: "The usual designation.",
+    displayTitleLeaderHint: "For informal groups, or when that is how you are known.",
+    displayTitleSave: "Save designation",
     logoTitle: "Organization mark",
     logoLead:
       "Fathers in {name} see this at the top of every page, next to the organization name.",

@@ -1,5 +1,6 @@
 import { cache } from "react";
 
+import { parseManagerDisplayTitle } from "@/lib/account/display-title";
 import { parseNotificationPreferences } from "@/lib/account/preferences";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrl } from "@/lib/storage";
@@ -48,10 +49,26 @@ export async function loadCurrentAvatarUrl(userId: string) {
   return signStorageUrl(supabase, AVATARS_BUCKET, data?.avatar_url);
 }
 
+export const loadManagerDisplayTitle = cache(async (userId: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("display_title")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return parseManagerDisplayTitle(data?.display_title);
+});
+
 export async function loadAccountState(userId: string) {
   const supabase = await createClient();
   const [profileRes, prefsRes] = await Promise.all([
-    supabase.from("profiles").select("id, full_name, avatar_url, locale").eq("id", userId).maybeSingle(),
+    supabase
+      .from("profiles")
+      .select("id, full_name, avatar_url, locale, display_title")
+      .eq("id", userId)
+      .maybeSingle(),
     supabase.from("notification_preferences").select("*").eq("user_id", userId).maybeSingle(),
   ]);
 
@@ -74,5 +91,6 @@ export async function loadAccountState(userId: string) {
     avatarUrl: await signStorageUrl(supabase, AVATARS_BUCKET, profileRes.data?.avatar_url),
     preferences: parseNotificationPreferences(prefsRow),
     locale: typeof profileRes.data?.locale === "string" ? profileRes.data.locale : null,
+    displayTitle: parseManagerDisplayTitle(profileRes.data?.display_title),
   };
 }

@@ -1,6 +1,8 @@
 import { RoleShell } from "@/components/layout/role-shell";
-import { loadCurrentAvatarUrl } from "@/lib/account/data";
+import { loadCurrentAvatarUrl, loadManagerDisplayTitle } from "@/lib/account/data";
+import { managerDisplayTitleLabel } from "@/lib/account/display-title";
 import { requireRole } from "@/lib/auth/session";
+import { getI18n } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -10,10 +12,19 @@ export default async function ManagerLayout({
   children: React.ReactNode;
 }) {
   const { user, role } = await requireRole("manager");
-  const avatarUrl = await loadCurrentAvatarUrl(user.id);
+  const { t } = await getI18n();
+  const [avatarUrl, displayTitle] = await Promise.all([
+    loadCurrentAvatarUrl(user.id),
+    loadManagerDisplayTitle(user.id),
+  ]);
 
   return (
-    <RoleShell role={role} email={user.email} avatarUrl={avatarUrl}>
+    <RoleShell
+      role={role}
+      email={user.email}
+      avatarUrl={avatarUrl}
+      roleLabel={managerDisplayTitleLabel(displayTitle, t)}
+    >
       {children}
     </RoleShell>
   );

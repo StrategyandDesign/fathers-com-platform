@@ -2,6 +2,7 @@ export const APP_ROLES = ["father", "manager", "reviewer", "admin"] as const;
 
 export type AppRole = (typeof APP_ROLES)[number];
 
+/** Internal role labels. Manager chrome may show Leader via profiles.display_title. */
 export const ROLE_LABEL: Record<AppRole, string> = {
   father: "Father Participant",
   manager: "Manager",

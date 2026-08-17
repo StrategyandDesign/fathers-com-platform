@@ -18,6 +18,7 @@ export async function RoleShell({
   avatarUrl,
   organizationName,
   organizationLogoUrl,
+  roleLabel,
   children,
 }: {
   role: AppRole;
@@ -25,12 +26,13 @@ export async function RoleShell({
   avatarUrl?: string | null;
   organizationName?: string | null;
   organizationLogoUrl?: string | null;
+  roleLabel?: string | null;
   children: React.ReactNode;
 }) {
   const { t } = await getI18n();
   const fatherMobile = role === "father";
   const managerMobileNav = role === "manager";
-  const chromeLabel = role === "father" ? null : t(`role.${role}`);
+  const chromeLabel = role === "father" ? null : roleLabel?.trim() || t(`role.${role}`);
   const groupName = role === "father" ? organizationName?.trim() || null : null;
   const groupLogo = role === "father" ? organizationLogoUrl ?? null : null;
 

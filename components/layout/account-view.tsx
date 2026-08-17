@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { DisplayTitleForm } from "@/components/account/display-title-form";
 import { NotificationPrefs } from "@/components/account/notification-prefs";
 import { LanguageForm } from "@/components/i18n/language-form";
 import { LegalLinks } from "@/components/legal/legal-links";
@@ -32,7 +33,12 @@ export async function AccountView({
     loadAccountState(userId),
     role === "father" ? loadOrganizationName(userId) : Promise.resolve(null),
   ]);
-  const identityLabel = role === "father" ? organizationName?.trim() || null : t(`role.${role}`);
+  const identityLabel =
+    role === "father"
+      ? organizationName?.trim() || null
+      : role === "manager"
+        ? t(`role.${account.displayTitle}`)
+        : t(`role.${role}`);
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
@@ -64,6 +70,8 @@ export async function AccountView({
           </div>
         </div>
       </section>
+
+      {role === "manager" ? <DisplayTitleForm savedTitle={account.displayTitle} /> : null}
 
       <LanguageForm savedLocale={account.locale} />
 

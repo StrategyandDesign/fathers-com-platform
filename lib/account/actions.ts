@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { isManagerDisplayTitle } from "@/lib/account/display-title";
 import { parseNotificationPreferences, type NotificationPreferences } from "@/lib/account/preferences";
 import { ROLE_ACCOUNT } from "@/lib/auth/roles";
 import { getAuthContext } from "@/lib/auth/session";
@@ -10,6 +11,32 @@ import { createClient } from "@/lib/supabase/server";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
+}
+
+export async function saveDisplayTitle(formData: FormData) {
+  const { user, role } = await getAuthContext();
+  const path = ROLE_ACCOUNT.manager;
+  const title = String(formData.get("display_title") ?? "").trim();
+
+  if (!user || role !== "manager") {
+    redirect("/login");
+  }
+  if (!isManagerDisplayTitle(title)) {
+    redirect(`${path}?error=${encodeURIComponent("flash.displayTitleFailed")}`);
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ display_title: title })
+    .eq("id", user.id);
+
+  if (error) {
+    redirect(`${path}?error=${encodeURIComponent("flash.displayTitleFailed")}`);
+  }
+
+  revalidatePath("/", "layout");
+  redirect(`${path}?notice=${encodeURIComponent("flash.displayTitleSaved")}`);
 }
 
 export async function saveNotificationPreferences(input: NotificationPreferences) {
