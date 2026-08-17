@@ -23,6 +23,9 @@ import { getI18n } from "@/lib/i18n/server";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
+const eyebrowClassName =
+  "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
+
 export default async function FatherProfileTakePage({
   searchParams,
 }: {
@@ -56,7 +59,16 @@ export default async function FatherProfileTakePage({
   const section = profileSectionForQuestion(question.id);
   const sectionPosition = profileSectionPosition(question.id, section);
   const sectionPercent = Math.round((sectionPosition / section.size) * 100);
+  const overallPercent = Math.round((question.id / PROFILE_QUESTION_COUNT) * 100);
   const sectionStart = isProfileSectionStart(question.id, section);
+  const sectionName =
+    section.index === 1
+      ? t("father.profile.sectionName1")
+      : section.index === 2
+        ? t("father.profile.sectionName2")
+        : section.index === 3
+          ? t("father.profile.sectionName3")
+          : t("father.profile.sectionName4");
   const sectionLead =
     section.index === 1
       ? t("father.profile.section1Lead")
@@ -78,20 +90,48 @@ export default async function FatherProfileTakePage({
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div className="space-y-3">
-        <p className="text-sm font-medium">
+        <p className={eyebrowClassName}>
           {t("father.profile.sectionOf", { n: section.index, total: PROFILE_SECTION_COUNT })}
+          {" · "}
+          {sectionName}
         </p>
         {sectionStart ? (
-          <p className="text-sm leading-6 text-muted-foreground">{sectionLead}</p>
+          <div className="space-y-2">
+            <p className="text-sm leading-6 text-muted-foreground">{sectionLead}</p>
+            {section.index === 1 ? (
+              <p className="text-sm leading-6 text-muted-foreground">
+                {t("father.profile.howToAnswer")}
+              </p>
+            ) : null}
+          </div>
         ) : null}
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-foreground">
           {t("father.profile.sectionProgress", { n: sectionPosition, size: section.size })}
-          {" · "}
-          {t("father.home.questionOf", { n: question.id, total: PROFILE_QUESTION_COUNT })}
+          <span className="text-muted-foreground">
+            {" · "}
+            {t("father.home.questionOf", { n: question.id, total: PROFILE_QUESTION_COUNT })}
+          </span>
         </p>
-        <ProgressBar value={sectionPercent} />
+        <div className="space-y-1.5">
+          <ProgressBar
+            value={sectionPercent}
+            label={t("father.profile.sectionOf", {
+              n: section.index,
+              total: PROFILE_SECTION_COUNT,
+            })}
+          />
+          <ProgressBar
+            value={overallPercent}
+            className="h-1 bg-white/[0.06]"
+            indicatorClassName="bg-primary/45"
+            label={t("father.home.questionOf", {
+              n: question.id,
+              total: PROFILE_QUESTION_COUNT,
+            })}
+          />
+        </div>
         {milestoneText ? (
-          <p role="status" className="text-sm leading-6 text-foreground">
+          <p role="status" className="text-sm leading-6 text-muted-foreground">
             {milestoneText}
           </p>
         ) : null}
@@ -149,7 +189,10 @@ export default async function FatherProfileTakePage({
                 value="back"
                 formNoValidate
                 formAction={saveProfileProgress}
-                className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
+                className={cn(
+                  "inline-flex min-h-11 items-center text-sm text-muted-foreground",
+                  interactiveLinkClassName
+                )}
               >
                 {t("common.back")}
               </button>

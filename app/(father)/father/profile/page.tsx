@@ -12,6 +12,9 @@ import { PROFILE_QUESTION_COUNT, answeredCount, firstUnanswered } from "@/lib/fa
 import { readStoredDimensionScores } from "@/lib/profile/score";
 import { cn } from "@/lib/utils";
 
+const eyebrowClassName =
+  "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
+
 function ProfilePageHeader({
   title,
   lead,
@@ -38,7 +41,10 @@ export default async function FatherProfilePage({
   const { profile, draft } = await loadProfileState(user.id);
   const banner = <Flash error={flash.error} notice={flash.notice} />;
   const header = (
-    <ProfilePageHeader title={t("father.profile.title")} lead={t("father.profile.lead")} />
+    <ProfilePageHeader
+      title={t("father.profile.title")}
+      lead={profile ? t("father.profile.leadComplete") : t("father.profile.lead")}
+    />
   );
 
   if (profile) {
@@ -49,7 +55,7 @@ export default async function FatherProfilePage({
         {header}
         <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
-          <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+          <p className={eyebrowClassName}>
             {t("father.profile.yourKeystone")}
           </p>
           <p className="mt-6 text-sm text-muted-foreground">{t("father.profile.primaryDetermination")}</p>
@@ -75,7 +81,7 @@ export default async function FatherProfilePage({
           </div>
         </section>
         <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
-          <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+          <p className={eyebrowClassName}>
             {t("father.profile.keystone")}
           </p>
           <p className="mt-4 text-muted-foreground">
@@ -109,7 +115,7 @@ export default async function FatherProfilePage({
       {banner}
       {header}
       <section className="max-w-xl rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
-        <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+        <p className={eyebrowClassName}>
           {t("father.profile.keystone")}
         </p>
         <p className="mt-4 text-muted-foreground">
@@ -137,6 +143,9 @@ export default async function FatherProfilePage({
         )}
         <p className="mt-6 text-sm text-muted-foreground">
           {t("father.profile.takeHint")}
+        </p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {t("father.profile.howToAnswer")}
         </p>
       </section>
     </div>

@@ -35,7 +35,10 @@ const EXACT: Record<string, string> = {
   "Your check-in didn’t save. Try again.": "flash.checkinSaveFailed",
   "Choose the teaching point to continue.": "flash.chooseTeaching",
   "Your action didn’t save. Try again.": "flash.actionSaveFailed",
-  "Your Profile progress is saved. You can continue anytime.": "flash.profileProgressSaved",
+  "Your Profile progress is saved. You can continue from the Profile tab.":
+    "flash.profileProgressSaved",
+  "Your Profile didn’t save. Try again.": "flash.profileSaveFailed",
+  "Answer every question before you submit.": "flash.answerEveryQuestion",
   "That assessment couldn’t load. Try again from Home.": "flash.assessmentLoadFailed",
   "That assessment is not assigned to you.": "flash.assessmentNotAssigned",
   "This assessment has no questions yet. Check back after your manager adds some.":

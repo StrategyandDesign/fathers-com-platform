@@ -34,7 +34,11 @@ export async function DimensionScores({
                     <span>{translateThemeLabel(theme.label, t)}</span>
                     <span className="tabular-nums text-muted-foreground">{Math.round(value)}</span>
                   </div>
-                  <ProgressBar value={value} className="mt-1.5" />
+                  <ProgressBar
+                    value={value}
+                    className="mt-1.5"
+                    label={translateThemeLabel(theme.label, t)}
+                  />
                 </li>
               );
             })}

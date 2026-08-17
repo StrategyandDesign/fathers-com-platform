@@ -2,9 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { DimensionScores } from "@/components/profile/dimension-scores";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
-import { retakeProfile } from "@/lib/father/profile-actions";
 import { loadLatestProfile } from "@/lib/father/profile";
 import { translateThemeLabel, translateThemeMeaning } from "@/lib/i18n/flash";
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
@@ -32,7 +31,7 @@ export default async function FatherProfileResultsPage() {
   return (
     <div className="mx-auto max-w-2xl">
       <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
-        <p className="text-sm font-medium text-primary">
+        <p className="text-sm font-medium text-foreground">
           {t("father.profile.resultsComplete")}
         </p>
         <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
@@ -96,11 +95,15 @@ export default async function FatherProfileResultsPage() {
           <Link href="/father" className={cn(buttonVariants({ size: "lg" }), "w-full min-h-12")}>
             {t("father.profile.goHome")}
           </Link>
-          <form action={retakeProfile} className="text-center">
-            <Button type="submit" variant="ghost" className="text-sm text-muted-foreground">
-              {t("father.profile.retakeLater")}
-            </Button>
-          </form>
+          <Link
+            href="/father/profile"
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "w-full min-h-11 text-sm text-muted-foreground"
+            )}
+          >
+            {t("father.profile.backToProfile")}
+          </Link>
         </div>
       </section>
     </div>

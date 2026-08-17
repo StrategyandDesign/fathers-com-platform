@@ -4,7 +4,6 @@ import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { CoverPhoto } from "@/components/brand/cover";
 import { FirstVisitIntro } from "@/components/father/first-visit-intro";
 import { SessionCompleteMark } from "@/components/father/session-complete-mark";
-import { DimensionScores } from "@/components/profile/dimension-scores";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { loadFatherAssignments } from "@/lib/assessments/data";
@@ -20,7 +19,6 @@ import {
 } from "@/lib/org-photos/data";
 import { PROFILE_QUESTION_COUNT, firstUnanswered } from "@/lib/father/questions";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
-import { readStoredDimensionScores } from "@/lib/profile/score";
 import { translateThemeLabel } from "@/lib/i18n/flash";
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
 import { homePrimaryCtaClassName, interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
@@ -95,9 +93,10 @@ export default async function FatherHomePage({
     : t("father.home.startSession");
   const profileResumeAt = draft ? firstUnanswered(draft.answers) : 1;
   const profileContinueHref = `/father/profile/take?q=${profileResumeAt}`;
-  const profileScores = profile
-    ? readStoredDimensionScores(profile.raw_scores, profile.full_results)
-    : null;
+  const profileCardActionClassName = cn(
+    buttonVariants({ variant: "outline" }),
+    "w-full min-h-11"
+  );
 
   const emptyEyebrow = hasTraining
     ? trainingCards.length === 1
@@ -265,7 +264,7 @@ export default async function FatherHomePage({
           ) : null}
           {!justFinished && !profileIsPrimary && !assessmentIsPrimary && profile ? (
             <div className="mt-6">
-              <Link href="/father/profile" className={primaryCtaClassName}>
+              <Link href="/father/profile/results" className={primaryCtaClassName}>
                 {t("father.home.viewProfile")}
               </Link>
             </div>
@@ -292,7 +291,7 @@ export default async function FatherHomePage({
             <div className="absolute inset-0 bg-[#141414]/50" />
             <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a]/50 via-[#0a0a0a]/25 to-transparent" />
             {profile ? (
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/18 via-[#1c1c1c]/70 to-[#101510]/80" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1c1c1c]/70 to-[#101510]/80" />
             ) : null}
           </div>
           <div className="relative z-10 flex flex-1 flex-col p-4 sm:p-5">
@@ -311,12 +310,14 @@ export default async function FatherHomePage({
                 <p className="mt-1 font-medium uppercase">
                   {translateThemeLabel(profile.primary_edge, t)}
                 </p>
-                {profileScores ? (
-                  <DimensionScores scores={profileScores} className="mt-5 space-y-4" />
-                ) : null}
                 <p className="mt-3 text-sm text-muted-foreground">
                   {t("father.home.taken", { date: formatLongDate(profile.taken_at, locale) })}
                 </p>
+                <div className="mt-auto pt-5">
+                  <Link href="/father/profile/results" className={profileCardActionClassName}>
+                    {t("father.profile.viewResults")}
+                  </Link>
+                </div>
               </>
             ) : neverStarted ? (
               <p className="mt-3 text-sm text-muted-foreground">
@@ -336,12 +337,9 @@ export default async function FatherHomePage({
                 <p className="mt-2 text-sm text-muted-foreground">
                   {t("father.home.profileReminder")}
                 </p>
-                {profileIsPrimary || next ? null : (
+                {profileIsPrimary ? null : (
                   <div className="mt-auto pt-5">
-                    <Link
-                      href={profileContinueHref}
-                      className={cn(buttonVariants({ variant: "outline" }), "w-full")}
-                    >
+                    <Link href={profileContinueHref} className={profileCardActionClassName}>
                       {t("father.home.continueProfile")}
                     </Link>
                   </div>
@@ -358,9 +356,9 @@ export default async function FatherHomePage({
                 <p className="mt-2 text-sm text-muted-foreground">
                   {t("father.home.profileReminder")}
                 </p>
-                {profileIsPrimary || next ? null : (
+                {profileIsPrimary ? null : (
                   <form action={startProfile} className="mt-auto pt-5">
-                    <Button type="submit" variant="outline" className="w-full">
+                    <Button type="submit" variant="outline" className="w-full min-h-11">
                       {t("father.home.takeProfile")}
                     </Button>
                   </form>

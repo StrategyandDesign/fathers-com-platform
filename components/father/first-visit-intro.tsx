@@ -56,6 +56,9 @@ export async function FirstVisitIntro({
             <p className="mt-1 text-sm text-muted-foreground sm:text-base">
               {t("father.home.startRhythm")}
             </p>
+            <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+              {t("father.home.profileLater")}
+            </p>
           </div>
           <Link
             href={href}

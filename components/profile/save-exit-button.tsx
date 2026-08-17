@@ -27,7 +27,10 @@ export function ProfileSaveExitButton({
       disabled={pending}
       aria-busy={busy || undefined}
       onClick={() => setSaving(true)}
-      className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
+      className={cn(
+        "inline-flex min-h-11 items-center text-sm text-muted-foreground",
+        interactiveLinkClassName
+      )}
     >
       {busy ? t("common.saving") : t("common.saveAndExit")}
     </button>
