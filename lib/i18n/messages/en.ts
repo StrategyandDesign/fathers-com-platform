@@ -301,6 +301,9 @@ export const en = {
     signInAgainPrefs: "Sign in again to save preferences.",
     compareNeedSecondGroup: "Add a second group to compare groups. Time periods still work.",
     compareDifferentGroups: "Choose two different groups.",
+    assignedToOneFather: "Assigned to 1 father.",
+    assignedToManyFathers: "Assigned to {n} fathers.",
+    alreadyHasTraining: "Everyone who can receive this already has it.",
   },
   account: {
     title: "Account",
@@ -590,12 +593,13 @@ export const en = {
       lead: "Your group’s progress. Fathers join with the invite code.",
       impact: "Impact Snapshot",
       compare: "Compare",
-      newTrainings: "New trainings",
+      newTrainings: "Trainings",
       request: "Request a Training",
       reviewTitle: "New trainings to review",
       reviewLead:
-        "A new training is available for your review. Preview it, then accept to assign — or decline to keep it hidden.",
-      openQueue: "Open review queue",
+        "A new training is available. Open Trainings to preview it, then accept to make it available — or decline to keep it hidden.",
+      openQueue: "Open Trainings",
+      trainingsLead: "Accept a release, assign it to fathers, or hide it from the group.",
       sessionOne: "1 session",
       sessionMany: "{count} sessions",
       active: "Active Participants",
@@ -1113,13 +1117,13 @@ export const en = {
       dashboard: "Dashboard",
       previewTitle: "Preview — not yet available to your cohort",
       previewLead:
-        "Read-only. Accept to add this to Assign Training, or decline to keep it hidden from {org}.",
+        "Read-only. Accept to make it available to assign, or decline to keep it hidden from {org}.",
       declinedTitle: "Declined for your organization",
       declinedLead:
         "Hidden from new assignment. Type ACCEPT below to reverse this and make it available to assign.",
       availableTitle: "Available to assign",
       availableLead:
-        "Fathers are not enrolled until you assign this training. Decline if you want to hide it from new assignment.",
+        "Fathers are not enrolled until you assign this training. Remove it from the cohort if you want to hide it from new assignment.",
       sessions: "Sessions",
       sessionsLead:
         "Full structure in order. You can watch the film. Nothing here can be edited or marked complete.",
@@ -1141,7 +1145,7 @@ export const en = {
         "Accepted trainings appear in Assign Training. Nothing is sent to fathers automatically.",
       emptyTitle: "You’re caught up",
       emptyBody: "No new trainings are waiting. Decisions you already made stay in the history below.",
-      accept: "Accept & Push to My Cohort",
+      accept: "Accept",
       acceptLead:
         "Makes it available to assign. Fathers are not enrolled until you choose who receives it.",
       declinedLead:
@@ -1149,7 +1153,9 @@ export const en = {
       typeConfirm: "Type {word} to confirm",
       declineReason: "Decline reason (optional)",
       declinePlaceholder: "Optional note for your records",
+      removeReason: "Note for your records (optional)",
       decline: "Decline",
+      remove: "Remove from cohort",
       pending: "Pending",
       accepted: "Accepted",
       declined: "Declined",
@@ -1167,6 +1173,31 @@ export const en = {
       availableAssign: "Training is available to assign. Fathers are not enrolled until you assign it.",
       hiddenFromNew: "Training is hidden from new assignment for your organization.",
       hiddenFromOrg: "Training is hidden from your organization.",
+    },
+    trainings: {
+      title: "Trainings",
+      lead: "Accept a release to make it available to {org}. Assign it when you want fathers to receive it.",
+      waitingTitle: "Waiting on you",
+      waitingLead:
+        "Preview, then accept to make it available to assign — or decline to keep it hidden.",
+      waitingEmptyTitle: "You’re caught up",
+      waitingEmptyBody: "No new trainings are waiting.",
+      cohortTitle: "In your cohort",
+      cohortLead:
+        "Accepted and catalog trainings. Assign to the whole group, or choose specific fathers.",
+      cohortEmptyTitle: "No trainings in the cohort yet",
+      cohortEmptyBody: "Accept a release above, or request a training.",
+      assignedOf: "{assigned} of {total} assigned",
+      acceptedOn: "Accepted {date}",
+      assignRemaining: "Assign to {n} remaining",
+      allAssigned: "Everyone in the group already has this.",
+      chooseFathers: "Choose fathers",
+      preview: "Preview",
+      removeLead: "Removing hides it from new assignment. Fathers who already have it keep it.",
+      catalogItem: "In the catalog",
+      hiddenTitle: "Hidden",
+      hiddenLead: "Declined for your organization. You can accept again if it is still released.",
+      hiddenEmpty: "No hidden trainings.",
     },
     photos: {
       title: "Organization Photos",

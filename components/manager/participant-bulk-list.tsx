@@ -39,16 +39,23 @@ export function ParticipantBulkList({
   participants,
   trainings,
   sessions,
+  initialTrainingId,
 }: {
   participants: BulkListParticipant[];
   trainings: BulkListTraining[];
   sessions: BulkListSession[];
+  initialTrainingId?: string;
 }) {
   const t = useT();
   const { locale } = useI18n();
   const [selected, setSelected] = useState<string[]>([]);
   const [action, setAction] = useState<"assign" | "complete" | "certificates">("assign");
-  const [trainingId, setTrainingId] = useState(trainings[0]?.id ?? "");
+  const [trainingId, setTrainingId] = useState(() => {
+    if (initialTrainingId && trainings.some((training) => training.id === initialTrainingId)) {
+      return initialTrainingId;
+    }
+    return trainings[0]?.id ?? "";
+  });
   const profileLabel = {
     completed: t("manager.bulk.profileComplete"),
     in_progress: t("manager.bulk.profileInProgress"),

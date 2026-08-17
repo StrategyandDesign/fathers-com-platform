@@ -68,6 +68,15 @@ export const NAV: Record<AppRole, NavItem[]> = {
         path.startsWith("/manager/compare"),
     },
     {
+      href: "/manager/trainings",
+      labelKey: "nav.trainings",
+      icon: GraduationCap,
+      match: (path) =>
+        path.startsWith("/manager/trainings") ||
+        path.startsWith("/manager/reviews") ||
+        path.startsWith("/manager/request"),
+    },
+    {
       href: "/manager/participants",
       labelKey: "nav.participants",
       icon: Users,

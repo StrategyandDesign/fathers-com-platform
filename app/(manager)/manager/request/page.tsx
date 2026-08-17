@@ -20,8 +20,8 @@ export default async function ManagerTrainingRequestPage({
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
-        <Link href="/manager" className={interactiveLinkClassName}>
-          {t("manager.dashboard.title")}
+        <Link href="/manager/trainings" className={interactiveLinkClassName}>
+          {t("manager.trainings.title")}
         </Link>
         <span className="text-white/20">|</span>
         <span>{t("manager.request.title")}</span>

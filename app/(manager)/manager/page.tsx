@@ -86,17 +86,11 @@ export default async function ManagerHomePage({
             {t("manager.dashboard.compare")}
           </Link>
           <Link
-            href="/manager/reviews"
+            href="/manager/trainings"
             className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
           >
-            {t("manager.dashboard.newTrainings")}
+            {t("nav.trainings")}
             {reviews.pending.length > 0 ? ` (${reviews.pending.length})` : ""}
-          </Link>
-          <Link
-            href="/manager/request"
-            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
-          >
-            {t("manager.dashboard.request")}
           </Link>
         </div>
       </div>
@@ -116,16 +110,10 @@ export default async function ManagerHomePage({
             </div>
             <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto">
               <Link
-                href="/manager/reviews"
+                href="/manager/trainings"
                 className={cn(buttonVariants(), "w-full sm:w-auto")}
               >
                 {t("manager.dashboard.openQueue")}
-              </Link>
-              <Link
-                href="/manager/request"
-                className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
-              >
-                {t("manager.dashboard.request")}
               </Link>
             </div>
           </div>
@@ -299,17 +287,31 @@ export default async function ManagerHomePage({
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.assessments")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t("manager.dashboard.assessmentsLead")}
-        </p>
-        <Link
-          href="/manager/assessments"
-          className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
-        >
-          {t("manager.dashboard.viewAssessments")}
-        </Link>
+      <section className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">{t("nav.trainings")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("manager.dashboard.trainingsLead")}
+          </p>
+          <Link
+            href="/manager/trainings"
+            className={cn(buttonVariants(), "mt-5 w-full sm:w-auto")}
+          >
+            {t("manager.dashboard.openQueue")}
+          </Link>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.assessments")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("manager.dashboard.assessmentsLead")}
+          </p>
+          <Link
+            href="/manager/assessments"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
+            {t("manager.dashboard.viewAssessments")}
+          </Link>
+        </div>
       </section>
     </div>
   );

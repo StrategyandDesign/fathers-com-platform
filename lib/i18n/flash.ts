@@ -100,6 +100,8 @@ const EXACT: Record<string, string> = {
   "Choose a training to assign.": "flash.chooseTrainingAssign",
   "That training is already assigned.": "flash.trainingAlreadyAssigned",
   "Training assigned.": "flash.trainingAssigned",
+  "Assigned to 1 father.": "flash.assignedToOneFather",
+  "Everyone who can receive this already has it.": "flash.alreadyHasTraining",
   "Choose a training to mark complete.": "flash.chooseTrainingComplete",
   "Training marked complete.": "flash.trainingMarkedComplete",
   "Choose a training for the certificate.": "flash.chooseTrainingCertificate",
@@ -269,6 +271,10 @@ export function translateFlash(message: string | undefined, t: Translate) {
   const assignedMany = message.match(/^Assessment assigned to (\d+) participants\.$/);
   if (assignedMany) {
     return t("flash.assessmentAssignedMany", { n: assignedMany[1] });
+  }
+  const assignedFathers = message.match(/^Assigned to (\d+) fathers\.$/);
+  if (assignedFathers) {
+    return t("flash.assignedToManyFathers", { n: assignedFathers[1] });
   }
   const reminderTomorrow = message.match(/^A reminder already went out\. You can send another tomorrow\.$/);
   if (reminderTomorrow) return t("manager.participants.nudgeTomorrow");

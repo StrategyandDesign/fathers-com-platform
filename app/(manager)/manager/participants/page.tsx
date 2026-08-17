@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 export default async function ManagerParticipantsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; notice?: string }>;
+  searchParams: Promise<{ error?: string; notice?: string; training?: string }>;
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
@@ -117,8 +117,10 @@ export default async function ManagerParticipantsPage({
           {t("manager.participants.emptyBody")}
         </EmptyState>
       ) : (
-        <ParticipantBulkList
-          participants={participants.map((participant) => ({
+        <div id="assign">
+          <ParticipantBulkList
+            initialTrainingId={params.training}
+            participants={participants.map((participant) => ({
             fatherId: participant.fatherId,
             name: participant.name,
             avatarUrl: participant.avatarUrl,
@@ -136,24 +138,25 @@ export default async function ManagerParticipantsPage({
               participant.lastActivity,
               trainingProgressFor(participant.fatherId)
             ),
-          }))}
-          trainings={trainings.map((training) => ({
-            id: training.id,
-            title: training.title,
-            published: groups.some((group) =>
-              isTrainingAssignable(
-                training,
-                reviewForGroup(reviews, group.id, training.id)?.status
-              )
-            ),
-          }))}
-          sessions={sessions.map((session) => ({
-            id: session.id,
-            trainingId: session.training_id,
-            title: session.title,
-            sessionNumber: session.session_number,
-          }))}
-        />
+            }))}
+            trainings={trainings.map((training) => ({
+              id: training.id,
+              title: training.title,
+              published: groups.some((group) =>
+                isTrainingAssignable(
+                  training,
+                  reviewForGroup(reviews, group.id, training.id)?.status
+                )
+              ),
+            }))}
+            sessions={sessions.map((session) => ({
+              id: session.id,
+              trainingId: session.training_id,
+              title: session.title,
+              sessionNumber: session.session_number,
+            }))}
+          />
+        </div>
       )}
     </div>
   );

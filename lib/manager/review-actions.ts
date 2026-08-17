@@ -29,6 +29,7 @@ function reviewPath(trainingId: string, groupId: string) {
 
 function revalidateReviews(trainingId: string) {
   revalidatePath("/manager");
+  revalidatePath("/manager/trainings");
   revalidatePath("/manager/reviews");
   revalidatePath(`/manager/reviews/${trainingId}`);
   revalidatePath("/manager/participants");
@@ -44,14 +45,14 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
   const confirm = String(formData.get("confirm") ?? "").trim();
   const returnTo = String(formData.get("return_to") ?? "").trim();
   const path =
-    returnTo === "queue"
-      ? "/manager/reviews"
+    returnTo === "queue" || returnTo === "trainings"
+      ? "/manager/trainings"
       : trainingId && groupId
         ? reviewPath(trainingId, groupId)
-        : "/manager/reviews";
+        : "/manager/trainings";
 
   if (!UUID.test(trainingId) || !UUID.test(groupId)) {
-    fail("/manager/reviews", "Choose a training to review.");
+    fail("/manager/trainings", "Choose a training to review.");
   }
   if (!(await allowActionRateLimit("manager.review"))) {
     fail(path, "Too many review actions just now. Try again in a minute.");
@@ -68,7 +69,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
     fail(path, "Couldn’t verify this organization. Try again.");
   }
   if (!allowed) {
-    fail("/manager/reviews", "That training is not in your organization.");
+    fail("/manager/trainings", "That training is not in your organization.");
   }
 
   const { data: current, error: currentError } = await supabase
@@ -82,7 +83,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
     fail(path, "Couldn’t load that review. Try again.");
   }
   if (!current || !isReviewStatus(current.status)) {
-    fail("/manager/reviews", "That training is not waiting on your review.");
+    fail("/manager/trainings", "That training is not waiting on your review.");
   }
 
   if (status === "accepted") {

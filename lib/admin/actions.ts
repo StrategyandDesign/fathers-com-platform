@@ -60,6 +60,7 @@ function revalidateAdmin(extra?: string) {
   revalidatePath("/admin/users");
   revalidatePath("/manager");
   revalidatePath("/manager/reviews");
+  revalidatePath("/manager/trainings");
   revalidatePath("/manager/participants");
   revalidatePath("/father");
   revalidatePath("/father/trainings");

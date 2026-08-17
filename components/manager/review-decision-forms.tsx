@@ -21,7 +21,7 @@ export async function ReviewDecisionForms({
   trainingId: string;
   groupId: string;
   status: ReviewStatus;
-  returnTo?: "detail" | "queue";
+  returnTo?: "detail" | "queue" | "trainings";
   declineReason?: string | null;
 }) {
   const { t } = await getI18n();
@@ -73,7 +73,9 @@ export async function ReviewDecisionForms({
           <input type="hidden" name="return_to" value={returnTo} />
           <label className="block space-y-2">
             <span className="text-sm text-muted-foreground">
-              {t("manager.reviews.declineReason")}
+              {status === "accepted"
+                ? t("manager.reviews.removeReason")
+                : t("manager.reviews.declineReason")}
             </span>
             <textarea
               className={textareaClassName}
@@ -84,7 +86,9 @@ export async function ReviewDecisionForms({
             />
           </label>
           <Button type="submit" variant="outline" className="w-full sm:w-auto">
-            {t("manager.reviews.decline")}
+            {status === "accepted"
+              ? t("manager.reviews.remove")
+              : t("manager.reviews.decline")}
           </Button>
         </form>
       ) : null}

@@ -41,8 +41,8 @@ export default async function ManagerTrainingReviewPage({
           {t("manager.reviewDetail.dashboard")}
         </Link>
         <span className="text-white/20">|</span>
-        <Link href="/manager/reviews" className={interactiveLinkClassName}>
-          {t("manager.reviews.title")}
+        <Link href="/manager/trainings" className={interactiveLinkClassName}>
+          {t("manager.trainings.title")}
         </Link>
         <span className="text-white/20">|</span>
         <span className="min-w-0">{training.title}</span>
