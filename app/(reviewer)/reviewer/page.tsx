@@ -1,12 +1,23 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import Link from "next/link";
+
+import { Flash } from "@/components/manager/flash";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
-import { loadReviewerInsights } from "@/lib/reviewer/insights";
+import {
+  COMPLETION_STATUS_LABEL,
+  COMPLETION_STATUSES,
+  PROFILE_STATUS_LABEL,
+  formatActivityWeek,
+  hasInsightFilters,
+  insightQuery,
+  loadReviewerInsights,
+  parseInsightSearchParams,
+  progressLabel,
+} from "@/lib/reviewer/insights";
+import { fieldClassName } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
 function formatWeek(value: string) {
   const date = new Date(`${value}T00:00:00`);
@@ -14,24 +25,9 @@ function formatWeek(value: string) {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-function Bar({
-  value,
-  max,
-  className,
-}: {
-  value: number;
-  max: number;
-  className?: string;
-}) {
+function Bar({ value, max }: { value: number; max: number }) {
   const percent = max <= 0 ? 0 : Math.round((value / max) * 100);
-  return (
-    <div className="h-2 overflow-hidden rounded-full bg-muted">
-      <div
-        className={className ?? "h-full rounded-full bg-primary"}
-        style={{ width: `${percent}%` }}
-      />
-    </div>
-  );
+  return <ProgressBar value={percent} />;
 }
 
 function StackedBar({
@@ -45,11 +41,11 @@ function StackedBar({
 }) {
   const total = notStarted + inProgress + completed;
   if (total === 0) {
-    return <div className="h-2 rounded-full bg-muted" />;
+    return <div className="h-1.5 rounded-full bg-white/10" />;
   }
 
   return (
-    <div className="flex h-2 overflow-hidden rounded-full bg-muted">
+    <div className="flex h-1.5 overflow-hidden rounded-full bg-white/10">
       <div
         className="h-full bg-primary"
         style={{ width: `${(completed / total) * 100}%` }}
@@ -66,9 +62,26 @@ function StackedBar({
   );
 }
 
-export default async function ReviewerInsightsPage() {
+export default async function ReviewerInsightsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    group_id?: string;
+    training_id?: string;
+    status?: string;
+    from?: string;
+    to?: string;
+    error?: string;
+    notice?: string;
+  }>;
+}) {
+  const params = await searchParams;
   await requireRole("reviewer");
-  const insights = await loadReviewerInsights();
+  const parsed = parseInsightSearchParams(params);
+  const insights = await loadReviewerInsights(parsed.filters);
+  const query = insightQuery(parsed.filters);
+  const exportQuery = query ? `${query}&` : "";
+  const filtered = hasInsightFilters(parsed.filters);
   const trendMax = Math.max(1, ...insights.completion_trend.map((point) => point.count));
   const edgeMax = Math.max(1, ...insights.primary_edges.map((edge) => edge.count));
 
@@ -88,42 +101,131 @@ export default async function ReviewerInsightsPage() {
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-3">
-        <div>
-          <h1 className="font-heading text-2xl font-medium">Insights</h1>
-          <p className="text-sm text-muted-foreground">
-            Cohort totals only. No names, emails, or individual records.
-          </p>
-        </div>
-        <p className="rounded-lg border border-input bg-muted/40 px-3 py-2 text-sm">
-          All data is anonymized and aggregated.
+    <div className="space-y-6">
+      <div>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">Insights</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Anonymized cohort view. No names or emails.
         </p>
       </div>
+      <Flash error={params.error || parsed.error || insights.error} notice={params.notice} />
+
+      <form
+        method="get"
+        action="/reviewer"
+        className="rounded-xl border border-border bg-card p-4 sm:p-6"
+      >
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Group</span>
+            <select
+              className={fieldClassName}
+              name="group_id"
+              defaultValue={parsed.filters.groupId ?? ""}
+            >
+              <option value="">All groups</option>
+              {insights.groups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Training</span>
+            <select
+              className={fieldClassName}
+              name="training_id"
+              defaultValue={parsed.filters.trainingId ?? ""}
+            >
+              <option value="">All trainings</option>
+              {insights.trainings.map((training) => (
+                <option key={training.id} value={training.id}>
+                  {training.title}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Completion status</span>
+            <select
+              className={fieldClassName}
+              name="status"
+              defaultValue={parsed.filters.status ?? ""}
+            >
+              <option value="">All statuses</option>
+              {COMPLETION_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {COMPLETION_STATUS_LABEL[status]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Last activity from</span>
+            <input
+              className={fieldClassName}
+              type="date"
+              name="from"
+              defaultValue={parsed.filters.from ?? ""}
+            />
+          </label>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Last activity to</span>
+            <input
+              className={fieldClassName}
+              type="date"
+              name="to"
+              defaultValue={parsed.filters.to ?? ""}
+            />
+          </label>
+        </div>
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Button type="submit" className="w-full sm:w-auto">
+            Apply filters
+          </Button>
+          {filtered ? (
+            <Link
+              href="/reviewer"
+              className={cn(buttonVariants({ variant: "ghost" }), "w-full sm:w-auto")}
+            >
+              Clear filters
+            </Link>
+          ) : null}
+          <Link
+            href={`/api/reviewer/insights/export?${exportQuery}format=csv`}
+            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+          >
+            Download CSV
+          </Link>
+        </div>
+      </form>
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {stats.map((stat) => (
-          <Card key={stat.label} size="sm">
-            <CardHeader>
-              <CardDescription>{stat.label}</CardDescription>
-              <CardTitle className="text-2xl tabular-nums">{stat.value}</CardTitle>
-              {"detail" in stat && stat.detail ? (
-                <CardDescription>{stat.detail}</CardDescription>
-              ) : null}
-            </CardHeader>
-          </Card>
+          <div key={stat.label} className="rounded-xl border border-border bg-card p-4 sm:p-5">
+            <p className="text-sm text-muted-foreground">{stat.label}</p>
+            <p className="mt-3 text-3xl font-semibold tabular-nums">{stat.value}</p>
+            {"detail" in stat && stat.detail ? (
+              <p className="mt-1 text-xs text-muted-foreground">{stat.detail}</p>
+            ) : null}
+          </div>
         ))}
       </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile completion trend</CardTitle>
-            <CardDescription>Weekly Profile completions, last six weeks.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">Profile completion trend</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Weekly Profile completions, last six weeks.
+          </p>
+          <div className="mt-5 space-y-3">
             {insights.completion_trend.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No weekly totals yet.</p>
+              <p className="text-sm text-muted-foreground">
+                {insights.total_participants === 0
+                  ? "No cohort data yet. Weekly totals appear after fathers finish a Profile."
+                  : "No Profile completions in the last six weeks."}
+              </p>
             ) : (
               insights.completion_trend.map((point) => (
                 <div key={point.week} className="space-y-1.5">
@@ -135,18 +237,20 @@ export default async function ReviewerInsightsPage() {
                 </div>
               ))
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Most common Primary Edges</CardTitle>
-            <CardDescription>Counts from completed Profiles only.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">Most common Primary Edges</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Counts from completed Profiles only.
+          </p>
+          <div className="mt-5 space-y-3">
             {insights.primary_edges.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No Primary Edge totals yet.
+                {insights.total_participants === 0
+                  ? "No cohort data yet. Edges appear after fathers complete a Profile."
+                  : "No Primary Edge totals yet. Edges appear after fathers complete a Profile."}
               </p>
             ) : (
               insights.primary_edges.map((edge) => (
@@ -159,31 +263,38 @@ export default async function ReviewerInsightsPage() {
                 </div>
               ))
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Training progress distribution</CardTitle>
-          <CardDescription>
-            How the cohort sits in each training. Complete, in progress, not started.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="font-heading text-lg font-semibold">Training progress distribution</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              How the cohort sits in each training.
+            </p>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            All data is anonymized and aggregated.
+          </p>
+        </div>
+        <div className="mt-5 space-y-5">
           {insights.training_distribution.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No trainings in the catalog yet.</p>
+            <p className="text-sm text-muted-foreground">
+              No trainings in the catalog yet. Distribution appears once
+              trainings are published.
+            </p>
           ) : (
             insights.training_distribution.map((training) => {
               const total =
                 training.not_started + training.in_progress + training.completed;
+              const pct = total === 0 ? 0 : Math.round((training.completed / total) * 100);
               return (
                 <div key={training.title} className="space-y-2">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="font-medium">{training.title}</p>
-                    <p className="text-sm text-muted-foreground tabular-nums">
-                      {total} participant{total === 1 ? "" : "s"}
-                    </p>
+                    <p className="min-w-0 font-medium">{training.title}</p>
+                    <p className="shrink-0 text-sm tabular-nums text-muted-foreground">{pct}%</p>
                   </div>
                   <StackedBar
                     notStarted={training.not_started}
@@ -191,15 +302,129 @@ export default async function ReviewerInsightsPage() {
                     completed={training.completed}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {training.completed} complete · {training.in_progress} in
-                    progress · {training.not_started} not started
+                    {training.completed} complete · {training.in_progress} in progress ·{" "}
+                    {training.not_started} not started
                   </p>
                 </div>
               );
             })
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
+
+      <section className="overflow-hidden rounded-xl border border-border bg-card">
+        <div className="border-b border-border px-4 py-4 sm:px-6">
+          <h2 className="font-heading text-lg font-semibold">Anonymized progress</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {insights.rows.length} of {insights.participantCount} participants
+            {parsed.filters.trainingId
+              ? " · status is for the selected training"
+              : " · status is across the catalog"}
+            .
+          </p>
+        </div>
+        {insights.rows.length === 0 ? (
+          insights.participantCount === 0 ? (
+            <EmptyState framed={false} title="No cohort data yet">
+              Totals stay at zero until fathers join a group and start a Profile
+              or training. Nothing here is individual.
+            </EmptyState>
+          ) : (
+            <EmptyState
+              framed={false}
+              title="No matching participants"
+              actionHref={filtered ? "/reviewer" : undefined}
+              actionLabel={filtered ? "Clear filters" : undefined}
+            >
+              No one matches these filters. Clear them to see the full cohort.
+            </EmptyState>
+          )
+        ) : (
+          <>
+            <ul className="md:hidden">
+              {insights.rows.map((row) => (
+                <li
+                  key={row.participantLabel}
+                  className="border-b border-border last:border-0"
+                >
+                  <div className="grid gap-2 px-4 py-4 sm:px-6">
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium tabular-nums">
+                        {row.participantLabel}
+                      </span>
+                      <span className="block truncate text-sm text-muted-foreground">
+                        {row.groupLabel}
+                      </span>
+                    </span>
+                    <span className="flex items-baseline justify-between gap-3 text-sm">
+                      <span className="text-muted-foreground">Profile</span>
+                      <span className="text-right text-muted-foreground">
+                        {PROFILE_STATUS_LABEL[row.profileStatus]}
+                      </span>
+                    </span>
+                    <span className="flex items-baseline justify-between gap-3 text-sm">
+                      <span className="text-muted-foreground">Status</span>
+                      <span className="text-right">
+                        {COMPLETION_STATUS_LABEL[row.completionStatus]}
+                      </span>
+                    </span>
+                    <span className="flex items-baseline justify-between gap-3 text-sm">
+                      <span className="text-muted-foreground">Progress</span>
+                      <span className="text-right">
+                        {progressLabel(row, parsed.filters.trainingId)}
+                      </span>
+                    </span>
+                    <span className="flex items-baseline justify-between gap-3 text-sm">
+                      <span className="text-muted-foreground">Last active</span>
+                      <span className="text-right text-muted-foreground">
+                        {formatActivityWeek(row.activityWeek)}
+                      </span>
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full min-w-[52rem] text-left text-sm">
+                <thead>
+                  <tr className="border-b border-border text-xs tracking-wide text-muted-foreground uppercase">
+                    <th className="px-6 py-3 font-medium">Participant</th>
+                    <th className="px-4 py-3 font-medium">Profile</th>
+                    <th className="px-4 py-3 font-medium">Status</th>
+                    <th className="px-4 py-3 font-medium">Progress</th>
+                    <th className="px-6 py-3 font-medium">Last activity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {insights.rows.map((row) => (
+                    <tr
+                      key={row.participantLabel}
+                      className="border-b border-border last:border-0"
+                    >
+                      <td className="px-6 py-3">
+                        <p className="font-medium tabular-nums">{row.participantLabel}</p>
+                        <p className="text-muted-foreground">{row.groupLabel}</p>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {PROFILE_STATUS_LABEL[row.profileStatus]}
+                      </td>
+                      <td className="px-4 py-3">
+                        {COMPLETION_STATUS_LABEL[row.completionStatus]}
+                      </td>
+                      <td className="px-4 py-3">
+                        {progressLabel(row, parsed.filters.trainingId)}
+                      </td>
+                      <td className="px-6 py-3 text-muted-foreground">
+                        {formatActivityWeek(row.activityWeek)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </section>
     </div>
   );
 }

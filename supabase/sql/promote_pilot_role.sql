@@ -57,6 +57,31 @@ join public.profiles on profiles.id = groups.manager_id
 where profiles.role = 'manager'
 order by groups.created_at;
 
+-- ---------- Super-admin ----------
+-- No /signup path grants admin. Create the user in Authentication first
+-- (or promote an existing account), replace the email, then run this.
+-- Sign out and sign in afterward so the JWT picks up app_metadata.role.
+--
+-- do $$
+-- declare
+--   uid uuid;
+-- begin
+--   select id into uid from auth.users where email = 'admin@example.com'; -- <-- replace
+--   if uid is null then
+--     raise exception 'No auth user with that email. Add the user in Authentication first.';
+--   end if;
+--
+--   update public.profiles set role = 'admin' where id = uid;
+--
+--   update auth.users
+--   set raw_app_meta_data =
+--     coalesce(raw_app_meta_data, '{}'::jsonb) || '{"role":"admin"}'::jsonb
+--   where id = uid;
+--
+--   raise notice 'Super-admin ready. Sign out and sign in.';
+-- end
+-- $$;
+
 -- ---------- Reviewer (optional) ----------
 -- do $$
 -- declare

@@ -10,14 +10,29 @@ export async function getAuthContext() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { user: null, role: null as AppRole | null };
+    return { user: null, role: null as AppRole | null, deactivated: false };
   }
 
-  return { user, role: resolveRole(user) };
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("deactivated_at")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!error && profile?.deactivated_at) {
+    await supabase.auth.signOut();
+    return { user: null, role: null as AppRole | null, deactivated: true };
+  }
+
+  return { user, role: resolveRole(user), deactivated: false };
 }
 
 export async function requireRole(allowed: AppRole) {
-  const { user, role } = await getAuthContext();
+  const { user, role, deactivated } = await getAuthContext();
+
+  if (deactivated) {
+    redirect("/login?error=This account has been deactivated.");
+  }
 
   if (!user || !role) {
     redirect("/login");

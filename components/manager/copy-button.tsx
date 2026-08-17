@@ -4,18 +4,29 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-export function CopyButton({ value }: { value: string }) {
-  const [copied, setCopied] = useState(false);
+export function CopyButton({
+  value,
+  className,
+}: {
+  value: string;
+  className?: string;
+}) {
+  const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
 
   async function copy() {
-    await navigator.clipboard.writeText(value);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1500);
+    try {
+      await navigator.clipboard.writeText(value);
+      setStatus("copied");
+      window.setTimeout(() => setStatus("idle"), 1500);
+    } catch {
+      setStatus("error");
+      window.setTimeout(() => setStatus("idle"), 2500);
+    }
   }
 
   return (
-    <Button type="button" variant="outline" onClick={copy}>
-      {copied ? "Copied" : "Copy"}
+    <Button type="button" variant="inverse" className={className} onClick={copy}>
+      {status === "copied" ? "Copied" : status === "error" ? "Copy failed" : "Copy Code"}
     </Button>
   );
 }

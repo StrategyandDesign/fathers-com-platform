@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 
 import { resolveRole } from "@/lib/auth/roles";
-import { evaluatePlaceholder } from "@/lib/father/evaluate";
 import {
   deleteProfileDraft,
   loadLatestProfile,
@@ -13,6 +12,7 @@ import {
   hasAllAnswers,
   parseAnswers,
 } from "@/lib/father/questions";
+import { evaluateProfile, profilePersistFields } from "@/lib/profile/score";
 import { createClient } from "@/lib/supabase/server";
 
 function takeError(message: string, questionId?: number) {
@@ -51,14 +51,11 @@ export async function POST(request: Request) {
     takeError("Answer every question before you submit.", firstUnanswered(answers));
   }
 
-  const evaluation = evaluatePlaceholder(answers);
+  const evaluation = evaluateProfile(answers);
 
   const { error } = await supabase.from("father_profiles").insert({
     father_id: user.id,
-    primary_edge: evaluation.primary_edge,
-    primary_determination: evaluation.primary_determination,
-    raw_scores: evaluation.raw_scores,
-    full_results: evaluation.full_results,
+    ...profilePersistFields(evaluation),
   });
 
   if (error) {

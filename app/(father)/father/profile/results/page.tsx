@@ -1,17 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { DimensionScores } from "@/components/profile/dimension-scores";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/session";
 import { loadLatestProfile } from "@/lib/father/profile";
+import { readStoredDimensionScores } from "@/lib/profile/score";
+import { cn } from "@/lib/utils";
 
 export default async function FatherProfileResultsPage() {
   const { user } = await requireRole("father");
@@ -21,63 +16,45 @@ export default async function FatherProfileResultsPage() {
     redirect("/father/profile");
   }
 
+  const scores = readStoredDimensionScores(profile.raw_scores, profile.full_results);
+
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm text-muted-foreground">
-          <Link href="/father" className="hover:underline">
-            Home
-          </Link>
-          <span className="px-1.5">/</span>
-          <Link href="/father/profile" className="hover:underline">
-            Father Profile
-          </Link>
-          <span className="px-1.5">/</span>
-          Results
+    <div className="mx-auto max-w-2xl">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
+        <p className="text-sm font-medium text-primary">
+          Your Father Profile is complete
         </p>
-        <h1 className="font-heading mt-2 text-2xl font-medium">Your results</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="font-heading mt-3 text-2xl font-semibold tracking-tight lg:text-3xl">
+          Primary Determination: {profile.primary_determination ?? "—"}
+        </h1>
+        <p className="mt-3 text-muted-foreground">
+          Primary Edge: {profile.primary_edge ?? "—"}
+        </p>
+        {scores ? <DimensionScores scores={scores} /> : null}
+        <p className="mt-8 text-sm text-muted-foreground">
           Completed{" "}
           {new Date(profile.taken_at).toLocaleDateString(undefined, {
             year: "numeric",
-            month: "short",
+            month: "long",
             day: "numeric",
           })}
         </p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardDescription>Primary Edge</CardDescription>
-            <CardTitle>{profile.primary_edge ?? "Not set"}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              The strength this Profile is pointing to first.
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardDescription>Primary Determination</CardDescription>
-            <CardTitle>{profile.primary_determination ?? "Not set"}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              The work to keep in front of you this season.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardFooter>
-          <Link href="/father" className={buttonVariants()}>
-            Back to Home
+        <p className="mt-6 text-sm text-muted-foreground">
+          As you continue to grow your skills, come back to see how your profile
+          evolves.
+        </p>
+        <div className="mt-8 flex flex-col gap-3">
+          <Link href="/father" className={cn(buttonVariants({ size: "lg" }), "w-full")}>
+            Go to Home
           </Link>
-        </CardFooter>
-      </Card>
+          <Link
+            href="/father/profile"
+            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full")}
+          >
+            Profile home
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

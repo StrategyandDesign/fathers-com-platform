@@ -9,8 +9,22 @@ export function Flash({
 
   return (
     <div className="space-y-2">
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
-      {notice ? <p className="text-sm text-muted-foreground">{notice}</p> : null}
+      {error ? (
+        <p
+          role="alert"
+          className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+        >
+          {error}
+        </p>
+      ) : null}
+      {notice ? (
+        <p
+          role="status"
+          className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm text-foreground"
+        >
+          {notice}
+        </p>
+      ) : null}
     </div>
   );
 }

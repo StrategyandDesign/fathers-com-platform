@@ -1,0 +1,356 @@
+import { displayName, type ManagedProfile } from "@/lib/manager/types";
+import { createClient } from "@/lib/supabase/server";
+import {
+  asStringOptions,
+  isAssignmentStatus,
+  isQuestionType,
+  type AssessmentListItem,
+  type AssignmentRow,
+  type CustomAssessment,
+  type CustomAssessmentAnswer,
+  type CustomAssessmentAssignment,
+  type CustomAssessmentQuestion,
+  type FatherAssignmentCard,
+  type RosterFather,
+} from "@/lib/assessments/types";
+
+function emptyIn<T>(
+  ids: string[],
+  load: () => PromiseLike<{ data: T[] | null; error: { message: string } | null }>
+) {
+  if (ids.length === 0) {
+    return Promise.resolve({ data: [] as T[], error: null });
+  }
+  return load();
+}
+
+function asAssessment(row: CustomAssessment): CustomAssessment {
+  return row;
+}
+
+function asQuestion(row: {
+  id: string;
+  assessment_id: string;
+  order_index: number;
+  prompt: string;
+  question_type: string;
+  options: unknown;
+}): CustomAssessmentQuestion | null {
+  if (!isQuestionType(row.question_type)) return null;
+  return {
+    id: row.id,
+    assessment_id: row.assessment_id,
+    order_index: row.order_index,
+    prompt: row.prompt,
+    question_type: row.question_type,
+    options: row.question_type === "single_select" ? asStringOptions(row.options) : null,
+  };
+}
+
+function asAssignment(row: CustomAssessmentAssignment): CustomAssessmentAssignment | null {
+  if (!isAssignmentStatus(row.status)) return null;
+  return row;
+}
+
+export async function loadManagerRoster(managerId: string): Promise<RosterFather[]> {
+  const supabase = await createClient();
+  const { data: groups, error: groupsError } = await supabase
+    .from("groups")
+    .select("id")
+    .eq("manager_id", managerId);
+
+  if (groupsError) throw groupsError;
+  const groupIds = (groups ?? []).map((group) => group.id);
+
+  const membersRes = await emptyIn<{ father_id: string }>(groupIds, () =>
+    supabase.from("group_members").select("father_id").in("group_id", groupIds)
+  );
+  if (membersRes.error) throw membersRes.error;
+
+  const fatherIds = [...new Set((membersRes.data ?? []).map((row) => row.father_id))];
+  const profilesRes = await emptyIn<ManagedProfile>(fatherIds, () =>
+    supabase.from("profiles").select("id, full_name").in("id", fatherIds)
+  );
+  if (profilesRes.error) throw profilesRes.error;
+
+  const profiles = new Map((profilesRes.data ?? []).map((profile) => [profile.id, profile]));
+  return fatherIds
+    .map((fatherId) => ({
+      fatherId,
+      name: displayName(profiles.get(fatherId) ?? null, fatherId),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export async function loadManagerAssessments(managerId: string): Promise<AssessmentListItem[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("custom_assessments")
+    .select("*")
+    .eq("manager_id", managerId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  const assessments = (data ?? []) as CustomAssessment[];
+  const ids = assessments.map((row) => row.id);
+
+  const [questionsRes, assignmentsRes] = await Promise.all([
+    emptyIn<{ assessment_id: string }>(ids, () =>
+      supabase.from("custom_assessment_questions").select("assessment_id").in("assessment_id", ids)
+    ),
+    emptyIn<{ assessment_id: string; status: string }>(ids, () =>
+      supabase
+        .from("custom_assessment_assignments")
+        .select("assessment_id, status")
+        .in("assessment_id", ids)
+    ),
+  ]);
+  if (questionsRes.error) throw questionsRes.error;
+  if (assignmentsRes.error) throw assignmentsRes.error;
+
+  return assessments.map((assessment) => {
+    const questionCount = (questionsRes.data ?? []).filter(
+      (row) => row.assessment_id === assessment.id
+    ).length;
+    const assigned = (assignmentsRes.data ?? []).filter((row) => row.assessment_id === assessment.id);
+    return {
+      ...asAssessment(assessment),
+      questionCount,
+      assignedCount: assigned.length,
+      completedCount: assigned.filter((row) => row.status === "completed").length,
+    };
+  });
+}
+
+export async function loadManagerAssessmentDetail(managerId: string, assessmentId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("custom_assessments")
+    .select("*")
+    .eq("id", assessmentId)
+    .eq("manager_id", managerId)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+
+  const [questionsRes, assignmentsRes, roster] = await Promise.all([
+    supabase
+      .from("custom_assessment_questions")
+      .select("*")
+      .eq("assessment_id", assessmentId)
+      .order("order_index"),
+    supabase
+      .from("custom_assessment_assignments")
+      .select("*")
+      .eq("assessment_id", assessmentId)
+      .order("created_at"),
+    loadManagerRoster(managerId),
+  ]);
+
+  if (questionsRes.error) throw questionsRes.error;
+  if (assignmentsRes.error) throw assignmentsRes.error;
+
+  const questions = ((questionsRes.data ?? []) as Parameters<typeof asQuestion>[0][])
+    .map(asQuestion)
+    .filter((row): row is CustomAssessmentQuestion => row !== null);
+  const assignments = ((assignmentsRes.data ?? []) as CustomAssessmentAssignment[])
+    .map(asAssignment)
+    .filter((row): row is CustomAssessmentAssignment => row !== null);
+
+  const names = new Map(roster.map((row) => [row.fatherId, row.name]));
+  const assignmentRows: AssignmentRow[] = assignments.map((row) => ({
+    ...row,
+    fatherName: names.get(row.father_id) ?? displayName(null, row.father_id),
+  }));
+  assignmentRows.sort((a, b) => a.fatherName.localeCompare(b.fatherName));
+
+  return {
+    assessment: asAssessment(data as CustomAssessment),
+    questions,
+    assignments: assignmentRows,
+    roster,
+  };
+}
+
+export async function loadManagerAssignmentResponses(
+  managerId: string,
+  assessmentId: string,
+  fatherId: string
+) {
+  const detail = await loadManagerAssessmentDetail(managerId, assessmentId);
+  if (!detail) return null;
+
+  const assignment = detail.assignments.find((row) => row.father_id === fatherId);
+  if (!assignment) return null;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("custom_assessment_answers")
+    .select("*")
+    .eq("assignment_id", assignment.id);
+
+  if (error) throw error;
+
+  const answers = new Map(
+    ((data ?? []) as CustomAssessmentAnswer[]).map((row) => [row.question_id, row])
+  );
+
+  return {
+    assessment: detail.assessment,
+    questions: detail.questions,
+    assignment,
+    answers,
+  };
+}
+
+export async function loadParticipantCustomAssignments(managerId: string, fatherId: string) {
+  const supabase = await createClient();
+  const { data: managed, error: managedError } = await supabase.rpc("manages_father", {
+    father_id: fatherId,
+  });
+  if (managedError) throw managedError;
+  if (!managed) return [];
+
+  const { data, error } = await supabase
+    .from("custom_assessment_assignments")
+    .select("*")
+    .eq("father_id", fatherId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  const assignments = ((data ?? []) as CustomAssessmentAssignment[])
+    .map(asAssignment)
+    .filter((row): row is CustomAssessmentAssignment => row !== null);
+  const assessmentIds = [...new Set(assignments.map((row) => row.assessment_id))];
+
+  const assessmentsRes = await emptyIn<CustomAssessment>(assessmentIds, () =>
+    supabase
+      .from("custom_assessments")
+      .select("*")
+      .eq("manager_id", managerId)
+      .in("id", assessmentIds)
+  );
+  if (assessmentsRes.error) throw assessmentsRes.error;
+
+  const assessments = new Map(
+    ((assessmentsRes.data ?? []) as CustomAssessment[]).map((row) => [row.id, row])
+  );
+
+  return assignments
+    .map((assignment) => {
+      const assessment = assessments.get(assignment.assessment_id);
+      if (!assessment) return null;
+      return { assignment, assessment };
+    })
+    .filter((row): row is { assignment: CustomAssessmentAssignment; assessment: CustomAssessment } =>
+      row !== null
+    );
+}
+
+export async function loadFatherAssignments(fatherId: string): Promise<FatherAssignmentCard[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("custom_assessment_assignments")
+    .select("*")
+    .eq("father_id", fatherId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  const assignments = ((data ?? []) as CustomAssessmentAssignment[])
+    .map(asAssignment)
+    .filter((row): row is CustomAssessmentAssignment => row !== null);
+  const assessmentIds = [...new Set(assignments.map((row) => row.assessment_id))];
+  const assignmentIds = assignments.map((row) => row.id);
+
+  const [assessmentsRes, questionsRes, answersRes] = await Promise.all([
+    emptyIn<CustomAssessment>(assessmentIds, () =>
+      supabase.from("custom_assessments").select("*").in("id", assessmentIds)
+    ),
+    emptyIn<{ assessment_id: string }>(assessmentIds, () =>
+      supabase
+        .from("custom_assessment_questions")
+        .select("assessment_id")
+        .in("assessment_id", assessmentIds)
+    ),
+    emptyIn<{ assignment_id: string }>(assignmentIds, () =>
+      supabase
+        .from("custom_assessment_answers")
+        .select("assignment_id")
+        .in("assignment_id", assignmentIds)
+    ),
+  ]);
+  if (assessmentsRes.error) throw assessmentsRes.error;
+  if (questionsRes.error) throw questionsRes.error;
+  if (answersRes.error) throw answersRes.error;
+
+  const assessments = new Map(
+    ((assessmentsRes.data ?? []) as CustomAssessment[]).map((row) => [row.id, row])
+  );
+
+  return assignments
+    .map((assignment) => {
+      const assessment = assessments.get(assignment.assessment_id);
+      if (!assessment) return null;
+      return {
+        assignment,
+        assessment,
+        questionCount: (questionsRes.data ?? []).filter(
+          (row) => row.assessment_id === assignment.assessment_id
+        ).length,
+        answeredCount: (answersRes.data ?? []).filter((row) => row.assignment_id === assignment.id)
+          .length,
+      };
+    })
+    .filter((row): row is FatherAssignmentCard => row !== null);
+}
+
+export async function loadAssignmentTake(fatherId: string, assignmentId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("custom_assessment_assignments")
+    .select("*")
+    .eq("id", assignmentId)
+    .eq("father_id", fatherId)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+
+  const assignment = asAssignment(data as CustomAssessmentAssignment);
+  if (!assignment) return null;
+
+  const [assessmentRes, questionsRes, answersRes] = await Promise.all([
+    supabase
+      .from("custom_assessments")
+      .select("*")
+      .eq("id", assignment.assessment_id)
+      .maybeSingle(),
+    supabase
+      .from("custom_assessment_questions")
+      .select("*")
+      .eq("assessment_id", assignment.assessment_id)
+      .order("order_index"),
+    supabase.from("custom_assessment_answers").select("*").eq("assignment_id", assignment.id),
+  ]);
+
+  if (assessmentRes.error) throw assessmentRes.error;
+  if (questionsRes.error) throw questionsRes.error;
+  if (answersRes.error) throw answersRes.error;
+  if (!assessmentRes.data) return null;
+
+  const questions = ((questionsRes.data ?? []) as Parameters<typeof asQuestion>[0][])
+    .map(asQuestion)
+    .filter((row): row is CustomAssessmentQuestion => row !== null);
+
+  const answers = new Map(
+    ((answersRes.data ?? []) as CustomAssessmentAnswer[]).map((row) => [row.question_id, row.value])
+  );
+
+  return {
+    assignment,
+    assessment: asAssessment(assessmentRes.data as CustomAssessment),
+    questions,
+    answers,
+  };
+}

@@ -1,12 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { loadProfileDraft } from "@/lib/father/profile";
 import {
+  catalogSessionTotal,
   isSessionComplete,
+  isTrainingPublished,
   type FatherProfileSummary,
   type Session,
   type SessionProgress,
   type Training,
 } from "@/lib/father/types";
+import type { Certificate } from "@/lib/manager/types";
 
 function asProgress(row: SessionProgress): SessionProgress {
   const answers = row.checkin_answers;
@@ -19,30 +22,64 @@ function asProgress(row: SessionProgress): SessionProgress {
   };
 }
 
+function sortByDisplay(a: Session, b: Session) {
+  return a.order_index - b.order_index || a.session_number - b.session_number;
+}
+
+function sortByCatalog(a: Session, b: Session) {
+  return a.session_number - b.session_number || a.order_index - b.order_index;
+}
+
+function pickNextSession(
+  trainingSessions: Session[],
+  progressBySession: Map<string, SessionProgress>,
+  completed: number
+) {
+  if (trainingSessions.length === 0) return undefined;
+
+  // Zero completed: always Session 1 / first catalog row, not order_index or later in-progress.
+  if (completed === 0) {
+    return [...trainingSessions].sort(sortByCatalog)[0];
+  }
+
+  return [...trainingSessions]
+    .sort(sortByDisplay)
+    .find((session) => !isSessionComplete(progressBySession.get(session.id) ?? null));
+}
+
 export async function loadFatherHome(fatherId: string) {
   const supabase = await createClient();
 
-  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes] = await Promise.all([
-    supabase.from("trainings").select("*").order("order_index"),
-    supabase.from("sessions").select("*").order("order_index"),
-    supabase.from("session_progress").select("*").eq("father_id", fatherId),
-    supabase
-      .from("father_profiles")
-      .select("id, taken_at, primary_edge, primary_determination")
-      .eq("father_id", fatherId)
-      .order("taken_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    loadProfileDraft(fatherId),
-  ]);
+  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes, certificatesRes, assignmentsRes] =
+    await Promise.all([
+      supabase.from("trainings").select("*").order("order_index"),
+      supabase.from("sessions").select("*").order("order_index"),
+      supabase.from("session_progress").select("*").eq("father_id", fatherId),
+      supabase
+        .from("father_profiles")
+        .select("id, taken_at, primary_edge, primary_determination")
+        .eq("father_id", fatherId)
+        .order("taken_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      loadProfileDraft(fatherId),
+      supabase.from("certificates").select("*").eq("father_id", fatherId),
+      supabase.from("training_assignments").select("training_id").eq("father_id", fatherId),
+    ]);
 
   if (trainingsRes.error) throw trainingsRes.error;
   if (sessionsRes.error) throw sessionsRes.error;
   if (progressRes.error) throw progressRes.error;
   if (profileRes.error) throw profileRes.error;
+  if (certificatesRes.error) throw certificatesRes.error;
+  if (assignmentsRes.error) throw assignmentsRes.error;
   const draft = draftRes;
+  const certificates = (certificatesRes.data ?? []) as Certificate[];
+  const assignedIds = new Set(
+    ((assignmentsRes.data ?? []) as Array<{ training_id: string }>).map((row) => row.training_id)
+  );
 
-  const trainings = (trainingsRes.data ?? []) as Training[];
+  const allTrainings = (trainingsRes.data ?? []) as Training[];
   const sessions = (sessionsRes.data ?? []) as Session[];
   const progressBySession = new Map(
     ((progressRes.data ?? []) as SessionProgress[]).map((row) => [
@@ -50,46 +87,51 @@ export async function loadFatherHome(fatherId: string) {
       asProgress(row),
     ])
   );
+  const progressSessionIds = new Set(progressBySession.keys());
+  const certificateIds = new Set(certificates.map((row) => row.training_id));
+
+  const trainings = allTrainings.filter((training) => {
+    if (isTrainingPublished(training)) return true;
+    if (assignedIds.has(training.id) || certificateIds.has(training.id)) return true;
+    return sessions.some(
+      (session) => session.training_id === training.id && progressSessionIds.has(session.id)
+    );
+  });
 
   const trainingCards = trainings.map((training) => {
     const trainingSessions = sessions
       .filter((session) => session.training_id === training.id)
-      .sort((a, b) => a.order_index - b.order_index);
+      .sort(sortByDisplay);
     const completed = trainingSessions.filter((session) =>
       isSessionComplete(progressBySession.get(session.id) ?? null)
     ).length;
-    const next = trainingSessions.find(
-      (session) => !isSessionComplete(progressBySession.get(session.id) ?? null)
-    );
+    const next = pickNextSession(trainingSessions, progressBySession, completed);
 
     return {
       training,
       sessions: trainingSessions,
+      sessionDots: trainingSessions.map((session) => ({
+        id: session.id,
+        number: session.session_number,
+        title: session.title,
+        done: isSessionComplete(progressBySession.get(session.id) ?? null),
+      })),
       completed,
-      total: trainingSessions.length,
+      total: catalogSessionTotal(training, trainingSessions.length),
       next,
+      certificate: certificates.find((row) => row.training_id === training.id) ?? null,
     };
   });
 
-  const orderedSessions = trainings.flatMap((training) =>
-    sessions
-      .filter((session) => session.training_id === training.id)
-      .sort((a, b) => a.order_index - b.order_index)
-  );
-  const nextSession = orderedSessions.find(
-    (session) => !isSessionComplete(progressBySession.get(session.id) ?? null)
-  );
-  const nextTraining = nextSession
-    ? trainings.find((training) => training.id === nextSession.training_id)
-    : null;
+  const activeCard = trainingCards.find((card) => card.next);
 
   return {
     trainingCards,
-    next: nextSession && nextTraining
+    next: activeCard?.next
       ? {
-          session: nextSession,
-          training: nextTraining,
-          progress: progressBySession.get(nextSession.id) ?? null,
+          session: activeCard.next,
+          training: activeCard.training,
+          progress: progressBySession.get(activeCard.next.id) ?? null,
         }
       : null,
     profile: (profileRes.data as FatherProfileSummary | null) ?? null,

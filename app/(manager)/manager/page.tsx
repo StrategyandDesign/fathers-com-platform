@@ -2,23 +2,12 @@ import Link from "next/link";
 
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
-import { ManagerNav } from "@/components/manager/nav";
-import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { fieldClassName, initials, interactiveSurfaceClassName } from "@/lib/ui";
 import { requireRole } from "@/lib/auth/session";
 import { createGroup } from "@/lib/manager/actions";
 import { loadManagerWorkspace } from "@/lib/manager/data";
-
-const fieldClassName =
-  "h-8 w-full rounded-lg border border-input bg-background px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+import { cn } from "@/lib/utils";
 
 export default async function ManagerHomePage({
   searchParams,
@@ -38,56 +27,49 @@ export default async function ManagerHomePage({
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-3">
-        <ManagerNav current="dashboard" />
-        <div>
-          <h1 className="font-heading text-2xl font-medium">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Your group’s progress. Fathers join with the invite code.
-          </p>
-        </div>
-        <Flash error={params.error} notice={params.notice} />
+    <div className="space-y-6">
+      <div>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">Dashboard</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Your group’s progress. Fathers join with the invite code.
+        </p>
       </div>
+      <Flash error={params.error} notice={params.notice} />
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {stats.map((stat) => (
-          <Card key={stat.label} size="sm">
-            <CardHeader>
-              <CardDescription>{stat.label}</CardDescription>
-              <CardTitle className="text-2xl tabular-nums">{stat.value}</CardTitle>
-            </CardHeader>
-          </Card>
+          <div key={stat.label} className="rounded-xl border border-border bg-card p-4 sm:p-5">
+            <p className="text-sm text-muted-foreground">{stat.label}</p>
+            <p className="mt-3 text-3xl font-semibold tabular-nums">{stat.value}</p>
+          </div>
         ))}
       </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Group invite code</CardTitle>
-          <CardDescription>
+      <section className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">Group invite code</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             Fathers enter this code when they create an account.
-          </CardDescription>
-        </CardHeader>
-        {groups.length > 0 ? (
-          <CardContent className="space-y-3">
-            {groups.map((group) => (
-              <div
-                key={group.id}
-                className="flex flex-col gap-3 rounded-lg border border-input px-3 py-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div>
-                  <p className="font-medium">{group.name}</p>
-                  <p className="font-mono text-sm tracking-wide">{group.invite_code}</p>
+          </p>
+          {groups.length > 0 ? (
+            <div className="mt-5 space-y-3">
+              {groups.map((group) => (
+                <div
+                  key={group.id}
+                  className="flex flex-col gap-3 rounded-lg border border-input bg-black/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium">{group.name}</p>
+                    <p className="break-all font-mono text-sm tracking-wide">{group.invite_code}</p>
+                  </div>
+                  <CopyButton value={group.invite_code} className="w-full sm:w-auto" />
                 </div>
-                <CopyButton value={group.invite_code} />
-              </div>
-            ))}
-          </CardContent>
-        ) : (
-          <form action={createGroup}>
-            <CardContent className="space-y-3">
-              <label className="block space-y-1.5">
-                <span className="text-sm font-medium">Group name</span>
+              ))}
+            </div>
+          ) : (
+            <form action={createGroup} className="mt-5 space-y-4">
+              <label className="block space-y-2">
+                <span className="text-sm text-muted-foreground">Group name</span>
                 <input
                   className={fieldClassName}
                   name="name"
@@ -95,51 +77,79 @@ export default async function ManagerHomePage({
                   required
                 />
               </label>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit">Create group</Button>
-            </CardFooter>
-          </form>
-        )}
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Needs attention</CardTitle>
-          <CardDescription>
-            Profile gaps, unfinished sessions, and certificates ready to send.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {needsAttention.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nothing waiting right now.</p>
-          ) : (
-            <ul className="divide-y rounded-lg border">
-              {needsAttention.map((item) => (
-                <li key={`${item.fatherId}-${item.reason}`}>
-                  <Link
-                    href={`/manager/participants/${item.fatherId}`}
-                    className="flex items-center justify-between gap-3 px-3 py-2.5 hover:bg-muted/50"
-                  >
-                    <span>
-                      <span className="font-medium">{item.name}</span>
-                      <span className="mt-0.5 block text-sm text-muted-foreground">
-                        {item.reason}
-                      </span>
-                    </span>
-                    <Badge variant="outline">Open</Badge>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+              <Button type="submit" className="w-full sm:w-auto">
+                Create group
+              </Button>
+            </form>
           )}
-        </CardContent>
-        <CardFooter>
-          <Link href="/manager/participants" className={buttonVariants({ variant: "outline" })}>
+        </div>
+
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">Needs attention</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Profile gaps, unfinished sessions, and certificates ready to send.
+          </p>
+          <div className="mt-5">
+            {needsAttention.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Nothing waiting right now.</p>
+            ) : (
+              <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+                {needsAttention.map((item) => (
+                  <li key={`${item.fatherId}-${item.reason}`}>
+                    <Link
+                      href={`/manager/participants/${item.fatherId}`}
+                      className={cn("flex items-center gap-3 px-3 py-3", interactiveSurfaceClassName)}
+                    >
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-medium">
+                        {initials(item.name)}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">{item.name}</span>
+                        <span className="block text-sm text-muted-foreground">
+                          {item.reason}
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <Link
+            href="/manager/participants"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
             View all participants
           </Link>
-        </CardFooter>
-      </Card>
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <h2 className="font-heading text-lg font-semibold">Reports</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Filter by training, completion, and last activity. Download a CSV or PDF of
+          your group.
+        </p>
+        <Link
+          href="/manager/reports"
+          className={cn(buttonVariants(), "mt-5 w-full sm:w-auto")}
+        >
+          Open reports
+        </Link>
+      </section>
+
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <h2 className="font-heading text-lg font-semibold">Assessments</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Create custom questions and assign them to fathers in your group.
+        </p>
+        <Link
+          href="/manager/assessments"
+          className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+        >
+          View assessments
+        </Link>
+      </section>
     </div>
   );
 }

@@ -1,51 +1,69 @@
 import Link from "next/link";
 
+import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
+import { DimensionScores } from "@/components/profile/dimension-scores";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { loadFatherAssignments } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
 import { startProfile } from "@/lib/father/profile-actions";
 import { loadProfileState } from "@/lib/father/profile";
 import { PROFILE_QUESTION_COUNT, answeredCount, firstUnanswered } from "@/lib/father/questions";
+import { readStoredDimensionScores } from "@/lib/profile/score";
+import { cn } from "@/lib/utils";
 
 export default async function FatherProfilePage() {
   const { user } = await requireRole("father");
   const { profile, draft } = await loadProfileState(user.id);
+  const customAssignments = await loadFatherAssignments(user.id);
 
   if (profile) {
+    const scores = readStoredDimensionScores(profile.raw_scores, profile.full_results);
     return (
       <div className="space-y-6">
-        <div>
-          <p className="text-sm text-muted-foreground">
-            <Link href="/father" className="hover:underline">
-              Home
-            </Link>
-            <span className="px-1.5">/</span>
-            Father Profile
+        <div className="grid gap-6 lg:grid-cols-2">
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+            Your Keystone Profile
           </p>
-          <h1 className="font-heading mt-2 text-2xl font-medium">Father Profile</h1>
-        </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Completed</CardTitle>
-            <CardDescription>
-              {profile.primary_edge ? `Primary Edge: ${profile.primary_edge}` : "Results are ready."}
-              {profile.primary_determination
-                ? ` · Determination: ${profile.primary_determination}`
-                : ""}
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Link href="/father/profile/results" className={buttonVariants()}>
+          <p className="mt-6 text-sm text-muted-foreground">Primary Determination</p>
+          <h1 className="font-heading mt-1 text-2xl font-semibold tracking-tight uppercase sm:text-3xl">
+            {profile.primary_determination ?? "Complete"}
+          </h1>
+          <p className="mt-4 text-muted-foreground">
+            Primary Edge: {profile.primary_edge ?? "—"}
+          </p>
+          {scores ? <DimensionScores scores={scores} /> : null}
+          <p className="mt-6 text-sm text-muted-foreground">
+            Date of last profile:{" "}
+            {new Date(profile.taken_at).toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link href="/father/profile/results" className={cn(buttonVariants(), "w-full sm:w-auto")}>
               View results
             </Link>
-          </CardFooter>
-        </Card>
+          </div>
+        </section>
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+            Keystone Profile
+          </p>
+          <p className="mt-4 text-muted-foreground">
+            Retake when you want a fresh reading. Your last results stay until a new
+            Profile is completed.
+          </p>
+          <Link
+            href="/father/profile/results"
+            className={cn(buttonVariants(), "mt-8 w-full lg:w-auto")}
+          >
+            View your Father Profile
+          </Link>
+        </section>
+        </div>
+        <AssignedAssessmentList assignments={customAssignments} />
       </div>
     );
   }
@@ -55,44 +73,45 @@ export default async function FatherProfilePage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm text-muted-foreground">
-          <Link href="/father" className="hover:underline">
-            Home
+      <div className="grid gap-6 lg:grid-cols-2">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
+        <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+          Keystone Profile
+        </p>
+        <p className="mt-4 text-muted-foreground">
+          {draft
+            ? `Question ${resumeAt} of ${PROFILE_QUESTION_COUNT} · ${answered} answered`
+            : "If you have not taken it recently:"}
+        </p>
+        {draft ? (
+          <Link
+            href={`/father/profile/take?q=${resumeAt}`}
+            className={cn(buttonVariants({ size: "lg" }), "mt-8 w-full lg:w-auto")}
+          >
+            Continue
           </Link>
-          <span className="px-1.5">/</span>
-          Father Profile
+        ) : (
+          <form action={startProfile} className="mt-8">
+            <Button type="submit" size="lg" className="w-full lg:w-auto">
+              Take your Father Profile
+            </Button>
+          </form>
+        )}
+        <p className="mt-6 text-sm text-muted-foreground">
+          128 questions. One at a time. About 8–20 minutes. You can save and come
+          back.
         </p>
-        <h1 className="font-heading mt-2 text-2xl font-medium">Father Profile</h1>
-        <p className="text-sm text-muted-foreground">
-          128 questions. One at a time. You can save and come back.
+      </section>
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
+        <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+          Your Keystone Profile
         </p>
+        <p className="mt-6 text-muted-foreground">
+          Results appear here after you finish the Profile.
+        </p>
+      </section>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{draft ? "Continue your Profile" : "Start your Profile"}</CardTitle>
-          <CardDescription>
-            {draft
-              ? `Question ${resumeAt} of ${PROFILE_QUESTION_COUNT} · ${answered} answered`
-              : "About twenty minutes. Your answers stay on the server so you can resume."}
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          {draft ? (
-            <Link
-              href={`/father/profile/take?q=${resumeAt}`}
-              className={buttonVariants()}
-            >
-              Continue
-            </Link>
-          ) : (
-            <form action={startProfile}>
-              <Button type="submit">Start Profile</Button>
-            </form>
-          )}
-        </CardFooter>
-      </Card>
+      <AssignedAssessmentList assignments={customAssignments} />
     </div>
   );
 }

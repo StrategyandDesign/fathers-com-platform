@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export function ManagerNav({ current }: { current: "dashboard" | "participants" }) {
@@ -15,7 +16,8 @@ export function ManagerNav({ current }: { current: "dashboard" | "participants" 
           key={link.key}
           href={link.href}
           className={cn(
-            "text-muted-foreground hover:text-foreground",
+            "text-muted-foreground",
+            interactiveLinkClassName,
             current === link.key && "font-medium text-foreground"
           )}
         >

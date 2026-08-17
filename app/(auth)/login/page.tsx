@@ -1,18 +1,16 @@
 import Link from "next/link";
 
+import { Flash } from "@/components/manager/flash";
 import { signIn } from "@/lib/auth/actions";
 import { safeInternalPath } from "@/lib/auth/roles";
+import { authFieldClassName, interactiveUnderlineClassName } from "@/lib/ui";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-const fieldClassName =
-  "h-8 w-full rounded-lg border border-input bg-background px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export default async function LoginPage({
   searchParams,
@@ -21,50 +19,48 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const next = safeInternalPath(params.next);
+  const credentialsInvalid =
+    Boolean(params.error) && !/deactivated|too many/i.test(params.error ?? "");
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Sign in</CardTitle>
-        <CardDescription>Email and password.</CardDescription>
+      <CardHeader className="text-center">
+        <CardTitle className="text-xl font-medium">Sign In</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={signIn} className="space-y-4">
+        <form action={signIn} className="space-y-5">
           {next ? <input type="hidden" name="next" value={next} /> : null}
-          <label className="block space-y-1.5">
-            <span className="text-sm font-medium">Email</span>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Email</span>
             <input
-              className={fieldClassName}
+              className={authFieldClassName}
               type="email"
               name="email"
               autoComplete="email"
               required
+              aria-invalid={credentialsInvalid || undefined}
             />
           </label>
-          <label className="block space-y-1.5">
-            <span className="text-sm font-medium">Password</span>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Password</span>
             <input
-              className={fieldClassName}
+              className={authFieldClassName}
               type="password"
               name="password"
               autoComplete="current-password"
               required
+              aria-invalid={credentialsInvalid || undefined}
             />
           </label>
-          {params.error ? (
-            <p className="text-sm text-destructive">{params.error}</p>
-          ) : null}
-          {params.notice ? (
-            <p className="text-sm text-muted-foreground">{params.notice}</p>
-          ) : null}
-          <Button type="submit" className="w-full">
-            Sign in
+          <Flash error={params.error} notice={params.notice} />
+          <Button type="submit" size="lg" className="w-full rounded-full">
+            Sign In
           </Button>
         </form>
-        <p className="mt-4 text-sm text-muted-foreground">
-          New here?{" "}
-          <Link href="/signup" className="text-foreground underline-offset-4 hover:underline">
-            Create an account
+        <p className="mt-5 text-center text-sm text-muted-foreground">
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className={interactiveUnderlineClassName}>
+            Create one
           </Link>
         </p>
       </CardContent>

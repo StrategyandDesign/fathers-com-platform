@@ -1,15 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { Flash } from "@/components/manager/flash";
+import { ProfileAnswerOptions } from "@/components/profile/answer-options";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
 import { saveProfileProgress } from "@/lib/father/profile-actions";
 import { ensureProfileDraft, loadLatestProfile } from "@/lib/father/profile";
@@ -19,6 +14,8 @@ import {
   answeredCount,
   getProfileQuestion,
 } from "@/lib/father/questions";
+import { interactiveLinkClassName } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
 export default async function FatherProfileTakePage({
   searchParams,
@@ -50,100 +47,98 @@ export default async function FatherProfileTakePage({
   const percent = Math.round((answered / PROFILE_QUESTION_COUNT) * 100);
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
+    <div className="mx-auto max-w-2xl space-y-8">
+      <div className="space-y-3">
         <p className="text-sm text-muted-foreground">
-          <Link href="/father" className="hover:underline">
-            Home
-          </Link>
-          <span className="px-1.5">/</span>
-          <Link href="/father/profile" className="hover:underline">
-            Father Profile
-          </Link>
-        </p>
-        <p className="text-sm font-medium">
           Question {question.id} of {PROFILE_QUESTION_COUNT}
         </p>
-        <div className="h-2 overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full bg-primary"
-            style={{ width: `${percent}%` }}
-          />
-        </div>
-        <p className="text-xs text-muted-foreground">{answered} answered</p>
+        <ProgressBar value={percent} />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{question.text}</CardTitle>
-          <CardDescription>How true is this of you?</CardDescription>
-        </CardHeader>
-        <form
-          action={isLast ? "/api/profile/evaluate" : saveProfileProgress}
-          method="post"
-        >
-          <CardContent className="space-y-2">
-            <input type="hidden" name="question_id" value={question.id} />
-            <fieldset className="space-y-2">
-              <legend className="sr-only">Answer</legend>
-              {PROFILE_SCALE.map((option) => (
-                <label
-                  key={option.value}
-                  className="flex cursor-pointer items-center gap-3 rounded-lg border border-input px-3 py-2 text-sm has-[:checked]:border-foreground/30 has-[:checked]:bg-muted"
-                >
-                  <input
-                    type="radio"
-                    name="value"
-                    value={option.value}
-                    defaultChecked={saved === option.value}
-                    className="size-4"
-                  />
-                  <span>{option.label}</span>
-                </label>
-              ))}
-            </fieldset>
-            {params.error ? (
-              <p className="text-sm text-destructive">{params.error}</p>
-            ) : null}
-          </CardContent>
-          <CardFooter className="flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-            {question.id > 1 ? (
-              <button
-                type="submit"
-                name="intent"
-                value="back"
-                formAction={saveProfileProgress}
-                className={buttonVariants({ variant: "outline" })}
-              >
-                Back
-              </button>
-            ) : null}
+      <form
+        key={question.id}
+        action={isLast ? "/api/profile/evaluate" : saveProfileProgress}
+        method="post"
+        className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6"
+      >
+        <h1 className="font-heading text-lg font-semibold leading-snug sm:text-xl lg:text-2xl">
+          {question.text}
+        </h1>
+        <ProfileAnswerOptions
+          options={PROFILE_SCALE}
+          saved={saved}
+          autoAdvance={!isLast}
+        />
+        <input type="hidden" name="question_id" value={question.id} />
+        {params.error ? (
+          <div className="mt-4">
+            <Flash error={params.error} />
+          </div>
+        ) : null}
+
+        <div className="mt-8 flex flex-col gap-3 lg:mt-10 lg:flex-row lg:flex-wrap lg:items-center lg:justify-center">
+          {isLast ? (
+            <button
+              type="submit"
+              className={cn(buttonVariants({ size: "lg" }), "w-full lg:order-2 lg:w-auto")}
+            >
+              See my results
+            </button>
+          ) : (
             <button
               type="submit"
               name="intent"
-              value="exit"
-              formAction={saveProfileProgress}
-              className={buttonVariants({ variant: "outline" })}
+              value="next"
+              data-profile-advance
+              className={cn(
+                buttonVariants({ variant: "secondary" }),
+                "w-full lg:order-2 lg:w-auto"
+              )}
             >
-              Save & Exit
+              Next
             </button>
-            {isLast ? (
-              <button type="submit" className={buttonVariants()}>
-                See my results
-              </button>
-            ) : (
-              <button
-                type="submit"
-                name="intent"
-                value="next"
-                className={buttonVariants()}
-              >
-                Next
-              </button>
+          )}
+          {question.id > 1 ? (
+            <button
+              type="submit"
+              name="intent"
+              value="back"
+              formNoValidate
+              formAction={saveProfileProgress}
+              className={cn(buttonVariants({ variant: "secondary" }), "w-full lg:order-1 lg:w-auto")}
+            >
+              Back
+            </button>
+          ) : null}
+          <button
+            type="submit"
+            name="intent"
+            value="exit"
+            formNoValidate
+            formAction={saveProfileProgress}
+            className={cn(
+              buttonVariants({ variant: "secondary" }),
+              "w-full lg:order-3 lg:w-auto max-lg:border-0 max-lg:bg-transparent max-lg:underline max-lg:underline-offset-4 max-lg:hover:bg-transparent max-lg:hover:text-foreground/80"
             )}
-          </CardFooter>
-        </form>
-      </Card>
+          >
+            Save & Exit
+          </button>
+        </div>
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          {isLast
+            ? "Choose an answer, then confirm to see your results."
+            : "You can stop and continue anytime."}
+        </p>
+      </form>
+
+      <p className="text-center">
+        <Link
+          href="/father/profile"
+          className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
+        >
+          Back to Profile
+        </Link>
+      </p>
     </div>
   );
 }

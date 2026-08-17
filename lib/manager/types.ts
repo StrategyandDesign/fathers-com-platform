@@ -17,6 +17,7 @@ export type GroupMember = {
 export type ManagedProfile = {
   id: string;
   full_name: string | null;
+  avatar_url?: string | null;
 };
 
 export type TrainingAssignment = {
@@ -34,6 +35,8 @@ export type Certificate = {
   serial_number: string;
   issued_at: string;
   issued_by: string | null;
+  pdf_url?: string | null;
+  pdf_storage_path?: string | null;
 };
 
 export type ProfileResult = {
@@ -72,6 +75,7 @@ export type TrainingProgress = {
 export type ParticipantRow = {
   fatherId: string;
   name: string;
+  avatarUrl: string | null;
   groupName: string;
   joinedAt: string;
   profileStatus: "completed" | "in_progress" | "not_started";
@@ -83,6 +87,13 @@ export type ParticipantRow = {
 export function displayName(profile: ManagedProfile | null, fatherId: string) {
   const name = profile?.full_name?.trim();
   return name || `Father ${fatherId.slice(0, 8)}`;
+}
+
+export function profileName(
+  profile: ManagedProfile | null | undefined,
+  fallback: string
+) {
+  return profile?.full_name?.trim() || fallback;
 }
 
 export function formatShortDate(value: string | null | undefined) {

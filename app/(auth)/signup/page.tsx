@@ -1,17 +1,15 @@
 import Link from "next/link";
 
+import { Flash } from "@/components/manager/flash";
 import { signUp } from "@/lib/auth/actions";
+import { authFieldClassName, interactiveUnderlineClassName } from "@/lib/ui";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-const fieldClassName =
-  "h-8 w-full rounded-lg border border-input bg-background px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export default async function SignupPage({
   searchParams,
@@ -19,56 +17,61 @@ export default async function SignupPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
+  const inviteInvalid = Boolean(error && /invite/i.test(error));
+  const accountInvalid = Boolean(error && !inviteInvalid && !/too many/i.test(error));
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Create account</CardTitle>
-        <CardDescription>
-          New accounts start as Father Participant. A manager invite code is required.
-        </CardDescription>
+      <CardHeader className="text-center">
+        <CardTitle className="text-xl font-medium">Create your account</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={signUp} className="space-y-4">
-          <label className="block space-y-1.5">
-            <span className="text-sm font-medium">Invite code</span>
+        <form action={signUp} className="space-y-5">
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Invite code</span>
             <input
-              className={fieldClassName}
+              className={authFieldClassName}
               type="text"
               name="invite_code"
               autoComplete="off"
               required
+              aria-invalid={inviteInvalid || undefined}
             />
+            <span className="block text-xs text-muted-foreground">
+              Enter the code provided by your manager.
+            </span>
           </label>
-          <label className="block space-y-1.5">
-            <span className="text-sm font-medium">Email</span>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Email</span>
             <input
-              className={fieldClassName}
+              className={authFieldClassName}
               type="email"
               name="email"
               autoComplete="email"
               required
+              aria-invalid={accountInvalid || undefined}
             />
           </label>
-          <label className="block space-y-1.5">
-            <span className="text-sm font-medium">Password</span>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Password</span>
             <input
-              className={fieldClassName}
+              className={authFieldClassName}
               type="password"
               name="password"
               autoComplete="new-password"
               minLength={6}
               required
+              aria-invalid={accountInvalid || undefined}
             />
           </label>
-          {error ? <p className="text-sm text-destructive">{error}</p> : null}
-          <Button type="submit" className="w-full">
-            Create account
+          <Flash error={error} />
+          <Button type="submit" size="lg" className="w-full rounded-full">
+            Create Account
           </Button>
         </form>
-        <p className="mt-4 text-sm text-muted-foreground">
+        <p className="mt-5 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/login" className="text-foreground underline-offset-4 hover:underline">
+          <Link href="/login" className={interactiveUnderlineClassName}>
             Sign in
           </Link>
         </p>

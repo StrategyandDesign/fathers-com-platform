@@ -1,8 +1,10 @@
 import { isSessionComplete, type Session, type SessionProgress, type Training } from "@/lib/father/types";
 import { createClient } from "@/lib/supabase/server";
+import { AVATARS_BUCKET, signStorageUrls } from "@/lib/storage";
 import {
   displayName,
   latestTimestamp,
+  profileName,
   type AttentionItem,
   type Certificate,
   type Group,
@@ -63,7 +65,7 @@ export async function loadManagerWorkspace(managerId: string) {
   const [profilesRes, resultsRes, draftsRes, progressRes, assignmentsRes, certificatesRes, trainingsRes, sessionsRes] =
     await Promise.all([
       emptyIn<ManagedProfile>(fatherIds, () =>
-        supabase.from("profiles").select("id, full_name").in("id", fatherIds)
+        supabase.from("profiles").select("id, full_name, avatar_url").in("id", fatherIds)
       ),
       emptyIn<ProfileResult>(fatherIds, () =>
         supabase
@@ -97,8 +99,12 @@ export async function loadManagerWorkspace(managerId: string) {
 
   const trainings = (trainingsRes.data ?? []) as Training[];
   const sessions = (sessionsRes.data ?? []) as Session[];
-  const profiles = new Map(
-    ((profilesRes.data ?? []) as ManagedProfile[]).map((profile) => [profile.id, profile])
+  const profileRows = (profilesRes.data ?? []) as ManagedProfile[];
+  const profiles = new Map(profileRows.map((profile) => [profile.id, profile]));
+  const avatarUrls = await signStorageUrls(
+    supabase,
+    AVATARS_BUCKET,
+    profileRows.map((profile) => profile.avatar_url)
   );
   const latestProfile = new Map<string, ProfileResult>();
   for (const row of (resultsRes.data ?? []) as ProfileResult[]) {
@@ -185,10 +191,12 @@ export async function loadManagerWorkspace(managerId: string) {
     const fatherAssignments = assignments.filter((row) => row.father_id === fatherId);
     const fatherCertificates = certificates.filter((row) => row.father_id === fatherId);
     const profile = latestProfile.get(fatherId) ?? null;
+    const managed = profiles.get(fatherId) ?? null;
 
     return {
       fatherId,
-      name: displayName(profiles.get(fatherId) ?? null, fatherId),
+      name: displayName(managed, fatherId),
+      avatarUrl: managed?.avatar_url ? avatarUrls.get(managed.avatar_url) ?? null : null,
       groupName: groupsById.get(member.group_id)?.name ?? "Group",
       joinedAt: member.joined_at,
       profileStatus: profileStatus(fatherId),
@@ -287,5 +295,33 @@ export async function loadManagedParticipant(managerId: string, fatherId: string
     trainings: workspace.trainings,
     progress: workspace.trainingProgressFor(fatherId),
     groups: workspace.groups,
+  };
+}
+
+export async function loadCertificatePreview(
+  managerId: string,
+  fatherId: string,
+  trainingId: string
+) {
+  const detail = await loadManagedParticipant(managerId, fatherId);
+  if (!detail) return null;
+
+  const card = detail.progress.find((row) => row.training.id === trainingId);
+  if (!card) return null;
+
+  const supabase = await createClient();
+  const { data: manager, error } = await supabase
+    .from("profiles")
+    .select("id, full_name")
+    .eq("id", managerId)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  return {
+    participant: detail.participant,
+    training: card.training,
+    certificate: card.certificate,
+    managerName: profileName(manager, "Manager"),
   };
 }

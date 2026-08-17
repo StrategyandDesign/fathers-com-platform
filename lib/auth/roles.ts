@@ -1,4 +1,4 @@
-export const APP_ROLES = ["father", "manager", "reviewer"] as const;
+export const APP_ROLES = ["father", "manager", "reviewer", "admin"] as const;
 
 export type AppRole = (typeof APP_ROLES)[number];
 
@@ -6,12 +6,21 @@ export const ROLE_LABEL: Record<AppRole, string> = {
   father: "Father Participant",
   manager: "Manager",
   reviewer: "Reviewer",
+  admin: "Super-admin",
 };
 
 export const ROLE_HOME: Record<AppRole, string> = {
   father: "/father",
   manager: "/manager",
   reviewer: "/reviewer",
+  admin: "/admin",
+};
+
+export const ROLE_ACCOUNT: Record<AppRole, string> = {
+  father: "/father/account",
+  manager: "/manager/account",
+  reviewer: "/reviewer/account",
+  admin: "/admin/account",
 };
 
 export function isAppRole(value: unknown): value is AppRole {
@@ -21,6 +30,12 @@ export function isAppRole(value: unknown): value is AppRole {
 /**
  * Authorization role comes from Auth app_metadata only.
  * Never read user_metadata for access decisions — that claim is user-editable.
+ * RLS reads public.profiles.role. Both must match.
+ *
+ * First super-admin: there is no signup-as-admin path. In the Pilot SQL
+ * editor, set profiles.role and auth.users.raw_app_meta_data.role to
+ * 'admin' for a known email (see supabase/sql/promote_pilot_role.sql),
+ * then sign out and sign in so the JWT refreshes.
  */
 export function resolveRole(
   user: { app_metadata?: Record<string, unknown> } | null
@@ -42,6 +57,9 @@ export function roleForPath(pathname: string): AppRole | null {
   }
   if (pathname === "/reviewer" || pathname.startsWith("/reviewer/")) {
     return "reviewer";
+  }
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    return "admin";
   }
   return null;
 }

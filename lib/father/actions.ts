@@ -124,8 +124,13 @@ export async function completeAction(formData: FormData) {
     redirect("/father");
   }
 
+  const note = String(formData.get("action_note") ?? "").trim();
+
   try {
-    await saveProgress(user.id, sessionId, { action_completed: true });
+    await saveProgress(user.id, sessionId, {
+      action_completed: true,
+      action_note: note || null,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not save action";
     redirect(

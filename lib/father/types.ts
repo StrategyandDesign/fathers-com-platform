@@ -5,7 +5,20 @@ export type Training = {
   description: string | null;
   session_count: number;
   order_index: number;
+  published?: boolean | null;
 };
+
+export function isTrainingPublished(training: { published?: boolean | null }) {
+  return training.published !== false;
+}
+
+/** Display denominator only — never used to decide session completion. */
+export function catalogSessionTotal(
+  training: Pick<Training, "session_count">,
+  rowCount: number
+) {
+  return Math.max(training.session_count ?? 0, rowCount);
+}
 
 export type Session = {
   id: string;
