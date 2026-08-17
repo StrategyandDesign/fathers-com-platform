@@ -4,15 +4,14 @@ import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
+import { translateAssignmentStatus } from "@/lib/i18n/flash";
+import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import {
-  COMPLETION_STATUS_LABEL,
   COMPLETION_STATUSES,
-  PROFILE_STATUS_LABEL,
   loadManagerReport,
   parseReportSearchParams,
   reportQuery,
 } from "@/lib/manager/reports";
-import { formatShortDate } from "@/lib/manager/types";
 import { fieldClassName, interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +29,7 @@ export default async function ManagerReportsPage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
+  const { t, locale } = await getI18n();
   const parsed = parseReportSearchParams(params);
   const report = await loadManagerReport(user.id, parsed.filters);
   const query = reportQuery(parsed.filters);
@@ -45,18 +45,18 @@ export default async function ManagerReportsPage({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">Reports</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">
+            {t("manager.reports.title")}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Export fathers in your group. Date range filters last activity (join, profile,
-            session, assignment, or certificate). Email is omitted — it is not on profiles,
-            and managers cannot read auth emails under RLS.
+            {t("manager.reports.lead")}
           </p>
         </div>
         <Link
           href="/manager/impact"
           className={cn(buttonVariants({ variant: "outline" }), "w-full shrink-0 sm:w-auto")}
         >
-          Impact Snapshot
+          {t("manager.reports.impact")}
         </Link>
       </div>
       <Flash error={params.error || parsed.error || report.error} notice={params.notice} />
@@ -68,13 +68,13 @@ export default async function ManagerReportsPage({
       >
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Training</span>
+            <span className="text-sm text-muted-foreground">{t("manager.reports.training")}</span>
             <select
               className={fieldClassName}
               name="training_id"
               defaultValue={parsed.filters.trainingId ?? ""}
             >
-              <option value="">All trainings</option>
+              <option value="">{t("manager.reports.allTrainings")}</option>
               {report.trainings.map((training) => (
                 <option key={training.id} value={training.id}>
                   {training.title}
@@ -83,22 +83,22 @@ export default async function ManagerReportsPage({
             </select>
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Completion status</span>
+            <span className="text-sm text-muted-foreground">{t("manager.reports.status")}</span>
             <select
               className={fieldClassName}
               name="status"
               defaultValue={parsed.filters.status ?? ""}
             >
-              <option value="">All statuses</option>
+              <option value="">{t("manager.reports.allStatuses")}</option>
               {COMPLETION_STATUSES.map((status) => (
                 <option key={status} value={status}>
-                  {COMPLETION_STATUS_LABEL[status]}
+                  {translateAssignmentStatus(status, t)}
                 </option>
               ))}
             </select>
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Last activity from</span>
+            <span className="text-sm text-muted-foreground">{t("manager.reports.from")}</span>
             <input
               className={fieldClassName}
               type="date"
@@ -107,7 +107,7 @@ export default async function ManagerReportsPage({
             />
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Last activity to</span>
+            <span className="text-sm text-muted-foreground">{t("manager.reports.to")}</span>
             <input
               className={fieldClassName}
               type="date"
@@ -118,61 +118,64 @@ export default async function ManagerReportsPage({
         </div>
         <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Button type="submit" className="w-full sm:w-auto">
-            Apply filters
+            {t("manager.reports.apply")}
           </Button>
           {hasFilters ? (
             <Link
               href="/manager/reports"
               className={cn(buttonVariants({ variant: "ghost" }), "w-full sm:w-auto")}
             >
-              Clear filters
+              {t("manager.reports.clear")}
             </Link>
           ) : null}
           <Link
             href={`/api/manager/reports/export?${exportQuery}format=csv`}
             className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
           >
-            Download CSV
+            {t("manager.reports.csv")}
           </Link>
           <Link
             href={`/api/manager/reports/export?${exportQuery}format=pdf`}
             className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
           >
-            Download PDF
+            {t("manager.reports.pdf")}
           </Link>
         </div>
       </form>
 
       <section className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="border-b border-border px-4 py-4 sm:px-6">
-          <h2 className="font-heading text-lg font-semibold">Preview</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.reports.preview")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {report.rows.length} of {report.participantCount} participants
             {parsed.filters.trainingId
-              ? " · status is for the selected training"
-              : " · status is across assigned trainings"}
-            .
+              ? t("manager.reports.countSelected", {
+                  shown: report.rows.length,
+                  total: report.participantCount,
+                })
+              : t("manager.reports.countCatalog", {
+                  shown: report.rows.length,
+                  total: report.participantCount,
+                })}
           </p>
         </div>
         {report.rows.length === 0 ? (
           report.participantCount === 0 ? (
             <EmptyState
               framed={false}
-              title="No one has joined yet"
+              title={t("manager.reports.emptyTitle")}
               actionHref="/manager"
-              actionLabel="Open dashboard"
+              actionLabel={t("manager.participants.openDashboard")}
             >
-              Share your invite code from the Dashboard so fathers can join.
-              Reports fill in after someone is in the group.
+              {t("manager.reports.emptyBody")}
             </EmptyState>
           ) : (
             <EmptyState
               framed={false}
-              title="No matching participants"
+              title={t("manager.reports.noMatchTitle")}
               actionHref={hasFilters ? "/manager/reports" : undefined}
-              actionLabel={hasFilters ? "Clear filters" : undefined}
+              actionLabel={hasFilters ? t("manager.reports.clear") : undefined}
             >
-              No one matches these filters. Clear them to see the full group.
+              {t("manager.reports.noMatchBody")}
             </EmptyState>
           )
         ) : (
@@ -187,30 +190,30 @@ export default async function ManagerReportsPage({
                     <p className="font-medium">{row.name}</p>
                     <p className="text-sm text-muted-foreground">{row.groupName}</p>
                     <p className="flex justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">Profile</span>
-                      <span>{PROFILE_STATUS_LABEL[row.profileStatus]}</span>
+                      <span className="text-muted-foreground">{t("manager.reports.profile")}</span>
+                      <span>{translateAssignmentStatus(row.profileStatus === "not_started" ? "not_started" : row.profileStatus === "in_progress" ? "in_progress" : "completed", t)}</span>
                     </p>
                     <p className="flex justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">Status</span>
-                      <span>{COMPLETION_STATUS_LABEL[row.completionStatus]}</span>
+                      <span className="text-muted-foreground">{t("manager.reports.statusCol")}</span>
+                      <span>{translateAssignmentStatus(row.completionStatus, t)}</span>
                     </p>
                     <p className="flex justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">Trainings</span>
+                      <span className="text-muted-foreground">{t("manager.reports.trainings")}</span>
                       <span className="text-right">
-                        {row.assignmentTitles.join(", ") || "None assigned"}
+                        {row.assignmentTitles.join(", ") || t("manager.reports.noneAssigned")}
                       </span>
                     </p>
                     {row.certificateSerials ? (
                       <p className="flex justify-between gap-3 text-sm">
-                        <span className="text-muted-foreground">Serials</span>
+                        <span className="text-muted-foreground">{t("manager.reports.serials")}</span>
                         <span className="text-right font-mono text-xs">
                           {row.certificateSerials}
                         </span>
                       </p>
                     ) : null}
                     <p className="flex justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">Last active</span>
-                      <span>{formatShortDate(row.lastActivity)}</span>
+                      <span className="text-muted-foreground">{t("manager.reports.lastActive")}</span>
+                      <span>{formatShortDate(row.lastActivity, locale)}</span>
                     </p>
                   </Link>
                 </li>
@@ -220,12 +223,12 @@ export default async function ManagerReportsPage({
               <table className="w-full min-w-[52rem] text-left text-sm">
                 <thead>
                   <tr className="border-b border-border text-xs tracking-wide text-muted-foreground uppercase">
-                    <th className="px-6 py-3 font-medium">Name</th>
-                    <th className="px-4 py-3 font-medium">Profile</th>
-                    <th className="px-4 py-3 font-medium">Status</th>
-                    <th className="px-4 py-3 font-medium">Assignments</th>
-                    <th className="px-4 py-3 font-medium">Serials</th>
-                    <th className="px-6 py-3 font-medium">Last activity</th>
+                    <th className="px-6 py-3 font-medium">{t("manager.reports.name")}</th>
+                    <th className="px-4 py-3 font-medium">{t("manager.reports.profile")}</th>
+                    <th className="px-4 py-3 font-medium">{t("manager.reports.statusCol")}</th>
+                    <th className="px-4 py-3 font-medium">{t("manager.reports.assignments")}</th>
+                    <th className="px-4 py-3 font-medium">{t("manager.reports.serials")}</th>
+                    <th className="px-6 py-3 font-medium">{t("manager.reports.lastActivity")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -244,20 +247,27 @@ export default async function ManagerReportsPage({
                         <p className="text-muted-foreground">{row.groupName}</p>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
-                        {PROFILE_STATUS_LABEL[row.profileStatus]}
+                        {translateAssignmentStatus(
+                          row.profileStatus === "not_started"
+                            ? "not_started"
+                            : row.profileStatus === "in_progress"
+                              ? "in_progress"
+                              : "completed",
+                          t
+                        )}
                       </td>
                       <td className="px-4 py-3">
-                        {COMPLETION_STATUS_LABEL[row.completionStatus]}
+                        {translateAssignmentStatus(row.completionStatus, t)}
                       </td>
                       <td className="px-4 py-3">
-                        {row.assignmentTitles.join("; ") || "None assigned"}
+                        {row.assignmentTitles.join("; ") || t("manager.reports.noneAssigned")}
                         <p className="text-xs text-muted-foreground">{row.progressDetail}</p>
                       </td>
                       <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
                         {row.certificateSerials || "—"}
                       </td>
                       <td className="px-6 py-3 text-muted-foreground">
-                        {formatShortDate(row.lastActivity)}
+                        {formatShortDate(row.lastActivity, locale)}
                       </td>
                     </tr>
                   ))}

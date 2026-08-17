@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 
+import { useT } from "@/components/i18n/locale-provider";
 import { Button } from "@/components/ui/button";
 import { submitTrainingRequest } from "@/lib/training-requests/actions";
 import {
@@ -14,6 +15,7 @@ import { fieldClassName, textareaClassName } from "@/lib/ui";
 type GroupOption = { id: string; name: string };
 
 export function TrainingRequestForm({ groups }: { groups: GroupOption[] }) {
+  const t = useT();
   const [pending, startTransition] = useTransition();
   const [topicError, setTopicError] = useState<string | null>(null);
   const [descriptionError, setDescriptionError] = useState<string | null>(null);
@@ -23,8 +25,8 @@ export function TrainingRequestForm({ groups }: { groups: GroupOption[] }) {
       action={(formData) => {
         const topic = String(formData.get("topic") ?? "").trim();
         const description = String(formData.get("description") ?? "").trim();
-        const nextTopic = topic ? null : "Add a topic or suggested title.";
-        const nextDescription = description ? null : "Say why this training is needed.";
+        const nextTopic = topic ? null : t("manager.request.topicError");
+        const nextDescription = description ? null : t("manager.request.whyError");
         setTopicError(nextTopic);
         setDescriptionError(nextDescription);
         if (nextTopic || nextDescription) return;
@@ -39,7 +41,7 @@ export function TrainingRequestForm({ groups }: { groups: GroupOption[] }) {
     >
       {groups.length > 1 ? (
         <label className="block space-y-2">
-          <span className="text-sm text-muted-foreground">Organization</span>
+          <span className="text-sm text-muted-foreground">{t("common.organization")}</span>
           <select
             className={fieldClassName}
             name="group_id"
@@ -58,13 +60,13 @@ export function TrainingRequestForm({ groups }: { groups: GroupOption[] }) {
       ) : null}
 
       <label className="block space-y-2">
-        <span className="text-sm text-muted-foreground">Topic or suggested title</span>
+        <span className="text-sm text-muted-foreground">{t("manager.request.topic")}</span>
         <input
           className={fieldClassName}
           name="topic"
           maxLength={TOPIC_MAX_LENGTH}
           disabled={pending}
-          placeholder="Co-parenting after separation"
+          placeholder={t("manager.request.topicPlaceholder")}
           autoComplete="off"
           aria-invalid={Boolean(topicError) || undefined}
           aria-describedby={topicError ? "topic-error" : undefined}
@@ -80,14 +82,14 @@ export function TrainingRequestForm({ groups }: { groups: GroupOption[] }) {
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm text-muted-foreground">Why it’s needed</span>
+        <span className="text-sm text-muted-foreground">{t("manager.request.why")}</span>
         <textarea
           className={textareaClassName}
           name="description"
           maxLength={DESCRIPTION_MAX_LENGTH}
           disabled={pending}
           rows={5}
-          placeholder="What gap this would fill for the fathers you work with."
+          placeholder={t("manager.request.whyPlaceholder")}
           aria-invalid={Boolean(descriptionError) || undefined}
           aria-describedby={descriptionError ? "description-error" : undefined}
           onChange={() => {
@@ -102,19 +104,19 @@ export function TrainingRequestForm({ groups }: { groups: GroupOption[] }) {
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm text-muted-foreground">Audience or urgency (optional)</span>
+        <span className="text-sm text-muted-foreground">{t("manager.request.audience")}</span>
         <input
           className={fieldClassName}
           name="audience"
           maxLength={AUDIENCE_MAX_LENGTH}
           disabled={pending}
-          placeholder="New dads, or needed this quarter…"
+          placeholder={t("manager.request.audiencePlaceholder")}
           autoComplete="off"
         />
       </label>
 
       <Button type="submit" className="w-full sm:w-auto" disabled={pending}>
-        {pending ? "Sending…" : "Send request"}
+        {pending ? t("manager.request.sending") : t("manager.request.send")}
       </Button>
     </form>
   );

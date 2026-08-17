@@ -8,7 +8,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ProgressBar } from "@/components/ui/progress";
 import { loadParticipantCustomAssignments } from "@/lib/assessments/data";
-import { ASSIGNMENT_STATUS_LABEL } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
 import {
@@ -21,15 +20,19 @@ import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
 import { clearParticipantNote, saveParticipantNote } from "@/lib/manager/note-actions";
 import { NOTE_MAX_LENGTH, loadParticipantNote } from "@/lib/manager/notes";
 import {
-  NUDGE_STATUS_LABEL,
-  NUDGE_TEMPLATE_COPY,
   cooldownRemaining,
   isNudgeTemplate,
   loadNudgeHistory,
   loadReminderPrefAllowed,
   needsNudge,
-  quietLabel,
 } from "@/lib/manager/nudges";
+import {
+  translateAssignmentStatus,
+  translateNudgeStatus,
+  translateNudgeTemplate,
+  translateQuietLabel,
+  translateThemeLabel,
+} from "@/lib/i18n/flash";
 import { formatShortDate } from "@/lib/i18n/server";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
@@ -123,7 +126,7 @@ export default async function ManagerParticipantDetailPage({
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {participant.groupName} · {t("manager.participants.joined", { date: formatShortDate(participant.joinedAt, locale) })}
-            {quiet ? ` · ${quietLabel(participant.lastActivity)}` : ""}
+            {quiet ? ` · ${translateQuietLabel(participant.lastActivity, t)}` : ""}
           </p>
         </div>
       </section>
@@ -179,7 +182,9 @@ export default async function ManagerParticipantDetailPage({
         <h2 className="font-heading text-lg font-semibold">{t("manager.participants.sendNudge")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {quiet
-            ? t("manager.participants.nudgeQuiet", { quiet: quietLabel(participant.lastActivity) })
+            ? t("manager.participants.nudgeQuiet", {
+                quiet: translateQuietLabel(participant.lastActivity, t),
+              })
             : t("manager.participants.nudgeActive")}
         </p>
         {historyUnavailable ? (
@@ -200,12 +205,15 @@ export default async function ManagerParticipantDetailPage({
           <div className="mt-5">
             <NudgeForm fatherId={participant.fatherId} />
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {Object.values(NUDGE_TEMPLATE_COPY).map((template) => (
-                <li key={template.key}>
-                  <span className="font-medium text-foreground">{template.label}.</span>{" "}
-                  {template.preview}
-                </li>
-              ))}
+              {(["continue", "encouragement", "welcome_back"] as const).map((key) => {
+                const template = translateNudgeTemplate(key, t);
+                return (
+                  <li key={key}>
+                    <span className="font-medium text-foreground">{template.label}.</span>{" "}
+                    {template.preview}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
@@ -220,11 +228,11 @@ export default async function ManagerParticipantDetailPage({
                 >
                   <p className="text-sm">
                     {isNudgeTemplate(row.template_key)
-                      ? NUDGE_TEMPLATE_COPY[row.template_key].label
+                      ? translateNudgeTemplate(row.template_key, t).label
                       : row.template_key}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {NUDGE_STATUS_LABEL[row.status]} · {formatShortDate(row.sent_at, locale)}
+                    {translateNudgeStatus(row.status, t)} · {formatShortDate(row.sent_at, locale)}
                   </p>
                 </li>
               ))}
@@ -243,10 +251,14 @@ export default async function ManagerParticipantDetailPage({
               date: formatShortDate(participant.profile.taken_at, locale),
             })}
             {participant.profile.primary_edge
-              ? ` · ${t("manager.participants.primaryEdge", { edge: participant.profile.primary_edge })}`
+              ? ` · ${t("manager.participants.primaryEdge", {
+                  edge: translateThemeLabel(participant.profile.primary_edge, t),
+                })}`
               : ""}
             {participant.profile.primary_determination
-              ? ` · ${t("manager.participants.determination", { determination: participant.profile.primary_determination })}`
+              ? ` · ${t("manager.participants.determination", {
+                  determination: translateThemeLabel(participant.profile.primary_determination, t),
+                })}`
               : ""}
           </p>
         ) : (
@@ -273,7 +285,7 @@ export default async function ManagerParticipantDetailPage({
                 >
                   <span className="font-medium">{assessment.title}</span>
                   <span className="text-sm text-muted-foreground">
-                    {ASSIGNMENT_STATUS_LABEL[assignment.status]}
+                    {translateAssignmentStatus(assignment.status, t)}
                   </span>
                 </Link>
               </li>

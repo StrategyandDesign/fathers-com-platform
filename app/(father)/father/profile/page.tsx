@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
+import { translateThemeLabel } from "@/lib/i18n/flash";
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
 import { retakeProfile, startProfile } from "@/lib/father/profile-actions";
 import { loadProfileState } from "@/lib/father/profile";
@@ -57,10 +58,12 @@ export default async function FatherProfilePage({
           </p>
           <p className="mt-6 text-sm text-muted-foreground">{t("father.profile.primaryDetermination")}</p>
           <h2 className="font-heading mt-1 text-2xl font-semibold tracking-tight uppercase sm:text-3xl">
-            {profile.primary_determination ?? t("common.complete")}
+            {translateThemeLabel(profile.primary_determination, t)}
           </h2>
           <p className="mt-4 text-muted-foreground">
-            {t("father.profile.primaryEdge", { edge: profile.primary_edge ?? t("common.emDash") })}
+            {t("father.profile.primaryEdge", {
+              edge: translateThemeLabel(profile.primary_edge, t),
+            })}
           </p>
           {scores ? <DimensionScores scores={scores} /> : null}
           <p className="mt-6 text-sm text-muted-foreground">

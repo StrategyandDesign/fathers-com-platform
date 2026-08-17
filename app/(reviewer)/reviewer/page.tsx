@@ -5,6 +5,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
+import { translateThemeLabel } from "@/lib/i18n/flash";
 import { getI18n } from "@/lib/i18n/server";
 import { resolveUserLocale } from "@/lib/i18n/resolve";
 import { formatShortDate } from "@/lib/i18n/server";
@@ -320,7 +321,7 @@ export default async function ReviewerInsightsPage({
               insights.primary_edges.map((edge) => (
                 <div key={edge.label} className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
-                    <span>{edge.label}</span>
+                    <span>{translateThemeLabel(edge.label, t)}</span>
                     <span className="tabular-nums text-muted-foreground">{edge.count}</span>
                   </div>
                   <Bar value={edge.count} max={edgeMax} />

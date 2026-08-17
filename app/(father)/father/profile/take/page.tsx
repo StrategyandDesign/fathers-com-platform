@@ -15,6 +15,8 @@ import {
   answeredCount,
   getProfileQuestion,
 } from "@/lib/father/questions";
+import { translateProfileScale } from "@/lib/i18n/flash";
+import { getI18n } from "@/lib/i18n/server";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +27,7 @@ export default async function FatherProfileTakePage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("father");
+  const { t } = await getI18n();
   const [completed, existingDraft] = await Promise.all([
     loadLatestProfile(user.id),
     loadProfileDraft(user.id),
@@ -54,7 +57,7 @@ export default async function FatherProfileTakePage({
     <div className="mx-auto max-w-2xl space-y-8">
       <div className="space-y-3">
         <p className="text-sm text-muted-foreground">
-          Question {question.id} of {PROFILE_QUESTION_COUNT}
+          {t("father.home.questionOf", { n: question.id, total: PROFILE_QUESTION_COUNT })}
         </p>
         <ProgressBar value={percent} />
       </div>
@@ -69,7 +72,10 @@ export default async function FatherProfileTakePage({
           {question.text}
         </h1>
         <ProfileAnswerOptions
-          options={PROFILE_SCALE}
+          options={PROFILE_SCALE.map((option) => ({
+            ...option,
+            label: translateProfileScale(option.value, t),
+          }))}
           saved={saved}
           autoAdvance={!isLast}
           invalid={Boolean(params.error)}
@@ -87,7 +93,7 @@ export default async function FatherProfileTakePage({
               type="submit"
               className={cn(buttonVariants({ size: "lg" }), "w-full lg:order-2 lg:w-auto")}
             >
-              See my results
+              {t("father.profile.seeResults")}
             </button>
           ) : (
             <button
@@ -97,7 +103,7 @@ export default async function FatherProfileTakePage({
               data-profile-advance
               className={cn(buttonVariants(), "w-full lg:order-2 lg:w-auto")}
             >
-              Next
+              {t("common.next")}
             </button>
           )}
           {question.id > 1 ? (
@@ -109,15 +115,15 @@ export default async function FatherProfileTakePage({
               formAction={saveProfileProgress}
               className={cn(buttonVariants({ variant: "secondary" }), "w-full lg:order-1 lg:w-auto")}
             >
-              Back
+              {t("common.back")}
             </button>
           ) : null}
           <ProfileSaveExitButton action={saveAndExitProfile} />
         </div>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {isLast
-            ? "Choose an answer, then confirm to see your results."
-            : "You can stop and continue anytime."}
+            ? t("father.profile.chooseThenConfirm")
+            : t("father.profile.canStop")}
         </p>
       </form>
 
@@ -126,7 +132,7 @@ export default async function FatherProfileTakePage({
           href="/father/profile"
           className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
         >
-          Back to Profile
+          {t("father.profile.backToProfile")}
         </Link>
       </p>
     </div>

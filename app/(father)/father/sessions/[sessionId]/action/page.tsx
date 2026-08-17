@@ -10,11 +10,10 @@ import { completeAction } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
 import {
   ACTION_ANSWER_KEY,
-  ACTION_NOTE_LABEL,
-  ACTION_NOTE_PLACEHOLDER,
   parseSkillPrompt,
   sessionAction,
 } from "@/lib/father/session-questions";
+import { getI18n } from "@/lib/i18n/server";
 import { interactiveUnderlineClassName, sessionCtaClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +45,7 @@ export default async function SessionActionPage({
     redirect(`/father/sessions/${sessionId}/checkin`);
   }
 
+  const { t } = await getI18n();
   const { session, training, progress } = context;
   const prompt = sessionAction(session, training);
   const parsed = parseSkillPrompt(prompt);
@@ -68,14 +68,14 @@ export default async function SessionActionPage({
             {parsed.stem}
           </p>
           <p className="text-center text-sm text-muted-foreground">
-            This Action is complete.
+            {t("father.session.actionComplete")}
           </p>
           <div className="flex justify-center max-lg:block">
             <Link
               href="/father"
               className={cn(buttonVariants({ variant: "inverse", size: "lg" }), sessionCtaClassName)}
             >
-              Continue to Home
+              {t("father.session.continueHome")}
             </Link>
           </div>
         </div>
@@ -95,12 +95,12 @@ export default async function SessionActionPage({
                 {prompt}
               </p>
               <label className="block space-y-2">
-                <span className="text-sm text-muted-foreground">{ACTION_NOTE_LABEL}</span>
+                <span className="text-sm text-muted-foreground">{t("father.session.actionNoteLabel")}</span>
                 <textarea
                   className={textareaClassName}
                   name="action_note"
                   required
-                  placeholder={ACTION_NOTE_PLACEHOLDER}
+                  placeholder={t("father.session.actionNotePlaceholder")}
                   defaultValue={progress?.action_note ?? ""}
                   aria-invalid={Boolean(error) || undefined}
                 />
@@ -109,7 +109,7 @@ export default async function SessionActionPage({
           )}
           <div className="flex flex-col gap-3 lg:items-center">
             <Button type="submit" variant="inverse" size="lg" className={sessionCtaClassName}>
-              Complete this Action
+              {t("father.session.completeAction")}
             </Button>
             <Link
               href="/father"
@@ -118,7 +118,7 @@ export default async function SessionActionPage({
                 "w-full min-h-11 max-lg:border-border max-lg:bg-transparent max-lg:text-foreground max-lg:hover:bg-white/5 lg:w-auto"
               )}
             >
-              I’ll do this later
+              {t("father.session.doLater")}
             </Link>
           </div>
         </form>
@@ -129,7 +129,7 @@ export default async function SessionActionPage({
           href={`/father/sessions/${sessionId}`}
           className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
         >
-          Back to Session
+          {t("father.session.backToSession")}
         </Link>
       </p>
     </div>

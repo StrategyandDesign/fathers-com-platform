@@ -72,7 +72,7 @@ export function FirstVisitIntro({
             <div className="mt-3 space-y-3 text-sm text-muted-foreground sm:text-base">
               <p>
                 {trainingDescription?.trim() ||
-                  `This is ${trainingTitle}. Short sessions you can put to work the same night.`}
+                  t("father.intro.fallbackBody", { title: trainingTitle })}
               </p>
               <p>{t("father.home.startRhythm")}</p>
             </div>

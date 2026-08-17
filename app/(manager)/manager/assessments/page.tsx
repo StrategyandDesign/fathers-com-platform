@@ -5,7 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { loadManagerAssessments } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
-import { formatShortDate } from "@/lib/manager/types";
+import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -16,31 +16,33 @@ export default async function ManagerAssessmentsPage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
+  const { t, locale } = await getI18n();
   const assessments = await loadManagerAssessments(user.id);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">Assessments</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">
+            {t("manager.assessments.title")}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Create your own questions and assign them to fathers in your group.
+            {t("manager.assessments.lead")}
           </p>
         </div>
         <Link href="/manager/assessments/new" className={cn(buttonVariants(), "w-full sm:w-auto")}>
-          New assessment
+          {t("manager.assessments.new")}
         </Link>
       </div>
       <Flash error={params.error} notice={params.notice} />
 
       {assessments.length === 0 ? (
         <EmptyState
-          title="No assessments yet"
+          title={t("manager.assessments.emptyTitle")}
           actionHref="/manager/assessments/new"
-          actionLabel="New assessment"
+          actionLabel={t("manager.assessments.new")}
         >
-          Create a set of questions, then assign it to fathers from the detail
-          page.
+          {t("manager.assessments.emptyBody")}
         </EmptyState>
       ) : (
         <ul className="grid gap-4">
@@ -63,14 +65,18 @@ export default async function ManagerAssessmentsPage({
                     ) : null}
                   </div>
                   <p className="shrink-0 text-sm text-muted-foreground">
-                    {formatShortDate(assessment.created_at)}
+                    {formatShortDate(assessment.created_at, locale)}
                   </p>
                 </div>
                 <p className="mt-4 text-sm text-muted-foreground">
-                  {assessment.questionCount}{" "}
-                  {assessment.questionCount === 1 ? "question" : "questions"}
+                  {assessment.questionCount === 1
+                    ? t("manager.assessments.questionOne")
+                    : t("manager.assessments.questionMany", { count: assessment.questionCount })}
                   {" · "}
-                  {assessment.completedCount}/{assessment.assignedCount} completed
+                  {t("manager.assessments.completedOf", {
+                    completed: assessment.completedCount,
+                    assigned: assessment.assignedCount,
+                  })}
                 </p>
               </Link>
             </li>

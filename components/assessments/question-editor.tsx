@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { useT } from "@/components/i18n/locale-provider";
 import { Button } from "@/components/ui/button";
 import type { CustomQuestionType } from "@/lib/assessments/types";
 import { fieldClassName, textareaClassName } from "@/lib/ui";
@@ -33,6 +34,7 @@ export function AssessmentQuestionEditor({
   name?: string;
   initialQuestions?: QuestionDraft[];
 }) {
+  const t = useT();
   const [questions, setQuestions] = useState<QuestionDraft[]>(
     initialQuestions && initialQuestions.length > 0 ? initialQuestions : [emptyQuestion()]
   );
@@ -68,9 +70,11 @@ export function AssessmentQuestionEditor({
           key={question.key}
           className="space-y-4 rounded-xl border border-border bg-black/20 p-4 sm:p-5"
         >
-          <legend className="px-1 font-heading text-sm font-semibold">Question {index + 1}</legend>
+          <legend className="px-1 font-heading text-sm font-semibold">
+            {t("manager.assessments.questionN", { n: index + 1 })}
+          </legend>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Prompt</span>
+            <span className="text-sm text-muted-foreground">{t("manager.assessments.prompt")}</span>
             <textarea
               className={textareaClassName}
               value={question.prompt}
@@ -80,7 +84,7 @@ export function AssessmentQuestionEditor({
             />
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Type</span>
+            <span className="text-sm text-muted-foreground">{t("manager.assessments.type")}</span>
             <select
               className={fieldClassName}
               value={question.question_type}
@@ -94,13 +98,13 @@ export function AssessmentQuestionEditor({
                 })
               }
             >
-              <option value="short_text">Short text</option>
-              <option value="single_select">Multiple choice</option>
+              <option value="short_text">{t("manager.assessments.shortText")}</option>
+              <option value="single_select">{t("manager.assessments.multipleChoice")}</option>
             </select>
           </label>
           {question.question_type === "single_select" ? (
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Options</p>
+              <p className="text-sm text-muted-foreground">{t("manager.assessments.options")}</p>
               {question.options.map((option, optionIndex) => (
                 <div key={`${question.key}-opt-${optionIndex}`} className="flex gap-2">
                   <input
@@ -111,7 +115,7 @@ export function AssessmentQuestionEditor({
                       options[optionIndex] = event.target.value;
                       update(question.key, { options });
                     }}
-                    placeholder={`Option ${optionIndex + 1}`}
+                    placeholder={t("manager.assessments.optionN", { n: optionIndex + 1 })}
                     required
                   />
                   {question.options.length > 2 ? (
@@ -125,7 +129,7 @@ export function AssessmentQuestionEditor({
                         })
                       }
                     >
-                      Remove
+                      {t("manager.assessments.remove")}
                     </Button>
                   ) : null}
                 </div>
@@ -137,7 +141,7 @@ export function AssessmentQuestionEditor({
                   className="w-full sm:w-auto"
                   onClick={() => update(question.key, { options: [...question.options, ""] })}
                 >
-                  Add option
+                  {t("manager.assessments.addOption")}
                 </Button>
               ) : null}
             </div>
@@ -150,7 +154,7 @@ export function AssessmentQuestionEditor({
               disabled={index === 0}
               onClick={() => move(index, -1)}
             >
-              Move up
+              {t("manager.assessments.moveUp")}
             </Button>
             <Button
               type="button"
@@ -159,7 +163,7 @@ export function AssessmentQuestionEditor({
               disabled={index === questions.length - 1}
               onClick={() => move(index, 1)}
             >
-              Move down
+              {t("manager.assessments.moveDown")}
             </Button>
             <Button
               type="button"
@@ -170,7 +174,7 @@ export function AssessmentQuestionEditor({
                 setQuestions((current) => current.filter((item) => item.key !== question.key))
               }
             >
-              Remove question
+              {t("manager.assessments.removeQuestion")}
             </Button>
           </div>
         </fieldset>
@@ -181,7 +185,7 @@ export function AssessmentQuestionEditor({
         className="w-full sm:w-auto"
         onClick={() => setQuestions((current) => [...current, emptyQuestion()])}
       >
-        Add question
+        {t("manager.assessments.addQuestion")}
       </Button>
     </div>
   );

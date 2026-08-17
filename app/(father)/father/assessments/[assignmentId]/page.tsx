@@ -6,8 +6,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { saveCustomAnswer } from "@/lib/assessments/actions";
 import { loadAssignmentTake } from "@/lib/assessments/data";
-import { ASSIGNMENT_STATUS_LABEL } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
+import { getI18n } from "@/lib/i18n/server";
 import { interactiveLinkClassName, radioOptionClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +21,7 @@ export default async function FatherAssessmentTakePage({
   const { assignmentId } = await params;
   const query = await searchParams;
   const { user } = await requireRole("father");
+  const { t } = await getI18n();
   const ctx = await loadAssignmentTake(user.id, assignmentId);
 
   if (!ctx || ctx.questions.length === 0) {
@@ -45,8 +46,8 @@ export default async function FatherAssessmentTakePage({
         <p className="text-sm text-muted-foreground">{ctx.assessment.title}</p>
         <p className="text-sm text-muted-foreground">
           {completed
-            ? ASSIGNMENT_STATUS_LABEL.completed
-            : `Question ${questionNumber} of ${ctx.questions.length}`}
+            ? t("father.assessments.completed")
+            : t("father.home.questionOf", { n: questionNumber, total: ctx.questions.length })}
         </p>
         <ProgressBar value={completed ? 100 : percent} />
       </div>
@@ -57,7 +58,7 @@ export default async function FatherAssessmentTakePage({
         <div className="space-y-4">
           {ctx.questions.map((item, index) => (
             <section key={item.id} className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
-              <p className="text-sm text-muted-foreground">Question {index + 1}</p>
+              <p className="text-sm text-muted-foreground">{t("common.questionN", { n: index + 1 })}</p>
               <h2 className="mt-1 font-heading text-lg font-semibold">{item.prompt}</h2>
               <p className="mt-4 whitespace-pre-wrap text-muted-foreground">
                 {ctx.answers.get(item.id) ?? "—"}
@@ -82,7 +83,7 @@ export default async function FatherAssessmentTakePage({
               className="mt-8 space-y-1"
               aria-invalid={Boolean(query.error) || undefined}
             >
-              <legend className="sr-only">Answer</legend>
+              <legend className="sr-only">{t("father.assessments.answer")}</legend>
               {question.options.map((option) => (
                 <label
                   key={option}
@@ -102,7 +103,7 @@ export default async function FatherAssessmentTakePage({
             </fieldset>
           ) : (
             <label className="mt-8 block space-y-2">
-              <span className="sr-only">Answer</span>
+              <span className="sr-only">{t("father.assessments.answer")}</span>
               <textarea
                 className={textareaClassName}
                 name="value"
@@ -121,7 +122,7 @@ export default async function FatherAssessmentTakePage({
               value={isLast ? "complete" : "next"}
               className={cn(buttonVariants({ size: "lg" }), "w-full lg:order-2 lg:w-auto")}
             >
-              {isLast ? "Submit" : "Next"}
+              {isLast ? t("father.assessments.submit") : t("common.next")}
             </button>
             {questionNumber > 1 ? (
               <button
@@ -131,7 +132,7 @@ export default async function FatherAssessmentTakePage({
                 formNoValidate
                 className={cn(buttonVariants({ variant: "secondary" }), "w-full lg:order-1 lg:w-auto")}
               >
-                Back
+                {t("common.back")}
               </button>
             ) : null}
             <button
@@ -144,18 +145,18 @@ export default async function FatherAssessmentTakePage({
                 "w-full lg:order-3 lg:w-auto max-lg:border-0 max-lg:bg-transparent max-lg:underline max-lg:underline-offset-4 max-lg:hover:bg-transparent max-lg:hover:text-foreground/80"
               )}
             >
-              Save & Exit
+              {t("father.assessments.saveExit")}
             </button>
           </div>
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            You can stop and continue anytime.
+            {t("father.assessments.canStop")}
           </p>
         </form>
       )}
 
       <p className="text-center">
         <Link href="/father" className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}>
-          Back to Home
+          {t("father.assessments.backHome")}
         </Link>
       </p>
     </div>

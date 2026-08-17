@@ -14,8 +14,8 @@ import {
   loadNudgeHistory,
   loadReminderPrefs,
   needsNudge,
-  quietLabel,
 } from "@/lib/manager/nudges";
+import { translateQuietLabel } from "@/lib/i18n/flash";
 import { formatShortDate } from "@/lib/manager/types";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -74,7 +74,7 @@ export default async function ManagerParticipantsPage({
                       {participant.name}
                     </Link>
                     <p className="text-sm text-muted-foreground">
-                      {quietLabel(participant.lastActivity)}
+                      {translateQuietLabel(participant.lastActivity, t)}
                       {lastSent
                         ? ` · ${t("manager.participants.lastNudge", { date: formatShortDate(lastSent) })}`
                         : ""}

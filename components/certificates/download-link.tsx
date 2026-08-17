@@ -2,12 +2,13 @@ import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
 import { certificateDownloadPath } from "@/lib/certificates/types";
+import { getI18n } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
-export function CertificateDownloadLink({
+export async function CertificateDownloadLink({
   certificateId,
   className,
-  children = "Download PDF",
+  children,
   variant = "default",
   size = "sm",
 }: {
@@ -17,12 +18,13 @@ export function CertificateDownloadLink({
   variant?: "default" | "outline" | "inverse";
   size?: "sm" | "default";
 }) {
+  const { t } = await getI18n();
   return (
     <Link
       href={certificateDownloadPath(certificateId)}
       className={cn(buttonVariants({ variant, size }), className)}
     >
-      {children}
+      {children ?? t("common.downloadPdf")}
     </Link>
   );
 }

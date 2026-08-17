@@ -3,6 +3,7 @@
 import { useState, type MouseEvent } from "react";
 import { useFormStatus } from "react-dom";
 
+import { useT } from "@/components/i18n/locale-provider";
 import { radioOptionClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -22,9 +23,10 @@ export function ProfileAnswerOptions({
   autoAdvance: boolean;
   invalid?: boolean;
 }) {
+  const t = useT();
   return (
     <fieldset className="mt-8">
-      <legend className="sr-only">Answer</legend>
+      <legend className="sr-only">{t("common.answer")}</legend>
       <ProfileAnswerRadios
         options={options}
         saved={saved}

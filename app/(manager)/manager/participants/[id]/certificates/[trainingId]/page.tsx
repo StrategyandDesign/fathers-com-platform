@@ -9,6 +9,7 @@ import { requireRole } from "@/lib/auth/session";
 import { formatCertificateDate } from "@/lib/certificates/types";
 import { sendCertificate } from "@/lib/manager/actions";
 import { loadCertificatePreview } from "@/lib/manager/data";
+import { getI18n } from "@/lib/i18n/server";
 import { formatShortDate } from "@/lib/manager/types";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,7 @@ export default async function ManagerCertificatePage({
   const { id, trainingId } = await params;
   const flash = await searchParams;
   const { user } = await requireRole("manager");
+  const { t } = await getI18n();
   const preview = await loadCertificatePreview(user.id, id, trainingId);
 
   if (!preview) {
@@ -38,23 +40,23 @@ export default async function ManagerCertificatePage({
     <div className="space-y-6">
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
         <Link href="/manager/participants" className={interactiveLinkClassName}>
-          Participants
+          {t("manager.participants.title")}
         </Link>
         <span className="text-white/20">|</span>
         <Link href={`/manager/participants/${id}`} className={interactiveLinkClassName}>
           {preview.participant.name}
         </Link>
         <span className="text-white/20">|</span>
-        Certificate
+        {t("manager.cert.title")}
       </p>
       <Flash error={flash.error} notice={flash.notice} />
 
       <div>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">Certificate</h1>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+          {t("manager.cert.title")}
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {issued
-            ? "Issued and stored. Download the PDF anytime."
-            : "Preview the certificate, then issue the PDF."}
+          {issued ? t("manager.cert.issued") : t("manager.cert.preview")}
         </p>
       </div>
 
@@ -62,7 +64,7 @@ export default async function ManagerCertificatePage({
         fatherName={preview.participant.name}
         trainingName={preview.training.title}
         completedOn={completedOn}
-        serialNumber={issued?.serial_number ?? "Assigned on issue"}
+        serialNumber={issued?.serial_number ?? t("manager.cert.serialPending")}
         managerName={preview.managerName}
       />
 
@@ -73,27 +75,26 @@ export default async function ManagerCertificatePage({
             size="default"
             className="w-full sm:w-auto"
           >
-            Download PDF
+            {t("common.downloadPdf")}
           </CertificateDownloadLink>
         ) : preview.complete ? (
           <form action={sendCertificate} className="w-full sm:w-auto">
             <input type="hidden" name="father_id" value={id} />
             <input type="hidden" name="training_id" value={trainingId} />
             <Button type="submit" className="w-full sm:w-auto">
-              Send Certificate
+              {t("manager.participants.sendCertificate")}
             </Button>
           </form>
         ) : (
           <p className="w-full text-sm text-muted-foreground sm:w-auto">
-            This training is not fully complete. Certificates are issued only
-            after every session is done.
+            {t("manager.cert.notComplete")}
           </p>
         )}
         <Link
           href={`/manager/participants/${id}`}
           className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
         >
-          Back to participant
+          {t("manager.cert.back")}
         </Link>
       </div>
     </div>

@@ -25,6 +25,7 @@ import {
 import { PROFILE_QUESTION_COUNT, firstUnanswered } from "@/lib/father/questions";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
 import { readStoredDimensionScores } from "@/lib/profile/score";
+import { translateThemeLabel } from "@/lib/i18n/flash";
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -282,11 +283,11 @@ export default async function FatherHomePage() {
                   {t("father.home.primaryDetermination")}
                 </p>
                 <p className="font-heading mt-1 text-xl font-semibold tracking-tight uppercase">
-                  {profile.primary_determination ?? t("common.emDash")}
+                  {translateThemeLabel(profile.primary_determination, t)}
                 </p>
                 <p className="mt-3 text-sm text-muted-foreground">{t("father.home.primaryEdge")}</p>
                 <p className="mt-1 font-medium uppercase">
-                  {profile.primary_edge ?? t("common.emDash")}
+                  {translateThemeLabel(profile.primary_edge, t)}
                 </p>
                 {profileScores ? (
                   <DimensionScores scores={profileScores} className="mt-5 space-y-4" />

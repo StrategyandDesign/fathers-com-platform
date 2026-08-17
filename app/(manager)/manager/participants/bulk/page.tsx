@@ -9,7 +9,6 @@ import { isTrainingPublished } from "@/lib/father/types";
 import { runBulkAction } from "@/lib/manager/bulk-actions";
 import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
 import {
-  bulkActionLabel,
   confirmToken,
   isBulkAction,
   parseFatherIds,
@@ -18,6 +17,8 @@ import {
   planBulkComplete,
 } from "@/lib/manager/bulk";
 import { loadManagerWorkspace } from "@/lib/manager/data";
+import { translateBulkReason } from "@/lib/i18n/flash";
+import { getI18n } from "@/lib/i18n/server";
 import { fieldClassName, interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +35,7 @@ export default async function ManagerBulkReviewPage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
+  const { t } = await getI18n();
   const action = params.action?.trim() ?? "";
   const trainingId = params.training_id?.trim() ?? "";
   const sessionId = params.session_id?.trim() || null;
@@ -77,9 +79,9 @@ export default async function ManagerBulkReviewPage({
     if (!participant) {
       return {
         fatherId,
-        name: "Unknown participant",
+        name: t("manager.bulk.unknown"),
         eligible: false,
-        reason: "Not in your group.",
+        reason: t("manager.bulk.notInGroup"),
       };
     }
     const cards = workspace.trainingProgressFor(fatherId);
@@ -105,48 +107,51 @@ export default async function ManagerBulkReviewPage({
   const skipped = rows.filter((row) => !row.eligible);
   const token = confirmToken(action);
   const target = session
-    ? `${session.title} in ${training.title}`
+    ? t("manager.bulk.inTraining", { session: session.title, training: training.title })
     : training.title;
 
   return (
     <div className="space-y-6">
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
         <Link href="/manager/participants" className={interactiveLinkClassName}>
-          Participants
+          {t("manager.participants.title")}
         </Link>
         <span className="text-white/20">|</span>
-        <span>Review bulk action</span>
+        <span>{t("manager.bulk.reviewCrumb")}</span>
       </p>
       <Flash error={params.error} />
 
       <div>
         <h1 className="font-heading text-2xl font-semibold tracking-tight">
-          {bulkActionLabel(action)}
+          {action === "assign"
+            ? t("manager.bulk.assign")
+            : action === "complete"
+              ? t("manager.bulk.complete")
+              : t("manager.bulk.certificates")}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {action === "assign"
-            ? `Assign ${training.title} to the eligible people below.`
+            ? t("manager.bulk.assignLead", { title: training.title })
             : action === "complete"
-              ? `This writes completion for ${target}. Existing completed dates are left alone.`
-              : `Certificates are issued only when ${training.title} is fully complete and none is on file.`}
+              ? t("manager.bulk.completeLead", { target })
+              : t("manager.bulk.certLead", { title: training.title })}
         </p>
       </div>
 
       {eligible.length === 0 ? (
         <EmptyState
-          title="No one is eligible"
+          title={t("manager.bulk.noneEligibleTitle")}
           actionHref="/manager/participants"
-          actionLabel="Back to participants"
+          actionLabel={t("manager.bulk.backParticipants")}
         >
-          Everyone selected is already done, already assigned, or doesn’t meet
-          the rule for this action.
+          {t("manager.bulk.noneEligibleBody")}
         </EmptyState>
       ) : (
         <section className="overflow-hidden rounded-xl border border-border bg-card">
           <div className="border-b border-border px-4 py-4 sm:px-6">
-            <h2 className="font-heading text-lg font-semibold">Will be updated</h2>
+            <h2 className="font-heading text-lg font-semibold">{t("manager.bulk.willUpdate")}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              {eligible.length} of {rows.length} selected
+              {t("manager.bulk.selectedOf", { eligible: eligible.length, total: rows.length })}
             </p>
           </div>
           <ul className="divide-y divide-border">
@@ -162,10 +167,9 @@ export default async function ManagerBulkReviewPage({
       {skipped.length > 0 ? (
         <section className="overflow-hidden rounded-xl border border-border bg-card">
           <div className="border-b border-border px-4 py-4 sm:px-6">
-            <h2 className="font-heading text-lg font-semibold">Will be skipped</h2>
+            <h2 className="font-heading text-lg font-semibold">{t("manager.bulk.willSkip")}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Existing rules still apply. Nothing will be overwritten for these
-              people.
+              {t("manager.bulk.skipLead")}
             </p>
           </div>
           <ul className="divide-y divide-border">
@@ -175,7 +179,9 @@ export default async function ManagerBulkReviewPage({
                 className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6"
               >
                 <span>{row.name}</span>
-                <span className="text-sm text-muted-foreground">{row.reason}</span>
+                <span className="text-sm text-muted-foreground">
+                  {translateBulkReason(row.reason, t)}
+                </span>
               </li>
             ))}
           </ul>
@@ -196,8 +202,7 @@ export default async function ManagerBulkReviewPage({
           {token ? (
             <label className="block space-y-2">
               <span className="text-sm text-muted-foreground">
-                Type <span className="font-medium text-foreground">{token}</span> to
-                confirm
+                {t("manager.bulk.typeConfirm", { word: token })}
               </span>
               <input
                 className={fieldClassName}
@@ -209,8 +214,7 @@ export default async function ManagerBulkReviewPage({
             </label>
           ) : (
             <p className="text-sm text-muted-foreground">
-              Assigning does not change progress or certificates. Eligible
-              fathers will get the training on their path.
+              {t("manager.bulk.assignNote")}
             </p>
           )}
           <div className="mt-5 flex flex-col gap-2 sm:flex-row">
@@ -220,16 +224,18 @@ export default async function ManagerBulkReviewPage({
               className="w-full sm:w-auto"
             >
               {action === "assign"
-                ? `Assign to ${eligible.length}`
+                ? t("manager.bulk.assignTo", { n: eligible.length })
                 : action === "complete"
-                  ? `Mark ${eligible.length} complete`
-                  : `Issue ${eligible.length} certificate${eligible.length === 1 ? "" : "s"}`}
+                  ? t("manager.bulk.markN", { n: eligible.length })
+                  : eligible.length === 1
+                    ? t("manager.bulk.issueOne")
+                    : t("manager.bulk.issueN", { n: eligible.length })}
             </Button>
             <Link
               href="/manager/participants"
               className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
             >
-              Cancel
+              {t("common.cancel")}
             </Link>
           </div>
         </form>

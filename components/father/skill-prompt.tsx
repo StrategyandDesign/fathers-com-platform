@@ -1,7 +1,8 @@
 import { choiceIsSelected, parseSkillPrompt } from "@/lib/father/session-questions";
+import { getI18n } from "@/lib/i18n/server";
 import { radioOptionClassName, textareaClassName } from "@/lib/ui";
 
-export function SkillPromptField({
+export async function SkillPromptField({
   name,
   prompt,
   defaultValue,
@@ -14,6 +15,7 @@ export function SkillPromptField({
   invalid?: boolean;
   required?: boolean;
 }) {
+  const { t } = await getI18n();
   const parsed = parseSkillPrompt(prompt);
 
   return (
@@ -23,7 +25,7 @@ export function SkillPromptField({
       </p>
       {parsed.choices ? (
         <fieldset className="space-y-1" aria-invalid={invalid || undefined}>
-          <legend className="sr-only">Choose the teaching point</legend>
+          <legend className="sr-only">{t("father.session.chooseTeaching")}</legend>
           {parsed.choices.map((choice) => (
             <label key={choice.value} className={radioOptionClassName}>
               <input

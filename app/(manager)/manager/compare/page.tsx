@@ -4,9 +4,47 @@ import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
+import { getI18n } from "@/lib/i18n/server";
+import type { Translate } from "@/lib/i18n/translate";
 import { compareRows, loadManagerCompare, parseCompareSearchParams } from "@/lib/manager/compare";
 import { fieldClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+
+function translateCompareDetail(detail: string, t: Translate) {
+  if (detail === "Current members") return t("manager.compare.currentMembers");
+  return detail;
+}
+
+function translateCompareRowLabel(label: string, t: Translate) {
+  if (label === "Enrollment") return t("manager.compare.enrollment");
+  if (label === "Start rate") return t("manager.compare.startRate");
+  if (label === "Completion rate") return t("manager.compare.completionRate");
+  if (label === "Certificates") return t("manager.compare.certificates");
+  return label;
+}
+
+function translateCompareRowHint(hint: string, t: Translate) {
+  if (hint === "People in this group, or who joined in this period.") {
+    return t("manager.compare.enrollmentHint");
+  }
+  if (hint === "Share who began film, check-in, or action.") {
+    return t("manager.compare.startHint");
+  }
+  if (hint === "Share who finished every session in a training.") {
+    return t("manager.compare.completionHint");
+  }
+  if (hint === "On file for the group, or issued in the period.") {
+    return t("manager.compare.certificatesHint");
+  }
+  return hint;
+}
+
+function translateOfCount(detail: string | undefined, t: Translate) {
+  if (!detail) return undefined;
+  const match = detail.match(/^(\d+) of (\d+)$/);
+  if (!match) return detail;
+  return t("manager.compare.ofEnrolled", { count: match[1], enrolled: match[2] });
+}
 
 export default async function ManagerComparePage({
   searchParams,
@@ -21,6 +59,7 @@ export default async function ManagerComparePage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
+  const { t } = await getI18n();
   const filters = parseCompareSearchParams(params);
   const comparison = await loadManagerCompare(user.id, filters);
   const rows =
@@ -32,17 +71,18 @@ export default async function ManagerComparePage({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">Compare</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">
+            {t("manager.compare.title")}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Two groups, or two time periods. Same numbers as Impact — no extra
-            tracking.
+            {t("manager.compare.lead")}
           </p>
         </div>
         <Link
           href="/manager/impact"
           className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
         >
-          Impact Snapshot
+          {t("manager.compare.impact")}
         </Link>
       </div>
       <Flash error={params.error || comparison.error} />
@@ -54,32 +94,32 @@ export default async function ManagerComparePage({
       >
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Compare</span>
+            <span className="text-sm text-muted-foreground">{t("manager.compare.mode")}</span>
             <select
               className={fieldClassName}
               name="mode"
               defaultValue={comparison.mode}
             >
-              <option value="periods">Time periods</option>
-              <option value="groups">Groups</option>
+              <option value="periods">{t("manager.compare.periods")}</option>
+              <option value="groups">{t("manager.compare.groups")}</option>
             </select>
           </label>
           {comparison.mode === "periods" ? (
             <label className="block space-y-2">
-              <span className="text-sm text-muted-foreground">Window</span>
+              <span className="text-sm text-muted-foreground">{t("manager.compare.window")}</span>
               <select
                 className={fieldClassName}
                 name="window"
                 defaultValue={comparison.window}
               >
-                <option value="month">This month vs last month</option>
-                <option value="30">Last 30 days vs previous 30</option>
+                <option value="month">{t("manager.compare.month")}</option>
+                <option value="30">{t("manager.compare.days30")}</option>
               </select>
             </label>
           ) : (
             <>
               <label className="block space-y-2">
-                <span className="text-sm text-muted-foreground">Left</span>
+                <span className="text-sm text-muted-foreground">{t("manager.compare.left")}</span>
                 <select
                   className={fieldClassName}
                   name="left"
@@ -93,7 +133,7 @@ export default async function ManagerComparePage({
                 </select>
               </label>
               <label className="block space-y-2">
-                <span className="text-sm text-muted-foreground">Right</span>
+                <span className="text-sm text-muted-foreground">{t("manager.compare.right")}</span>
                 <select
                   className={fieldClassName}
                   name="right"
@@ -110,7 +150,7 @@ export default async function ManagerComparePage({
           )}
         </div>
         <Button type="submit" className="mt-5 w-full sm:w-auto">
-          Update comparison
+          {t("manager.compare.update")}
         </Button>
       </form>
 
@@ -119,33 +159,40 @@ export default async function ManagerComparePage({
           <section className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5">
               <p className="text-xs tracking-[0.16em] text-muted-foreground uppercase">
-                Left
+                {t("manager.compare.left")}
               </p>
               <h2 className="font-heading mt-2 text-xl font-semibold tracking-tight">
                 {comparison.left.label}
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground">{comparison.left.detail}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {translateCompareDetail(comparison.left.detail, t)}
+              </p>
             </div>
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5">
               <p className="text-xs tracking-[0.16em] text-muted-foreground uppercase">
-                Right
+                {t("manager.compare.right")}
               </p>
               <h2 className="font-heading mt-2 text-xl font-semibold tracking-tight">
                 {comparison.right.label}
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground">{comparison.right.detail}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {translateCompareDetail(comparison.right.detail, t)}
+              </p>
             </div>
           </section>
 
           <section className="overflow-hidden rounded-xl border border-border bg-card">
             <div className="border-b border-border px-4 py-4 sm:px-6">
               <h2 className="font-heading text-lg font-semibold">
-                {comparison.left.label} vs {comparison.right.label}
+                {t("manager.compare.vs", {
+                  left: comparison.left.label,
+                  right: comparison.right.label,
+                })}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 {comparison.mode === "groups"
-                  ? "Current members in each group."
-                  : "Enrollment is who joined in each window. Start and completion rates are lifetime progress for that join cohort. Certificates count issues in the window."}
+                  ? t("manager.compare.membersLead")
+                  : t("manager.compare.periodLead")}
               </p>
             </div>
             <ul className="divide-y divide-border">
@@ -155,13 +202,17 @@ export default async function ManagerComparePage({
                   className="grid gap-3 px-4 py-4 sm:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,1fr))] sm:items-center sm:px-6"
                 >
                   <div>
-                    <p className="font-medium">{row.label}</p>
-                    <p className="text-sm text-muted-foreground">{row.hint}</p>
+                    <p className="font-medium">{translateCompareRowLabel(row.label, t)}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {translateCompareRowHint(row.hint, t)}
+                    </p>
                   </div>
                   <div>
                     <p className="text-2xl font-semibold tabular-nums">{row.left}</p>
                     {row.leftDetail ? (
-                      <p className="text-sm text-muted-foreground">{row.leftDetail}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {translateOfCount(row.leftDetail, t)}
+                      </p>
                     ) : null}
                   </div>
                   <div>
@@ -169,7 +220,9 @@ export default async function ManagerComparePage({
                       {row.right}
                     </p>
                     {row.rightDetail ? (
-                      <p className="text-sm text-muted-foreground">{row.rightDetail}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {translateOfCount(row.rightDetail, t)}
+                      </p>
                     ) : null}
                   </div>
                   <p
@@ -180,9 +233,9 @@ export default async function ManagerComparePage({
                   >
                     {row.delta}
                     {row.better === "left"
-                      ? " left"
+                      ? ` ${t("manager.compare.leftDelta")}`
                       : row.better === "right"
-                        ? " right"
+                        ? ` ${t("manager.compare.rightDelta")}`
                         : ""}
                   </p>
                 </li>
@@ -191,10 +244,14 @@ export default async function ManagerComparePage({
           </section>
         </>
       ) : (
-        <EmptyState title="Nothing to compare yet" actionHref="/manager" actionLabel="Open dashboard">
+        <EmptyState
+          title={t("manager.compare.emptyTitle")}
+          actionHref="/manager"
+          actionLabel={t("manager.participants.openDashboard")}
+        >
           {comparison.mode === "groups"
-            ? "Create a second group, or switch to time periods."
-            : "Join activity will show here once fathers are in a group."}
+            ? t("manager.compare.emptyGroups")
+            : t("manager.compare.emptyPeriods")}
         </EmptyState>
       )}
     </div>

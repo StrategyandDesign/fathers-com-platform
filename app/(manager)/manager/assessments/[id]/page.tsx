@@ -6,8 +6,9 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { assignAssessment, updateAssessment } from "@/lib/assessments/actions";
 import { loadManagerAssessmentDetail } from "@/lib/assessments/data";
-import { ASSIGNMENT_STATUS_LABEL } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
+import { translateAssignmentStatus } from "@/lib/i18n/flash";
+import { getI18n } from "@/lib/i18n/server";
 import { fieldClassName, interactiveLinkClassName, interactiveSurfaceClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ export default async function ManagerAssessmentDetailPage({
   const { id } = await params;
   const flash = await searchParams;
   const { user } = await requireRole("manager");
+  const { t } = await getI18n();
   const detail = await loadManagerAssessmentDetail(user.id, id);
 
   if (!detail) {
@@ -34,7 +36,7 @@ export default async function ManagerAssessmentDetailPage({
     <div className="space-y-6">
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
         <Link href="/manager/assessments" className={interactiveLinkClassName}>
-          Assessments
+          {t("manager.assessments.title")}
         </Link>
         <span className="text-white/20">|</span>
         <span className="min-w-0 text-foreground">{detail.assessment.title}</span>
@@ -44,7 +46,7 @@ export default async function ManagerAssessmentDetailPage({
           {detail.assessment.title}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Edit details, assign fathers, and review responses.
+          {t("manager.assessments.editLead")}
         </p>
       </div>
       <Flash error={flash.error} notice={flash.notice} />
@@ -55,7 +57,7 @@ export default async function ManagerAssessmentDetailPage({
       >
         <input type="hidden" name="assessment_id" value={detail.assessment.id} />
         <label className="block space-y-2">
-          <span className="text-sm text-muted-foreground">Title</span>
+          <span className="text-sm text-muted-foreground">{t("common.title")}</span>
           <input
             className={fieldClassName}
             name="title"
@@ -66,7 +68,7 @@ export default async function ManagerAssessmentDetailPage({
           />
         </label>
         <label className="block space-y-2">
-          <span className="text-sm text-muted-foreground">Description</span>
+          <span className="text-sm text-muted-foreground">{t("common.description")}</span>
           <textarea
             className={textareaClassName}
             name="description"
@@ -75,22 +77,21 @@ export default async function ManagerAssessmentDetailPage({
           />
         </label>
         <Button type="submit" variant="secondary" className="w-full sm:w-auto">
-          Save details
+          {t("manager.assessments.saveDetails")}
         </Button>
       </form>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">Questions</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.questions")}</h2>
         {detail.questions.length === 0 ? (
           <EmptyState
             framed={false}
             className="mt-3 p-0"
-            title="No questions on this assessment"
+            title={t("manager.assessments.noQuestionsTitle")}
             actionHref="/manager/assessments/new"
-            actionLabel="New assessment"
+            actionLabel={t("manager.assessments.new")}
           >
-            Questions are set when you create an assessment. Start a new one if
-            you need a different set.
+            {t("manager.assessments.noQuestionsBody")}
           </EmptyState>
         ) : (
         <ol className="mt-4 space-y-3">
@@ -98,7 +99,9 @@ export default async function ManagerAssessmentDetailPage({
             <li key={question.id} className="rounded-lg border border-border bg-black/20 p-4">
               <p className="text-sm text-muted-foreground">
                 {index + 1}.{" "}
-                {question.question_type === "single_select" ? "Multiple choice" : "Short text"}
+                {question.question_type === "single_select"
+                  ? t("manager.assessments.multipleChoice")
+                  : t("manager.assessments.shortText")}
               </p>
               <p className="mt-1 font-medium">{question.prompt}</p>
               {question.options ? (
@@ -115,20 +118,19 @@ export default async function ManagerAssessmentDetailPage({
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">Assign</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.assign")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Fathers in your group. Already assigned stay checked.
+          {t("manager.assessments.assignLead")}
         </p>
         {detail.roster.length === 0 ? (
           <EmptyState
             framed={false}
             className="mt-4 p-0"
-            title="No one has joined yet"
+            title={t("manager.participants.emptyTitle")}
             actionHref="/manager"
-            actionLabel="Open dashboard"
+            actionLabel={t("manager.participants.openDashboard")}
           >
-            Share your invite code from the dashboard so fathers can create an
-            account. Then you can assign this assessment.
+            {t("manager.participants.emptyBody")}
           </EmptyState>
         ) : (
           <form action={assignAssessment} className="mt-4 space-y-4">
@@ -156,7 +158,9 @@ export default async function ManagerAssessmentDetailPage({
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-medium">{father.name}</span>
                         {assigned ? (
-                          <span className="text-sm text-muted-foreground">Already assigned</span>
+                          <span className="text-sm text-muted-foreground">
+                            {t("manager.assessments.alreadyAssigned")}
+                          </span>
                         ) : null}
                       </span>
                     </label>
@@ -166,25 +170,24 @@ export default async function ManagerAssessmentDetailPage({
             </ul>
             {unassigned.length > 0 ? (
               <Button type="submit" className="w-full sm:w-auto">
-                Assign selected
+                {t("manager.assessments.assignSelected")}
               </Button>
             ) : (
-              <p className="text-sm text-muted-foreground">Everyone in your group is assigned.</p>
+              <p className="text-sm text-muted-foreground">{t("manager.assessments.allAssigned")}</p>
             )}
           </form>
         )}
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">Assignments</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.assignments")}</h2>
         {detail.assignments.length === 0 ? (
           <EmptyState
             framed={false}
             className="mt-3 p-0"
-            title="No one is assigned yet"
+            title={t("manager.assessments.noAssignedTitle")}
           >
-            Choose fathers above and assign this assessment. Responses show up
-            here after they start.
+            {t("manager.assessments.noAssignedBody")}
           </EmptyState>
         ) : (
           <ul className="mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border">
@@ -200,7 +203,7 @@ export default async function ManagerAssessmentDetailPage({
                   <div className="min-w-0">
                     <p className="font-medium">{row.fatherName}</p>
                     <p className="text-sm text-muted-foreground">
-                      {ASSIGNMENT_STATUS_LABEL[row.status]}
+                      {translateAssignmentStatus(row.status, t)}
                     </p>
                   </div>
                   <span
@@ -209,7 +212,7 @@ export default async function ManagerAssessmentDetailPage({
                       "pointer-events-none w-full sm:w-auto"
                     )}
                   >
-                    View responses
+                    {t("manager.assessments.viewResponses")}
                   </span>
                 </Link>
               </li>

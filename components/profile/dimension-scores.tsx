@@ -1,18 +1,21 @@
 import { ProgressBar } from "@/components/ui/progress";
+import { translateThemeLabel } from "@/lib/i18n/flash";
+import { getI18n } from "@/lib/i18n/server";
 import { PROFILE_THEMES } from "@/lib/profile/questions";
 import { cn } from "@/lib/utils";
 
-export function DimensionScores({
+export async function DimensionScores({
   scores,
   className,
 }: {
   scores: Record<string, number>;
   className?: string;
 }) {
+  const { t } = await getI18n();
   const groups = [
-    { title: "Edges", items: PROFILE_THEMES.filter((theme) => theme.kind === "edge") },
+    { title: t("father.profile.edges"), items: PROFILE_THEMES.filter((theme) => theme.kind === "edge") },
     {
-      title: "Determinations",
+      title: t("father.profile.determinations"),
       items: PROFILE_THEMES.filter((theme) => theme.kind === "determination"),
     },
   ];
@@ -28,7 +31,7 @@ export function DimensionScores({
               return (
                 <li key={theme.key}>
                   <div className="flex justify-between gap-3 text-sm">
-                    <span>{theme.label}</span>
+                    <span>{translateThemeLabel(theme.label, t)}</span>
                     <span className="tabular-nums text-muted-foreground">{Math.round(value)}</span>
                   </div>
                   <ProgressBar value={value} className="mt-1.5" />

@@ -10,11 +10,10 @@ import { submitCheckin } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
 import {
   CHECKIN_NOTE_KEY,
-  CHECKIN_NOTE_LABEL,
   CHECKIN_NOTE_MAX_LENGTH,
-  CHECKIN_NOTE_PLACEHOLDER,
   checkinQuestionsFor,
 } from "@/lib/father/session-questions";
+import { getI18n } from "@/lib/i18n/server";
 import { interactiveUnderlineClassName, sessionCtaClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +41,7 @@ export default async function SessionCheckinPage({
     redirect(`/father/sessions/${sessionId}`);
   }
 
+  const { t } = await getI18n();
   const { session, training, progress } = context;
   const questions = checkinQuestionsFor(session, training);
 
@@ -66,23 +66,22 @@ export default async function SessionCheckinPage({
           />
         ))}
         <label className="block space-y-2">
-          <span className="text-sm text-muted-foreground">{CHECKIN_NOTE_LABEL}</span>
+          <span className="text-sm text-muted-foreground">{t("father.session.noteLabel")}</span>
           <textarea
             className={textareaClassName}
             name={CHECKIN_NOTE_KEY}
             maxLength={CHECKIN_NOTE_MAX_LENGTH}
-            placeholder={CHECKIN_NOTE_PLACEHOLDER}
+            placeholder={t("father.session.notePlaceholder")}
             defaultValue={progress?.session_note ?? ""}
           />
         </label>
         <Flash error={error} />
         <p className="text-center text-sm text-muted-foreground">
-          Your answer is saved to this session’s progress. This is a skill
-          check, not a personal journal. Notes are optional.
+          {t("father.session.savedHint")}
         </p>
         <div className="flex justify-center max-lg:block">
           <Button type="submit" variant="inverse" size="lg" className={sessionCtaClassName}>
-            {progress?.checkin_completed ? "Save and continue" : "Next"}
+            {progress?.checkin_completed ? t("father.session.saveContinue") : t("common.next")}
           </Button>
         </div>
       </form>
@@ -92,7 +91,7 @@ export default async function SessionCheckinPage({
           href={`/father/sessions/${sessionId}`}
           className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
         >
-          Back to Session
+          {t("father.session.backToSession")}
         </Link>
       </p>
     </div>

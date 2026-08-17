@@ -1,11 +1,12 @@
 import { CertificateDownloadLink } from "@/components/certificates/download-link";
 import { EmptyState } from "@/components/ui/empty-state";
 import { formatCertificateDate, type IssuedCertificate } from "@/lib/certificates/types";
+import { getI18n } from "@/lib/i18n/server";
 
-export function IssuedCertificateList({
+export async function IssuedCertificateList({
   certificates,
   empty,
-  emptyTitle = "No certificates yet",
+  emptyTitle,
   actionHref,
   actionLabel,
 }: {
@@ -15,9 +16,14 @@ export function IssuedCertificateList({
   actionHref?: string;
   actionLabel?: string;
 }) {
+  const { t } = await getI18n();
   if (certificates.length === 0) {
     return (
-      <EmptyState title={emptyTitle} actionHref={actionHref} actionLabel={actionLabel}>
+      <EmptyState
+        title={emptyTitle ?? t("account.certificatesEmptyTitle")}
+        actionHref={actionHref}
+        actionLabel={actionLabel}
+      >
         {empty}
       </EmptyState>
     );
@@ -33,8 +39,10 @@ export function IssuedCertificateList({
           <div className="min-w-0">
             <p className="font-heading font-semibold">{certificate.trainingTitle}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Completed {formatCertificateDate(certificate.issuedAt)}
-              {certificate.issuerName ? ` · Issued by ${certificate.issuerName}` : ""}
+              {t("account.completedOn", { date: formatCertificateDate(certificate.issuedAt) })}
+              {certificate.issuerName
+                ? ` · ${t("account.issuedBy", { name: certificate.issuerName })}`
+                : ""}
             </p>
             <p className="mt-1 font-mono text-xs text-muted-foreground">
               {certificate.serialNumber}

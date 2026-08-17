@@ -12,6 +12,7 @@ import { markFilmWatched } from "@/lib/father/actions";
 import { loadFatherHome, loadSessionContext } from "@/lib/father/data";
 import { loadFatherOrgPhotoCovers } from "@/lib/org-photos/data";
 import { youtubeEmbedUrl } from "@/lib/father/types";
+import { getI18n } from "@/lib/i18n/server";
 import { sessionCtaClassName } from "@/lib/ui";
 
 export default async function SessionViewerPage({
@@ -34,6 +35,7 @@ export default async function SessionViewerPage({
     redirect(`/father/sessions/${context.redirectSessionId}`);
   }
 
+  const { t } = await getI18n();
   const { session, training, progress } = context;
   const embed = youtubeEmbedUrl(session.video_url);
   const filmDone = progress?.film_completed ?? false;
@@ -92,7 +94,7 @@ export default async function SessionViewerPage({
       <form action={markFilmWatched} className="flex justify-center max-lg:block">
         <input type="hidden" name="session_id" value={session.id} />
         <Button type="submit" variant="inverse" size="lg" className={sessionCtaClassName}>
-          {filmDone ? "Continue to Check-in" : "I watched this"}
+          {filmDone ? t("father.session.continueCheckin") : t("father.session.iWatched")}
         </Button>
       </form>
     </div>

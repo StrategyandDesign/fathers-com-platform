@@ -6,19 +6,27 @@ import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
-import { loadManagerImpact, trendLabel } from "@/lib/manager/impact";
+import { formatLongDate, getI18n } from "@/lib/i18n/server";
+import type { Translate } from "@/lib/i18n/translate";
+import { loadManagerImpact } from "@/lib/manager/impact";
 import { cn } from "@/lib/utils";
 
-function formatGeneratedAt(value: string) {
-  return new Date(value).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-function TrendDelta({ current, previous }: { current: number; previous: number }) {
+function TrendDelta({
+  current,
+  previous,
+  t,
+}: {
+  current: number;
+  previous: number;
+  t: Translate;
+}) {
   const delta = current - previous;
+  const label =
+    delta === 0
+      ? t("manager.impact.same")
+      : delta > 0
+        ? t("manager.impact.plus", { n: delta })
+        : t("manager.impact.minus", { n: Math.abs(delta) });
   return (
     <p
       className={cn(
@@ -26,7 +34,7 @@ function TrendDelta({ current, previous }: { current: number; previous: number }
         delta > 0 ? "text-primary" : "text-muted-foreground"
       )}
     >
-      {trendLabel(current, previous)}
+      {label}
     </p>
   );
 }
@@ -38,52 +46,62 @@ export default async function ManagerImpactPage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
+  const { t, locale } = await getI18n();
   const snapshot = await loadManagerImpact(user.id);
   const organization =
     snapshot.organizationNames.length > 0
       ? snapshot.organizationNames.join(", ")
-      : "Your organization";
+      : t("manager.impact.yourOrg");
 
   const metrics = [
     {
-      label: "Fathers enrolled",
+      label: t("manager.impact.enrolled"),
       value: String(snapshot.enrolled),
-      detail: "Current members in your group",
+      detail: t("manager.impact.enrolledDetail"),
     },
     {
-      label: "Started training",
+      label: t("manager.impact.started"),
       value: `${snapshot.startedTrainingPct}%`,
-      detail: `${snapshot.startedTraining} of ${snapshot.enrolled} began a session`,
+      detail: t("manager.impact.startedDetail", {
+        started: snapshot.startedTraining,
+        enrolled: snapshot.enrolled,
+      }),
       bar: snapshot.startedTrainingPct,
     },
     {
-      label: "Completed a session",
+      label: t("manager.impact.oneSession"),
       value: `${snapshot.completedOneSessionPct}%`,
-      detail: `${snapshot.completedOneSession} of ${snapshot.enrolled} finished at least one`,
+      detail: t("manager.impact.oneSessionDetail", {
+        count: snapshot.completedOneSession,
+        enrolled: snapshot.enrolled,
+      }),
       bar: snapshot.completedOneSessionPct,
     },
     {
-      label: "Fully completed",
+      label: t("manager.impact.fully"),
       value: `${snapshot.fullyCompletedPct}%`,
-      detail: `${snapshot.fullyCompleted} of ${snapshot.enrolled} finished a training`,
+      detail: t("manager.impact.fullyDetail", {
+        count: snapshot.fullyCompleted,
+        enrolled: snapshot.enrolled,
+      }),
       bar: snapshot.fullyCompletedPct,
     },
     {
-      label: "Certificates issued",
+      label: t("manager.impact.certs"),
       value: String(snapshot.certificatesIssued),
-      detail: "Certificates sent from your group",
+      detail: t("manager.impact.certsDetail"),
     },
     {
-      label: "Currently active",
+      label: t("manager.impact.active"),
       value: String(snapshot.activeParticipants),
-      detail: `Last activity in the past ${snapshot.periodDays} days`,
+      detail: t("manager.impact.activeDetail", { days: snapshot.periodDays }),
     },
   ];
 
   const trendRows = [
-    { label: "New enrollments", count: snapshot.trend.enrolled },
-    { label: "Sessions completed", count: snapshot.trend.sessionsCompleted },
-    { label: "Certificates issued", count: snapshot.trend.certificatesIssued },
+    { label: t("manager.impact.newEnrollments"), count: snapshot.trend.enrolled },
+    { label: t("manager.impact.sessionsCompleted"), count: snapshot.trend.sessionsCompleted },
+    { label: t("manager.impact.certs"), count: snapshot.trend.certificatesIssued },
   ];
 
   return (
@@ -94,11 +112,10 @@ export default async function ManagerImpactPage({
             {organization}
           </p>
           <h1 className="font-heading mt-2 text-2xl font-semibold tracking-tight">
-            Impact Snapshot
+            {t("manager.impact.title")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            One page of numbers for a board, funder, or leader. Your organization
-            only. Generated {formatGeneratedAt(snapshot.generatedAt)}.
+            {t("manager.impact.lead", { date: formatLongDate(snapshot.generatedAt, locale) })}
           </p>
         </div>
         <div className="flex flex-col gap-2 print:hidden sm:flex-row">
@@ -106,13 +123,13 @@ export default async function ManagerImpactPage({
             href="/api/manager/impact/export"
             className={cn(buttonVariants(), "w-full sm:w-auto")}
           >
-            Download PDF
+            {t("manager.impact.pdf")}
           </Link>
           <Link
             href="/manager/compare"
             className={cn(buttonVariants({ variant: "outline" }), "w-full print:hidden sm:w-auto")}
           >
-            Compare
+            {t("manager.impact.compare")}
           </Link>
           <PrintButton />
         </div>
@@ -121,12 +138,11 @@ export default async function ManagerImpactPage({
 
       {snapshot.enrolled === 0 ? (
         <EmptyState
-          title="No one has joined yet"
+          title={t("manager.impact.emptyTitle")}
           actionHref="/manager"
-          actionLabel="Open dashboard"
+          actionLabel={t("manager.participants.openDashboard")}
         >
-          Share your invite code from the Dashboard. This snapshot fills in after
-          someone joins {organization}.
+          {t("manager.impact.emptyBody", { org: organization })}
         </EmptyState>
       ) : (
         <>
@@ -142,10 +158,13 @@ export default async function ManagerImpactPage({
         </section>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">This period vs previous</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("manager.impact.periodTitle")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Last {snapshot.periodDays} days ({snapshot.currentRangeLabel}) compared with{" "}
-          {snapshot.previousRangeLabel}.
+          {t("manager.impact.periodLead", {
+            days: snapshot.periodDays,
+            current: snapshot.currentRangeLabel,
+            previous: snapshot.previousRangeLabel,
+          })}
         </p>
         <ul className="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
           {trendRows.map((row) => (
@@ -156,12 +175,15 @@ export default async function ManagerImpactPage({
               <div>
                 <p className="font-medium">{row.label}</p>
                 <p className="text-sm text-muted-foreground">
-                  {row.count.previous} in the previous {snapshot.periodDays} days
+                  {t("manager.impact.previousDays", {
+                    count: row.count.previous,
+                    days: snapshot.periodDays,
+                  })}
                 </p>
               </div>
               <div className="sm:text-right">
                 <p className="text-xl font-semibold tabular-nums">{row.count.current}</p>
-                <TrendDelta current={row.count.current} previous={row.count.previous} />
+                <TrendDelta current={row.count.current} previous={row.count.previous} t={t} />
               </div>
             </li>
           ))}
@@ -170,9 +192,9 @@ export default async function ManagerImpactPage({
 
       {snapshot.trainings.length > 0 ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">By training</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.impact.byTraining")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            How {organization} sits in each catalog training.
+            {t("manager.impact.byTrainingLead", { org: organization })}
           </p>
           <ul className="mt-5 space-y-5">
             {snapshot.trainings.map((training) => (
@@ -180,7 +202,7 @@ export default async function ManagerImpactPage({
                 <div className="flex items-start justify-between gap-3">
                   <p className="min-w-0 font-medium">{training.title}</p>
                   <p className="shrink-0 text-sm tabular-nums text-muted-foreground">
-                    {training.fullyCompleted} complete
+                    {t("manager.impact.completeCount", { count: training.fullyCompleted })}
                   </p>
                 </div>
                 <ProgressBar
@@ -191,8 +213,11 @@ export default async function ManagerImpactPage({
                   }
                 />
                 <p className="text-xs text-muted-foreground">
-                  {training.started} started · {training.completedOneSession} completed a
-                  session · {training.fullyCompleted} fully completed
+                  {t("manager.impact.trainingBreakdown", {
+                    started: training.started,
+                    one: training.completedOneSession,
+                    fully: training.fullyCompleted,
+                  })}
                 </p>
               </li>
             ))}
@@ -203,31 +228,34 @@ export default async function ManagerImpactPage({
       )}
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">How to read these numbers</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("manager.impact.howTitle")}</h2>
         <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
           <li>
-            <span className="font-medium text-foreground">Started training</span> — began
-            film, check-in, or action in any session.
+            <span className="font-medium text-foreground">{t("manager.impact.howStarted")}</span>
+            {" — "}
+            {t("manager.impact.howStartedBody")}
           </li>
           <li>
-            <span className="font-medium text-foreground">Completed a session</span> —
-            finished film, check-in, and action for at least one session.
+            <span className="font-medium text-foreground">{t("manager.impact.howOne")}</span>
+            {" — "}
+            {t("manager.impact.howOneBody")}
           </li>
           <li>
-            <span className="font-medium text-foreground">Fully completed</span> — finished
-            every session in at least one training.
+            <span className="font-medium text-foreground">{t("manager.impact.howFully")}</span>
+            {" — "}
+            {t("manager.impact.howFullyBody")}
           </li>
           <li>
-            <span className="font-medium text-foreground">Currently active</span> — last
-            join, profile, session, assignment, or certificate activity in the past{" "}
-            {snapshot.periodDays} days.
+            <span className="font-medium text-foreground">{t("manager.impact.howActive")}</span>
+            {" — "}
+            {t("manager.impact.howActiveBody", { days: snapshot.periodDays })}
           </li>
         </ul>
         <Link
           href="/manager/reports"
           className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full print:hidden sm:w-auto")}
         >
-          Open detailed reports
+          {t("manager.impact.openReports")}
         </Link>
       </section>
     </div>
