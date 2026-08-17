@@ -409,7 +409,7 @@ export const he = {
     },
     trainings: {
       title: "הכשרות",
-      lead: "עבור על הקטלוג לפי הסדר. מפגש מסתיים כשסרט, צ'ק-אין ופעולה הושלמו.",
+      lead: "סרט קצר, כמה שאלות, ואז מיומנות אחת.",
       emptyTitle: "לא הוקצתה הכשרה",
       emptyBody: "המנהל עדיין לא הקצה הכשרה. היא תופיע כאן כשיקצה.",
       backHome: "חזרה לבית",
@@ -424,6 +424,13 @@ export const he = {
       sessionNote: "מפגש {n} · {note}",
       startSession1: "התחלת מפגש 1",
       continueTraining: "המשך הכשרה",
+      nextSession: "הבא: {title}",
+      sessionOf: "מפגש {n} מתוך {total}",
+      openSession: "פתיחת מפגש {n}",
+      startSessionN: "התחלת מפגש {n}",
+      seeSessions: "צפייה במפגשים",
+      trainingComplete: "ההכשרה הזו הושלמה.",
+      sessionDone: "הושלם",
       downloadCertificate: "הורדת תעודה",
     },
     profile: {

@@ -424,7 +424,7 @@ export const en = {
     },
     trainings: {
       title: "Trainings",
-      lead: "Move through the catalog in order. A session is done when Film, Check-in, and Action are done.",
+      lead: "A short film, a few questions, then one skill.",
       emptyTitle: "No training assigned",
       emptyBody:
         "Your manager hasn’t assigned a training yet. It will show up here when they do.",
@@ -440,6 +440,13 @@ export const en = {
       sessionNote: "Session {n} · {note}",
       startSession1: "Start Session 1",
       continueTraining: "Continue training",
+      nextSession: "Next: {title}",
+      sessionOf: "Session {n} of {total}",
+      openSession: "Open Session {n}",
+      startSessionN: "Start Session {n}",
+      seeSessions: "See sessions",
+      trainingComplete: "This training is complete.",
+      sessionDone: "Done",
       downloadCertificate: "Download certificate",
     },
     profile: {
