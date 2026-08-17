@@ -26,7 +26,7 @@ export default async function AdminTrainingsPage({
           <h1 className="font-heading text-2xl font-semibold tracking-tight">Trainings</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Platform catalog. Publish when sessions are ready, then release to
-            managers for review.
+            selected organizations or all.
           </p>
         </div>
         <Link href="/admin/trainings/new" className={cn(buttonVariants(), "w-full sm:w-auto")}>

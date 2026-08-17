@@ -48,9 +48,13 @@ export default async function SignupPage({
             <span className="text-sm text-muted-foreground">Email</span>
             <input
               className={authFieldClassName}
-              type="email"
+              type="text"
               name="email"
+              inputMode="email"
               autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               required
               aria-invalid={accountInvalid || undefined}
             />

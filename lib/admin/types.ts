@@ -25,10 +25,19 @@ export type AdminParticipantRow = {
   joinedAt: string;
 };
 
+export type AdminReviewStatus = "pending" | "accepted" | "declined";
+
+export type AdminReleaseTarget = {
+  id: string;
+  name: string;
+  reviewStatus: AdminReviewStatus | null;
+};
+
 export type AdminTrainingRow = Training & {
   published: boolean;
   releasedByName: string | null;
   sessions: Session[];
+  releaseTargets: AdminReleaseTarget[];
 };
 
 export type AdminDashboard = {

@@ -35,9 +35,13 @@ export default async function LoginPage({
             <span className="text-sm text-muted-foreground">Email</span>
             <input
               className={authFieldClassName}
-              type="email"
+              type="text"
               name="email"
-              autoComplete="email"
+              inputMode="email"
+              autoComplete="username"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               required
               aria-invalid={credentialsInvalid || undefined}
             />

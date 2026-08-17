@@ -325,11 +325,8 @@ export async function releaseTraining(formData: FormData) {
 
   if (currentError) fail(path, RELEASE_WRITE_ERROR);
   if (!current) fail("/admin/trainings", "That training was not found.");
-  if (current.released_at) {
-    ok(path, "This training is already released for review.");
-  }
   if (current.published !== true) {
-    fail(path, "Publish the training first, then release it to managers.");
+    fail(path, "Publish the training first, then release it to organizations.");
   }
 
   const { count, error: countError } = await supabase
@@ -338,28 +335,52 @@ export async function releaseTraining(formData: FormData) {
     .eq("training_id", trainingId);
   if (countError) fail(path, RELEASE_WRITE_ERROR);
   if ((count ?? current.session_count ?? 0) < 1) {
-    fail(path, "Add at least one session before releasing to managers.");
+    fail(path, "Add at least one session before releasing to organizations.");
   }
 
-  if (isLegacyCatalogTraining(current) && confirm !== RELEASE_CONFIRM) {
+  if (!current.released_at && isLegacyCatalogTraining(current) && confirm !== RELEASE_CONFIRM) {
     fail(path, `Type ${RELEASE_CONFIRM} to release a catalog training. Managers must accept it before they can assign it.`);
+  }
+
+  const scope = String(formData.get("release_scope") ?? "all").trim();
+  const selectedIds = formData
+    .getAll("group_id")
+    .map((value) => String(value).trim())
+    .filter((value) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
+    );
+
+  if (scope === "selected" && selectedIds.length === 0) {
+    fail(path, "Choose at least one organization, or send to all.");
   }
 
   const result = await releaseTrainingToManagers(supabase, {
     trainingId,
     trainingTitle: current.title,
     releasedBy: user.id,
+    groupIds: scope === "selected" ? selectedIds : null,
   });
 
   if (!result.ok) {
     fail(path, RELEASE_WRITE_ERROR);
   }
 
+  const notice =
+    result.targetCount === 0
+      ? "No matching organizations to release to."
+      : result.newCount === 0
+        ? "Those organizations already have this training."
+        : scope === "selected"
+          ? result.newCount === 1
+            ? "Released to 1 organization. That manager was notified."
+            : `Released to ${result.newCount} organizations. Eligible managers were notified.`
+          : result.notified
+            ? "Released to all organizations. Eligible managers were notified."
+            : "Released to all organizations.";
+
   revalidateAdmin(path);
   finish(path, {
-    notice: result.notified
-      ? "Released to managers. Eligible managers were notified."
-      : "Released to managers.",
+    notice,
     error: result.notifyFailed ? RELEASE_NOTIFY_WARNING : undefined,
   });
 }

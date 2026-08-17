@@ -19,6 +19,7 @@ import {
   UNRELEASE_CONFIRM,
 } from "@/lib/admin/release";
 import { ReleaseStatusBadge } from "@/components/admin/release-status";
+import { ReleaseTargetStatusList, ReleaseTargets } from "@/components/admin/release-targets";
 import { Flash } from "@/components/manager/flash";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -48,8 +49,8 @@ export default async function AdminTrainingDetailPage({
     training.sessions.reduce((max, session) => Math.max(max, session.session_number), 0) + 1;
   const releaseState = trainingReleaseState(training);
   const legacy = isLegacyCatalogTraining(training);
-  const canRelease =
-    training.published && training.sessions.length > 0 && releaseState !== "released";
+  const canRelease = training.published && training.sessions.length > 0;
+  const alreadyReleased = releaseState === "released";
 
   return (
     <div className="space-y-6">
@@ -138,9 +139,10 @@ export default async function AdminTrainingDetailPage({
           {training.published ? "Unpublish" : "Publish"}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Publishing does not notify managers. Use Release to Managers below
-          when the training is ready for review. Unpublished trainings stay off
-          new assignment. Fathers who already have progress can still continue.
+          Publishing does not notify managers. Use Release to organizations
+          below when the training is ready for review. Unpublished trainings
+          stay off new assignment. Fathers who already have progress can still
+          continue.
         </p>
         <Button type="submit" variant="outline" className="mt-4 w-full sm:w-auto">
           {training.published ? "Unpublish" : "Publish"}
@@ -150,16 +152,16 @@ export default async function AdminTrainingDetailPage({
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="font-heading text-lg font-semibold">Release to Managers</h2>
+            <h2 className="font-heading text-lg font-semibold">Release to organizations</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              This is the official trigger. Eligible managers are notified and
+              Push to every organization or only the ones you select. Managers
               must accept before they can assign it.
             </p>
           </div>
-          <ReleaseStatusBadge state={releaseState === "released" ? "released" : "draft"} />
+          <ReleaseStatusBadge state={alreadyReleased ? "released" : "draft"} />
         </div>
 
-        {releaseState === "released" ? (
+        {alreadyReleased ? (
           <div className="mt-5 space-y-5">
             <div className="rounded-lg border border-input bg-black/30 px-4 py-3">
               <p className="font-medium">Released {formatShortDate(training.released_at)}</p>
@@ -167,6 +169,17 @@ export default async function AdminTrainingDetailPage({
                 by {training.releasedByName ?? "Super-admin"}
               </p>
             </div>
+            <ReleaseTargetStatusList organizations={training.releaseTargets} />
+            <form action={releaseTraining} className="space-y-4">
+              <input type="hidden" name="training_id" value={training.id} />
+              <p className="text-sm text-muted-foreground">
+                Send this to more organizations, or again to one that declined.
+              </p>
+              <ReleaseTargets organizations={training.releaseTargets} defaultScope="selected" />
+              <Button type="submit" className="w-full sm:w-auto" disabled={!canRelease}>
+                Release to organizations
+              </Button>
+            </form>
             <form action={unreleaseTraining} className="space-y-4">
               <input type="hidden" name="training_id" value={training.id} />
               <p className="text-sm text-muted-foreground">
@@ -207,8 +220,8 @@ export default async function AdminTrainingDetailPage({
             ) : legacy ? (
               <p className="text-sm text-muted-foreground">
                 This training is already in the catalog and assignable. Releasing
-                it sends it to managers and hides it from new assignment until
-                they accept.
+                it sends it to the organizations you choose and hides it from
+                new assignment until those managers accept.
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">
@@ -216,6 +229,9 @@ export default async function AdminTrainingDetailPage({
                 decline. Fathers are not enrolled until a manager assigns it.
               </p>
             )}
+            {canRelease ? (
+              <ReleaseTargets organizations={training.releaseTargets} defaultScope="all" />
+            ) : null}
             {legacy ? (
               <label className="block space-y-2">
                 <span className="text-sm text-muted-foreground">
@@ -232,7 +248,7 @@ export default async function AdminTrainingDetailPage({
               </label>
             ) : null}
             <Button type="submit" className="w-full sm:w-auto" disabled={!canRelease}>
-              Release to Managers
+              Release to organizations
             </Button>
           </form>
         )}

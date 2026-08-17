@@ -72,7 +72,7 @@ export default async function AdminHomePage({
           <h2 className="font-heading text-lg font-semibold">Catalog</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Add a training. Publish when sessions are ready, then release it to
-            managers.
+            selected organizations or all.
           </p>
           <Link
             href="/admin/trainings/new"

@@ -6,9 +6,18 @@ import type {
   AdminDashboard,
   AdminGroupRow,
   AdminParticipantRow,
+  AdminReleaseTarget,
+  AdminReviewStatus,
   AdminTrainingRow,
   AdminUserRow,
 } from "@/lib/admin/types";
+
+function asReviewStatus(value: unknown): AdminReviewStatus | null {
+  if (value === "pending" || value === "accepted" || value === "declined") {
+    return value;
+  }
+  return null;
+}
 
 function asUser(row: Record<string, unknown>): AdminUserRow {
   const role = isAppRole(row.role) ? row.role : "father";
@@ -126,16 +135,26 @@ export async function loadAdminOrganization(groupId: string) {
 
 export async function loadAdminTrainings(): Promise<AdminTrainingRow[]> {
   const supabase = await createClient();
-  const [trainingsRes, sessionsRes] = await Promise.all([
+  const [trainingsRes, sessionsRes, groupsRes, reviewsRes] = await Promise.all([
     supabase.from("trainings").select("*").order("order_index"),
     supabase.from("sessions").select("*").order("order_index"),
+    supabase.from("groups").select("id, name").order("name"),
+    supabase.from("organization_training_reviews").select("group_id, training_id, status"),
   ]);
 
   if (trainingsRes.error) throw trainingsRes.error;
   if (sessionsRes.error) throw sessionsRes.error;
+  if (groupsRes.error) throw groupsRes.error;
+  if (reviewsRes.error) throw reviewsRes.error;
 
   const sessions = (sessionsRes.data ?? []) as Session[];
   const trainings = (trainingsRes.data ?? []) as Training[];
+  const groups = (groupsRes.data ?? []) as Array<{ id: string; name: string }>;
+  const reviews = (reviewsRes.data ?? []) as Array<{
+    group_id: string;
+    training_id: string;
+    status: string;
+  }>;
   const releaserIds = [
     ...new Set(trainings.map((training) => training.released_by).filter(Boolean)),
   ] as string[];
@@ -153,14 +172,28 @@ export async function loadAdminTrainings(): Promise<AdminTrainingRow[]> {
     }
   }
 
-  return trainings.map((training) => ({
-    ...training,
-    published: isTrainingPublished(training),
-    releasedByName: training.released_by ? names.get(training.released_by) ?? "Super-admin" : null,
-    sessions: sessions
-      .filter((session) => session.training_id === training.id)
-      .sort((a, b) => a.order_index - b.order_index || a.session_number - b.session_number),
-  }));
+  return trainings.map((training) => {
+    const statusByGroup = new Map(
+      reviews
+        .filter((review) => review.training_id === training.id)
+        .map((review) => [review.group_id, asReviewStatus(review.status)])
+    );
+    const releaseTargets: AdminReleaseTarget[] = groups.map((group) => ({
+      id: group.id,
+      name: group.name,
+      reviewStatus: statusByGroup.get(group.id) ?? null,
+    }));
+
+    return {
+      ...training,
+      published: isTrainingPublished(training),
+      releasedByName: training.released_by ? names.get(training.released_by) ?? "Super-admin" : null,
+      sessions: sessions
+        .filter((session) => session.training_id === training.id)
+        .sort((a, b) => a.order_index - b.order_index || a.session_number - b.session_number),
+      releaseTargets,
+    };
+  });
 }
 
 export async function loadAdminTraining(trainingId: string) {

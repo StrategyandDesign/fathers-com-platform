@@ -102,12 +102,14 @@ export async function releaseTrainingToManagers(
     trainingId: string;
     trainingTitle: string;
     releasedBy: string;
+    groupIds?: string[] | null;
   }
 ) {
   try {
     const { data, error } = await supabase.rpc("release_training_to_organizations", {
       p_training_id: input.trainingId,
       p_released_by: input.releasedBy,
+      p_group_ids: input.groupIds && input.groupIds.length > 0 ? input.groupIds : null,
     });
 
     if (error) {
@@ -115,14 +117,18 @@ export async function releaseTrainingToManagers(
       return { ok: false as const, notifyFailed: false };
     }
 
+    const rows = asReleaseRows(data);
+    const newCount = rows.filter((row) => row.is_new).length;
     const notify = await notifyNewRows(
-      asReleaseRows(data),
+      rows,
       input.trainingId,
       new Map([[input.trainingId, input.trainingTitle]])
     );
     return {
       ok: true as const,
-      notified: notify.sent > 0 || asReleaseRows(data).some((row) => row.is_new),
+      newCount,
+      targetCount: rows.length,
+      notified: notify.sent > 0 || newCount > 0,
       notifyFailed: notify.failed > 0,
     };
   } catch (error) {
