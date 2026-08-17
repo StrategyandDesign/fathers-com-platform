@@ -48,6 +48,8 @@ export type FatherProfileSummary = {
   taken_at: string;
   primary_edge: string | null;
   primary_determination?: string | null;
+  raw_scores?: unknown;
+  full_results?: unknown;
 };
 
 export function isSessionComplete(

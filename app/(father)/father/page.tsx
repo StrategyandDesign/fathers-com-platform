@@ -4,12 +4,13 @@ import Link from "next/link";
 import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { CoverPhoto } from "@/components/brand/cover";
 import { FirstVisitIntro } from "@/components/father/first-visit-intro";
+import { DimensionScores } from "@/components/profile/dimension-scores";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
-import { sessionCover } from "@/lib/brand/photos";
+import { BRAND_PHOTOS, sessionCover } from "@/lib/brand/photos";
 import { startProfile } from "@/lib/father/profile-actions";
 import { loadFatherHome } from "@/lib/father/data";
 import {
@@ -18,6 +19,7 @@ import {
 } from "@/lib/father/intro-seen";
 import { PROFILE_QUESTION_COUNT, firstUnanswered } from "@/lib/father/questions";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
+import { readStoredDimensionScores } from "@/lib/profile/score";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -71,6 +73,9 @@ export default async function FatherHomePage() {
   const continueLabel = nextInProgress ? "Continue session" : "Start this session";
   const profileResumeAt = draft ? firstUnanswered(draft.answers) : 1;
   const profileContinueHref = `/father/profile/take?q=${profileResumeAt}`;
+  const profileScores = profile
+    ? readStoredDimensionScores(profile.raw_scores, profile.full_results)
+    : null;
 
   const emptyEyebrow = hasTraining
     ? trainingCards.length === 1
@@ -226,76 +231,91 @@ export default async function FatherHomePage() {
           </section>
         )}
 
-        <section className="flex flex-col rounded-xl border border-border bg-card p-4 sm:p-5">
-          <p className={eyebrowClassName}>
-            Profile
-          </p>
+        <section className="relative flex min-h-56 flex-col overflow-hidden rounded-xl border border-border bg-card">
           {profile ? (
-            <>
-              <dl className="mt-4 space-y-2 text-sm">
-                <div className="flex justify-between gap-3">
-                  <dt className="shrink-0 text-muted-foreground">Primary Edge</dt>
-                  <dd className="min-w-0 text-right font-medium uppercase">
-                    {profile.primary_edge ?? "—"}
-                  </dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="shrink-0 text-muted-foreground">Determination</dt>
-                  <dd className="min-w-0 text-right font-medium uppercase">
-                    {profile.primary_determination ?? "—"}
-                  </dd>
-                </div>
-              </dl>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Taken{" "}
-                {new Date(profile.taken_at).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <div className="mt-auto pt-5">
-                <Link
-                  href="/father/profile/results"
-                  className={cn(buttonVariants({ variant: "outline" }), "w-full")}
-                >
-                  View your Profile
-                </Link>
-              </div>
-            </>
-          ) : draft ? (
-            <>
-              <p className="mt-3 font-heading text-base font-semibold">In progress</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Question {firstUnanswered(draft.answers)} of {PROFILE_QUESTION_COUNT}
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">{profileReminder}</p>
-              {profileIsPrimary ? null : (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/18 via-[#1c1c1c] to-[#101510]"
+            />
+          ) : (
+            <div className="pointer-events-none absolute inset-0" aria-hidden>
+              {/* Local public photo; plain img matches CoverPhoto usage. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={BRAND_PHOTOS.profile}
+                alt=""
+                className="h-full w-full object-cover object-[center_62%] opacity-30"
+              />
+              <div className="absolute inset-0 bg-[#141414]/70" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a] via-[#0a0a0a]/55 to-transparent" />
+            </div>
+          )}
+          <div className="relative z-10 flex flex-1 flex-col p-4 sm:p-5">
+            <p className={eyebrowClassName}>
+              Profile
+            </p>
+            {profile ? (
+              <>
+                <p className="mt-4 text-sm text-muted-foreground">Primary Determination</p>
+                <p className="font-heading mt-1 text-xl font-semibold tracking-tight uppercase">
+                  {profile.primary_determination ?? "—"}
+                </p>
+                <p className="mt-3 text-sm text-muted-foreground">Primary Edge</p>
+                <p className="mt-1 font-medium uppercase">{profile.primary_edge ?? "—"}</p>
+                {profileScores ? (
+                  <DimensionScores scores={profileScores} className="mt-5 space-y-4" />
+                ) : null}
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Taken{" "}
+                  {new Date(profile.taken_at).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
                 <div className="mt-auto pt-5">
                   <Link
-                    href={profileContinueHref}
+                    href="/father/profile/results"
                     className={cn(buttonVariants({ variant: "outline" }), "w-full")}
                   >
-                    Continue Profile
+                    View your Profile
                   </Link>
                 </div>
-              )}
-            </>
-          ) : (
-            <>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Optional. About twenty minutes, one question at a time.
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">{profileReminder}</p>
-              {profileIsPrimary ? null : (
-                <form action={startProfile} className="mt-auto pt-5">
-                  <Button type="submit" variant="outline" className="w-full">
-                    Take your Profile
-                  </Button>
-                </form>
-              )}
-            </>
-          )}
+              </>
+            ) : draft ? (
+              <>
+                <p className="mt-3 font-heading text-base font-semibold">In progress</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Question {firstUnanswered(draft.answers)} of {PROFILE_QUESTION_COUNT}
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{profileReminder}</p>
+                {profileIsPrimary ? null : (
+                  <div className="mt-auto pt-5">
+                    <Link
+                      href={profileContinueHref}
+                      className={cn(buttonVariants({ variant: "outline" }), "w-full")}
+                    >
+                      Continue Profile
+                    </Link>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Optional. About twenty minutes, one question at a time.
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">{profileReminder}</p>
+                {profileIsPrimary ? null : (
+                  <form action={startProfile} className="mt-auto pt-5">
+                    <Button type="submit" variant="outline" className="w-full">
+                      Take your Profile
+                    </Button>
+                  </form>
+                )}
+              </>
+            )}
+          </div>
         </section>
       </div>
 

@@ -1,7 +1,14 @@
 import { ProgressBar } from "@/components/ui/progress";
 import { PROFILE_THEMES } from "@/lib/profile/questions";
+import { cn } from "@/lib/utils";
 
-export function DimensionScores({ scores }: { scores: Record<string, number> }) {
+export function DimensionScores({
+  scores,
+  className,
+}: {
+  scores: Record<string, number>;
+  className?: string;
+}) {
   const groups = [
     { title: "Edges", items: PROFILE_THEMES.filter((theme) => theme.kind === "edge") },
     {
@@ -11,7 +18,7 @@ export function DimensionScores({ scores }: { scores: Record<string, number> }) 
   ];
 
   return (
-    <div className="mt-8 space-y-6">
+    <div className={cn("mt-8 space-y-6", className)}>
       {groups.map((group) => (
         <div key={group.title}>
           <p className="text-sm font-medium">{group.title}</p>

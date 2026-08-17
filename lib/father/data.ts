@@ -57,7 +57,7 @@ export async function loadFatherHome(fatherId: string) {
       supabase.from("session_progress").select("*").eq("father_id", fatherId),
       supabase
         .from("father_profiles")
-        .select("id, taken_at, primary_edge, primary_determination")
+        .select("id, taken_at, primary_edge, primary_determination, raw_scores, full_results")
         .eq("father_id", fatherId)
         .order("taken_at", { ascending: false })
         .limit(1)

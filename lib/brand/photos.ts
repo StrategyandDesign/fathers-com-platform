@@ -6,6 +6,7 @@ export const BRAND_PHOTOS = {
   teen: "/brand/photos/commitment-teen.png",
   park: "/brand/photos/knowing-park.png",
   bike: "/brand/photos/protecting-bike.png",
+  profile: "/brand/photos/profile-placeholder.png",
 } as const;
 
 const SESSION_CYCLE = [
