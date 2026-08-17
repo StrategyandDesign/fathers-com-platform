@@ -27,6 +27,7 @@ export type AdminParticipantRow = {
 
 export type AdminTrainingRow = Training & {
   published: boolean;
+  releasedByName: string | null;
   sessions: Session[];
 };
 

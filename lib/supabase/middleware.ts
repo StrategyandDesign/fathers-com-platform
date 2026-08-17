@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
   isAuthPath,
   ROLE_HOME,
+  resolveProfileRole,
   resolveRole,
   roleForPath,
 } from "@/lib/auth/roles";
@@ -62,15 +63,24 @@ export async function updateSession(request: NextRequest) {
     return redirectWithSession(supabaseResponse, url);
   }
 
-  if (user && isAuthPath(pathname)) {
+  let role = user ? resolveRole(user) : null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+    role = resolveProfileRole(profile?.role, user);
+  }
+
+  if (user && role && isAuthPath(pathname)) {
     const url = request.nextUrl.clone();
-    url.pathname = ROLE_HOME[resolveRole(user)];
+    url.pathname = ROLE_HOME[role];
     url.search = "";
     return redirectWithSession(supabaseResponse, url);
   }
 
-  if (user && requiredRole) {
-    const role = resolveRole(user);
+  if (user && role && requiredRole) {
     if (role !== requiredRole) {
       const url = request.nextUrl.clone();
       url.pathname = ROLE_HOME[role];

@@ -5,6 +5,18 @@ export const RATE_LIMITS = {
   "auth.signup": { limit: 5, windowMs: 60 * 60 * 1000 },
   "certificates.download": { limit: 30, windowMs: 5 * 60 * 1000 },
   "account.avatar": { limit: 8, windowMs: 15 * 60 * 1000 },
+  "account.org_photo": { limit: 20, windowMs: 15 * 60 * 1000 },
+  "manager.impact_export": { limit: 20, windowMs: 5 * 60 * 1000 },
+  "manager.nudge": { limit: 12, windowMs: 15 * 60 * 1000 },
+  "manager.bulk": { limit: 8, windowMs: 15 * 60 * 1000 },
+  "manager.note": { limit: 20, windowMs: 15 * 60 * 1000 },
+  "manager.review": { limit: 20, windowMs: 15 * 60 * 1000 },
+  "admin.release": { limit: 20, windowMs: 15 * 60 * 1000 },
+  "admin.support": { limit: 30, windowMs: 15 * 60 * 1000 },
+  "support.submit": { limit: 6, windowMs: 15 * 60 * 1000 },
+  "reviewer.summary_export": { limit: 20, windowMs: 5 * 60 * 1000 },
+  "reviewer.insights_export": { limit: 20, windowMs: 5 * 60 * 1000 },
+  "manager.reports_export": { limit: 20, windowMs: 5 * 60 * 1000 },
 } as const;
 
 export type RateLimitRoute = keyof typeof RATE_LIMITS;

@@ -102,11 +102,21 @@ export default async function ReviewerInsightsPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">Insights</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Anonymized cohort view. No names or emails.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">Insights</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Anonymized cohort view. No names or emails. Use Impact Summary for a
+            funder or board. The CSV is internal — it uses coded labels, not
+            names.
+          </p>
+        </div>
+        <Link
+          href={query ? `/reviewer/summary?${query}` : "/reviewer/summary"}
+          className={cn(buttonVariants(), "w-full sm:w-auto")}
+        >
+          Impact Summary
+        </Link>
       </div>
       <Flash error={params.error || parsed.error || insights.error} notice={params.notice} />
 
@@ -195,8 +205,15 @@ export default async function ReviewerInsightsPage({
           <Link
             href={`/api/reviewer/insights/export?${exportQuery}format=csv`}
             className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            title="Internal use only. Labels are anonymized codes, not names."
           >
             Download CSV
+          </Link>
+          <Link
+            href={query ? `/reviewer/summary?${query}` : "/reviewer/summary"}
+            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+          >
+            Impact Summary
           </Link>
         </div>
       </form>

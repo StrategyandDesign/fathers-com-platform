@@ -4,6 +4,7 @@ import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { loadAdminDashboard } from "@/lib/admin/data";
 import { requireRole } from "@/lib/auth/session";
+import { loadOpenSupportCount } from "@/lib/support/data";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +15,10 @@ export default async function AdminHomePage({
 }) {
   const params = await searchParams;
   await requireRole("admin");
-  const summary = await loadAdminDashboard();
+  const [summary, openSupportCount] = await Promise.all([
+    loadAdminDashboard(),
+    loadOpenSupportCount(),
+  ]);
 
   const stats = [
     { label: "Organizations", value: summary.organizationCount, href: "/admin/organizations" },
@@ -49,7 +53,7 @@ export default async function AdminHomePage({
         ))}
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-3">
+      <section className="grid gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Organizations</h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -65,7 +69,8 @@ export default async function AdminHomePage({
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Catalog</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Add a training. Leave it unpublished until the sessions are ready.
+            Add a training. Publish when sessions are ready, then release it to
+            managers.
           </p>
           <Link
             href="/admin/trainings/new"
@@ -84,6 +89,24 @@ export default async function AdminHomePage({
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
             Manage users
+          </Link>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">Support Inbox</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {openSupportCount == null
+              ? "Reports from fathers, managers, and reviewers."
+              : openSupportCount === 0
+                ? "No open reports."
+                : openSupportCount === 1
+                  ? "1 open report."
+                  : `${openSupportCount} open reports.`}
+          </p>
+          <Link
+            href="/admin/support"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
+            Open inbox
           </Link>
         </div>
       </section>

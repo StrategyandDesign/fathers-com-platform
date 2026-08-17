@@ -7,12 +7,18 @@ import { FirstVisitIntro } from "@/components/father/first-visit-intro";
 import { DimensionScores } from "@/components/profile/dimension-scores";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
+import { loadOrganizationName } from "@/lib/account/data";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
-import { BRAND_PHOTOS, sessionCover, trainingCover } from "@/lib/brand/photos";
+import { BRAND_PHOTOS } from "@/lib/brand/photos";
 import { startProfile } from "@/lib/father/profile-actions";
 import { loadFatherHome } from "@/lib/father/data";
+import {
+  loadFatherOrgPhotoCovers,
+  resolveHomeHeroCover,
+  resolveTrainingCardCover,
+} from "@/lib/org-photos/data";
 import {
   FATHERS_INTRO_SEEN_KEY,
   isFathersIntroSeenValue,
@@ -41,8 +47,16 @@ function sessionInProgress(progress: SessionProgress | null) {
 
 export default async function FatherHomePage() {
   const { user } = await requireRole("father");
-  const { trainingCards, next, profile, draft } = await loadFatherHome(user.id);
-  const customAssignments = await loadFatherAssignments(user.id);
+  const [{ trainingCards, next, profile, draft }, customAssignments, organizationName, orgPhotos] =
+    await Promise.all([
+      loadFatherHome(user.id),
+      loadFatherAssignments(user.id),
+      loadOrganizationName(user.id),
+      loadFatherOrgPhotoCovers(user.id),
+    ]);
+  const heroCover = next
+    ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl)
+    : null;
 
   const nextCard = next
     ? trainingCards.find((card) => card.training.id === next.training.id)
@@ -116,13 +130,14 @@ export default async function FatherHomePage() {
             total={nextTotal}
             completed={nextCompleted}
             percent={nextPercent}
-            coverSrc={sessionCover(next.session.session_number)}
+            coverSrc={heroCover}
+            organizationName={organizationName}
           >
             <div className="min-w-0 space-y-2">
               <p className={eyebrowClassName}>{heroLabel}</p>
               <section className="overflow-hidden rounded-xl border border-border bg-card">
                 <div className="h-24 overflow-hidden bg-[#101510] sm:h-36 lg:h-44">
-                  <CoverPhoto src={sessionCover(next.session.session_number)} />
+                  <CoverPhoto src={heroCover} />
                 </div>
                 <div className="space-y-5 p-4 sm:p-5 lg:p-6">
                   <div>
@@ -275,7 +290,7 @@ export default async function FatherHomePage() {
                 </p>
                 <div className="mt-auto pt-5">
                   <Link
-                    href="/father/profile/results"
+                    href="/father/profile"
                     className={cn(buttonVariants({ variant: "outline" }), "w-full")}
                   >
                     View your Profile
@@ -284,7 +299,9 @@ export default async function FatherHomePage() {
               </>
             ) : draft ? (
               <>
-                <p className="mt-3 font-heading text-base font-semibold">In progress</p>
+                <h2 className="font-heading mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
+                  In progress
+                </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Question {firstUnanswered(draft.answers)} of {PROFILE_QUESTION_COUNT}
                 </p>
@@ -302,6 +319,9 @@ export default async function FatherHomePage() {
               </>
             ) : (
               <>
+                <h2 className="font-heading mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
+                  Take your Profile
+                </h2>
                 <p className="mt-3 text-sm text-muted-foreground">
                   Optional. About twenty minutes, one question at a time.
                 </p>
@@ -352,7 +372,12 @@ export default async function FatherHomePage() {
                   )}
                 >
                   <div className="h-28 overflow-hidden rounded-t-xl bg-[#101510] sm:h-32">
-                    <CoverPhoto src={trainingCover(training.slug)} />
+                    <CoverPhoto
+                      src={resolveTrainingCardCover(
+                        training.slug,
+                        orgPhotos.trainingUrls[training.slug]
+                      )}
+                    />
                   </div>
                   <div className="p-4 sm:p-5">
                     <p className="font-heading text-sm font-semibold sm:text-base">

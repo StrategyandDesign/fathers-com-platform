@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { ROLE_HOME, resolveRole, type AppRole } from "@/lib/auth/roles";
+import { ROLE_HOME, resolveProfileRole, type AppRole } from "@/lib/auth/roles";
 import { createClient } from "@/lib/supabase/server";
 
 export async function getAuthContext() {
@@ -15,7 +15,7 @@ export async function getAuthContext() {
 
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("deactivated_at")
+    .select("deactivated_at, role")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -24,7 +24,11 @@ export async function getAuthContext() {
     return { user: null, role: null as AppRole | null, deactivated: true };
   }
 
-  return { user, role: resolveRole(user), deactivated: false };
+  return {
+    user,
+    role: resolveProfileRole(profile?.role, user),
+    deactivated: false,
+  };
 }
 
 export async function requireRole(allowed: AppRole) {

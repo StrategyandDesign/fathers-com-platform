@@ -3,11 +3,12 @@ import { redirect } from "next/navigation";
 
 import { Flash } from "@/components/manager/flash";
 import { ProfileAnswerOptions } from "@/components/profile/answer-options";
+import { ProfileSaveExitButton } from "@/components/profile/save-exit-button";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
-import { saveProfileProgress } from "@/lib/father/profile-actions";
-import { ensureProfileDraft, loadLatestProfile } from "@/lib/father/profile";
+import { saveAndExitProfile, saveProfileProgress } from "@/lib/father/profile-actions";
+import { ensureProfileDraft, loadLatestProfile, loadProfileDraft } from "@/lib/father/profile";
 import {
   PROFILE_QUESTION_COUNT,
   PROFILE_SCALE,
@@ -24,13 +25,16 @@ export default async function FatherProfileTakePage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("father");
-  const completed = await loadLatestProfile(user.id);
+  const [completed, existingDraft] = await Promise.all([
+    loadLatestProfile(user.id),
+    loadProfileDraft(user.id),
+  ]);
 
-  if (completed) {
+  if (completed && !existingDraft) {
     redirect("/father/profile/results");
   }
 
-  const draft = await ensureProfileDraft(user.id);
+  const draft = existingDraft ?? (await ensureProfileDraft(user.id));
   const requested = Number(params.q ?? draft.current_index);
   const questionId = Number.isInteger(requested)
     ? Math.min(PROFILE_QUESTION_COUNT, Math.max(1, requested))
@@ -91,10 +95,7 @@ export default async function FatherProfileTakePage({
               name="intent"
               value="next"
               data-profile-advance
-              className={cn(
-                buttonVariants({ variant: "secondary" }),
-                "w-full lg:order-2 lg:w-auto"
-              )}
+              className={cn(buttonVariants(), "w-full lg:order-2 lg:w-auto")}
             >
               Next
             </button>
@@ -111,19 +112,7 @@ export default async function FatherProfileTakePage({
               Back
             </button>
           ) : null}
-          <button
-            type="submit"
-            name="intent"
-            value="exit"
-            formNoValidate
-            formAction={saveProfileProgress}
-            className={cn(
-              buttonVariants({ variant: "secondary" }),
-              "w-full lg:order-3 lg:w-auto max-lg:border-0 max-lg:bg-transparent max-lg:underline max-lg:underline-offset-4 max-lg:hover:bg-transparent max-lg:hover:text-foreground/80"
-            )}
-          >
-            Save & Exit
-          </button>
+          <ProfileSaveExitButton action={saveAndExitProfile} />
         </div>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {isLast

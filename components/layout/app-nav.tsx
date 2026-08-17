@@ -10,6 +10,7 @@ import {
   FileSpreadsheet,
   GraduationCap,
   Home,
+  Inbox,
   LayoutDashboard,
   Settings,
   User,
@@ -91,7 +92,7 @@ export const NAV: Record<AppRole, NavItem[]> = {
       href: "/reviewer",
       label: "Insights",
       icon: BarChart3,
-      match: (path) => path === "/reviewer",
+      match: (path) => path === "/reviewer" || path.startsWith("/reviewer/summary"),
     },
     {
       href: "/reviewer/account",
@@ -124,6 +125,12 @@ export const NAV: Record<AppRole, NavItem[]> = {
       label: "Users",
       icon: Users,
       match: (path) => path.startsWith("/admin/users"),
+    },
+    {
+      href: "/admin/support",
+      label: "Inbox",
+      icon: Inbox,
+      match: (path) => path.startsWith("/admin/support"),
     },
     {
       href: "/admin/account",

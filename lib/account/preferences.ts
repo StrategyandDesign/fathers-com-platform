@@ -10,6 +10,7 @@ export const NOTIFICATION_PREF_KEYS = [
   "account_security_alerts",
   "session_reminders",
   "new_trainings",
+  "training_releases",
 ] as const;
 
 export type NotificationPrefKey = (typeof NOTIFICATION_PREF_KEYS)[number];
@@ -26,6 +27,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   account_security_alerts: true,
   session_reminders: true,
   new_trainings: true,
+  training_releases: true,
 };
 
 export type NotificationToggle = {
@@ -36,34 +38,14 @@ export type NotificationToggle = {
 
 const MANAGER_TOGGLES: NotificationToggle[] = [
   {
-    key: "participant_joined",
-    label: "New participant joins the group",
-    hint: "When a father uses your invite code.",
-  },
-  {
-    key: "session_completed",
-    label: "Participant completes a session",
-    hint: "Film, check-in, and action are done.",
-  },
-  {
-    key: "training_completed",
-    label: "Participant completes a training",
-    hint: "Every session in a training is done.",
-  },
-  {
-    key: "profile_completed",
-    label: "Participant completes a profile",
-    hint: "Father Profile results are in.",
+    key: "training_releases",
+    label: "New trainings available for review",
+    hint: "When a Super-admin releases a training for your organization to preview and accept.",
   },
   {
     key: "certificate_sent",
     label: "Certificate sent",
     hint: "When you issue a completion certificate.",
-  },
-  {
-    key: "weekly_report_ready",
-    label: "Weekly report ready",
-    hint: "Saved for when weekly email reports ship.",
   },
   {
     key: "account_security_alerts",
@@ -76,7 +58,7 @@ const FATHER_TOGGLES: NotificationToggle[] = [
   {
     key: "session_reminders",
     label: "Session reminders",
-    hint: "When a session is waiting on him.",
+    hint: "When a session is waiting, including a calm note from his manager.",
   },
   {
     key: "new_trainings",

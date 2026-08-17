@@ -3,12 +3,13 @@ import { loadProfileDraft } from "@/lib/father/profile";
 import {
   catalogSessionTotal,
   isSessionComplete,
-  isTrainingPublished,
+  isTrainingVisibleInCatalog,
   type FatherProfileSummary,
   type Session,
   type SessionProgress,
   type Training,
 } from "@/lib/father/types";
+import { loadAcceptedTrainingIds } from "@/lib/manager/reviews";
 import type { Certificate } from "@/lib/manager/types";
 
 function asProgress(row: SessionProgress): SessionProgress {
@@ -28,6 +29,35 @@ function sortByDisplay(a: Session, b: Session) {
 
 function sortByCatalog(a: Session, b: Session) {
   return a.session_number - b.session_number || a.order_index - b.order_index;
+}
+
+export function isSessionUnlocked(
+  trainingSessions: Session[],
+  progressBySession: Map<string, SessionProgress>,
+  sessionId: string
+) {
+  if (isSessionComplete(progressBySession.get(sessionId) ?? null)) {
+    return true;
+  }
+
+  const catalog = [...trainingSessions].sort(sortByCatalog);
+  const index = catalog.findIndex((session) => session.id === sessionId);
+  if (index <= 0) return index === 0;
+
+  return catalog
+    .slice(0, index)
+    .every((session) => isSessionComplete(progressBySession.get(session.id) ?? null));
+}
+
+function firstReachableSessionId(
+  trainingSessions: Session[],
+  progressBySession: Map<string, SessionProgress>
+) {
+  const catalog = [...trainingSessions].sort(sortByCatalog);
+  const incomplete = catalog.find(
+    (session) => !isSessionComplete(progressBySession.get(session.id) ?? null)
+  );
+  return incomplete?.id ?? catalog[0]?.id ?? null;
 }
 
 function pickNextSession(
@@ -50,7 +80,7 @@ function pickNextSession(
 export async function loadFatherHome(fatherId: string) {
   const supabase = await createClient();
 
-  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes, certificatesRes, assignmentsRes] =
+  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes, certificatesRes, assignmentsRes, accepted] =
     await Promise.all([
       supabase.from("trainings").select("*").order("order_index"),
       supabase.from("sessions").select("*").order("order_index"),
@@ -64,7 +94,11 @@ export async function loadFatherHome(fatherId: string) {
         .maybeSingle(),
       loadProfileDraft(fatherId),
       supabase.from("certificates").select("*").eq("father_id", fatherId),
-      supabase.from("training_assignments").select("training_id").eq("father_id", fatherId),
+      supabase
+        .from("training_assignments")
+        .select("training_id, assigned_at")
+        .eq("father_id", fatherId),
+      loadAcceptedTrainingIds(),
     ]);
 
   if (trainingsRes.error) throw trainingsRes.error;
@@ -75,8 +109,13 @@ export async function loadFatherHome(fatherId: string) {
   if (assignmentsRes.error) throw assignmentsRes.error;
   const draft = draftRes;
   const certificates = (certificatesRes.data ?? []) as Certificate[];
-  const assignedIds = new Set(
-    ((assignmentsRes.data ?? []) as Array<{ training_id: string }>).map((row) => row.training_id)
+  const assignments = (assignmentsRes.data ?? []) as Array<{
+    training_id: string;
+    assigned_at: string | null;
+  }>;
+  const assignedIds = new Set(assignments.map((row) => row.training_id));
+  const assignedAt = new Map(
+    assignments.map((row) => [row.training_id, Date.parse(row.assigned_at ?? "") || 0])
   );
 
   const allTrainings = (trainingsRes.data ?? []) as Training[];
@@ -90,13 +129,16 @@ export async function loadFatherHome(fatherId: string) {
   const progressSessionIds = new Set(progressBySession.keys());
   const certificateIds = new Set(certificates.map((row) => row.training_id));
 
-  const trainings = allTrainings.filter((training) => {
-    if (isTrainingPublished(training)) return true;
-    if (assignedIds.has(training.id) || certificateIds.has(training.id)) return true;
-    return sessions.some(
-      (session) => session.training_id === training.id && progressSessionIds.has(session.id)
-    );
-  });
+  const trainings = allTrainings.filter((training) =>
+    isTrainingVisibleInCatalog(training, {
+      accepted: accepted.ids.has(training.id),
+      assigned: assignedIds.has(training.id),
+      hasCertificate: certificateIds.has(training.id),
+      hasProgress: sessions.some(
+        (session) => session.training_id === training.id && progressSessionIds.has(session.id)
+      ),
+    })
+  );
 
   const trainingCards = trainings.map((training) => {
     const trainingSessions = sessions
@@ -115,6 +157,7 @@ export async function loadFatherHome(fatherId: string) {
         number: session.session_number,
         title: session.title,
         done: isSessionComplete(progressBySession.get(session.id) ?? null),
+        unlocked: isSessionUnlocked(trainingSessions, progressBySession, session.id),
       })),
       completed,
       total: catalogSessionTotal(training, trainingSessions.length),
@@ -124,7 +167,14 @@ export async function loadFatherHome(fatherId: string) {
     };
   });
 
-  const activeCard = trainingCards.find((card) => card.next);
+  const activeCard = [...trainingCards]
+    .sort((left, right) => {
+      const leftAssigned = assignedAt.get(left.training.id) ?? 0;
+      const rightAssigned = assignedAt.get(right.training.id) ?? 0;
+      if (leftAssigned !== rightAssigned) return rightAssigned - leftAssigned;
+      return left.training.order_index - right.training.order_index;
+    })
+    .find((card) => card.next);
 
   return {
     trainingCards,
@@ -170,9 +220,80 @@ export async function loadSessionContext(fatherId: string, sessionId: string) {
 
   if (progressError) throw progressError;
 
+  const typedSession = session as Session;
+  const typedTraining = training as Training;
+
+  const { data: siblings, error: siblingsError } = await supabase
+    .from("sessions")
+    .select("*")
+    .eq("training_id", typedSession.training_id)
+    .order("order_index");
+
+  if (siblingsError) throw siblingsError;
+
+  const trainingSessions = (siblings ?? []) as Session[];
+  const siblingIds = trainingSessions.map((row) => row.id);
+  const { data: siblingProgress, error: siblingProgressError } =
+    siblingIds.length === 0
+      ? { data: [] as SessionProgress[], error: null }
+      : await supabase
+          .from("session_progress")
+          .select("*")
+          .eq("father_id", fatherId)
+          .in("session_id", siblingIds);
+
+  if (siblingProgressError) throw siblingProgressError;
+
+  const progressBySession = new Map(
+    ((siblingProgress ?? []) as SessionProgress[]).map((row) => [row.session_id, asProgress(row)])
+  );
+  const currentProgress = progress
+    ? asProgress(progress as SessionProgress)
+    : progressBySession.get(sessionId) ?? null;
+  if (currentProgress) {
+    progressBySession.set(sessionId, currentProgress);
+  }
+
+  const unlocked = isSessionUnlocked(trainingSessions, progressBySession, sessionId);
+
+  const [accepted, assignmentRes, certificateRes] = await Promise.all([
+    loadAcceptedTrainingIds(),
+    supabase
+      .from("training_assignments")
+      .select("training_id")
+      .eq("father_id", fatherId)
+      .eq("training_id", typedTraining.id)
+      .maybeSingle(),
+    supabase
+      .from("certificates")
+      .select("id")
+      .eq("father_id", fatherId)
+      .eq("training_id", typedTraining.id)
+      .maybeSingle(),
+  ]);
+
+  if (assignmentRes.error) throw assignmentRes.error;
+  if (certificateRes.error) throw certificateRes.error;
+
+  if (
+    !isTrainingVisibleInCatalog(typedTraining, {
+      accepted: accepted.ids.has(typedTraining.id),
+      assigned: Boolean(assignmentRes.data),
+      hasProgress: progressBySession.size > 0,
+      hasCertificate: Boolean(certificateRes.data),
+    })
+  ) {
+    return null;
+  }
+
   return {
-    session: session as Session,
-    training: training as Training,
-    progress: progress ? asProgress(progress as SessionProgress) : null,
+    session: typedSession,
+    training: typedTraining,
+    progress: currentProgress,
+    trainingSessions,
+    unlocked,
+    redirectSessionId: unlocked
+      ? sessionId
+      : firstReachableSessionId(trainingSessions, progressBySession) ?? sessionId,
   };
 }

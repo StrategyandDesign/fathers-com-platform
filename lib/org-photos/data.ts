@@ -1,0 +1,206 @@
+import { sessionCover, trainingCover } from "@/lib/brand/photos";
+import { isTrainingPublished, type Training } from "@/lib/father/types";
+import { loadManagerGroups } from "@/lib/manager/data";
+import type { Group } from "@/lib/manager/types";
+import {
+  HOME_HERO_SLOT,
+  homeHeroGuidance,
+  parseTrainingSlug,
+  slotCopy,
+  trainingCardGuidance,
+  trainingPhotoSlot,
+  type OrganizationPhotoSlotView,
+} from "@/lib/org-photos/slots";
+import { ORG_PHOTOS_BUCKET, signStorageUrls } from "@/lib/storage";
+import { createClient } from "@/lib/supabase/server";
+
+export type { OrganizationPhotoSlotView };
+
+export type OrganizationPhotoRow = {
+  group_id: string;
+  slot: string;
+  storage_path: string;
+  updated_at: string;
+};
+
+export type OrganizationPhotoSection = {
+  organization: Group;
+  slots: OrganizationPhotoSlotView[];
+};
+
+export type FatherOrgPhotoCovers = {
+  organizationName: string | null;
+  heroUrl: string | null;
+  trainingUrls: Record<string, string>;
+};
+
+/**
+ * Trainings already have distinct covers via trainingCover(slug).
+ * Only fundamentals ships a platform photo; anger/reentry fall back to SceneArt.
+ * Store one override per training slug so each card can be customized.
+ * Home hero is a single org slot (the Up Next card), not per-session.
+ * Fathers in more than one group use the earliest membership for overrides.
+ */
+export function resolveHomeHeroCover(
+  sessionNumber: number,
+  customUrl?: string | null
+) {
+  return customUrl || sessionCover(sessionNumber);
+}
+
+export function resolveTrainingCardCover(slug: string, customUrl?: string | null) {
+  return customUrl || trainingCover(slug);
+}
+
+function organizationName(name: string | null | undefined) {
+  const trimmed = name?.trim();
+  return trimmed || "this organization";
+}
+
+async function loadPhotoRows(groupIds: string[]) {
+  if (groupIds.length === 0) return [] as OrganizationPhotoRow[];
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("organization_photos")
+    .select("group_id, slot, storage_path, updated_at")
+    .in("group_id", groupIds);
+  if (error) {
+    const missing =
+      error.code === "42P01" ||
+      error.code === "PGRST205" ||
+      /organization_photos/i.test(error.message);
+    if (missing) return [];
+    throw error;
+  }
+  return (data ?? []) as OrganizationPhotoRow[];
+}
+
+export async function loadCatalogTrainings() {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("trainings")
+    .select("id, slug, title, description, session_count, order_index, published")
+    .order("order_index");
+  if (error) throw error;
+  return ((data ?? []) as Training[]).filter((training) => isTrainingPublished(training));
+}
+
+export async function loadManagerOrganizationPhotos(
+  managerId: string
+): Promise<OrganizationPhotoSection[]> {
+  const [organizations, trainings] = await Promise.all([
+    loadManagerGroups(managerId),
+    loadCatalogTrainings(),
+  ]);
+  const rows = await loadPhotoRows(organizations.map((org) => org.id));
+  const supabase = await createClient();
+  const signed = await signStorageUrls(
+    supabase,
+    ORG_PHOTOS_BUCKET,
+    rows.map((row) => row.storage_path)
+  );
+
+  const rowsByGroup = new Map<string, Map<string, OrganizationPhotoRow>>();
+  for (const row of rows) {
+    const map = rowsByGroup.get(row.group_id) ?? new Map<string, OrganizationPhotoRow>();
+    map.set(row.slot, row);
+    rowsByGroup.set(row.group_id, map);
+  }
+
+  return organizations.map((organization) => {
+    const orgName = organizationName(organization.name);
+    const custom = rowsByGroup.get(organization.id) ?? new Map();
+    const slots: OrganizationPhotoSlotView[] = [];
+
+    const heroGuidance = homeHeroGuidance();
+    const heroRow = custom.get(HOME_HERO_SLOT);
+    const heroCustom = heroRow ? signed.get(heroRow.storage_path) ?? null : null;
+    const heroCopy = slotCopy(orgName, "home_hero");
+    slots.push({
+      slot: HOME_HERO_SLOT,
+      guidance: heroGuidance,
+      where: heroCustom
+        ? heroCopy.where
+        : `${heroCopy.where} Until you replace it, the card uses the platform photo for whichever session is next.`,
+      applies: heroCopy.applies,
+      previewUrl: heroCustom,
+      defaultUrl: sessionCover(1),
+      isCustom: Boolean(heroCustom),
+      previewLabel: heroCustom
+        ? `Custom for ${orgName}`
+        : "Platform default (next session’s photo)",
+    });
+
+    for (const training of trainings) {
+      const guidance = trainingCardGuidance(training.slug, training.title);
+      const row = custom.get(trainingPhotoSlot(training.slug));
+      const customUrl = row ? signed.get(row.storage_path) ?? null : null;
+      const copy = slotCopy(orgName, "training");
+      slots.push({
+        slot: guidance.slot,
+        guidance,
+        where: copy.where,
+        applies: copy.applies,
+        previewUrl: customUrl,
+        defaultUrl: trainingCover(training.slug),
+        isCustom: Boolean(customUrl),
+        previewLabel: customUrl ? `Custom for ${orgName}` : "Platform default",
+      });
+    }
+
+    return { organization, slots };
+  });
+}
+
+export async function loadFatherOrgPhotoCovers(
+  fatherId: string
+): Promise<FatherOrgPhotoCovers> {
+  const empty: FatherOrgPhotoCovers = {
+    organizationName: null,
+    heroUrl: null,
+    trainingUrls: {},
+  };
+
+  const supabase = await createClient();
+  const { data: membership, error: memberError } = await supabase
+    .from("group_members")
+    .select("group_id, joined_at")
+    .eq("father_id", fatherId)
+    .order("joined_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (memberError) throw memberError;
+  if (!membership?.group_id) return empty;
+
+  const [groupRes, rows] = await Promise.all([
+    supabase.from("groups").select("id, name").eq("id", membership.group_id).maybeSingle(),
+    loadPhotoRows([membership.group_id]),
+  ]);
+  if (groupRes.error) throw groupRes.error;
+
+  const signed = await signStorageUrls(
+    supabase,
+    ORG_PHOTOS_BUCKET,
+    rows.map((row) => row.storage_path)
+  );
+
+  const trainingUrls: Record<string, string> = {};
+  let heroUrl: string | null = null;
+  for (const row of rows) {
+    const url = signed.get(row.storage_path);
+    if (!url) continue;
+    if (row.slot === HOME_HERO_SLOT) {
+      heroUrl = url;
+      continue;
+    }
+    const slug = parseTrainingSlug(row.slot);
+    if (slug) trainingUrls[slug] = url;
+  }
+
+  return {
+    organizationName: organizationName(groupRes.data?.name),
+    heroUrl,
+    trainingUrls,
+  };
+}

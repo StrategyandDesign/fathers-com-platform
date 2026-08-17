@@ -63,7 +63,10 @@ function ProfileAnswerRadios({
   }
 
   return (
-    <div className={cn("space-y-1", locked && "pointer-events-none")}>
+    <div
+      className={cn("space-y-1", locked && "pointer-events-none")}
+      aria-invalid={invalid || undefined}
+    >
       {options.map((option) => (
         <label key={option.value} className={radioOptionClassName}>
           <input
@@ -72,7 +75,6 @@ function ProfileAnswerRadios({
             value={option.value}
             defaultChecked={saved === option.value}
             required
-            aria-invalid={invalid || undefined}
             className="size-4 accent-primary"
             onClick={handleClick}
           />

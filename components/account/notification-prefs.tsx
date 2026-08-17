@@ -49,7 +49,9 @@ export function NotificationPrefs({
       <div>
         <h2 className="font-heading text-lg font-semibold">Notification preferences</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Saved to your account. Emails are sent only for the items you leave on.
+          {role === "manager"
+            ? "Saved to your account. Emails and in-app notices are sent only for the items you leave on."
+            : "Saved to your account. Emails are sent only for the items you leave on."}
         </p>
       </div>
       {toggles.length === 0 ? (

@@ -23,6 +23,55 @@ const ACTION_NOTE_HINT =
 export const ACTION_NOTE_LABEL = ACTION_NOTE_HINT;
 export const ACTION_NOTE_PLACEHOLDER =
   "Teaching point only — no personal details.";
+export const ACTION_ANSWER_KEY = "action_answer";
+
+export type SkillChoice = {
+  value: string;
+  label: string;
+};
+
+export type ParsedSkillPrompt = {
+  stem: string;
+  choices: SkillChoice[] | null;
+};
+
+export function parseSkillPrompt(text: string): ParsedSkillPrompt {
+  const marker = /(?:^|\s)([A-D])\)\s+/g;
+  const hits: Array<{ letter: string; index: number }> = [];
+  let match: RegExpExecArray | null;
+  while ((match = marker.exec(text))) {
+    const leadingSpace = match[0].startsWith(" ") ? 1 : 0;
+    hits.push({ letter: match[1], index: match.index + leadingSpace });
+  }
+  if (hits.length < 2) {
+    return { stem: text, choices: null };
+  }
+
+  const stem = text.slice(0, hits[0].index).trim();
+  const choices = hits.map((hit, index) => {
+    const start = hit.index + hit.letter.length + 2;
+    const end = hits[index + 1]?.index ?? text.length;
+    return {
+      value: hit.letter,
+      label: text.slice(start, end).trim(),
+    };
+  });
+
+  return {
+    stem: stem || "Choose the correct teaching point.",
+    choices,
+  };
+}
+
+export function choiceIsSelected(saved: string | undefined, choice: SkillChoice) {
+  if (!saved) return false;
+  const value = saved.trim();
+  return (
+    value === choice.value ||
+    value.startsWith(`${choice.value})`) ||
+    value === choice.label
+  );
+}
 
 function pack(
   q1: string,

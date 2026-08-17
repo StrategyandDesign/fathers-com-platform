@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 
-import { uploadAvatar } from "@/lib/account/actions";
+import { removeAvatar, uploadAvatar } from "@/lib/account/actions";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Button } from "@/components/ui/button";
 import { interactiveControlClassName } from "@/lib/ui";
@@ -58,9 +58,22 @@ export function AvatarUpload({
           {name || email?.split("@")[0] || "Account"}
         </p>
         <p className="truncate text-sm text-muted-foreground">{email}</p>
-        <Button type="submit" variant="outline" className="w-full sm:w-auto" disabled={pending}>
-          {pending ? "Saving…" : "Upload photo"}
-        </Button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button type="submit" variant="outline" className="w-full sm:w-auto" disabled={pending}>
+            {pending ? "Saving…" : "Upload photo"}
+          </Button>
+          {avatarUrl ? (
+            <Button
+              type="submit"
+              formAction={removeAvatar}
+              variant="ghost"
+              className="w-full sm:w-auto"
+              disabled={pending}
+            >
+              Remove photo
+            </Button>
+          ) : null}
+        </div>
         <p className="text-xs text-muted-foreground">JPEG, PNG, WebP, or GIF. 2 MB max.</p>
       </div>
     </form>

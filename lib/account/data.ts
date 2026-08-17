@@ -1,6 +1,40 @@
+import { cache } from "react";
+
 import { parseNotificationPreferences } from "@/lib/account/preferences";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrl } from "@/lib/storage";
+
+export const loadOrganizationName = cache(async (userId: string) => {
+  const supabase = await createClient();
+  const { data: memberships, error: membershipError } = await supabase
+    .from("group_members")
+    .select("group_id")
+    .eq("father_id", userId)
+    .order("joined_at", { ascending: true });
+
+  if (membershipError) throw membershipError;
+
+  const groupIds = [
+    ...new Set((memberships ?? []).map((row) => String(row.group_id))),
+  ];
+  if (groupIds.length === 0) return null;
+
+  const { data: groups, error: groupError } = await supabase
+    .from("groups")
+    .select("id, name")
+    .in("id", groupIds);
+
+  if (groupError) throw groupError;
+
+  const nameById = new Map(
+    ((groups ?? []) as Array<{ id: string; name: string | null }>).map((group) => [
+      group.id,
+      group.name?.trim() || "",
+    ])
+  );
+  const names = groupIds.map((id) => nameById.get(id) ?? "").filter(Boolean);
+  return names.length > 0 ? names.join(", ") : null;
+});
 
 export async function loadCurrentAvatarUrl(userId: string) {
   const supabase = await createClient();

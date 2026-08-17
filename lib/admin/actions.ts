@@ -5,9 +5,22 @@ import { redirect } from "next/navigation";
 
 import { slugify } from "@/lib/admin/slug";
 import { loadSessionUsage, loadTrainingUsage } from "@/lib/admin/data";
-import { isAppRole } from "@/lib/auth/roles";
-import { requireRole } from "@/lib/auth/session";
+import {
+  isLegacyCatalogTraining,
+  RELEASE_CONFIRM,
+  releaseTrainingToManagers,
+  seedGroupTrainingReviews,
+  UNRELEASE_CONFIRM,
+  unreleaseTrainingFromManagers,
+} from "@/lib/admin/release";
+import { isAppRole, ROLE_HOME } from "@/lib/auth/roles";
+import { getAuthContext, requireRole } from "@/lib/auth/session";
+import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
+
+const RELEASE_WRITE_ERROR = "Unable to update release status. Please try again.";
+const RELEASE_NOTIFY_WARNING =
+  "Some manager emails didn’t send. The training is still released for review.";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
@@ -17,11 +30,39 @@ function ok(path: string, notice: string): never {
   redirect(`${path}?notice=${encodeURIComponent(notice)}`);
 }
 
+function finish(path: string, input: { notice?: string; error?: string }): never {
+  const params = new URLSearchParams();
+  if (input.error) params.set("error", input.error);
+  if (input.notice) params.set("notice", input.notice);
+  redirect(`${path}?${params.toString()}`);
+}
+
+async function requireSuperAdmin() {
+  const { user, role, deactivated } = await getAuthContext();
+  if (deactivated) {
+    redirect("/login?error=This account has been deactivated.");
+  }
+  if (!user || !role) {
+    redirect("/login");
+  }
+  if (role !== "admin") {
+    redirect(
+      `${ROLE_HOME[role]}?error=${encodeURIComponent("You need Super-admin access to change release status.")}`
+    );
+  }
+  return { user, role };
+}
+
 function revalidateAdmin(extra?: string) {
   revalidatePath("/admin");
   revalidatePath("/admin/organizations");
   revalidatePath("/admin/trainings");
   revalidatePath("/admin/users");
+  revalidatePath("/manager");
+  revalidatePath("/manager/reviews");
+  revalidatePath("/manager/participants");
+  revalidatePath("/father");
+  revalidatePath("/father/trainings");
   if (extra) revalidatePath(extra);
 }
 
@@ -83,12 +124,19 @@ export async function createOrganization(formData: FormData) {
     fail("/admin/organizations/new", "That user is not a manager. Change their role first.");
   }
 
-  const { error } = await supabase.from("groups").insert({
-    name,
-    manager_id: managerId,
-  });
+  const { data, error } = await supabase
+    .from("groups")
+    .insert({
+      name,
+      manager_id: managerId,
+    })
+    .select("id")
+    .single();
 
   if (error) fail("/admin/organizations/new", error.message);
+  if (data?.id) {
+    await seedGroupTrainingReviews(supabase, data.id);
+  }
 
   revalidateAdmin();
   ok("/admin/organizations", "Organization created.");
@@ -255,6 +303,101 @@ export async function setTrainingPublished(formData: FormData) {
 
   revalidateAdmin(path);
   ok(path, published ? "Training published." : "Training unpublished. Existing progress stays reachable.");
+}
+
+export async function releaseTraining(formData: FormData) {
+  const { user } = await requireSuperAdmin();
+  const trainingId = String(formData.get("training_id") ?? "");
+  const confirm = String(formData.get("confirm") ?? "").trim();
+  const path = trainingId ? `/admin/trainings/${trainingId}` : "/admin/trainings";
+
+  if (!trainingId) fail("/admin/trainings", "That training was not found.");
+  if (!(await allowActionRateLimit("admin.release"))) {
+    fail(path, "Too many release actions just now. Try again in a minute.");
+  }
+
+  const supabase = await createClient();
+  const { data: current, error: currentError } = await supabase
+    .from("trainings")
+    .select("id, title, published, released_at, first_published_at, session_count")
+    .eq("id", trainingId)
+    .maybeSingle();
+
+  if (currentError) fail(path, RELEASE_WRITE_ERROR);
+  if (!current) fail("/admin/trainings", "That training was not found.");
+  if (current.released_at) {
+    ok(path, "This training is already released for review.");
+  }
+  if (current.published !== true) {
+    fail(path, "Publish the training first, then release it to managers.");
+  }
+
+  const { count, error: countError } = await supabase
+    .from("sessions")
+    .select("id", { count: "exact", head: true })
+    .eq("training_id", trainingId);
+  if (countError) fail(path, RELEASE_WRITE_ERROR);
+  if ((count ?? current.session_count ?? 0) < 1) {
+    fail(path, "Add at least one session before releasing to managers.");
+  }
+
+  if (isLegacyCatalogTraining(current) && confirm !== RELEASE_CONFIRM) {
+    fail(path, `Type ${RELEASE_CONFIRM} to release a catalog training. Managers must accept it before they can assign it.`);
+  }
+
+  const result = await releaseTrainingToManagers(supabase, {
+    trainingId,
+    trainingTitle: current.title,
+    releasedBy: user.id,
+  });
+
+  if (!result.ok) {
+    fail(path, RELEASE_WRITE_ERROR);
+  }
+
+  revalidateAdmin(path);
+  finish(path, {
+    notice: result.notified
+      ? "Released to managers. Eligible managers were notified."
+      : "Released to managers.",
+    error: result.notifyFailed ? RELEASE_NOTIFY_WARNING : undefined,
+  });
+}
+
+export async function unreleaseTraining(formData: FormData) {
+  await requireSuperAdmin();
+  const trainingId = String(formData.get("training_id") ?? "");
+  const confirm = String(formData.get("confirm") ?? "").trim();
+  const path = trainingId ? `/admin/trainings/${trainingId}` : "/admin/trainings";
+
+  if (!trainingId) fail("/admin/trainings", "That training was not found.");
+  if (!(await allowActionRateLimit("admin.release"))) {
+    fail(path, "Too many release actions just now. Try again in a minute.");
+  }
+  if (confirm !== UNRELEASE_CONFIRM) {
+    fail(path, `Type ${UNRELEASE_CONFIRM} to pull this back from manager review.`);
+  }
+
+  const supabase = await createClient();
+  const { data: current, error: currentError } = await supabase
+    .from("trainings")
+    .select("id, released_at")
+    .eq("id", trainingId)
+    .maybeSingle();
+
+  if (currentError) fail(path, RELEASE_WRITE_ERROR);
+  if (!current) fail("/admin/trainings", "That training was not found.");
+  if (!current.released_at) {
+    ok(path, "This training is already in draft. It is not released to managers.");
+  }
+
+  const result = await unreleaseTrainingFromManagers(supabase, trainingId);
+  if (!result.ok) {
+    fail(path, RELEASE_WRITE_ERROR);
+  }
+
+  revalidateAdmin(path);
+  ok(path, "Un-released. Pending reviews were withdrawn. Existing assignments stay.");
 }
 
 export async function deleteTraining(formData: FormData) {

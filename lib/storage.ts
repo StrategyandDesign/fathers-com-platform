@@ -2,13 +2,23 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const CERTIFICATES_BUCKET = "certificates";
 export const AVATARS_BUCKET = "avatars";
+export const ORG_PHOTOS_BUCKET = "org-photos";
+export const SUPPORT_SCREENSHOTS_BUCKET = "support-screenshots";
 export const SIGNED_URL_TTL_SECONDS = 60 * 60;
 export const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
+export const ORG_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+export const SUPPORT_SCREENSHOT_MAX_BYTES = 2 * 1024 * 1024;
 export const AVATAR_MIME_TYPES = [
   "image/jpeg",
   "image/png",
   "image/webp",
   "image/gif",
+] as const;
+export const ORG_PHOTO_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+export const SUPPORT_SCREENSHOT_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
 ] as const;
 
 export function avatarObjectPath(userId: string) {
@@ -17,6 +27,11 @@ export function avatarObjectPath(userId: string) {
 
 export function certificateObjectPath(fatherId: string, serial: string) {
   return `${fatherId}/${serial}.pdf`;
+}
+
+export function supportScreenshotObjectPath(userId: string, mime: string) {
+  const ext = mime === "image/png" ? "png" : mime === "image/webp" ? "webp" : "jpg";
+  return `${userId}/${crypto.randomUUID()}.${ext}`;
 }
 
 export async function signStorageUrl(

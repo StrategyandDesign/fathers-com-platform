@@ -12,14 +12,16 @@ export function LegalLinks({
   className,
   align = "start",
   copyright = false,
+  helpHref,
 }: {
   className?: string;
   align?: "start" | "center";
   copyright?: boolean;
+  helpHref?: string;
 }) {
   const nav = (
     <nav
-      aria-label="Legal"
+      aria-label={helpHref ? "Legal and help" : "Legal"}
       className={cn(
         "flex flex-wrap items-center gap-x-3",
         align === "center" && "justify-center",
@@ -35,6 +37,16 @@ export function LegalLinks({
       <Link href="/terms" className={linkClassName}>
         Terms
       </Link>
+      {helpHref ? (
+        <>
+          <span className="text-muted-foreground" aria-hidden>
+            ·
+          </span>
+          <Link href={helpHref} className={linkClassName}>
+            Help
+          </Link>
+        </>
+      ) : null}
     </nav>
   );
 

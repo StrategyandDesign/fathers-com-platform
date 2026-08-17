@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { CoverPhoto } from "@/components/brand/cover";
 import { SessionCrumbNote, SessionHeader } from "@/components/father/session-header";
@@ -27,6 +27,10 @@ export default async function SessionViewerPage({
 
   if (!context) {
     notFound();
+  }
+
+  if (!context.unlocked) {
+    redirect(`/father/sessions/${context.redirectSessionId}`);
   }
 
   const { session, training, progress } = context;
@@ -84,14 +88,7 @@ export default async function SessionViewerPage({
       <form action={markFilmWatched} className="flex justify-center max-lg:block">
         <input type="hidden" name="session_id" value={session.id} />
         <Button type="submit" variant="inverse" size="lg" className={sessionCtaClassName}>
-          {filmDone ? (
-            <>
-              <span className="lg:hidden">Start Check-in</span>
-              <span className="hidden lg:inline">Continue</span>
-            </>
-          ) : (
-            "I watched this"
-          )}
+          {filmDone ? "Continue to Check-in" : "I watched this"}
         </Button>
       </form>
     </div>

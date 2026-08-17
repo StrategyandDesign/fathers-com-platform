@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
+import { allowRequestRateLimit } from "@/lib/security/rate-limit";
 import {
   insightFilename,
   insightQuery,
@@ -37,6 +38,10 @@ export async function GET(request: Request) {
   const format = (url.searchParams.get("format") ?? "csv").trim().toLowerCase();
   if (format !== "csv") {
     fail("Export format must be csv.", parsed.filters);
+  }
+
+  if (!allowRequestRateLimit("reviewer.insights_export", request)) {
+    fail("Too many downloads. Try again in a few minutes.", parsed.filters);
   }
 
   const insights = await loadReviewerInsights(parsed.filters);

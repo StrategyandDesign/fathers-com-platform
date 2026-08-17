@@ -1,4 +1,5 @@
 import { isSessionComplete, type Session, type SessionProgress, type Training } from "@/lib/father/types";
+import { loadOrganizationReviews } from "@/lib/manager/reviews";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrls } from "@/lib/storage";
 import {
@@ -62,7 +63,7 @@ export async function loadManagerWorkspace(managerId: string) {
   const members = (membersRes.data ?? []) as GroupMember[];
   const fatherIds = [...new Set(members.map((member) => member.father_id))];
 
-  const [profilesRes, resultsRes, draftsRes, progressRes, assignmentsRes, certificatesRes, trainingsRes, sessionsRes] =
+  const [profilesRes, resultsRes, draftsRes, progressRes, assignmentsRes, certificatesRes, trainingsRes, sessionsRes, reviews] =
     await Promise.all([
       emptyIn<ManagedProfile>(fatherIds, () =>
         supabase.from("profiles").select("id, full_name, avatar_url").in("id", fatherIds)
@@ -91,6 +92,7 @@ export async function loadManagerWorkspace(managerId: string) {
       ),
       supabase.from("trainings").select("*").order("order_index"),
       supabase.from("sessions").select("*").order("order_index"),
+      loadOrganizationReviews(groupIds),
     ]);
 
   for (const result of [profilesRes, resultsRes, draftsRes, progressRes, assignmentsRes, certificatesRes, trainingsRes, sessionsRes]) {
@@ -197,6 +199,7 @@ export async function loadManagerWorkspace(managerId: string) {
       fatherId,
       name: displayName(managed, fatherId),
       avatarUrl: managed?.avatar_url ? avatarUrls.get(managed.avatar_url) ?? null : null,
+      groupId: member.group_id,
       groupName: groupsById.get(member.group_id)?.name ?? "Group",
       joinedAt: member.joined_at,
       profileStatus: profileStatus(fatherId),
@@ -272,7 +275,10 @@ export async function loadManagerWorkspace(managerId: string) {
     groups,
     trainings,
     sessions,
+    reviews,
     participants,
+    progress,
+    certificates,
     trainingProgressFor,
     summary: {
       activeParticipants: fatherIds.length,
@@ -295,6 +301,7 @@ export async function loadManagedParticipant(managerId: string, fatherId: string
     trainings: workspace.trainings,
     progress: workspace.trainingProgressFor(fatherId),
     groups: workspace.groups,
+    reviews: workspace.reviews,
   };
 }
 
@@ -322,6 +329,7 @@ export async function loadCertificatePreview(
     participant: detail.participant,
     training: card.training,
     certificate: card.certificate,
+    complete: card.total > 0 && card.completed === card.total,
     managerName: profileName(manager, "Manager"),
   };
 }

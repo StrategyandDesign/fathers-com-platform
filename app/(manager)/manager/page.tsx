@@ -2,12 +2,14 @@ import Link from "next/link";
 
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
+import { ReviewStatusBadge } from "@/components/manager/review-decision-forms";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { fieldClassName, initials, interactiveSurfaceClassName } from "@/lib/ui";
 import { requireRole } from "@/lib/auth/session";
 import { createGroup } from "@/lib/manager/actions";
 import { loadManagerWorkspace } from "@/lib/manager/data";
+import { loadReviewQueue } from "@/lib/manager/reviews";
 import { cn } from "@/lib/utils";
 
 export default async function ManagerHomePage({
@@ -17,7 +19,10 @@ export default async function ManagerHomePage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
-  const { groups, summary, needsAttention } = await loadManagerWorkspace(user.id);
+  const [{ groups, summary, needsAttention }, reviews] = await Promise.all([
+    loadManagerWorkspace(user.id),
+    loadReviewQueue(user.id),
+  ]);
 
   const stats = [
     { label: "Active Participants", value: summary.activeParticipants },
@@ -29,13 +34,103 @@ export default async function ManagerHomePage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Your group’s progress. Fathers join with the invite code.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Your group’s progress. Fathers join with the invite code.
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Link
+            href="/manager/impact"
+            className={cn(buttonVariants(), "w-full sm:w-auto")}
+          >
+            Impact Snapshot
+          </Link>
+          <Link
+            href="/manager/compare"
+            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+          >
+            Compare
+          </Link>
+          <Link
+            href="/manager/reviews"
+            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+          >
+            New trainings
+            {reviews.pending.length > 0 ? ` (${reviews.pending.length})` : ""}
+          </Link>
+        </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
+
+      {reviews.pending.length > 0 || reviews.unread.length > 0 ? (
+        <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 className="font-heading text-lg font-semibold">
+                New trainings to review
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                A new training is available for your review. Preview it, then
+                accept to assign — or decline to keep it hidden.
+              </p>
+            </div>
+            <Link
+              href="/manager/reviews"
+              className={cn(buttonVariants(), "w-full shrink-0 sm:w-auto")}
+            >
+              Open review queue
+            </Link>
+          </div>
+          {reviews.unread.length > 0 ? (
+            <ul className="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
+              {reviews.unread.slice(0, 3).map((item) => (
+                <li key={item.id}>
+                  <Link
+                    href={item.href}
+                    className={cn("block px-4 py-3", interactiveSurfaceClassName)}
+                  >
+                    <span className="block font-medium">{item.title}</span>
+                    {item.body ? (
+                      <span className="mt-0.5 block text-sm text-muted-foreground">
+                        {item.body}
+                      </span>
+                    ) : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul className="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
+              {reviews.pending.slice(0, 3).map((item) => (
+                <li key={`${item.review.group_id}-${item.training.id}`}>
+                  <Link
+                    href={`/manager/reviews/${item.training.id}?group=${item.review.group_id}`}
+                    className={cn(
+                      "flex items-center justify-between gap-3 px-4 py-3",
+                      interactiveSurfaceClassName
+                    )}
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium">
+                        {item.training.title}
+                      </span>
+                      <span className="block text-sm text-muted-foreground">
+                        {item.sessionCount === 1
+                          ? "1 session"
+                          : `${item.sessionCount} sessions`}
+                      </span>
+                    </span>
+                    <ReviewStatusBadge status={item.review.status} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : null}
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {stats.map((stat) => (
@@ -133,18 +228,33 @@ export default async function ManagerHomePage({
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">Reports</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Filter by training, completion, and last activity. Download a CSV or PDF of
-          your group.
-        </p>
-        <Link
-          href="/manager/reports"
-          className={cn(buttonVariants(), "mt-5 w-full sm:w-auto")}
-        >
-          Open reports
-        </Link>
+      <section className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">Impact Snapshot</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            One page of enrollment, completion, and certificate numbers for a board
+            or funder.
+          </p>
+          <Link
+            href="/manager/impact"
+            className={cn(buttonVariants(), "mt-5 w-full sm:w-auto")}
+          >
+            Open Impact Snapshot
+          </Link>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">Reports</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Filter by training, completion, and last activity. Download a CSV or PDF of
+            your group.
+          </p>
+          <Link
+            href="/manager/reports"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
+            Open reports
+          </Link>
+        </div>
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">

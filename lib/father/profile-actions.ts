@@ -5,8 +5,10 @@ import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
 import {
+  deleteProfileDraft,
   ensureProfileDraft,
   loadLatestProfile,
+  loadProfileDraft,
   upsertProfileDraft,
 } from "@/lib/father/profile";
 import {
@@ -28,8 +30,11 @@ function readAnswer(formData: FormData) {
 
 export async function startProfile() {
   const { user } = await requireRole("father");
-  const profile = await loadLatestProfile(user.id);
-  if (profile) {
+  const [profile, draft] = await Promise.all([
+    loadLatestProfile(user.id),
+    loadProfileDraft(user.id),
+  ]);
+  if (profile && !draft) {
     redirect("/father/profile/results");
   }
 
@@ -39,9 +44,34 @@ export async function startProfile() {
   redirect("/father/profile/take");
 }
 
-export async function saveProfileProgress(formData: FormData) {
+export async function retakeProfile() {
   const { user } = await requireRole("father");
-  const intent = String(formData.get("intent") ?? "next");
+  await deleteProfileDraft(user.id);
+  await ensureProfileDraft(user.id);
+  revalidatePath("/father");
+  revalidatePath("/father/profile");
+  revalidatePath("/father/profile/take");
+  redirect("/father/profile/take?q=1");
+}
+
+type ProfileIntent = "next" | "back" | "exit";
+
+function readIntent(formData: FormData): ProfileIntent {
+  const raw = String(formData.get("intent") ?? "next");
+  if (raw === "back" || raw === "exit") return raw;
+  return "next";
+}
+
+export async function saveProfileProgress(formData: FormData) {
+  await persistProfileProgress(formData, readIntent(formData));
+}
+
+export async function saveAndExitProfile(formData: FormData) {
+  await persistProfileProgress(formData, "exit");
+}
+
+async function persistProfileProgress(formData: FormData, intent: ProfileIntent) {
+  const { user } = await requireRole("father");
   const questionId = clampQuestion(Number(formData.get("question_id") ?? 1));
   const draft = await ensureProfileDraft(user.id);
   const answers = parseAnswers(draft.answers);
@@ -70,7 +100,11 @@ export async function saveProfileProgress(formData: FormData) {
   revalidatePath("/father/profile/take");
 
   if (intent === "exit") {
-    redirect("/father");
+    redirect(
+      `/father/profile?notice=${encodeURIComponent(
+        "Your Profile progress is saved. You can continue anytime."
+      )}`
+    );
   }
 
   redirect(`/father/profile/take?q=${nextIndex}`);

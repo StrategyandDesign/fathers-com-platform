@@ -78,7 +78,10 @@ export default async function FatherAssessmentTakePage({
           <input type="hidden" name="question_id" value={question.id} />
 
           {question.question_type === "single_select" && question.options ? (
-            <fieldset className="mt-8 space-y-1">
+            <fieldset
+              className="mt-8 space-y-1"
+              aria-invalid={Boolean(query.error) || undefined}
+            >
               <legend className="sr-only">Answer</legend>
               {question.options.map((option) => (
                 <label
@@ -91,7 +94,6 @@ export default async function FatherAssessmentTakePage({
                     value={option}
                     defaultChecked={saved === option}
                     required
-                    aria-invalid={Boolean(query.error) || undefined}
                     className="size-4 accent-primary"
                   />
                   <span>{option}</span>

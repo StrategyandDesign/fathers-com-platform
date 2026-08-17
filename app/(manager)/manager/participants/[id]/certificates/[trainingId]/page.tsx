@@ -75,7 +75,7 @@ export default async function ManagerCertificatePage({
           >
             Download PDF
           </CertificateDownloadLink>
-        ) : (
+        ) : preview.complete ? (
           <form action={sendCertificate} className="w-full sm:w-auto">
             <input type="hidden" name="father_id" value={id} />
             <input type="hidden" name="training_id" value={trainingId} />
@@ -83,6 +83,11 @@ export default async function ManagerCertificatePage({
               Send Certificate
             </Button>
           </form>
+        ) : (
+          <p className="w-full text-sm text-muted-foreground sm:w-auto">
+            This training is not fully complete. Certificates are issued only
+            after every session is done.
+          </p>
         )}
         <Link
           href={`/manager/participants/${id}`}

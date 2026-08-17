@@ -59,7 +59,10 @@ export default async function LoginPage({
         </form>
         <p className="mt-5 text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className={interactiveUnderlineClassName}>
+          <Link
+            href={next ? `/signup?next=${encodeURIComponent(next)}` : "/signup"}
+            className={interactiveUnderlineClassName}
+          >
             Create one
           </Link>
         </p>

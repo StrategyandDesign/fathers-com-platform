@@ -3,22 +3,40 @@ import { notFound } from "next/navigation";
 
 import { CertificateDownloadLink } from "@/components/certificates/download-link";
 import { Flash } from "@/components/manager/flash";
+import { NudgeForm } from "@/components/manager/nudge-form";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ProgressBar } from "@/components/ui/progress";
 import { loadParticipantCustomAssignments } from "@/lib/assessments/data";
 import { ASSIGNMENT_STATUS_LABEL } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
-import { isTrainingPublished } from "@/lib/father/types";
 import {
   assignTraining,
   markTrainingComplete,
   previewCertificate,
 } from "@/lib/manager/actions";
 import { loadManagedParticipant } from "@/lib/manager/data";
+import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
+import { clearParticipantNote, saveParticipantNote } from "@/lib/manager/note-actions";
+import { NOTE_MAX_LENGTH, loadParticipantNote } from "@/lib/manager/notes";
+import {
+  NUDGE_STATUS_LABEL,
+  NUDGE_TEMPLATE_COPY,
+  cooldownRemaining,
+  isNudgeTemplate,
+  loadNudgeHistory,
+  loadReminderPrefAllowed,
+  needsNudge,
+  quietLabel,
+} from "@/lib/manager/nudges";
 import { formatShortDate } from "@/lib/manager/types";
 import { UserAvatar } from "@/components/layout/user-avatar";
-import { fieldClassName, interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
+import {
+  fieldClassName,
+  interactiveLinkClassName,
+  interactiveSurfaceClassName,
+  textareaClassName,
+} from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 function Step({ done, label }: { done: boolean; label: string }) {
@@ -53,12 +71,28 @@ export default async function ManagerParticipantDetailPage({
     notFound();
   }
 
-  const { participant, progress } = detail;
-  const customAssignments = await loadParticipantCustomAssignments(user.id, id);
-  const unassigned = progress.filter(
-    (card) => !card.assigned && isTrainingPublished(card.training)
+  const { participant, progress, reviews } = detail;
+  const [customAssignments, historyByFather, remindersAllowed, note] = await Promise.all([
+    loadParticipantCustomAssignments(user.id, id),
+    loadNudgeHistory([id]),
+    loadReminderPrefAllowed(id),
+    loadParticipantNote(id),
+  ]);
+  const nudgeHistory = historyByFather.byFather.get(id) ?? [];
+  const historyUnavailable = historyByFather.unavailable;
+  const quiet = needsNudge(participant.lastActivity, progress);
+  const cooldown = cooldownRemaining(nudgeHistory);
+  const assignable = progress.filter((card) =>
+    isTrainingAssignable(
+      card.training,
+      reviewForGroup(reviews, participant.groupId, card.training.id)?.status
+    )
   );
-  const withoutCert = progress.filter((card) => !card.certificate);
+  const unassigned = assignable.filter((card) => !card.assigned);
+  const withoutCert = progress.filter(
+    (card) =>
+      !card.certificate && card.total > 0 && card.completed === card.total
+  );
   const current =
     progress.find((card) => card.assigned && card.current)?.current ??
     progress.find((card) => card.current)?.current ??
@@ -86,10 +120,117 @@ export default async function ManagerParticipantDetailPage({
             {participant.name}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Active Participant · {participant.groupName} · Joined{" "}
-            {formatShortDate(participant.joinedAt)}
+            {participant.groupName} · Joined {formatShortDate(participant.joinedAt)}
+            {quiet ? ` · ${quietLabel(participant.lastActivity)}` : ""}
           </p>
         </div>
+      </section>
+
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <h2 className="font-heading text-lg font-semibold">Private note</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Only managers of {participant.groupName} can see this. He never will.
+        </p>
+        <form action={saveParticipantNote} className="mt-5 space-y-4">
+          <input type="hidden" name="father_id" value={participant.fatherId} />
+          <label className="block space-y-2">
+            <span className="sr-only">Private note</span>
+            <textarea
+              className={textareaClassName}
+              name="body"
+              maxLength={NOTE_MAX_LENGTH}
+              rows={4}
+              defaultValue={note?.body ?? ""}
+              placeholder="Spoke with him Tuesday."
+              aria-invalid={Boolean(flash.error) || undefined}
+            />
+          </label>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">
+              {note
+                ? `Updated ${formatShortDate(note.updatedAt)}`
+                : "Not saved yet."}
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button type="submit" className="w-full sm:w-auto">
+                Save note
+              </Button>
+              {note ? (
+                <Button
+                  formAction={clearParticipantNote}
+                  type="submit"
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                >
+                  Clear
+                </Button>
+              ) : null}
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <section
+        id="nudge"
+        className="rounded-xl border border-border bg-card p-4 sm:p-6"
+      >
+        <h2 className="font-heading text-lg font-semibold">Send a nudge</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {quiet
+            ? `${quietLabel(participant.lastActivity)}. A short, respectful note — only if he left session reminders on.`
+            : "He’s been active recently. You can still send a calm note if you need to."}
+        </p>
+        {historyUnavailable ? (
+          <p className="mt-4 rounded-xl border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
+            Couldn’t check recent reminders. Try again in a moment.
+          </p>
+        ) : remindersAllowed === false ? (
+          <p className="mt-4 rounded-xl border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
+            He turned off session reminders. A nudge will not be emailed.
+          </p>
+        ) : cooldown > 0 ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            {cooldown === 1
+              ? "A reminder already went out. You can send another tomorrow."
+              : `A reminder already went out. You can send another in ${cooldown} days.`}
+          </p>
+        ) : (
+          <div className="mt-5">
+            <NudgeForm fatherId={participant.fatherId} />
+            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+              {Object.values(NUDGE_TEMPLATE_COPY).map((template) => (
+                <li key={template.key}>
+                  <span className="font-medium text-foreground">{template.label}.</span>{" "}
+                  {template.preview}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {nudgeHistory.length > 0 ? (
+          <div className="mt-6">
+            <h3 className="text-sm font-medium">Nudge history</h3>
+            <ul className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border">
+              {nudgeHistory.map((row) => (
+                <li
+                  key={row.id}
+                  className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <p className="text-sm">
+                    {isNudgeTemplate(row.template_key)
+                      ? NUDGE_TEMPLATE_COPY[row.template_key].label
+                      : row.template_key}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {NUDGE_STATUS_LABEL[row.status]} · {formatShortDate(row.sent_at)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="mt-5 text-sm text-muted-foreground">No nudges sent yet.</p>
+        )}
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
@@ -230,14 +371,14 @@ export default async function ManagerParticipantDetailPage({
           <p className="mt-1 text-sm text-muted-foreground">Adds this training to his path.</p>
           <input type="hidden" name="father_id" value={participant.fatherId} />
           <div className="mt-4">
-            {progress.length === 0 ? (
+            {assignable.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No published trainings to assign yet. An admin adds those to the
-                catalog.
+                No trainings are available to assign yet. Review new releases
+                from the dashboard, or wait for an admin to publish one.
               </p>
             ) : unassigned.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Every published training is already assigned.
+                Every available training is already assigned.
               </p>
             ) : (
               <select
@@ -308,7 +449,10 @@ export default async function ManagerParticipantDetailPage({
               </p>
             ) : withoutCert.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                A certificate is already on file for each training.
+                Certificates are only issued after a training is fully complete.
+                {progress.some((card) => !card.certificate)
+                  ? " Finish the remaining sessions first."
+                  : " A certificate is already on file for each completed training."}
               </p>
             ) : (
               <select

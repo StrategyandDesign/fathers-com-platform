@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { resolveRole } from "@/lib/auth/roles";
+import { getAuthContext } from "@/lib/auth/session";
 import {
   deleteProfileDraft,
   loadLatestProfile,
@@ -22,17 +22,18 @@ function takeError(message: string, questionId?: number) {
 }
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user || resolveRole(user) !== "father") {
+  const { user, role, deactivated } = await getAuthContext();
+  if (deactivated) {
+    redirect("/login?error=This account has been deactivated.");
+  }
+  if (!user || role !== "father") {
     redirect("/login");
   }
 
+  const supabase = await createClient();
   const existing = await loadLatestProfile(user.id);
-  if (existing) {
+  const draft = await loadProfileDraft(user.id);
+  if (existing && !draft) {
     redirect("/father/profile/results");
   }
 
@@ -40,7 +41,6 @@ export async function POST(request: Request) {
   const questionId = Number(formData.get("question_id") ?? 0);
   const rawValue = Number(formData.get("value") ?? 0);
 
-  const draft = await loadProfileDraft(user.id);
   const answers = parseAnswers(draft?.answers);
 
   if (Number.isInteger(rawValue) && rawValue >= 1 && rawValue <= 5 && questionId > 0) {
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
 
   if (error) {
     await upsertProfileDraft(user.id, answers, firstUnanswered(answers));
-    takeError(error.message, questionId || firstUnanswered(answers));
+    takeError("Your Profile didn’t save. Try again.", questionId || firstUnanswered(answers));
   }
 
   await deleteProfileDraft(user.id);

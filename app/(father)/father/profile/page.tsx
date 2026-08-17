@@ -1,26 +1,34 @@
 import Link from "next/link";
 
 import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
+import { Flash } from "@/components/manager/flash";
 import { DimensionScores } from "@/components/profile/dimension-scores";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
-import { startProfile } from "@/lib/father/profile-actions";
+import { retakeProfile, startProfile } from "@/lib/father/profile-actions";
 import { loadProfileState } from "@/lib/father/profile";
 import { PROFILE_QUESTION_COUNT, answeredCount, firstUnanswered } from "@/lib/father/questions";
 import { readStoredDimensionScores } from "@/lib/profile/score";
 import { cn } from "@/lib/utils";
 
-export default async function FatherProfilePage() {
+export default async function FatherProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; notice?: string }>;
+}) {
+  const flash = await searchParams;
   const { user } = await requireRole("father");
   const { profile, draft } = await loadProfileState(user.id);
   const customAssignments = await loadFatherAssignments(user.id);
+  const banner = <Flash error={flash.error} notice={flash.notice} />;
 
   if (profile) {
     const scores = readStoredDimensionScores(profile.raw_scores, profile.full_results);
     return (
       <div className="space-y-6">
+        {banner}
         <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
           <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
@@ -53,15 +61,23 @@ export default async function FatherProfilePage() {
             Keystone Profile
           </p>
           <p className="mt-4 text-muted-foreground">
-            Retake when you want a fresh reading. Your last results stay until a new
-            Profile is completed.
+            Retake when you want a fresh reading. Your last results stay until a
+            new Profile is completed.
           </p>
-          <Link
-            href="/father/profile/results"
-            className={cn(buttonVariants(), "mt-8 w-full lg:w-auto")}
-          >
-            View your Father Profile
-          </Link>
+          {draft ? (
+            <Link
+              href={`/father/profile/take?q=${firstUnanswered(draft.answers)}`}
+              className={cn(buttonVariants(), "mt-8 w-full lg:w-auto")}
+            >
+              Continue retake
+            </Link>
+          ) : (
+            <form action={retakeProfile} className="mt-8">
+              <Button type="submit" className="w-full lg:w-auto">
+                Retake Profile
+              </Button>
+            </form>
+          )}
         </section>
         </div>
         <AssignedAssessmentList assignments={customAssignments} />
@@ -74,6 +90,7 @@ export default async function FatherProfilePage() {
 
   return (
     <div className="space-y-6">
+      {banner}
       <div className="grid gap-6 lg:grid-cols-2">
       <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
         <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
@@ -99,8 +116,8 @@ export default async function FatherProfilePage() {
           </form>
         )}
         <p className="mt-6 text-sm text-muted-foreground">
-          128 questions. One at a time. About 8–20 minutes. You can save and come
-          back.
+          128 questions. One at a time. About twenty minutes. You can save and
+          come back.
         </p>
       </section>
       <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">

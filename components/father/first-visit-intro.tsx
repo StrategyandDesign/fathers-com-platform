@@ -25,6 +25,7 @@ export function FirstVisitIntro({
   completed,
   percent,
   coverSrc,
+  organizationName,
   children,
 }: {
   eligible: boolean;
@@ -36,6 +37,7 @@ export function FirstVisitIntro({
   completed: number;
   percent: number;
   coverSrc?: string | null;
+  organizationName?: string | null;
   children: ReactNode;
 }) {
   const [showFull, setShowFull] = useState(eligible);
@@ -44,10 +46,7 @@ export function FirstVisitIntro({
     if (!eligible) return;
     if (hasFathersIntroSeen()) {
       setShowFull(false);
-      markFathersIntroSeen();
-      return;
     }
-    markFathersIntroSeen();
   }, [eligible]);
 
   if (!eligible || !showFull) return children;
@@ -57,7 +56,7 @@ export function FirstVisitIntro({
 
   return (
     <div className="min-w-0 space-y-2">
-      <p className={eyebrowClassName}>Welcome</p>
+      <p className={eyebrowClassName}>{organizationName?.trim() || "Welcome"}</p>
       <section className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="h-24 overflow-hidden bg-[#101510] sm:h-36 lg:h-44">
           <CoverPhoto src={coverSrc} />

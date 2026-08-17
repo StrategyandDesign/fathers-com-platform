@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { parseNotificationPreferences, type NotificationPreferences } from "@/lib/account/preferences";
-import { ROLE_ACCOUNT, ROLE_HOME, resolveRole } from "@/lib/auth/roles";
+import { ROLE_ACCOUNT, ROLE_HOME } from "@/lib/auth/roles";
 import { getAuthContext } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
@@ -24,8 +24,8 @@ function ok(path: string, notice: string): never {
 }
 
 export async function saveNotificationPreferences(input: NotificationPreferences) {
-  const { user } = await getAuthContext();
-  if (!user) {
+  const { user, role } = await getAuthContext();
+  if (!user || !role) {
     return { error: "Sign in again to save preferences." };
   }
 
@@ -41,7 +41,6 @@ export async function saveNotificationPreferences(input: NotificationPreferences
     return { error: "Preferences didn’t save. Try again." };
   }
 
-  const role = resolveRole(user);
   revalidatePath(ROLE_ACCOUNT[role]);
   return { ok: true as const };
 }
@@ -92,4 +91,33 @@ export async function uploadAvatar(formData: FormData) {
   revalidatePath(path);
   revalidatePath(ROLE_HOME[role]);
   ok(path, "Photo updated.");
+}
+
+export async function removeAvatar() {
+  const { user, role } = await getAuthContext();
+  if (!user || !role) {
+    redirect("/login");
+  }
+
+  const path = ROLE_ACCOUNT[role];
+  if (!(await allowActionRateLimit("account.avatar"))) {
+    fail(path, "Too many photo changes. Wait a few minutes and try again.");
+  }
+
+  const supabase = await createClient();
+  const objectPath = avatarObjectPath(user.id);
+  await supabase.storage.from(AVATARS_BUCKET).remove([objectPath]);
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ avatar_url: null, avatar_path: null })
+    .eq("id", user.id);
+
+  if (error) {
+    fail(path, "The photo didn’t remove. Try again.");
+  }
+
+  revalidatePath(path);
+  revalidatePath(ROLE_HOME[role]);
+  ok(path, "Photo removed.");
 }

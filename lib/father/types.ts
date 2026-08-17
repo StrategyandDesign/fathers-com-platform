@@ -6,10 +6,52 @@ export type Training = {
   session_count: number;
   order_index: number;
   published?: boolean | null;
+  released_at?: string | null;
+  released_by?: string | null;
+  first_published_at?: string | null;
 };
 
 export function isTrainingPublished(training: { published?: boolean | null }) {
   return training.published !== false;
+}
+
+export function isLegacyCatalogTraining(training: {
+  released_at?: string | null;
+  first_published_at?: string | null;
+}) {
+  return !training.released_at && Boolean(training.first_published_at);
+}
+
+export function isTrainingAssignable(
+  training: {
+    published?: boolean | null;
+    released_at?: string | null;
+    first_published_at?: string | null;
+  },
+  reviewStatus: string | null | undefined
+) {
+  if (!isTrainingPublished(training)) return false;
+  if (training.released_at) return reviewStatus === "accepted";
+  return isLegacyCatalogTraining(training);
+}
+
+export function isTrainingVisibleInCatalog(
+  training: {
+    published?: boolean | null;
+    released_at?: string | null;
+    first_published_at?: string | null;
+  },
+  access: {
+    accepted: boolean;
+    assigned: boolean;
+    hasProgress: boolean;
+    hasCertificate: boolean;
+  }
+) {
+  if (access.assigned || access.hasProgress || access.hasCertificate) return true;
+  if (!isTrainingPublished(training)) return false;
+  if (training.released_at) return access.accepted;
+  return isLegacyCatalogTraining(training);
 }
 
 /** Display denominator only — never used to decide session completion. */

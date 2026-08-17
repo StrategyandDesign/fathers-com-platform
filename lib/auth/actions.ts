@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { notifyAccountCreated } from "@/lib/email/events";
+import { ensureFatherGroupJoin } from "@/lib/auth/group-join";
 import { ROLE_HOME, resolveRole, safeInternalPath } from "@/lib/auth/roles";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
@@ -71,6 +72,10 @@ export async function signIn(formData: FormData) {
     redirect(`/login?error=${encodeURIComponent("This account has been deactivated.")}`);
   }
 
+  if (resolveRole(data.user) === "father") {
+    await ensureFatherGroupJoin(data.user);
+  }
+
   redirect(next ?? ROLE_HOME[resolveRole(data.user)]);
 }
 
@@ -103,7 +108,7 @@ export async function signUp(formData: FormData) {
   if (!data.session) {
     await notifyAccountCreated({ email, userId: data.user?.id });
     redirect(
-      `/login?notice=${encodeURIComponent("Check your email to confirm your account, then sign in with your invite code.")}`
+      `/login?notice=${encodeURIComponent("Check your email to confirm your account, then sign in with your email and password.")}`
     );
   }
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Flash } from "@/components/manager/flash";
 import { signUp } from "@/lib/auth/actions";
+import { safeInternalPath } from "@/lib/auth/roles";
 import { authFieldClassName, interactiveUnderlineClassName } from "@/lib/ui";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,9 +15,10 @@ import {
 export default async function SignupPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; next?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, next: nextParam } = await searchParams;
+  const next = safeInternalPath(nextParam);
   const inviteInvalid = Boolean(error && /invite/i.test(error));
   const accountInvalid = Boolean(error && !inviteInvalid && !/too many/i.test(error));
 
@@ -71,7 +73,10 @@ export default async function SignupPage({
         </form>
         <p className="mt-5 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/login" className={interactiveUnderlineClassName}>
+          <Link
+            href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}
+            className={interactiveUnderlineClassName}
+          >
             Sign in
           </Link>
         </p>

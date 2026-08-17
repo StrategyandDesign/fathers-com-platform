@@ -1,9 +1,11 @@
 import Link from "next/link";
 
+import { ReleaseStatusBadge } from "@/components/admin/release-status";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { loadAdminTrainings } from "@/lib/admin/data";
+import { trainingReleaseState } from "@/lib/admin/release";
 import { requireRole } from "@/lib/auth/session";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -23,7 +25,8 @@ export default async function AdminTrainingsPage({
         <div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight">Trainings</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Platform catalog. Unpublished trainings stay off new assignment lists.
+            Platform catalog. Publish when sessions are ready, then release to
+            managers for review.
           </p>
         </div>
         <Link href="/admin/trainings/new" className={cn(buttonVariants(), "w-full sm:w-auto")}>
@@ -40,11 +43,11 @@ export default async function AdminTrainingsPage({
             actionHref="/admin/trainings/new"
             actionLabel="New training"
           >
-            Add one, then add sessions before you publish it for assignment.
+            Add one, add sessions, publish, then release it to managers.
           </EmptyState>
         ) : (
           <ul>
-            <li className="hidden grid-cols-[minmax(0,1.6fr)_6rem_7rem] gap-4 border-b border-border px-6 py-3 text-xs tracking-wide text-muted-foreground uppercase md:grid">
+            <li className="hidden grid-cols-[minmax(0,1.4fr)_5.5rem_minmax(8rem,0.9fr)] gap-4 border-b border-border px-6 py-3 text-xs tracking-wide text-muted-foreground uppercase md:grid">
               <span>Title</span>
               <span>Sessions</span>
               <span>Status</span>
@@ -54,7 +57,7 @@ export default async function AdminTrainingsPage({
                 <Link
                   href={`/admin/trainings/${training.id}`}
                   className={cn(
-                    "grid gap-2 px-4 py-4 sm:px-6 md:grid-cols-[minmax(0,1.6fr)_6rem_7rem] md:items-center",
+                    "grid gap-2 px-4 py-4 sm:px-6 md:grid-cols-[minmax(0,1.4fr)_5.5rem_minmax(8rem,0.9fr)] md:items-center",
                     interactiveSurfaceClassName
                   )}
                 >
@@ -70,9 +73,7 @@ export default async function AdminTrainingsPage({
                   </span>
                   <span className="flex items-baseline justify-between gap-3 text-sm md:block">
                     <span className="text-muted-foreground md:hidden">Status</span>
-                    <span className={training.published ? "text-primary" : "text-muted-foreground"}>
-                      {training.published ? "Published" : "Unpublished"}
-                    </span>
+                    <ReleaseStatusBadge state={trainingReleaseState(training)} />
                   </span>
                 </Link>
               </li>

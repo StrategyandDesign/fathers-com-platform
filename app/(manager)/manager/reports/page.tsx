@@ -43,13 +43,21 @@ export default async function ManagerReportsPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">Reports</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Export fathers in your group. Date range filters last activity (join, profile,
-          session, assignment, or certificate). Email is omitted — it is not on profiles,
-          and managers cannot read auth emails under RLS.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">Reports</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Export fathers in your group. Date range filters last activity (join, profile,
+            session, assignment, or certificate). Email is omitted — it is not on profiles,
+            and managers cannot read auth emails under RLS.
+          </p>
+        </div>
+        <Link
+          href="/manager/impact"
+          className={cn(buttonVariants({ variant: "outline" }), "w-full shrink-0 sm:w-auto")}
+        >
+          Impact Snapshot
+        </Link>
       </div>
       <Flash error={params.error || parsed.error || report.error} notice={params.notice} />
 

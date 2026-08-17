@@ -2,8 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { DimensionScores } from "@/components/profile/dimension-scores";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
+import { retakeProfile } from "@/lib/father/profile-actions";
 import { loadLatestProfile } from "@/lib/father/profile";
 import { readStoredDimensionScores } from "@/lib/profile/score";
 import { cn } from "@/lib/utils";
@@ -40,19 +41,18 @@ export default async function FatherProfileResultsPage() {
           })}
         </p>
         <p className="mt-6 text-sm text-muted-foreground">
-          As you continue to grow your skills, come back to see how your profile
-          evolves.
+          Retake anytime for a fresh reading. Your last results stay until a new
+          Profile is completed.
         </p>
         <div className="mt-8 flex flex-col gap-3">
           <Link href="/father" className={cn(buttonVariants({ size: "lg" }), "w-full")}>
             Go to Home
           </Link>
-          <Link
-            href="/father/profile"
-            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full")}
-          >
-            Profile home
-          </Link>
+          <form action={retakeProfile}>
+            <Button type="submit" variant="outline" size="lg" className="w-full">
+              Retake Profile
+            </Button>
+          </form>
         </div>
       </section>
     </div>

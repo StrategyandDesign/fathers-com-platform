@@ -41,7 +41,7 @@ export function SessionSteps({
     {
       key: "action" as const,
       short: "Action",
-      label: "Log your weekly action",
+      label: "Answer the skill check",
       href: `/father/sessions/${sessionId}/action`,
       done: actionCompleted,
       locked: !checkinCompleted,

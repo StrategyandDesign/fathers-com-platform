@@ -135,9 +135,28 @@ export async function loadAdminTrainings(): Promise<AdminTrainingRow[]> {
   if (sessionsRes.error) throw sessionsRes.error;
 
   const sessions = (sessionsRes.data ?? []) as Session[];
-  return ((trainingsRes.data ?? []) as Training[]).map((training) => ({
+  const trainings = (trainingsRes.data ?? []) as Training[];
+  const releaserIds = [
+    ...new Set(trainings.map((training) => training.released_by).filter(Boolean)),
+  ] as string[];
+
+  const names = new Map<string, string>();
+  if (releaserIds.length > 0) {
+    const { data: profiles, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, full_name")
+      .in("id", releaserIds);
+    if (profileError) throw profileError;
+    for (const profile of profiles ?? []) {
+      const name = profile.full_name?.trim();
+      if (name) names.set(profile.id, name);
+    }
+  }
+
+  return trainings.map((training) => ({
     ...training,
     published: isTrainingPublished(training),
+    releasedByName: training.released_by ? names.get(training.released_by) ?? "Super-admin" : null,
     sessions: sessions
       .filter((session) => session.training_id === training.id)
       .sort((a, b) => a.order_index - b.order_index || a.session_number - b.session_number),

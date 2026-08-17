@@ -76,6 +76,7 @@ export type ParticipantRow = {
   fatherId: string;
   name: string;
   avatarUrl: string | null;
+  groupId: string;
   groupName: string;
   joinedAt: string;
   profileStatus: "completed" | "in_progress" | "not_started";

@@ -3,6 +3,7 @@ import "server-only";
 import type { NotificationPrefKey } from "@/lib/account/preferences";
 import { createClient } from "@/lib/supabase/server";
 import { getAppUrl, renderTransactionalEmail, sendEmail } from "@/lib/email/send";
+import type { NudgeTemplate } from "@/lib/manager/nudges";
 
 type Recipient = {
   email: string;
@@ -80,6 +81,39 @@ export async function notifyCertificateIssued(input: {
   }
 }
 
+export async function notifyTrainingReleased(input: {
+  managerId: string;
+  trainingId: string;
+  trainingTitle: string;
+}): Promise<"sent" | "skipped" | "failed"> {
+  try {
+    const recipient = await loadRecipient(input.managerId, "training_releases");
+    if (!recipient) return "failed";
+    if (!recipient.allowed) return "skipped";
+
+    const appUrl = getAppUrl();
+    const rendered = renderTransactionalEmail({
+      title: "A new training is available for your review",
+      body: `${input.trainingTitle} is ready for your organization.\nPreview it, then accept to make it available to assign — or decline to keep it hidden. Fathers are not enrolled until you assign it.`,
+      ctaLabel: "Review training",
+      ctaHref: `${appUrl}/manager/reviews/${input.trainingId}`,
+    });
+    const result = await sendEmail({
+      to: recipient.email,
+      subject: "A new training is available for your review",
+      html: rendered.html,
+      text: rendered.text,
+    });
+    if (result.sent) return "sent";
+    if (result.reason === "not_configured") return "skipped";
+    console.error("[email] training released failed", result.reason);
+    return "failed";
+  } catch (error) {
+    console.error("[email] training released failed", error);
+    return "failed";
+  }
+}
+
 export async function notifyTrainingAssigned(input: {
   fatherId: string;
   trainingTitle: string;
@@ -118,10 +152,34 @@ export async function notifyAccountCreated(input: {
   }
 }
 
+export async function notifyManagerNudge(input: {
+  fatherId: string;
+  organizationName: string;
+  template: NudgeTemplate;
+}) {
+  const recipient = await loadRecipient(input.fatherId, "session_reminders");
+  if (!recipient) return { status: "failed" as const };
+  if (!recipient.allowed) return { status: "skipped_pref" as const };
+
+  const rendered = renderTransactionalEmail({
+    title: input.template.title,
+    body: input.template.body(input.organizationName),
+    ctaLabel: input.template.ctaLabel,
+    ctaHref: `${getAppUrl()}/father`,
+  });
+  const result = await sendEmail({
+    to: recipient.email,
+    subject: input.template.subject,
+    html: rendered.html,
+    text: rendered.text,
+  });
+  return { status: result.sent ? ("sent" as const) : ("failed" as const) };
+}
+
 async function sendWelcome(to: string) {
   const rendered = renderTransactionalEmail({
     title: "Your account is ready.",
-    body: "Confirm your email if you were asked to, then sign in with the invite code your manager gave you.",
+    body: "Confirm your email if you were asked to, then sign in with your email and password.",
     ctaLabel: "Sign in",
     ctaHref: `${getAppUrl()}/login`,
   });
