@@ -13,6 +13,17 @@ import { PROFILE_QUESTION_COUNT, answeredCount, firstUnanswered } from "@/lib/fa
 import { readStoredDimensionScores } from "@/lib/profile/score";
 import { cn } from "@/lib/utils";
 
+function ProfilePageHeader() {
+  return (
+    <div>
+      <h1 className="font-heading text-2xl font-semibold tracking-tight">Profile</h1>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Complete your Profile to see your Primary Edge and Determination.
+      </p>
+    </div>
+  );
+}
+
 export default async function FatherProfilePage({
   searchParams,
 }: {
@@ -29,15 +40,16 @@ export default async function FatherProfilePage({
     return (
       <div className="space-y-6">
         {banner}
+        <ProfilePageHeader />
         <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
           <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
             Your Keystone Profile
           </p>
           <p className="mt-6 text-sm text-muted-foreground">Primary Determination</p>
-          <h1 className="font-heading mt-1 text-2xl font-semibold tracking-tight uppercase sm:text-3xl">
+          <h2 className="font-heading mt-1 text-2xl font-semibold tracking-tight uppercase sm:text-3xl">
             {profile.primary_determination ?? "Complete"}
-          </h1>
+          </h2>
           <p className="mt-4 text-muted-foreground">
             Primary Edge: {profile.primary_edge ?? "—"}
           </p>
@@ -91,6 +103,7 @@ export default async function FatherProfilePage({
   return (
     <div className="space-y-6">
       {banner}
+      <ProfilePageHeader />
       <div className="grid gap-6 lg:grid-cols-2">
       <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
         <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
