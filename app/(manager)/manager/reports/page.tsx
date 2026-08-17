@@ -9,6 +9,7 @@ import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import {
   COMPLETION_STATUSES,
   loadManagerReport,
+  localizeProgressDetail,
   parseReportSearchParams,
   reportQuery,
 } from "@/lib/manager/reports";
@@ -201,6 +202,9 @@ export default async function ManagerReportsPage({
                       <span className="text-muted-foreground">{t("manager.reports.trainings")}</span>
                       <span className="text-right">
                         {row.assignmentTitles.join(", ") || t("manager.reports.noneAssigned")}
+                        <span className="mt-1 block text-xs text-muted-foreground">
+                          {localizeProgressDetail(row.progressDetail, t)}
+                        </span>
                       </span>
                     </p>
                     {row.certificateSerials ? (
@@ -261,7 +265,9 @@ export default async function ManagerReportsPage({
                       </td>
                       <td className="px-4 py-3">
                         {row.assignmentTitles.join("; ") || t("manager.reports.noneAssigned")}
-                        <p className="text-xs text-muted-foreground">{row.progressDetail}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {localizeProgressDetail(row.progressDetail, t)}
+                        </p>
                       </td>
                       <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
                         {row.certificateSerials || "—"}

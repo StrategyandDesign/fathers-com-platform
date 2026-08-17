@@ -164,13 +164,28 @@ function statusLabel(
   return t("manager.reports.notStarted");
 }
 
-function localizeProgressDetail(detail: string, t: Translate) {
+export function localizeProgressDetail(detail: string, t: Translate): string {
+  if (!detail || detail === "—") return detail;
   if (detail === "None assigned") return t("manager.reports.noneAssigned");
+  if (detail.includes("; ")) {
+    return detail
+      .split("; ")
+      .map((part) => localizeProgressDetail(part, t))
+      .join("; ");
+  }
   const sessions = detail.match(/^(\d+)\/(\d+) sessions$/);
   if (sessions) {
     return t("manager.reports.sessionsProgress", {
       completed: sessions[1],
       total: sessions[2],
+    });
+  }
+  const titled = detail.match(/^(.+) (\d+)\/(\d+)$/);
+  if (titled) {
+    return t("manager.reports.trainingProgress", {
+      title: titled[1],
+      completed: titled[2],
+      total: titled[3],
     });
   }
   return detail;

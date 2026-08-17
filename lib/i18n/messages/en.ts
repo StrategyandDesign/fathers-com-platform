@@ -668,6 +668,7 @@ export const en = {
       lastActivity: "Last activity",
       noneAssigned: "None assigned",
       sessionsProgress: "{completed}/{total} sessions",
+      trainingProgress: "{title} {completed}/{total}",
       notStarted: "Not started",
       inProgress: "In progress",
       completed: "Completed",

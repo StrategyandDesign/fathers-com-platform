@@ -646,6 +646,7 @@ export const he = {
       lastActivity: "פעילות אחרונה",
       noneAssigned: "לא הוקצתה הכשרה",
       sessionsProgress: "{completed}/{total} מפגשים",
+      trainingProgress: "{title} {completed}/{total} מפגשים",
       notStarted: "לא התחיל",
       inProgress: "בתהליך",
       completed: "הושלם",
