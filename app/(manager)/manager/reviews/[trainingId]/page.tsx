@@ -6,12 +6,14 @@ import {
   ReviewDecisionForms,
   ReviewStatusBadge,
 } from "@/components/manager/review-decision-forms";
+import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { youtubeEmbedUrl } from "@/lib/father/types";
 import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { loadReviewDetail } from "@/lib/manager/reviews";
 import { interactiveLinkClassName } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
 export default async function ManagerTrainingReviewPage({
   params,
@@ -31,8 +33,9 @@ export default async function ManagerTrainingReviewPage({
   }
 
   const { review, training, groupName, sessions, otherGroups } = detail;
-  const previewing = review.status === "pending";
-  const declined = review.status === "declined";
+  const catalog = !review;
+  const previewing = review?.status === "pending";
+  const declined = review?.status === "declined";
 
   return (
     <div className="space-y-6">
@@ -49,7 +52,14 @@ export default async function ManagerTrainingReviewPage({
       </p>
       <Flash error={flash.error} notice={flash.notice} />
 
-      {previewing ? (
+      {catalog ? (
+        <div className="rounded-xl border border-border bg-card px-4 py-3 sm:px-5">
+          <p className="font-medium">{t("manager.reviewDetail.catalogTitle")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("manager.reviewDetail.catalogLead")}
+          </p>
+        </div>
+      ) : previewing ? (
         <div className="rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 sm:px-5">
           <p className="font-medium">{t("manager.reviewDetail.previewTitle")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -85,12 +95,12 @@ export default async function ManagerTrainingReviewPage({
               {otherGroups.length > 0 ? ` · ${groupName}` : ""}
             </p>
           </div>
-          <ReviewStatusBadge status={review.status} />
+          {review ? <ReviewStatusBadge status={review.status} /> : null}
         </div>
         {training.description ? (
           <p className="mt-4 text-sm text-muted-foreground">{training.description}</p>
         ) : null}
-        {review.decided_at ? (
+        {review?.decided_at ? (
           <p className="mt-4 text-sm text-muted-foreground">
             {review.status === "accepted" ? t("manager.reviews.accepted") : t("manager.reviews.declined")}{" "}
             {formatShortDate(review.decided_at, locale)}
@@ -99,14 +109,25 @@ export default async function ManagerTrainingReviewPage({
               : ""}
           </p>
         ) : null}
-        <div className="mt-6 border-t border-border pt-6">
-          <ReviewDecisionForms
-            trainingId={training.id}
-            groupId={review.group_id}
-            status={review.status}
-            declineReason={review.decline_reason}
-          />
-        </div>
+        {review ? (
+          <div className="mt-6 border-t border-border pt-6">
+            <ReviewDecisionForms
+              trainingId={training.id}
+              groupId={review.group_id}
+              status={review.status}
+              declineReason={review.decline_reason}
+            />
+          </div>
+        ) : (
+          <div className="mt-6 border-t border-border pt-6">
+            <Link
+              href="/manager/trainings#cohort"
+              className={cn(buttonVariants(), "w-full sm:w-auto")}
+            >
+              {t("manager.reviewDetail.assignFromTrainings")}
+            </Link>
+          </div>
+        )}
       </section>
 
       <section className="space-y-4">

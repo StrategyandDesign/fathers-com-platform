@@ -1129,6 +1129,10 @@ export const en = {
       availableTitle: "Available to assign",
       availableLead:
         "Fathers are not enrolled until you assign this training. Remove it from the cohort if you want to hide it from new assignment.",
+      catalogTitle: "In your catalog",
+      catalogLead:
+        "Watch each session the way a father would. Nothing here assigns or marks work complete.",
+      assignFromTrainings: "Assign from Trainings",
       sessions: "Sessions",
       sessionsLead:
         "Full structure in order. You can watch the film. Nothing here can be edited or marked complete.",
@@ -1189,7 +1193,7 @@ export const en = {
       waitingEmptyBody: "No new trainings are waiting.",
       cohortTitle: "In your cohort",
       cohortLead:
-        "Accepted and catalog trainings. Assign to the whole group, or choose specific fathers.",
+        "Open a training to watch the sessions, then assign to the group or choose fathers.",
       cohortEmptyTitle: "No trainings in the cohort yet",
       cohortEmptyBody: "Accept a release above, or request a training.",
       assignedOf: "{assigned} of {total} assigned",
@@ -1198,6 +1202,7 @@ export const en = {
       allAssigned: "Everyone in the group already has this.",
       chooseFathers: "Choose fathers",
       preview: "Preview",
+      viewTraining: "View training",
       removeLead: "Removing hides it from new assignment. Fathers who already have it keep it.",
       catalogItem: "In the catalog",
       hiddenTitle: "Hidden",

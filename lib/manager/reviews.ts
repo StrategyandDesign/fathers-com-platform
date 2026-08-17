@@ -1,5 +1,7 @@
 import {
   catalogSessionTotal,
+  isLegacyCatalogTraining,
+  isTrainingPublished,
   type Session,
   type Training,
 } from "@/lib/father/types";
@@ -51,7 +53,7 @@ export type ReviewQueueItem = {
 };
 
 export type ReviewDetail = {
-  review: OrganizationTrainingReview;
+  review: OrganizationTrainingReview | null;
   training: Training;
   groupName: string;
   sessions: Session[];
@@ -236,8 +238,23 @@ export async function loadReviewDetail(
     matches.find((row) => row.review.status === "pending") ??
     matches[0];
 
-  if (!item) return null;
+  if (!item) {
+    return loadCatalogTrainingDetail(queue.groups, trainingId);
+  }
 
+  const sessions = await loadTrainingSessions(trainingId);
+  await markTrainingNotificationsRead(managerId, trainingId);
+
+  return {
+    review: item.review,
+    training: item.training,
+    groupName: item.groupName,
+    sessions,
+    otherGroups: matches.filter((row) => row.review.group_id !== item.review.group_id),
+  } satisfies ReviewDetail & { otherGroups: ReviewQueueItem[] };
+}
+
+async function loadTrainingSessions(trainingId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("sessions")
@@ -248,19 +265,34 @@ export async function loadReviewDetail(
 
   if (error) throw error;
 
-  const sessions = ((data ?? []) as Session[]).sort(
+  return ((data ?? []) as Session[]).sort(
     (left, right) =>
       left.order_index - right.order_index || left.session_number - right.session_number
   );
+}
 
-  await markTrainingNotificationsRead(managerId, trainingId);
+async function loadCatalogTrainingDetail(groups: Group[], trainingId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("trainings")
+    .select(
+      "id, slug, title, description, session_count, order_index, published, released_at, first_published_at, first_released_at"
+    )
+    .eq("id", trainingId)
+    .maybeSingle();
+
+  if (error) throw error;
+  const training = data as Training | null;
+  if (!training || !isTrainingPublished(training) || !isLegacyCatalogTraining(training)) {
+    return null;
+  }
 
   return {
-    review: item.review,
-    training: item.training,
-    groupName: item.groupName,
-    sessions,
-    otherGroups: matches.filter((row) => row.review.group_id !== item.review.group_id),
+    review: null,
+    training,
+    groupName: groups[0]?.name ?? "Your organization",
+    sessions: await loadTrainingSessions(trainingId),
+    otherGroups: [] as ReviewQueueItem[],
   } satisfies ReviewDetail & { otherGroups: ReviewQueueItem[] };
 }
 

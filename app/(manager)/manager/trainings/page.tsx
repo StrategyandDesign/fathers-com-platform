@@ -195,6 +195,15 @@ export default async function ManagerTrainingsPage({
                     <ReviewStatusBadge status={item.review.status} />
                   </div>
                   <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                    <Link
+                      href={`/manager/reviews/${item.training.id}?group=${item.review.group_id}`}
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "w-full min-h-11 sm:w-auto"
+                      )}
+                    >
+                      {t("manager.trainings.viewTraining")}
+                    </Link>
                     {remaining > 0 ? (
                       <form action={assignTrainingToUnassigned}>
                         <input type="hidden" name="training_id" value={item.training.id} />
@@ -217,15 +226,6 @@ export default async function ManagerTrainingsPage({
                     >
                       {t("manager.trainings.chooseFathers")}
                     </Link>
-                    <Link
-                      href={`/manager/reviews/${item.training.id}?group=${item.review.group_id}`}
-                      className={cn(
-                        buttonVariants({ variant: "outline" }),
-                        "w-full min-h-11 sm:w-auto"
-                      )}
-                    >
-                      {t("manager.trainings.preview")}
-                    </Link>
                   </div>
                   <div className="mt-5 border-t border-border pt-5">
                     <p className="mb-3 text-sm text-muted-foreground">
@@ -246,16 +246,28 @@ export default async function ManagerTrainingsPage({
               const assigned = assignedCount(training.id);
               const total = groupSize();
               const remaining = Math.max(0, total - assigned);
+              const viewHref = `/manager/reviews/${training.id}`;
               return (
                 <li key={training.id} className="px-4 py-5 sm:px-6">
                   <div className="min-w-0">
-                    <p className="font-medium">{training.title}</p>
+                    <Link href={viewHref} className={cn("block font-medium", interactiveLinkClassName)}>
+                      {training.title}
+                    </Link>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {t("manager.trainings.assignedOf", { assigned, total })}
                       {` · ${t("manager.trainings.catalogItem")}`}
                     </p>
                   </div>
                   <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                    <Link
+                      href={viewHref}
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "w-full min-h-11 sm:w-auto"
+                      )}
+                    >
+                      {t("manager.trainings.viewTraining")}
+                    </Link>
                     {remaining > 0 ? (
                       <form action={assignTrainingToUnassigned}>
                         <input type="hidden" name="training_id" value={training.id} />
