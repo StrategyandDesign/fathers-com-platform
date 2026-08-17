@@ -1,12 +1,12 @@
 import Link from "next/link";
 
-import { ROLE_ACCOUNT, ROLE_HELP, ROLE_HOME, roleChromeLabel, type AppRole } from "@/lib/auth/roles";
+import { ROLE_ACCOUNT, ROLE_HOME, roleChromeLabel, type AppRole } from "@/lib/auth/roles";
 import { BrandLogo } from "@/components/brand/logo";
 import { AppNav } from "@/components/layout/app-nav";
 import { StaffMenu } from "@/components/layout/staff-menu";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Badge } from "@/components/ui/badge";
-import { interactiveIconClassName, interactiveLinkClassName } from "@/lib/ui";
+import { interactiveIconClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export function RoleShell({
@@ -78,19 +78,6 @@ export function RoleShell({
       >
         <div className="mx-auto w-full min-w-0 max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-6 lg:px-8 lg:py-8">
           {children}
-          {role !== "admin" ? (
-            <p className="mt-10 border-t border-border pt-4 print:hidden">
-              <Link
-                href={ROLE_HELP[role]}
-                className={cn(
-                  "inline-flex min-h-11 items-center text-sm text-muted-foreground",
-                  interactiveLinkClassName
-                )}
-              >
-                Help
-              </Link>
-            </p>
-          ) : null}
         </div>
       </main>
     </div>
