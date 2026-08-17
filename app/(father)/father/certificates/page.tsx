@@ -16,7 +16,7 @@ export default async function FatherCertificatesPage() {
       </div>
       <IssuedCertificateList
         certificates={certificates}
-        empty="Certificates appear after your manager issues one for a completed training."
+        empty="Finish a training, then your manager can issue a certificate. It will show up here."
         actionHref="/father/trainings"
         actionLabel="View trainings"
       />

@@ -119,6 +119,7 @@ export async function loadFatherHome(fatherId: string) {
       completed,
       total: catalogSessionTotal(training, trainingSessions.length),
       next,
+      nextProgress: next ? progressBySession.get(next.id) ?? null : null,
       certificate: certificates.find((row) => row.training_id === training.id) ?? null,
     };
   });

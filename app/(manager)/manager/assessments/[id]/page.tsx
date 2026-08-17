@@ -3,11 +3,12 @@ import { notFound } from "next/navigation";
 
 import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { assignAssessment, updateAssessment } from "@/lib/assessments/actions";
 import { loadManagerAssessmentDetail } from "@/lib/assessments/data";
 import { ASSIGNMENT_STATUS_LABEL } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
-import { fieldClassName, interactiveLinkClassName, interactiveSurfaceClassName, interactiveUnderlineClassName, textareaClassName } from "@/lib/ui";
+import { fieldClassName, interactiveLinkClassName, interactiveSurfaceClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export default async function ManagerAssessmentDetailPage({
@@ -61,6 +62,7 @@ export default async function ManagerAssessmentDetailPage({
             defaultValue={detail.assessment.title}
             required
             maxLength={200}
+            aria-invalid={Boolean(flash.error) || undefined}
           />
         </label>
         <label className="block space-y-2">
@@ -80,10 +82,16 @@ export default async function ManagerAssessmentDetailPage({
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="font-heading text-lg font-semibold">Questions</h2>
         {detail.questions.length === 0 ? (
-          <p className="mt-3 text-sm text-muted-foreground">
-            This assessment has no questions. Create a new assessment if you
-            need a different set.
-          </p>
+          <EmptyState
+            framed={false}
+            className="mt-3 p-0"
+            title="No questions on this assessment"
+            actionHref="/manager/assessments/new"
+            actionLabel="New assessment"
+          >
+            Questions are set when you create an assessment. Start a new one if
+            you need a different set.
+          </EmptyState>
         ) : (
         <ol className="mt-4 space-y-3">
           {detail.questions.map((question, index) => (
@@ -112,16 +120,16 @@ export default async function ManagerAssessmentDetailPage({
           Fathers in your group. Already assigned stay checked.
         </p>
         {detail.roster.length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">
-            No participants yet. Share your invite code from the{" "}
-            <Link
-              href="/manager"
-              className={interactiveUnderlineClassName}
-            >
-              dashboard
-            </Link>
-            .
-          </p>
+          <EmptyState
+            framed={false}
+            className="mt-4 p-0"
+            title="No one has joined yet"
+            actionHref="/manager"
+            actionLabel="Open dashboard"
+          >
+            Share your invite code from the dashboard so fathers can create an
+            account. Then you can assign this assessment.
+          </EmptyState>
         ) : (
           <form action={assignAssessment} className="mt-4 space-y-4">
             <input type="hidden" name="assessment_id" value={detail.assessment.id} />
@@ -164,10 +172,14 @@ export default async function ManagerAssessmentDetailPage({
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="font-heading text-lg font-semibold">Assignments</h2>
         {detail.assignments.length === 0 ? (
-          <p className="mt-3 text-sm text-muted-foreground">
-            No one is assigned yet. Choose fathers above and assign this
-            assessment.
-          </p>
+          <EmptyState
+            framed={false}
+            className="mt-3 p-0"
+            title="No one is assigned yet"
+          >
+            Choose fathers above and assign this assessment. Responses show up
+            here after they start.
+          </EmptyState>
         ) : (
           <ul className="mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border">
             {detail.assignments.map((row) => (

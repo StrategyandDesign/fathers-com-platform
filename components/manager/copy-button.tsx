@@ -26,7 +26,7 @@ export function CopyButton({
 
   return (
     <Button type="button" variant="inverse" className={className} onClick={copy}>
-      {status === "copied" ? "Copied" : status === "error" ? "Copy failed" : "Copy Code"}
+      {status === "copied" ? "Copied" : status === "error" ? "Couldn’t copy" : "Copy Code"}
     </Button>
   );
 }

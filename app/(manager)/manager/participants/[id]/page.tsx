@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { CertificateDownloadLink } from "@/components/certificates/download-link";
 import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { ProgressBar } from "@/components/ui/progress";
 import { loadParticipantCustomAssignments } from "@/lib/assessments/data";
 import { ASSIGNMENT_STATUS_LABEL } from "@/lib/assessments/types";
@@ -106,8 +107,8 @@ export default async function ManagerParticipantDetailPage({
         ) : (
           <p className="mt-3 text-muted-foreground">
             {participant.profileStatus === "in_progress"
-              ? "Started, not finished."
-              : "Not started."}
+              ? "He started the Profile and hasn’t finished."
+              : "He hasn’t started the Profile yet."}
           </p>
         )}
       </section>
@@ -139,10 +140,13 @@ export default async function ManagerParticipantDetailPage({
       {progress.length === 0 ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Trainings</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            No trainings are in the catalog yet. An admin needs to add one
-            before you can assign work.
-          </p>
+          <EmptyState
+            framed={false}
+            className="mt-2 p-0"
+            title="No trainings in the catalog"
+          >
+            An admin needs to add a training before you can assign work.
+          </EmptyState>
         </section>
       ) : (
       <section className="grid gap-4 md:grid-cols-3">
@@ -200,13 +204,23 @@ export default async function ManagerParticipantDetailPage({
             </div>
           </>
         ) : (
-          <p className="mt-2 text-muted-foreground">
+          <EmptyState
+            framed={false}
+            className="mt-2 p-0"
+            title={
+              progress.length === 0
+                ? "No trainings to continue"
+                : progress.some((card) => card.assigned)
+                  ? "All sessions complete"
+                  : "No training assigned"
+            }
+          >
             {progress.length === 0
-              ? "No trainings are in the catalog yet."
+              ? "An admin needs to add a training to the catalog first."
               : progress.some((card) => card.assigned)
-                ? "Every session in the catalog is complete."
-                : "No training assigned yet. Assign one below."}
-          </p>
+                ? "Every session in the catalog is complete. You can send a certificate below."
+                : "Assign a training below so he has a next session."}
+          </EmptyState>
         )}
       </section>
 
@@ -218,12 +232,20 @@ export default async function ManagerParticipantDetailPage({
           <div className="mt-4">
             {progress.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No published trainings to assign yet.
+                No published trainings to assign yet. An admin adds those to the
+                catalog.
               </p>
             ) : unassigned.length === 0 ? (
-              <p className="text-sm text-muted-foreground">All trainings are assigned.</p>
+              <p className="text-sm text-muted-foreground">
+                Every published training is already assigned.
+              </p>
             ) : (
-              <select className={fieldClassName} name="training_id" required>
+              <select
+                className={fieldClassName}
+                name="training_id"
+                required
+                aria-invalid={Boolean(flash.error) || undefined}
+              >
                 {unassigned.map((card) => (
                   <option key={card.training.id} value={card.training.id}>
                     {card.training.title}
@@ -248,10 +270,15 @@ export default async function ManagerParticipantDetailPage({
           <div className="mt-4">
             {progress.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No trainings in the catalog yet.
+                No trainings in the catalog yet. An admin needs to add one.
               </p>
             ) : (
-              <select className={fieldClassName} name="training_id" required>
+              <select
+                className={fieldClassName}
+                name="training_id"
+                required
+                aria-invalid={Boolean(flash.error) || undefined}
+              >
                 {progress.map((card) => (
                   <option key={card.training.id} value={card.training.id}>
                     {card.training.title}
@@ -277,14 +304,19 @@ export default async function ManagerParticipantDetailPage({
           <div className="mt-4">
             {progress.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No trainings in the catalog yet.
+                No trainings in the catalog yet. An admin needs to add one.
               </p>
             ) : withoutCert.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 A certificate is already on file for each training.
               </p>
             ) : (
-              <select className={fieldClassName} name="training_id" required>
+              <select
+                className={fieldClassName}
+                name="training_id"
+                required
+                aria-invalid={Boolean(flash.error) || undefined}
+              >
                 {withoutCert.map((card) => (
                   <option key={card.training.id} value={card.training.id}>
                     {card.training.title}

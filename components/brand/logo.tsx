@@ -17,7 +17,7 @@ export function BrandMark({
     <img
       src={WHITE_LOCKUP}
       alt={alt}
-      className={cn("h-8 w-auto", className)}
+      className={cn("h-7 w-auto", className)}
     />
   );
 }
@@ -35,7 +35,7 @@ export function BrandLogo({
   const mark = (
     <BrandMark
       alt="Fathers.com"
-      className={cn(size === "display" ? "h-10" : "h-8", className)}
+      className={cn(size === "display" ? "h-10" : "h-7", className)}
     />
   );
 

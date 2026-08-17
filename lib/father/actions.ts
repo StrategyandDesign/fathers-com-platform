@@ -74,9 +74,10 @@ export async function markFilmWatched(formData: FormData) {
 
   try {
     await saveProgress(user.id, sessionId, { film_completed: true });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not save progress";
-    redirect(`/father/sessions/${sessionId}?error=${encodeURIComponent(message)}`);
+  } catch {
+    redirect(
+      `/father/sessions/${sessionId}?error=${encodeURIComponent("Your progress didn’t save. Try again.")}`
+    );
   }
 
   redirect(`/father/sessions/${sessionId}/checkin`);
@@ -95,7 +96,7 @@ export async function submitCheckin(formData: FormData) {
     const value = String(formData.get(question.key) ?? "").trim();
     if (!value) {
       redirect(
-        `/father/sessions/${sessionId}/checkin?error=${encodeURIComponent("Answer all three questions.")}`
+        `/father/sessions/${sessionId}/checkin?error=${encodeURIComponent("Answer all three questions to continue.")}`
       );
     }
     answers[question.key] = value;
@@ -106,10 +107,9 @@ export async function submitCheckin(formData: FormData) {
       checkin_completed: true,
       checkin_answers: answers,
     });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not save check-in";
+  } catch {
     redirect(
-      `/father/sessions/${sessionId}/checkin?error=${encodeURIComponent(message)}`
+      `/father/sessions/${sessionId}/checkin?error=${encodeURIComponent("Your check-in didn’t save. Try again.")}`
     );
   }
 
@@ -131,10 +131,9 @@ export async function completeAction(formData: FormData) {
       action_completed: true,
       action_note: note || null,
     });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not save action";
+  } catch {
     redirect(
-      `/father/sessions/${sessionId}/action?error=${encodeURIComponent(message)}`
+      `/father/sessions/${sessionId}/action?error=${encodeURIComponent("Your action didn’t save. Try again.")}`
     );
   }
 

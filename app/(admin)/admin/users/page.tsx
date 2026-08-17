@@ -29,8 +29,14 @@ export default async function AdminUsersPage({
 
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         {users.length === 0 ? (
-          <EmptyState framed={false} title="No users yet">
+          <EmptyState
+            framed={false}
+            title="No users yet"
+            actionHref="/admin/organizations"
+            actionLabel="Open organizations"
+          >
             Accounts appear here after someone signs up with an invite code.
+            Create an organization first so a manager can share that code.
           </EmptyState>
         ) : (
           <ul>

@@ -12,6 +12,7 @@ import {
 import { loadAdminTraining, loadTrainingUsage } from "@/lib/admin/data";
 import { Flash } from "@/components/manager/flash";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { fieldClassName, interactiveLinkClassName, textareaClassName } from "@/lib/ui";
 
@@ -59,7 +60,13 @@ export default async function AdminTrainingDetailPage({
         </div>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Title</span>
-          <input className={fieldClassName} name="title" defaultValue={training.title} required />
+          <input
+            className={fieldClassName}
+            name="title"
+            defaultValue={training.title}
+            required
+            aria-invalid={Boolean(flash.error) || undefined}
+          />
         </label>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Slug</span>
@@ -129,9 +136,14 @@ export default async function AdminTrainingDetailPage({
             Title, order, YouTube URL, and keyline. Sessions with progress cannot be deleted.
           </p>
           {training.sessions.length === 0 ? (
-            <p className="mt-3 text-sm text-muted-foreground">
-              No sessions yet. Add the first one below.
-            </p>
+            <EmptyState
+              framed={false}
+              className="mt-3 px-0 py-0"
+              title="No sessions yet"
+            >
+              Add the first one below. Fathers cannot start this training until
+              it has a session.
+            </EmptyState>
           ) : null}
         </div>
 

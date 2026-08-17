@@ -148,7 +148,7 @@ export async function createAssessment(formData: FormData) {
     .single();
 
   if (error || !data) {
-    fail(path, error?.message ?? "Could not create the assessment.");
+    fail(path, "The assessment didn’t save. Try again.");
   }
 
   const { error: questionError } = await supabase.from("custom_assessment_questions").insert(
@@ -163,7 +163,7 @@ export async function createAssessment(formData: FormData) {
 
   if (questionError) {
     await supabase.from("custom_assessments").delete().eq("id", data.id);
-    fail(path, questionError.message);
+    fail(path, "The questions didn’t save. Try again.");
   }
 
   revalidateAssessments(data.id);
@@ -207,7 +207,7 @@ export async function updateAssessment(formData: FormData) {
     .eq("manager_id", user.id);
 
   if (error) {
-    fail(path, error.message);
+    fail(path, "The assessment didn’t save. Try again.");
   }
 
   revalidateAssessments(assessmentId);
@@ -258,7 +258,7 @@ export async function assignAssessment(formData: FormData) {
   );
 
   if (error) {
-    fail(path, error.message);
+    fail(path, "The assignment didn’t save. Try again.");
   }
 
   revalidateAssessments(assessmentId);
@@ -289,15 +289,15 @@ export async function saveCustomAnswer(formData: FormData) {
   let ctx;
   try {
     ctx = await loadAssignmentTake(user.id, assignmentId);
-  } catch (error) {
-    fail(home, error instanceof Error ? error.message : "Could not load that assessment.");
+  } catch {
+    fail(home, "That assessment couldn’t load. Try again from Home.");
   }
 
   if (!ctx) {
     fail(home, "That assessment is not assigned to you.");
   }
   if (ctx.questions.length === 0) {
-    fail(home, "This assessment has no questions yet.");
+    fail(home, "This assessment has no questions yet. Check back after your manager adds some.");
   }
   if (ctx.assignment.status === "completed") {
     redirect(path);
@@ -338,7 +338,7 @@ export async function saveCustomAnswer(formData: FormData) {
         { onConflict: "assignment_id,question_id" }
       );
       if (error) {
-        fail(`${path}?q=${questionNumber}`, error.message);
+        fail(`${path}?q=${questionNumber}`, "Your answer didn’t save. Try again.");
       }
 
       if (ctx.assignment.status === "not_started") {
@@ -351,7 +351,7 @@ export async function saveCustomAnswer(formData: FormData) {
           .eq("id", assignmentId)
           .eq("father_id", user.id);
         if (statusError) {
-          fail(`${path}?q=${questionNumber}`, statusError.message);
+          fail(`${path}?q=${questionNumber}`, "Your answer didn’t save. Try again.");
         }
       }
 
@@ -383,7 +383,7 @@ export async function saveCustomAnswer(formData: FormData) {
       .eq("father_id", user.id);
 
     if (error) {
-      fail(`${path}?q=${questionNumber}`, error.message);
+      fail(`${path}?q=${questionNumber}`, "Your answers saved, but the assessment didn’t finish. Try Submit again.");
     }
 
     revalidateAssessments(ctx.assessment.id, user.id, assignmentId);

@@ -68,6 +68,7 @@ export default async function FatherProfileTakePage({
           options={PROFILE_SCALE}
           saved={saved}
           autoAdvance={!isLast}
+          invalid={Boolean(params.error)}
         />
         <input type="hidden" name="question_id" value={question.id} />
         {params.error ? (

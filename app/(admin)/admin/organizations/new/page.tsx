@@ -4,9 +4,9 @@ import { createOrganization } from "@/lib/admin/actions";
 import { loadAdminUsers } from "@/lib/admin/data";
 import { Flash } from "@/components/manager/flash";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
-import { fieldClassName, interactiveLinkClassName, interactiveUnderlineClassName } from "@/lib/ui";
-import { cn } from "@/lib/utils";
+import { fieldClassName, interactiveLinkClassName } from "@/lib/ui";
 
 export default async function AdminNewOrganizationPage({
   searchParams,
@@ -39,26 +39,26 @@ export default async function AdminNewOrganizationPage({
       <form action={createOrganization} className="max-w-xl space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Name</span>
-          <input className={fieldClassName} name="name" required />
+          <input
+            className={fieldClassName}
+            name="name"
+            required
+            aria-invalid={Boolean(flash.error) || undefined}
+          />
         </label>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Manager</span>
           {managers.length === 0 ? (
-            <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                No managers yet. Change a user&apos;s role to Manager, then come
-                back.
-              </p>
-              <Link
-                href="/admin/users"
-                className={cn(
-                  "inline-flex min-h-11 items-center text-sm",
-                  interactiveUnderlineClassName
-                )}
-              >
-                Open users
-              </Link>
-            </div>
+            <EmptyState
+              framed={false}
+              className="p-0"
+              title="No managers yet"
+              actionHref="/admin/users"
+              actionLabel="Open users"
+            >
+              Change a user’s role to Manager, then come back to create the
+              organization.
+            </EmptyState>
           ) : (
             <select className={fieldClassName} name="manager_id" required>
               {managers.map((manager) => (

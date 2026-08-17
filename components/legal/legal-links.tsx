@@ -11,17 +11,19 @@ const linkClassName = cn(
 export function LegalLinks({
   className,
   align = "start",
+  copyright = false,
 }: {
   className?: string;
   align?: "start" | "center";
+  copyright?: boolean;
 }) {
-  return (
+  const nav = (
     <nav
       aria-label="Legal"
       className={cn(
         "flex flex-wrap items-center gap-x-3",
         align === "center" && "justify-center",
-        className
+        !copyright && className
       )}
     >
       <Link href="/privacy" className={linkClassName}>
@@ -34,5 +36,22 @@ export function LegalLinks({
         Terms
       </Link>
     </nav>
+  );
+
+  if (!copyright) {
+    return nav;
+  }
+
+  return (
+    <div
+      className={cn(
+        "flex flex-col gap-1",
+        align === "center" && "items-center text-center",
+        className
+      )}
+    >
+      {nav}
+      <p className="text-xs text-muted-foreground">© 2026 Fathers.com</p>
+    </div>
   );
 }

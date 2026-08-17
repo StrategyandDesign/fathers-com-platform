@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { fieldClassName, initials, interactiveSurfaceClassName } from "@/lib/ui";
 import { requireRole } from "@/lib/auth/session";
 import { createGroup } from "@/lib/manager/actions";
@@ -75,6 +76,7 @@ export default async function ManagerHomePage({
                   name="name"
                   defaultValue="Pilot Group"
                   required
+                  aria-invalid={Boolean(params.error) || undefined}
                 />
               </label>
               <Button type="submit" className="w-full sm:w-auto">
@@ -91,7 +93,14 @@ export default async function ManagerHomePage({
           </p>
           <div className="mt-5">
             {needsAttention.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nothing waiting right now.</p>
+              <EmptyState
+                framed={false}
+                className="p-0"
+                title="You’re caught up"
+              >
+                No profile gaps, unfinished sessions, or certificates waiting to
+                send.
+              </EmptyState>
             ) : (
               <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
                 {needsAttention.map((item) => (

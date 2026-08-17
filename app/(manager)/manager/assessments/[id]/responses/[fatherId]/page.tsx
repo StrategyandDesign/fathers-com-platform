@@ -58,7 +58,7 @@ export default async function ManagerAssessmentResponsesPage({
               <p className="text-sm text-muted-foreground">Question {index + 1}</p>
               <p className="mt-1 font-heading text-base font-semibold">{question.prompt}</p>
               <p className="mt-4 whitespace-pre-wrap text-muted-foreground">
-                {answer?.value ?? "No answer yet."}
+                {answer?.value ?? "He hasn’t answered this one yet."}
               </p>
             </li>
           );

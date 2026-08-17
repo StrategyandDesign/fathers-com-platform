@@ -15,15 +15,22 @@ export function ProfileAnswerOptions({
   options,
   saved,
   autoAdvance,
+  invalid,
 }: {
   options: readonly ScaleOption[];
   saved?: number;
   autoAdvance: boolean;
+  invalid?: boolean;
 }) {
   return (
     <fieldset className="mt-8">
       <legend className="sr-only">Answer</legend>
-      <ProfileAnswerRadios options={options} saved={saved} autoAdvance={autoAdvance} />
+      <ProfileAnswerRadios
+        options={options}
+        saved={saved}
+        autoAdvance={autoAdvance}
+        invalid={invalid}
+      />
     </fieldset>
   );
 }
@@ -32,10 +39,12 @@ function ProfileAnswerRadios({
   options,
   saved,
   autoAdvance,
+  invalid,
 }: {
   options: readonly ScaleOption[];
   saved?: number;
   autoAdvance: boolean;
+  invalid?: boolean;
 }) {
   const { pending } = useFormStatus();
   const [advancing, setAdvancing] = useState(false);
@@ -63,6 +72,7 @@ function ProfileAnswerRadios({
             value={option.value}
             defaultChecked={saved === option.value}
             required
+            aria-invalid={invalid || undefined}
             className="size-4 accent-primary"
             onClick={handleClick}
           />

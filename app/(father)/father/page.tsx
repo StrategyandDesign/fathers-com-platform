@@ -1,7 +1,9 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
 
 import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { CoverPhoto } from "@/components/brand/cover";
+import { FirstVisitIntro } from "@/components/father/first-visit-intro";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { loadFatherAssignments } from "@/lib/assessments/data";
@@ -10,6 +12,10 @@ import { requireRole } from "@/lib/auth/session";
 import { sessionCover } from "@/lib/brand/photos";
 import { startProfile } from "@/lib/father/profile-actions";
 import { loadFatherHome } from "@/lib/father/data";
+import {
+  FATHERS_INTRO_SEEN_KEY,
+  isFathersIntroSeenValue,
+} from "@/lib/father/intro-seen";
 import { PROFILE_QUESTION_COUNT, firstUnanswered } from "@/lib/father/questions";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
@@ -17,6 +23,9 @@ import { cn } from "@/lib/utils";
 
 const eyebrowClassName =
   "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
+
+const profileReminder =
+  "Your Profile gives you a clearer picture of your fathering strengths.";
 
 function sessionInProgress(progress: SessionProgress | null) {
   if (!progress) return false;
@@ -50,6 +59,10 @@ export default async function FatherHomePage() {
   const issuedCertificates = trainingCards.filter((card) => card.certificate);
   const nextInProgress = sessionInProgress(next?.progress ?? null);
   const neverStarted = Boolean(next) && nextCompleted === 0 && !nextInProgress;
+  const introSeen = isFathersIntroSeenValue(
+    (await cookies()).get(FATHERS_INTRO_SEEN_KEY)?.value
+  );
+  const showFirstVisitIntro = neverStarted && !introSeen;
   const heroLabel = neverStarted
     ? "Start Here"
     : nextInProgress
@@ -83,63 +96,75 @@ export default async function FatherHomePage() {
       ? "Your manager hasn’t assigned a training yet. You can take your Profile while you wait."
       : assessmentIsPrimary
         ? "Your manager hasn’t assigned a training yet. They did send an assessment."
-        : "Your manager hasn’t assigned a training yet.";
+        : "Your manager hasn’t assigned a training yet. It will show up here when they do.";
 
   return (
     <div className="space-y-8">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,1fr)]">
         {next ? (
-          <div className="min-w-0 space-y-2">
-            <p className={eyebrowClassName}>{heroLabel}</p>
-            <section className="overflow-hidden rounded-xl border border-border bg-card">
-              <div className="h-24 overflow-hidden bg-[#101510] sm:h-36 lg:h-44">
-                <CoverPhoto src={sessionCover(next.session.session_number)} />
-              </div>
-              <div className="space-y-5 p-4 sm:p-5 lg:p-6">
-                <div>
-                  <p className={eyebrowClassName}>
-                    {neverStarted
-                      ? nextTotal > 0
-                        ? `Session ${next.session.session_number} of ${nextTotal}`
-                        : `Session ${next.session.session_number}`
-                      : nextTotal > 0
-                        ? `Session ${next.session.session_number} of ${nextTotal} · ${next.training.title}`
-                        : `Session ${next.session.session_number} · ${next.training.title}`}
-                  </p>
-                  <h1 className="font-heading mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
-                    {neverStarted ? next.training.title : next.session.title}
-                  </h1>
-                  {neverStarted ? (
-                    <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                      Start with the Overview. Each session follows the same rhythm:
-                      Film → Check-in → Action.
+          <FirstVisitIntro
+            eligible={showFirstVisitIntro}
+            href={continueHref(next.session.id, next.progress)}
+            trainingTitle={next.training.title}
+            trainingDescription={next.training.description}
+            sessionNumber={next.session.session_number}
+            total={nextTotal}
+            completed={nextCompleted}
+            percent={nextPercent}
+            coverSrc={sessionCover(next.session.session_number)}
+          >
+            <div className="min-w-0 space-y-2">
+              <p className={eyebrowClassName}>{heroLabel}</p>
+              <section className="overflow-hidden rounded-xl border border-border bg-card">
+                <div className="h-24 overflow-hidden bg-[#101510] sm:h-36 lg:h-44">
+                  <CoverPhoto src={sessionCover(next.session.session_number)} />
+                </div>
+                <div className="space-y-5 p-4 sm:p-5 lg:p-6">
+                  <div>
+                    <p className={eyebrowClassName}>
+                      {neverStarted
+                        ? nextTotal > 0
+                          ? `Session ${next.session.session_number} of ${nextTotal}`
+                          : `Session ${next.session.session_number}`
+                        : nextTotal > 0
+                          ? `Session ${next.session.session_number} of ${nextTotal} · ${next.training.title}`
+                          : `Session ${next.session.session_number} · ${next.training.title}`}
                     </p>
-                  ) : next.session.keyline ? (
-                    <p className="mt-1 text-sm text-muted-foreground">{next.session.keyline}</p>
-                  ) : null}
-                </div>
-                <div className="space-y-4">
-                  {nextTotal > 0 ? (
-                    <div className="space-y-2">
-                      <ProgressBar value={nextPercent} />
-                      <p className="text-sm text-muted-foreground">
-                        {nextCompleted} of {nextTotal} sessions complete
+                    <h1 className="font-heading mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+                      {neverStarted ? next.training.title : next.session.title}
+                    </h1>
+                    {neverStarted ? (
+                      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                        Start with the Overview. Each session follows the same rhythm:
+                        Film → Check-in → Action.
                       </p>
-                    </div>
-                  ) : null}
-                  <Link
-                    href={continueHref(next.session.id, next.progress)}
-                    className={cn(
-                      buttonVariants({ variant: "inverse", size: "lg" }),
-                      "w-full sm:w-auto"
-                    )}
-                  >
-                    {neverStarted ? "Start the Overview" : continueLabel}
-                  </Link>
+                    ) : next.session.keyline ? (
+                      <p className="mt-1 text-sm text-muted-foreground">{next.session.keyline}</p>
+                    ) : null}
+                  </div>
+                  <div className="space-y-4">
+                    {nextTotal > 0 ? (
+                      <div className="space-y-2">
+                        <ProgressBar value={nextPercent} />
+                        <p className="text-sm text-muted-foreground">
+                          {nextCompleted} of {nextTotal} sessions complete
+                        </p>
+                      </div>
+                    ) : null}
+                    <Link
+                      href={continueHref(next.session.id, next.progress)}
+                      className={cn(
+                        buttonVariants({ variant: "inverse", size: "lg" }),
+                        "w-full sm:w-auto"
+                      )}
+                    >
+                      {neverStarted ? "Start the Overview" : continueLabel}
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </section>
-          </div>
+              </section>
+            </div>
+          </FirstVisitIntro>
         ) : (
           <section className="flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:p-8">
             <p className={eyebrowClassName}>
@@ -182,6 +207,19 @@ export default async function FatherHomePage() {
                   {pendingAssessment.assignment.status === "in_progress"
                     ? "Continue assessment"
                     : "Take assessment"}
+                </Link>
+              </div>
+            ) : null}
+            {!profileIsPrimary && !assessmentIsPrimary && profile ? (
+              <div className="mt-6">
+                <Link
+                  href="/father/profile"
+                  className={cn(
+                    buttonVariants({ variant: "inverse", size: "lg" }),
+                    "w-full sm:w-auto"
+                  )}
+                >
+                  View your Profile
                 </Link>
               </div>
             ) : null}
@@ -231,6 +269,7 @@ export default async function FatherHomePage() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Question {firstUnanswered(draft.answers)} of {PROFILE_QUESTION_COUNT}
               </p>
+              <p className="mt-2 text-sm text-muted-foreground">{profileReminder}</p>
               {profileIsPrimary ? null : (
                 <div className="mt-auto pt-5">
                   <Link
@@ -247,6 +286,7 @@ export default async function FatherHomePage() {
               <p className="mt-3 text-sm text-muted-foreground">
                 Optional. About twenty minutes, one question at a time.
               </p>
+              <p className="mt-2 text-sm text-muted-foreground">{profileReminder}</p>
               {profileIsPrimary ? null : (
                 <form action={startProfile} className="mt-auto pt-5">
                   <Button type="submit" variant="outline" className="w-full">
@@ -275,14 +315,16 @@ export default async function FatherHomePage() {
             ) : null}
           </div>
           <div className="grid gap-3 lg:grid-cols-3">
-            {trainingCards.map(({ training, completed, total, next: trainingNext }) => {
+            {trainingCards.map(({ training, completed, total, next: trainingNext, nextProgress }) => {
               const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
               const complete = total > 0 && completed === total;
               return (
                 <Link
                   key={training.id}
                   href={
-                    trainingNext ? `/father/sessions/${trainingNext.id}` : "/father/trainings"
+                    trainingNext
+                      ? continueHref(trainingNext.id, nextProgress)
+                      : "/father/trainings"
                   }
                   className={cn(
                     "rounded-xl border border-border bg-card p-4 sm:p-5",
@@ -296,7 +338,7 @@ export default async function FatherHomePage() {
                     <ProgressBar value={percent} />
                     <p className="text-sm text-muted-foreground">
                       {total === 0
-                        ? "No sessions yet"
+                        ? "Sessions will appear when this training is ready."
                         : complete
                           ? "Complete"
                           : `${completed} of ${total} sessions`}

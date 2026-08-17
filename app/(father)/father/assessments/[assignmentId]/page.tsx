@@ -91,6 +91,7 @@ export default async function FatherAssessmentTakePage({
                     value={option}
                     defaultChecked={saved === option}
                     required
+                    aria-invalid={Boolean(query.error) || undefined}
                     className="size-4 accent-primary"
                   />
                   <span>{option}</span>

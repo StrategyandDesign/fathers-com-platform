@@ -178,7 +178,7 @@ export async function loadManagerWorkspace(managerId: string) {
       cards.find((card) => card.assigned) ??
       cards[0];
 
-    if (!active) return "No trainings";
+    if (!active) return "None assigned";
     if (active.completed === active.total && active.total > 0) {
       return `${active.training.title} complete`;
     }

@@ -71,7 +71,13 @@ export default async function AdminUserDetailPage({
         </p>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Role</span>
-          <select className={fieldClassName} name="role" defaultValue={user.role} required>
+          <select
+            className={fieldClassName}
+            name="role"
+            defaultValue={user.role}
+            required
+            aria-invalid={Boolean(flash.error) || undefined}
+          >
             {APP_ROLES.map((role) => (
               <option key={role} value={role}>
                 {ROLE_LABEL[role]}

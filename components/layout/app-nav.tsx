@@ -1,11 +1,11 @@
 "use client";
 
+import type { ComponentType } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
   Building2,
-  ChevronsUp,
   ClipboardList,
   FileSpreadsheet,
   GraduationCap,
@@ -14,16 +14,21 @@ import {
   Settings,
   User,
   Users,
-  type LucideIcon,
 } from "lucide-react";
 
+import { BrandLogoArrow } from "@/components/brand/logo-arrow";
 import { type AppRole } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
+
+type NavIcon = ComponentType<{
+  className?: string;
+  strokeWidth?: number;
+}>;
 
 type NavItem = {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: NavIcon;
   match: (pathname: string) => boolean;
 };
 
@@ -38,7 +43,7 @@ export const NAV: Record<AppRole, NavItem[]> = {
     {
       href: "/father/trainings",
       label: "Trainings",
-      icon: ChevronsUp,
+      icon: BrandLogoArrow,
       match: (path) => path === "/father/trainings" || path.startsWith("/father/sessions"),
     },
     {

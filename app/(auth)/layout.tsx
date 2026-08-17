@@ -11,10 +11,8 @@ export default function AuthLayout({
       <div className="mb-8">
         <BrandLogo href="/" />
       </div>
-      <div className="w-full max-w-[24rem]">
-        {children}
-        <LegalLinks align="center" className="mt-6" />
-      </div>
+      <div className="w-full max-w-[24rem]">{children}</div>
+      <LegalLinks align="center" copyright className="mt-6" />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { loadAdminOrganization } from "@/lib/admin/data";
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { formatShortDate } from "@/lib/manager/types";
 import { fieldClassName, interactiveLinkClassName } from "@/lib/ui";
@@ -58,7 +59,13 @@ export default async function AdminOrganizationDetailPage({
         </h1>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Name</span>
-          <input className={fieldClassName} name="name" defaultValue={group.name} required />
+          <input
+            className={fieldClassName}
+            name="name"
+            defaultValue={group.name}
+            required
+            aria-invalid={Boolean(flash.error) || undefined}
+          />
         </label>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Manager</span>
@@ -95,10 +102,10 @@ export default async function AdminOrganizationDetailPage({
           </p>
         </div>
         {participants.length === 0 ? (
-          <p className="px-4 py-8 text-sm text-muted-foreground sm:px-6">
-            No one has joined yet. Share this organization’s invite code with
-            fathers.
-          </p>
+          <EmptyState framed={false} title="No one has joined yet">
+            Share this organization’s invite code with fathers. They create an
+            account and land in this group.
+          </EmptyState>
         ) : (
           <ul>
             {participants.map((participant) => (

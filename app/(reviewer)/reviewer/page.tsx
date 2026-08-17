@@ -221,11 +221,15 @@ export default async function ReviewerInsightsPage({
           </p>
           <div className="mt-5 space-y-3">
             {insights.completion_trend.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
+              <EmptyState
+                framed={false}
+                className="p-0"
+                title="No weekly totals yet"
+              >
                 {insights.total_participants === 0
-                  ? "No cohort data yet. Weekly totals appear after fathers finish a Profile."
+                  ? "These bars fill in after fathers finish a Profile."
                   : "No Profile completions in the last six weeks."}
-              </p>
+              </EmptyState>
             ) : (
               insights.completion_trend.map((point) => (
                 <div key={point.week} className="space-y-1.5">
@@ -247,11 +251,15 @@ export default async function ReviewerInsightsPage({
           </p>
           <div className="mt-5 space-y-3">
             {insights.primary_edges.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
+              <EmptyState
+                framed={false}
+                className="p-0"
+                title="No Primary Edges yet"
+              >
                 {insights.total_participants === 0
-                  ? "No cohort data yet. Edges appear after fathers complete a Profile."
-                  : "No Primary Edge totals yet. Edges appear after fathers complete a Profile."}
-              </p>
+                  ? "Edges appear after fathers complete a Profile."
+                  : "No completed Profiles in this filter have a Primary Edge yet."}
+              </EmptyState>
             ) : (
               insights.primary_edges.map((edge) => (
                 <div key={edge.label} className="space-y-1.5">
@@ -281,10 +289,13 @@ export default async function ReviewerInsightsPage({
         </div>
         <div className="mt-5 space-y-5">
           {insights.training_distribution.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No trainings in the catalog yet. Distribution appears once
-              trainings are published.
-            </p>
+            <EmptyState
+              framed={false}
+              className="p-0"
+              title="No trainings in the catalog"
+            >
+              Distribution appears once trainings are published.
+            </EmptyState>
           ) : (
             insights.training_distribution.map((training) => {
               const total =
@@ -327,7 +338,7 @@ export default async function ReviewerInsightsPage({
           insights.participantCount === 0 ? (
             <EmptyState framed={false} title="No cohort data yet">
               Totals stay at zero until fathers join a group and start a Profile
-              or training. Nothing here is individual.
+              or training. This view stays anonymized.
             </EmptyState>
           ) : (
             <EmptyState

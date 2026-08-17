@@ -34,7 +34,12 @@ export default async function AdminNewTrainingPage({
       <form action={createTraining} className="max-w-xl space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Title</span>
-          <input className={fieldClassName} name="title" required />
+          <input
+            className={fieldClassName}
+            name="title"
+            required
+            aria-invalid={Boolean(flash.error) || undefined}
+          />
         </label>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Slug (optional)</span>

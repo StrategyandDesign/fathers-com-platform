@@ -7,6 +7,40 @@ import { ROLE_HOME, resolveRole, safeInternalPath } from "@/lib/auth/roles";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
+function signInFlash(message?: string) {
+  const text = (message ?? "").toLowerCase();
+  if (text.includes("deactivated")) {
+    return "This account has been deactivated.";
+  }
+  if (text.includes("too many")) {
+    return "Too many attempts. Wait a few minutes and try again.";
+  }
+  if (text.includes("confirm")) {
+    return "Confirm your email first, then sign in.";
+  }
+  return "Email or password doesn’t match. Try again, or create an account if you don’t have one.";
+}
+
+function signUpFlash(message: string) {
+  const text = message.toLowerCase();
+  if (text.includes("too many")) {
+    return "Too many attempts. Wait a few minutes and try again.";
+  }
+  if (text.includes("invite") || text.includes("not signed in")) {
+    return "That invite code didn’t work. Check it with your manager and try again.";
+  }
+  if (text.includes("already") || text.includes("registered") || text.includes("exists")) {
+    return "An account with that email already exists. Sign in instead.";
+  }
+  if (text.includes("password")) {
+    return "Use a password with at least 6 characters.";
+  }
+  if (text.includes("email") && (text.includes("invalid") || text.includes("valid"))) {
+    return "Enter a valid email address.";
+  }
+  return "Couldn’t create the account. Check the invite code and try again.";
+}
+
 export async function signIn(formData: FormData) {
   if (!(await allowActionRateLimit("auth.signin"))) {
     redirect(`/login?error=${encodeURIComponent("Too many attempts. Wait a few minutes and try again.")}`);
@@ -23,7 +57,7 @@ export async function signIn(formData: FormData) {
   });
 
   if (error || !data.user) {
-    redirect(`/login?error=${encodeURIComponent(error?.message ?? "Sign in failed")}`);
+    redirect(`/login?error=${encodeURIComponent(signInFlash(error?.message))}`);
   }
 
   const { data: profile } = await supabase
@@ -50,7 +84,9 @@ export async function signUp(formData: FormData) {
   const inviteCode = String(formData.get("invite_code") ?? "").trim();
 
   if (!inviteCode) {
-    redirect(`/signup?error=${encodeURIComponent("Invite code is required")}`);
+    redirect(
+      `/signup?error=${encodeURIComponent("Ask your manager for an invite code, then try again.")}`
+    );
   }
 
   const supabase = await createClient();
@@ -61,7 +97,7 @@ export async function signUp(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/signup?error=${encodeURIComponent(error.message)}`);
+    redirect(`/signup?error=${encodeURIComponent(signUpFlash(error.message))}`);
   }
 
   if (!data.session) {
@@ -76,7 +112,7 @@ export async function signUp(formData: FormData) {
   });
 
   if (joinError) {
-    redirect(`/signup?error=${encodeURIComponent(joinError.message)}`);
+    redirect(`/signup?error=${encodeURIComponent(signUpFlash(joinError.message))}`);
   }
 
   await notifyAccountCreated({ email, userId: data.user?.id });

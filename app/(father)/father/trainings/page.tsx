@@ -7,6 +7,7 @@ import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
 import { trainingCover } from "@/lib/brand/photos";
 import { loadFatherHome } from "@/lib/father/data";
+import { continueHref } from "@/lib/father/types";
 import { cn } from "@/lib/utils";
 
 export default async function FatherTrainingsPage() {
@@ -34,7 +35,7 @@ export default async function FatherTrainingsPage() {
         </EmptyState>
       ) : (
         <div className="space-y-4">
-          {trainingCards.map(({ training, completed, total, next, sessionDots, certificate }) => {
+          {trainingCards.map(({ training, completed, total, next, nextProgress, sessionDots, certificate }) => {
             const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
             return (
               <article
@@ -50,7 +51,9 @@ export default async function FatherTrainingsPage() {
                       {training.title}
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      {total} session{total === 1 ? "" : "s"}
+                      {total === 0
+                        ? "Sessions will appear when this training is ready."
+                        : `${total} session${total === 1 ? "" : "s"}`}
                     </p>
                     {training.description ? (
                       <p className="max-w-xl text-sm text-muted-foreground">
@@ -60,12 +63,12 @@ export default async function FatherTrainingsPage() {
                     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                       {next ? (
                         <Link
-                          href={`/father/sessions/${next.id}`}
+                          href={continueHref(next.id, nextProgress)}
                           className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
                         >
                           View Sessions
                         </Link>
-                      ) : (
+                      ) : total === 0 ? null : (
                         <p className="inline-flex min-h-11 items-center text-sm text-primary">
                           Complete
                         </p>

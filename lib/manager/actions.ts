@@ -42,7 +42,7 @@ export async function createGroup(formData: FormData) {
   });
 
   if (error) {
-    fail("/manager", error.message);
+    fail("/manager", "The group didn’t save. Try again.");
   }
 
   revalidateManager();
@@ -67,7 +67,7 @@ export async function assignTraining(formData: FormData) {
     .maybeSingle();
 
   if (catalogError) {
-    fail(path, catalogError.message);
+    fail(path, "Couldn’t load that training. Try again.");
   }
   if (!catalog || !isTrainingPublished(catalog)) {
     fail(path, "That training is not published.");
@@ -80,7 +80,12 @@ export async function assignTraining(formData: FormData) {
   });
 
   if (error) {
-    fail(path, error.message);
+    fail(
+      path,
+      error.code === "23505"
+        ? "That training is already assigned."
+        : "The assignment didn’t save. Try again."
+    );
   }
 
   const { data: training } = await supabase
@@ -115,7 +120,7 @@ export async function markTrainingComplete(formData: FormData) {
     .eq("training_id", trainingId);
 
   if (sessionError) {
-    fail(path, sessionError.message);
+    fail(path, "Couldn’t load sessions for that training. Try again.");
   }
 
   const now = new Date().toISOString();
@@ -130,7 +135,7 @@ export async function markTrainingComplete(formData: FormData) {
   }));
 
   if (rows.length === 0) {
-    fail(path, "That training has no sessions.");
+    fail(path, "That training has no sessions yet. Ask an admin to add one.");
   }
 
   const { error } = await supabase
@@ -138,7 +143,7 @@ export async function markTrainingComplete(formData: FormData) {
     .upsert(rows, { onConflict: "father_id,session_id" });
 
   if (error) {
-    fail(path, error.message);
+    fail(path, "Progress didn’t save. Try again.");
   }
 
   revalidateManager(fatherId);
@@ -177,7 +182,7 @@ export async function sendCertificate(formData: FormData) {
   });
 
   if (managedError) {
-    fail(previewPath, managedError.message);
+    fail(previewPath, "Couldn’t verify this participant. Try again.");
   }
   if (!managed) {
     fail(participantPath, "That participant is not in your group.");
@@ -191,7 +196,7 @@ export async function sendCertificate(formData: FormData) {
     .maybeSingle();
 
   if (existingError) {
-    fail(previewPath, existingError.message);
+    fail(previewPath, "Couldn’t check for an existing certificate. Try again.");
   }
   if (existing) {
     ok(previewPath, "A certificate is already on file for this training.");
@@ -203,11 +208,11 @@ export async function sendCertificate(formData: FormData) {
     supabase.from("profiles").select("id, full_name").eq("id", user.id).maybeSingle(),
   ]);
 
-  if (fatherRes.error) fail(previewPath, fatherRes.error.message);
-  if (trainingRes.error) fail(previewPath, trainingRes.error.message);
-  if (managerRes.error) fail(previewPath, managerRes.error.message);
+  if (fatherRes.error || trainingRes.error || managerRes.error) {
+    fail(previewPath, "Couldn’t load this certificate. Go back to the participant and try again.");
+  }
   if (!fatherRes.data || !trainingRes.data) {
-    fail(previewPath, "Could not load the father or training for this certificate.");
+    fail(previewPath, "Couldn’t load this certificate. Go back to the participant and try again.");
   }
 
   const issuedAt = new Date();
@@ -228,8 +233,8 @@ export async function sendCertificate(formData: FormData) {
       serialNumber: serial,
       managerName,
     });
-  } catch (error) {
-    fail(previewPath, error instanceof Error ? error.message : "Could not generate the PDF.");
+  } catch {
+    fail(previewPath, "The PDF didn’t generate. Try again.");
   }
 
   const { error: uploadError } = await supabase.storage
@@ -240,7 +245,7 @@ export async function sendCertificate(formData: FormData) {
     });
 
   if (uploadError) {
-    fail(previewPath, uploadError.message);
+    fail(previewPath, "The certificate PDF didn’t save. Try again.");
   }
 
   const { error } = await supabase.from("certificates").insert({
@@ -254,7 +259,7 @@ export async function sendCertificate(formData: FormData) {
 
   if (error) {
     await supabase.storage.from(CERTIFICATES_BUCKET).remove([storagePath]);
-    fail(previewPath, error.message);
+    fail(previewPath, "The certificate didn’t save. Try again.");
   }
 
   await notifyCertificateIssued({

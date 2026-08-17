@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { DimensionScores } from "@/components/profile/dimension-scores";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
 import { startProfile } from "@/lib/father/profile-actions";
@@ -81,7 +82,7 @@ export default async function FatherProfilePage() {
         <p className="mt-4 text-muted-foreground">
           {draft
             ? `Question ${resumeAt} of ${PROFILE_QUESTION_COUNT} · ${answered} answered`
-            : "If you have not taken it recently:"}
+            : "Optional. About twenty minutes, one question at a time."}
         </p>
         {draft ? (
           <Link
@@ -106,9 +107,14 @@ export default async function FatherProfilePage() {
         <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
           Your Keystone Profile
         </p>
-        <p className="mt-6 text-muted-foreground">
-          Results appear here after you finish the Profile.
-        </p>
+        <EmptyState
+          framed={false}
+          className="mt-2 p-0"
+          title="No results yet"
+        >
+          Finish the Profile and your Primary Edge and Determination will show
+          up here.
+        </EmptyState>
       </section>
       </div>
       <AssignedAssessmentList assignments={customAssignments} />

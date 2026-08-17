@@ -26,7 +26,7 @@ function ok(path: string, notice: string): never {
 export async function saveNotificationPreferences(input: NotificationPreferences) {
   const { user } = await getAuthContext();
   if (!user) {
-    return { error: "Sign in required." };
+    return { error: "Sign in again to save preferences." };
   }
 
   const prefs = parseNotificationPreferences(input);
@@ -38,7 +38,7 @@ export async function saveNotificationPreferences(input: NotificationPreferences
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: "Preferences didn’t save. Try again." };
   }
 
   const role = resolveRole(user);
@@ -77,7 +77,7 @@ export async function uploadAvatar(formData: FormData) {
   });
 
   if (uploadError) {
-    fail(path, uploadError.message);
+    fail(path, "The photo didn’t save. Try a JPEG, PNG, WebP, or GIF under 2 MB.");
   }
 
   const { error } = await supabase
@@ -86,7 +86,7 @@ export async function uploadAvatar(formData: FormData) {
     .eq("id", user.id);
 
   if (error) {
-    fail(path, error.message);
+    fail(path, "The photo didn’t save. Try again.");
   }
 
   revalidatePath(path);

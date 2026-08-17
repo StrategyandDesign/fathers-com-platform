@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 
 import { saveNotificationPreferences } from "@/lib/account/actions";
+import { Flash } from "@/components/manager/flash";
 import {
   togglesForRole,
   type NotificationPrefKey,
@@ -53,7 +54,7 @@ export function NotificationPrefs({
       </div>
       {toggles.length === 0 ? (
         <p className="mt-5 text-sm text-muted-foreground">
-          No email preferences for this role yet. Account and security alerts
+          This role doesn’t have email toggles yet. Account and security alerts
           still apply when they ship.
         </p>
       ) : (
@@ -104,17 +105,12 @@ export function NotificationPrefs({
           Saving…
         </p>
       ) : message ? (
-        <p
-          className={cn(
-            "mt-4 rounded-xl border px-4 py-3 text-sm",
-            status === "error"
-              ? "border-destructive/30 bg-destructive/10 text-destructive"
-              : "border-primary/25 bg-primary/10 text-foreground"
-          )}
-          role={status === "error" ? "alert" : "status"}
-        >
-          {message}
-        </p>
+        <div className="mt-4">
+          <Flash
+            error={status === "error" ? message : undefined}
+            notice={status === "saved" ? message : undefined}
+          />
+        </div>
       ) : null}
     </section>
   );
