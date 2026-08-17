@@ -228,20 +228,6 @@ export async function loadManagerWorkspace(managerId: string) {
   const needsAttention: AttentionItem[] = [];
   for (const participant of participants) {
     const cards = trainingProgressFor(participant.fatherId);
-    if (participant.profileStatus === "not_started") {
-      needsAttention.push({
-        fatherId: participant.fatherId,
-        name: participant.name,
-        reason: "Has not started the Father Profile",
-      });
-    } else if (participant.profileStatus === "in_progress") {
-      needsAttention.push({
-        fatherId: participant.fatherId,
-        name: participant.name,
-        reason: "Father Profile is in progress",
-      });
-    }
-
     if (!cards.some((card) => card.assigned)) {
       needsAttention.push({
         fatherId: participant.fatherId,

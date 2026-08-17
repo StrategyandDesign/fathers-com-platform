@@ -16,12 +16,8 @@ const ITEMS = [
   {
     href: "/manager/impact",
     labelKey: "nav.impact",
-    match: (path: string) => path.startsWith("/manager/impact"),
-  },
-  {
-    href: "/manager/compare",
-    labelKey: "nav.compare",
-    match: (path: string) => path.startsWith("/manager/compare"),
+    match: (path: string) =>
+      path.startsWith("/manager/impact") || path.startsWith("/manager/compare"),
   },
 ] as const;
 

@@ -387,7 +387,6 @@ export function rowsToCsv(rows: InsightRow[], trainingId: string | null) {
   const header = [
     "Participant",
     "Group",
-    "Profile status",
     "Training progress",
     "Completion status",
     "Last activity week",
@@ -399,7 +398,6 @@ export function rowsToCsv(rows: InsightRow[], trainingId: string | null) {
       [
         row.participantLabel,
         row.groupLabel,
-        PROFILE_STATUS_LABEL[row.profileStatus],
         progressLabel(row, trainingId),
         COMPLETION_STATUS_LABEL[row.completionStatus],
         formatActivityWeek(row.activityWeek),

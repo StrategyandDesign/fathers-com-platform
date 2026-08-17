@@ -140,11 +140,7 @@ export function filterSummaryLines(
   ];
 }
 
-function buildTrend(
-  insights: ReviewerInsights,
-  rows: InsightRow[],
-  locale: Locale = DEFAULT_LOCALE
-) {
+function buildTrend(rows: InsightRow[], locale: Locale = DEFAULT_LOCALE) {
   const t = createTranslator(locale);
   const weeks = [
     ...new Set(rows.map((row) => row.activityWeek).filter((value): value is string => Boolean(value))),
@@ -169,20 +165,6 @@ function buildTrend(
         unit: locale === "he" ? t("reviewer.summary.completionRate") : "completion rate",
       };
     }
-  }
-
-  const trend = insights.completion_trend.filter((point) => point.week);
-  if (trend.length >= 2) {
-    const mid = Math.ceil(trend.length / 2);
-    const earlier = trend.slice(0, mid);
-    const later = trend.slice(mid);
-    return {
-      leftLabel: `${formatWeekLabel(earlier[0].week, locale)}–${formatWeekLabel(earlier.at(-1)?.week ?? earlier[0].week, locale)}`,
-      rightLabel: `${formatWeekLabel(later[0].week, locale)}–${formatWeekLabel(later.at(-1)?.week ?? later[0].week, locale)}`,
-      left: earlier.reduce((sum, point) => sum + point.count, 0),
-      right: later.reduce((sum, point) => sum + point.count, 0),
-      unit: locale === "he" ? t("reviewer.summary.profileCompletions") : "profile completions",
-    };
   }
 
   return null;
@@ -229,7 +211,7 @@ export function buildReviewerImpactSummary(
     fullyCompletedCount,
     fullyCompletedPct: percent(fullyCompletedCount, total),
     certificatesIssued,
-    trend: buildTrend(insights, rows, locale),
+    trend: buildTrend(rows, locale),
     groups,
   };
 }

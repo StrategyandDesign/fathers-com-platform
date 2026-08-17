@@ -29,7 +29,7 @@ function revalidateAssessments(assessmentId?: string, fatherId?: string, assignm
   revalidatePath("/manager");
   revalidatePath("/manager/assessments");
   revalidatePath("/father");
-  revalidatePath("/father/profile");
+  revalidatePath("/father/assessments");
   if (assessmentId) {
     revalidatePath(`/manager/assessments/${assessmentId}`);
   }

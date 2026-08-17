@@ -10,10 +10,12 @@ export async function AssignedAssessmentList({
   assignments,
   title,
   quiet = false,
+  hideHeader = false,
 }: {
   assignments: FatherAssignmentCard[];
   title?: string;
   quiet?: boolean;
+  hideHeader?: boolean;
 }) {
   if (assignments.length === 0) return null;
   const { t } = await getI18n();
@@ -21,19 +23,29 @@ export async function AssignedAssessmentList({
 
   return (
     <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-      <h2
+      {hideHeader ? null : (
+        <>
+          <h2
+            className={
+              quiet
+                ? "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]"
+                : "font-heading text-lg font-semibold"
+            }
+          >
+            {heading}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {quiet ? t("father.assessments.quietLead") : t("father.assessments.lead")}
+          </p>
+        </>
+      )}
+      <ul
         className={
-          quiet
-            ? "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]"
-            : "font-heading text-lg font-semibold"
+          hideHeader
+            ? "divide-y divide-border overflow-hidden rounded-lg border border-border"
+            : "mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border"
         }
       >
-        {heading}
-      </h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        {quiet ? t("father.assessments.quietLead") : t("father.assessments.lead")}
-      </p>
-      <ul className="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
         {assignments.map(({ assignment, assessment, questionCount, answeredCount }) => (
           <li key={assignment.id}>
             <Link

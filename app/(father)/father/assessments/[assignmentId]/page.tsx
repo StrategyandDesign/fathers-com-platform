@@ -146,10 +146,10 @@ export default async function FatherAssessmentTakePage({
       {completed ? (
         <div className="flex justify-center max-lg:block">
           <Link
-            href="/father"
+            href="/father/assessments"
             className={cn(buttonVariants({ size: "lg" }), "w-full min-h-12 sm:w-auto")}
           >
-            {t("father.assessments.backHome")}
+            {t("father.assessments.backToAssessments")}
           </Link>
         </div>
       ) : null}

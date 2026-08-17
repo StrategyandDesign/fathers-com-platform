@@ -1,11 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { loadProfileDraft } from "@/lib/father/profile";
 import {
   asSessionProgress,
   catalogSessionTotal,
   isSessionComplete,
   isTrainingVisibleInCatalog,
-  type FatherProfileSummary,
   type Session,
   type SessionProgress,
   type Training,
@@ -74,19 +72,11 @@ function pickNextSession(
 export async function loadFatherHome(fatherId: string) {
   const supabase = await createClient();
 
-  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes, certificatesRes, assignmentsRes, accepted] =
+  const [trainingsRes, sessionsRes, progressRes, certificatesRes, assignmentsRes, accepted] =
     await Promise.all([
       supabase.from("trainings").select("*").order("order_index"),
       supabase.from("sessions").select("*").order("order_index"),
       supabase.from("session_progress").select("*").eq("father_id", fatherId),
-      supabase
-        .from("father_profiles")
-        .select("id, taken_at, primary_edge, primary_determination, raw_scores, full_results")
-        .eq("father_id", fatherId)
-        .order("taken_at", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      loadProfileDraft(fatherId),
       supabase.from("certificates").select("*").eq("father_id", fatherId),
       supabase
         .from("training_assignments")
@@ -98,10 +88,8 @@ export async function loadFatherHome(fatherId: string) {
   if (trainingsRes.error) throw trainingsRes.error;
   if (sessionsRes.error) throw sessionsRes.error;
   if (progressRes.error) throw progressRes.error;
-  if (profileRes.error) throw profileRes.error;
   if (certificatesRes.error) throw certificatesRes.error;
   if (assignmentsRes.error) throw assignmentsRes.error;
-  const draft = draftRes;
   const certificates = (certificatesRes.data ?? []) as Certificate[];
   const assignments = (assignmentsRes.data ?? []) as Array<{
     training_id: string;
@@ -180,8 +168,6 @@ export async function loadFatherHome(fatherId: string) {
           progress: progressBySession.get(activeCard.next.id) ?? null,
         }
       : null,
-    profile: (profileRes.data as FatherProfileSummary | null) ?? null,
-    draft,
   };
 }
 

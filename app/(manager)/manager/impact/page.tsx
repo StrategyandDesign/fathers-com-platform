@@ -1,7 +1,9 @@
 import Link from "next/link";
 
 import { CompanionNarrative } from "@/components/manager/companion-narrative";
+import { ComparePanel } from "@/components/manager/compare-panel";
 import { Flash } from "@/components/manager/flash";
+import { ImpactTabs } from "@/components/manager/impact-tabs";
 import { PrintButton } from "@/components/manager/print-button";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -43,16 +45,54 @@ function TrendDelta({
 export default async function ManagerImpactPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; notice?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    notice?: string;
+    tab?: string;
+    mode?: string;
+    window?: string;
+    left?: string;
+    right?: string;
+  }>;
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
   const { t, locale } = await getI18n();
-  const snapshot = await loadManagerImpact(user.id, locale);
-  const organization =
-    snapshot.organizationNames.length > 0
+  const tab = params.tab === "compare" ? "compare" : "snapshot";
+  const snapshot = tab === "snapshot" ? await loadManagerImpact(user.id, locale) : null;
+  const organization = snapshot
+    ? snapshot.organizationNames.length > 0
       ? snapshot.organizationNames.join(", ")
-      : t("manager.impact.yourOrg");
+      : t("manager.impact.yourOrg")
+    : t("manager.impact.yourOrg");
+
+  if (!snapshot) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="font-heading text-2xl font-semibold tracking-tight">
+              {t("manager.impact.title")}
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">{t("manager.impact.compareLead")}</p>
+          </div>
+          <ImpactTabs current="compare" />
+        </div>
+        <Flash error={params.error} notice={params.notice} />
+        <ComparePanel
+          managerId={user.id}
+          locale={locale}
+          t={t}
+          params={{
+            mode: params.mode,
+            window: params.window,
+            left: params.left,
+            right: params.right,
+          }}
+        />
+      </div>
+    );
+  }
 
   const metrics = [
     {
@@ -119,20 +159,17 @@ export default async function ManagerImpactPage({
             {t("manager.impact.lead", { date: formatLongDate(snapshot.generatedAt, locale) })}
           </p>
         </div>
-        <div className="flex flex-col gap-2 print:hidden sm:flex-row">
-          <Link
-            href="/api/manager/impact/export"
-            className={cn(buttonVariants(), "w-full sm:w-auto")}
-          >
-            {t("manager.impact.pdf")}
-          </Link>
-          <Link
-            href="/manager/compare"
-            className={cn(buttonVariants({ variant: "outline" }), "w-full print:hidden sm:w-auto")}
-          >
-            {t("manager.impact.compare")}
-          </Link>
-          <PrintButton />
+        <div className="flex flex-col gap-3 print:hidden sm:items-end">
+          <ImpactTabs current="snapshot" />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Link
+              href="/api/manager/impact/export"
+              className={cn(buttonVariants(), "w-full sm:w-auto")}
+            >
+              {t("manager.impact.pdf")}
+            </Link>
+            <PrintButton />
+          </div>
         </div>
       </div>
       <Flash error={params.error} notice={params.notice} />

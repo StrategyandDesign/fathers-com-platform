@@ -28,7 +28,6 @@ import {
   translateNudgeStatus,
   translateNudgeTemplate,
   translateQuietLabel,
-  translateThemeLabel,
 } from "@/lib/i18n/flash";
 import { formatShortDate, formatShortDateTime } from "@/lib/i18n/server";
 import { UserAvatar } from "@/components/layout/user-avatar";
@@ -302,36 +301,9 @@ export default async function ManagerParticipantDetailPage({
         )}
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">{t("manager.participants.fatherProfile")}</h2>
-        {participant.profile ? (
-          <p className="mt-3 text-muted-foreground">
-            {t("manager.participants.profileCompleted", {
-              date: formatShortDate(participant.profile.taken_at, locale),
-            })}
-            {participant.profile.primary_edge
-              ? ` · ${t("manager.participants.primaryEdge", {
-                  edge: translateThemeLabel(participant.profile.primary_edge, t),
-                })}`
-              : ""}
-            {participant.profile.primary_determination
-              ? ` · ${t("manager.participants.determination", {
-                  determination: translateThemeLabel(participant.profile.primary_determination, t),
-                })}`
-              : ""}
-          </p>
-        ) : (
-          <p className="mt-3 text-muted-foreground">
-            {participant.profileStatus === "in_progress"
-              ? t("manager.participants.profileInProgress")
-              : t("manager.participants.profileNotStarted")}
-          </p>
-        )}
-      </section>
-
       {customAssignments.length > 0 ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">{t("manager.participants.customAssessments")}</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.participants.assessments")}</h2>
           <ul className="mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border">
             {customAssignments.map(({ assignment, assessment }) => (
               <li key={assignment.id}>

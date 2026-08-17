@@ -10,11 +10,9 @@ import {
   FileSpreadsheet,
   GraduationCap,
   Home,
-  Images,
   Inbox,
   LayoutDashboard,
   Settings,
-  User,
   Users,
 } from "lucide-react";
 
@@ -51,10 +49,10 @@ export const NAV: Record<AppRole, NavItem[]> = {
       match: (path) => path === "/father/trainings" || path.startsWith("/father/sessions"),
     },
     {
-      href: "/father/profile",
-      labelKey: "nav.profile",
-      icon: User,
-      match: (path) => path.startsWith("/father/profile"),
+      href: "/father/assessments",
+      labelKey: "nav.assessments",
+      icon: ClipboardList,
+      match: (path) => path.startsWith("/father/assessments"),
     },
   ],
   manager: [
@@ -62,10 +60,7 @@ export const NAV: Record<AppRole, NavItem[]> = {
       href: "/manager",
       labelKey: "nav.dashboard",
       icon: LayoutDashboard,
-      match: (path) =>
-        path === "/manager" ||
-        path.startsWith("/manager/impact") ||
-        path.startsWith("/manager/compare"),
+      match: (path) => path === "/manager",
     },
     {
       href: "/manager/trainings",
@@ -86,7 +81,8 @@ export const NAV: Record<AppRole, NavItem[]> = {
       href: "/manager/impact",
       labelKey: "nav.impact",
       icon: BarChart3,
-      match: (path) => path.startsWith("/manager/impact"),
+      match: (path) =>
+        path.startsWith("/manager/impact") || path.startsWith("/manager/compare"),
     },
     {
       href: "/manager/assessments",
@@ -99,21 +95,6 @@ export const NAV: Record<AppRole, NavItem[]> = {
       labelKey: "nav.reports",
       icon: FileSpreadsheet,
       match: (path) => path.startsWith("/manager/reports"),
-    },
-    {
-      href: "/manager/account/photos",
-      labelKey: "nav.photos",
-      icon: Images,
-      match: (path) => path.startsWith("/manager/account/photos"),
-    },
-    {
-      href: "/manager/account",
-      labelKey: "nav.account",
-      icon: Settings,
-      match: (path) =>
-        (path.startsWith("/manager/account") &&
-          !path.startsWith("/manager/account/photos")) ||
-        path.startsWith("/manager/help"),
     },
   ],
   reviewer: [

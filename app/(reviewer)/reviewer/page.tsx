@@ -3,9 +3,7 @@ import Link from "next/link";
 import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
-import { translateThemeLabel } from "@/lib/i18n/flash";
 import { getI18n } from "@/lib/i18n/server";
 import { resolveUserLocale } from "@/lib/i18n/resolve";
 import { formatShortDate } from "@/lib/i18n/server";
@@ -16,14 +14,13 @@ import {
   loadReviewerInsights,
   parseInsightSearchParams,
   type InsightRow,
-  type ProfileStatus,
   type CompletionStatus,
 } from "@/lib/reviewer/insights";
 import { fieldClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 function statusLabel(
-  status: ProfileStatus | CompletionStatus,
+  status: CompletionStatus,
   t: (key: string) => string
 ) {
   if (status === "completed") return t("reviewer.completed");
@@ -51,11 +48,6 @@ function rowProgress(
     completed: row.trainingsCompleted,
     inProgress: row.trainingsInProgress,
   });
-}
-
-function Bar({ value, max }: { value: number; max: number }) {
-  const percent = max <= 0 ? 0 : Math.round((value / max) * 100);
-  return <ProgressBar value={percent} />;
 }
 
 function StackedBar({
@@ -120,19 +112,9 @@ export default async function ReviewerInsightsPage({
   const query = insightQuery(filters);
   const exportQuery = query ? `${query}&` : "";
   const filtered = hasInsightFilters(filters);
-  const trendMax = Math.max(1, ...insights.completion_trend.map((point) => point.count));
-  const edgeMax = Math.max(1, ...insights.primary_edges.map((edge) => edge.count));
 
   const stats = [
     { label: t("reviewer.total"), value: String(insights.total_participants) },
-    {
-      label: t("reviewer.profiles"),
-      value: `${insights.profiles_completed_pct}%`,
-      detail: t("reviewer.profilesDetail", {
-        completed: insights.profiles_completed,
-        total: insights.total_participants,
-      }),
-    },
     {
       label: t("reviewer.avgSessions"),
       value: insights.average_sessions_completed.toFixed(1),
@@ -258,79 +240,14 @@ export default async function ReviewerInsightsPage({
         </div>
       </form>
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <div key={stat.label} className="rounded-xl border border-border bg-card p-4 sm:p-5">
             <p className="text-sm text-muted-foreground">{stat.label}</p>
             <p className="mt-3 text-3xl font-semibold tabular-nums">{stat.value}</p>
-            {"detail" in stat && stat.detail ? (
-              <p className="mt-1 text-xs text-muted-foreground">{stat.detail}</p>
-            ) : null}
           </div>
         ))}
       </section>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">{t("reviewer.trendTitle")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("reviewer.trendLead")}
-          </p>
-          <div className="mt-5 space-y-3">
-            {insights.completion_trend.length === 0 ? (
-              <EmptyState
-                framed={false}
-                className="p-0"
-                title={t("reviewer.noWeeklyTitle")}
-              >
-                {insights.total_participants === 0
-                  ? t("reviewer.noWeeklyEmpty")
-                  : t("reviewer.noWeeklyRecent")}
-              </EmptyState>
-            ) : (
-              insights.completion_trend.map((point) => (
-                <div key={point.week} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>{formatShortDate(point.week, locale)}</span>
-                    <span className="tabular-nums text-muted-foreground">{point.count}</span>
-                  </div>
-                  <Bar value={point.count} max={trendMax} />
-                </div>
-              ))
-            )}
-          </div>
-        </section>
-
-        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">{t("reviewer.edgesTitle")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("reviewer.edgesLead")}
-          </p>
-          <div className="mt-5 space-y-3">
-            {insights.primary_edges.length === 0 ? (
-              <EmptyState
-                framed={false}
-                className="p-0"
-                title={t("reviewer.noEdgesTitle")}
-              >
-                {insights.total_participants === 0
-                  ? t("reviewer.noEdgesEmpty")
-                  : t("reviewer.noEdgesFilter")}
-              </EmptyState>
-            ) : (
-              insights.primary_edges.map((edge) => (
-                <div key={edge.label} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>{translateThemeLabel(edge.label, t)}</span>
-                    <span className="tabular-nums text-muted-foreground">{edge.count}</span>
-                  </div>
-                  <Bar value={edge.count} max={edgeMax} />
-                </div>
-              ))
-            )}
-          </div>
-        </section>
-      </div>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -431,12 +348,6 @@ export default async function ReviewerInsightsPage({
                       </span>
                     </span>
                     <span className="flex items-baseline justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">{t("reviewer.profile")}</span>
-                      <span className="text-right text-muted-foreground">
-                        {statusLabel(row.profileStatus, t)}
-                      </span>
-                    </span>
-                    <span className="flex items-baseline justify-between gap-3 text-sm">
                       <span className="text-muted-foreground">{t("reviewer.statusCol")}</span>
                       <span className="text-right">
                         {statusLabel(row.completionStatus, t)}
@@ -465,7 +376,6 @@ export default async function ReviewerInsightsPage({
                 <thead>
                   <tr className="border-b border-border text-xs tracking-wide text-muted-foreground uppercase">
                     <th className="px-6 py-3 font-medium">{t("reviewer.participant")}</th>
-                    <th className="px-4 py-3 font-medium">{t("reviewer.profile")}</th>
                     <th className="px-4 py-3 font-medium">{t("reviewer.statusCol")}</th>
                     <th className="px-4 py-3 font-medium">{t("reviewer.progress")}</th>
                     <th className="px-6 py-3 font-medium">{t("reviewer.lastActivity")}</th>
@@ -480,9 +390,6 @@ export default async function ReviewerInsightsPage({
                       <td className="px-6 py-3">
                         <p className="font-medium tabular-nums">{row.participantLabel}</p>
                         <p className="text-muted-foreground">{groupLabel(row.groupLabel, t)}</p>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">
-                        {statusLabel(row.profileStatus, t)}
                       </td>
                       <td className="px-4 py-3">
                         {statusLabel(row.completionStatus, t)}

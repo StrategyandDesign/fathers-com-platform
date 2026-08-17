@@ -15,6 +15,7 @@ import {
   buildCompanionBriefing,
   organizationLabel,
 } from "@/lib/manager/companion";
+import { loadManagerAssessments } from "@/lib/assessments/data";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
 import { needsNudge } from "@/lib/manager/nudges";
@@ -29,9 +30,10 @@ export default async function ManagerHomePage({
   const params = await searchParams;
   const { user } = await requireRole("manager");
   const { t } = await getI18n();
-  const [workspace, reviews] = await Promise.all([
+  const [workspace, reviews, assessments] = await Promise.all([
     loadManagerWorkspace(user.id),
     loadReviewQueue(user.id),
+    loadManagerAssessments(user.id),
   ]);
   const { groups, summary, needsAttention, participants, trainingProgressFor, certificates } =
     workspace;
@@ -58,7 +60,10 @@ export default async function ManagerHomePage({
 
   const stats = [
     { label: t("manager.dashboard.active"), value: summary.activeParticipants },
-    { label: t("manager.dashboard.profiles"), value: summary.profilesCompleted },
+    {
+      label: t("manager.dashboard.assessmentsCompleted"),
+      value: assessments.reduce((count, item) => count + item.completedCount, 0),
+    },
     { label: t("manager.dashboard.sessions"), value: summary.sessionsCompleted },
     { label: t("manager.dashboard.trainings"), value: summary.trainingsCompleted },
     { label: t("manager.dashboard.pending"), value: summary.pendingActions },

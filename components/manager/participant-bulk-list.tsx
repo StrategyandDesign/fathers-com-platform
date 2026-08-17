@@ -16,7 +16,6 @@ export type BulkListParticipant = {
   name: string;
   avatarUrl: string | null;
   groupName: string;
-  profileStatus: "completed" | "in_progress" | "not_started";
   progressLabel: string;
   lastActivity: string | null;
   quiet: boolean;
@@ -56,12 +55,6 @@ export function ParticipantBulkList({
     }
     return trainings[0]?.id ?? "";
   });
-  const profileLabel = {
-    completed: t("manager.bulk.profileComplete"),
-    in_progress: t("manager.bulk.profileInProgress"),
-    not_started: t("manager.bulk.profileNeeds"),
-  } as const;
-
   const selectedSet = useMemo(() => new Set(selected), [selected]);
   const allIds = participants.map((row) => row.fatherId);
   const allSelected = allIds.length > 0 && allIds.every((id) => selectedSet.has(id));
@@ -171,9 +164,8 @@ export function ParticipantBulkList({
                 className="size-4 accent-primary"
               />
             </label>
-            <span className="grid min-w-0 flex-1 grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.2fr)_8rem] gap-2">
+            <span className="grid min-w-0 flex-1 grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_8rem] gap-2">
               <span>{t("manager.bulk.name")}</span>
-              <span>{t("manager.bulk.profileStatus")}</span>
               <span>{t("manager.bulk.currentTraining")}</span>
               <span>{t("manager.bulk.lastActivity")}</span>
             </span>
@@ -195,7 +187,7 @@ export function ParticipantBulkList({
                   <Link
                     href={`/manager/participants/${participant.fatherId}`}
                     className={cn(
-                      "grid min-w-0 flex-1 gap-2 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.2fr)_8rem] md:items-center",
+                      "grid min-w-0 flex-1 gap-2 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_8rem] md:items-center",
                       interactiveSurfaceClassName
                     )}
                   >
@@ -217,12 +209,6 @@ export function ParticipantBulkList({
                         <span className="block truncate text-sm text-muted-foreground">
                           {participant.groupName}
                         </span>
-                      </span>
-                    </span>
-                    <span className="flex justify-between gap-3 pl-[3.25rem] text-sm md:block md:pl-0">
-                      <span className="text-muted-foreground md:hidden">{t("manager.bulk.profile")}</span>
-                      <span className="text-right text-muted-foreground md:text-left">
-                        {profileLabel[participant.profileStatus]}
                       </span>
                     </span>
                     <span className="flex justify-between gap-3 pl-[3.25rem] text-sm md:block md:pl-0">

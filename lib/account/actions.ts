@@ -4,23 +4,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { parseNotificationPreferences, type NotificationPreferences } from "@/lib/account/preferences";
-import { ROLE_ACCOUNT, ROLE_HOME } from "@/lib/auth/roles";
+import { ROLE_ACCOUNT } from "@/lib/auth/roles";
 import { getAuthContext } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
-import { allowActionRateLimit } from "@/lib/security/rate-limit";
-import {
-  AVATAR_MAX_BYTES,
-  AVATAR_MIME_TYPES,
-  AVATARS_BUCKET,
-  avatarObjectPath,
-} from "@/lib/storage";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
-}
-
-function ok(path: string, notice: string): never {
-  redirect(`${path}?notice=${encodeURIComponent(notice)}`);
 }
 
 export async function saveNotificationPreferences(input: NotificationPreferences) {
@@ -45,52 +34,12 @@ export async function saveNotificationPreferences(input: NotificationPreferences
   return { ok: true as const };
 }
 
-export async function uploadAvatar(formData: FormData) {
+export async function uploadAvatar() {
   const { user, role } = await getAuthContext();
   if (!user || !role) {
     redirect("/login");
   }
-
-  const path = ROLE_ACCOUNT[role];
-  if (!(await allowActionRateLimit("account.avatar"))) {
-    fail(path, "Too many photo uploads. Wait a few minutes and try again.");
-  }
-  const file = formData.get("photo");
-
-  if (!(file instanceof File) || file.size === 0) {
-    fail(path, "Choose a photo to upload.");
-  }
-  if (file.size > AVATAR_MAX_BYTES) {
-    fail(path, "Photo must be 2 MB or smaller.");
-  }
-  if (!AVATAR_MIME_TYPES.includes(file.type as (typeof AVATAR_MIME_TYPES)[number])) {
-    fail(path, "Use a JPEG, PNG, WebP, or GIF.");
-  }
-
-  const supabase = await createClient();
-  const objectPath = avatarObjectPath(user.id);
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  const { error: uploadError } = await supabase.storage.from(AVATARS_BUCKET).upload(objectPath, bytes, {
-    contentType: file.type,
-    upsert: true,
-  });
-
-  if (uploadError) {
-    fail(path, "The photo didn’t save. Try a JPEG, PNG, WebP, or GIF under 2 MB.");
-  }
-
-  const { error } = await supabase
-    .from("profiles")
-    .update({ avatar_url: objectPath })
-    .eq("id", user.id);
-
-  if (error) {
-    fail(path, "The photo didn’t save. Try again.");
-  }
-
-  revalidatePath(path);
-  revalidatePath(ROLE_HOME[role]);
-  ok(path, "Photo updated.");
+  fail(ROLE_ACCOUNT[role], "Photo upload is not available.");
 }
 
 export async function removeAvatar() {
@@ -98,26 +47,5 @@ export async function removeAvatar() {
   if (!user || !role) {
     redirect("/login");
   }
-
-  const path = ROLE_ACCOUNT[role];
-  if (!(await allowActionRateLimit("account.avatar"))) {
-    fail(path, "Too many photo changes. Wait a few minutes and try again.");
-  }
-
-  const supabase = await createClient();
-  const objectPath = avatarObjectPath(user.id);
-  await supabase.storage.from(AVATARS_BUCKET).remove([objectPath]);
-
-  const { error } = await supabase
-    .from("profiles")
-    .update({ avatar_url: null, avatar_path: null })
-    .eq("id", user.id);
-
-  if (error) {
-    fail(path, "The photo didn’t remove. Try again.");
-  }
-
-  revalidatePath(path);
-  revalidatePath(ROLE_HOME[role]);
-  ok(path, "Photo removed.");
+  fail(ROLE_ACCOUNT[role], "Photo upload is not available.");
 }

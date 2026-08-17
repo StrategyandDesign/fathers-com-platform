@@ -318,7 +318,6 @@ export function rowsToCsv(rows: ReportRow[], locale: Locale = DEFAULT_LOCALE) {
     const header = [
       "Name",
       "Group",
-      "Profile status",
       "Training assignments",
       "Completion status",
       "Session progress",
@@ -332,7 +331,6 @@ export function rowsToCsv(rows: ReportRow[], locale: Locale = DEFAULT_LOCALE) {
         [
           row.name,
           row.groupName,
-          PROFILE_STATUS_LABEL[row.profileStatus],
           row.assignmentTitles.join("; ") || "None assigned",
           COMPLETION_STATUS_LABEL[row.completionStatus],
           row.progressDetail,
@@ -351,7 +349,6 @@ export function rowsToCsv(rows: ReportRow[], locale: Locale = DEFAULT_LOCALE) {
   const header = [
     t("manager.reports.name"),
     t("manager.reports.csvGroup"),
-    t("manager.reports.csvProfileStatus"),
     t("manager.reports.csvAssignments"),
     t("manager.reports.csvCompletion"),
     t("manager.reports.csvProgress"),
@@ -365,7 +362,6 @@ export function rowsToCsv(rows: ReportRow[], locale: Locale = DEFAULT_LOCALE) {
       [
         row.name,
         row.groupName,
-        statusLabel(row.profileStatus, t),
         row.assignmentTitles.join("; ") || t("manager.reports.noneAssigned"),
         statusLabel(row.completionStatus, t),
         localizeProgressDetail(row.progressDetail, t),

@@ -5,7 +5,6 @@ import { dateLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { createTranslator, type Translate } from "@/lib/i18n/translate";
 import {
   COMPLETION_STATUS_LABEL,
-  PROFILE_STATUS_LABEL,
   filterSummary,
   type ReportFilters,
   type ReportRow,
@@ -24,11 +23,10 @@ const PAGE_HEIGHT = 612;
 const MARGIN = 36;
 const ROW_HEIGHT = 18;
 const COLS = [
-  { key: "name", label: "Name", width: 128 },
-  { key: "profile", label: "Profile", width: 78 },
-  { key: "status", label: "Status", width: 78 },
-  { key: "assignments", label: "Assignments", width: 168 },
-  { key: "serials", label: "Certificate serials", width: 168 },
+  { key: "name", label: "Name", width: 156 },
+  { key: "status", label: "Status", width: 88 },
+  { key: "assignments", label: "Assignments", width: 188 },
+  { key: "serials", label: "Certificate serials", width: 188 },
   { key: "activity", label: "Last activity", width: 100 },
 ] as const;
 
@@ -49,15 +47,9 @@ function fit(text: string, font: PDFFont, size: number, maxWidth: number, locale
   return fitPdfText(shapePdfText(text, locale), font, size, maxWidth);
 }
 
-function statusCopy(
-  status: ReportRow["profileStatus"] | ReportRow["completionStatus"],
-  locale: Locale,
-  t: Translate
-) {
+function statusCopy(status: ReportRow["completionStatus"], locale: Locale, t: Translate) {
   if (locale !== "he") {
-    return status in PROFILE_STATUS_LABEL
-      ? PROFILE_STATUS_LABEL[status as ReportRow["profileStatus"]]
-      : COMPLETION_STATUS_LABEL[status];
+    return COMPLETION_STATUS_LABEL[status];
   }
   if (status === "completed") return t("manager.reports.completed");
   if (status === "in_progress") return t("manager.reports.inProgress");
@@ -68,7 +60,6 @@ function cellValues(row: ReportRow, locale: Locale, t: Translate) {
   if (locale !== "he") {
     return {
       name: row.name,
-      profile: PROFILE_STATUS_LABEL[row.profileStatus],
       status: COMPLETION_STATUS_LABEL[row.completionStatus],
       assignments: row.assignmentTitles.join("; ") || "None assigned",
       serials: row.certificateSerials || "—",
@@ -78,7 +69,6 @@ function cellValues(row: ReportRow, locale: Locale, t: Translate) {
 
   return {
     name: row.name,
-    profile: statusCopy(row.profileStatus, locale, t),
     status: statusCopy(row.completionStatus, locale, t),
     assignments: row.assignmentTitles.join("; ") || t("manager.reports.noneAssigned"),
     serials: row.certificateSerials || t("common.emDash"),
@@ -95,11 +85,10 @@ function cellValues(row: ReportRow, locale: Locale, t: Translate) {
 function columnLabels(locale: Locale, t: Translate) {
   if (locale !== "he") return COLS;
   return [
-    { key: "name", label: t("manager.reports.name"), width: 128 },
-    { key: "profile", label: t("manager.reports.profile"), width: 78 },
-    { key: "status", label: t("manager.reports.statusCol"), width: 78 },
-    { key: "assignments", label: t("manager.reports.assignments"), width: 168 },
-    { key: "serials", label: t("manager.reports.csvSerials"), width: 168 },
+    { key: "name", label: t("manager.reports.name"), width: 156 },
+    { key: "status", label: t("manager.reports.statusCol"), width: 88 },
+    { key: "assignments", label: t("manager.reports.assignments"), width: 188 },
+    { key: "serials", label: t("manager.reports.csvSerials"), width: 188 },
     { key: "activity", label: t("manager.reports.lastActivity"), width: 100 },
   ] as const;
 }

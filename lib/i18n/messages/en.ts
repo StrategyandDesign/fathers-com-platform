@@ -80,16 +80,16 @@ export const en = {
       metaDescription: "How Fathers.com handles your information.",
       commitment: "Our commitment",
       commitmentBody:
-        "Fathers.com is a program of the National Center for Fathering. Your account, Father Profile answers, session notes, assessments, and certificates are personal. We treat them with care and we do not sell them.",
+        "Fathers.com is a program of the National Center for Fathering. Your account, session notes, assessments, and certificates are personal. We treat them with care and we do not sell them.",
       collect: "What we collect",
       collectIntro: "When you use the service, we may collect:",
       collectEmail: "The email and password you use to sign in.",
       collectInvite:
         "The invite code you enter, which places you in an organization group managed by your administrator.",
       collectProfile:
-        "Your Father Profile answers and results, session check-in and action notes, and any custom assessments your manager assigns.",
+        "Session check-in and action notes, and any assessments your manager assigns.",
       collectProgress:
-        "Training progress, certificates your manager issues, an optional account photo, and the notification preferences you choose.",
+        "Training progress, certificates your manager issues, and the notification preferences you choose.",
       collectTechnical:
         "Basic technical data needed to run the service, such as sign-in activity and error reports.",
       use: "How we use it",
@@ -100,20 +100,20 @@ export const en = {
         "Fathers.com may send account and security messages, training assignments, and certificate notices. You can turn most of these off on your Account page. Account and security alerts may still be required to keep the service safe. Confirm and reset messages are sent through the sign-in provider.",
       analytics: "Analytics and error monitoring",
       analyticsBody:
-        "If error monitoring is enabled, we may use Sentry to record technical details such as the page you were on, browser type, and the error itself. That helps us keep the service reliable. We do not send your Profile answers, session notes, or assessment responses to Sentry as a matter of product design.",
+        "If error monitoring is enabled, we may use Sentry to record technical details such as the page you were on, browser type, and the error itself. That helps us keep the service reliable. We do not send your session notes or assessment responses to Sentry as a matter of product design.",
       notDo: "What we do not do",
       notDoBody:
-        "We do not sell your personal information. We do not share your individual Profile answers, session notes, or assessment responses with employers, courts, or programs unless you ask us to, or the law requires it. We do not use your reflections about your family for any purpose beyond serving you and the organization that invited you.",
+        "We do not sell your personal information. We do not share your individual session notes or assessment responses with employers, courts, or programs unless you ask us to, or the law requires it. We do not use your reflections about your family for any purpose beyond serving you and the organization that invited you.",
       sharing: "Sharing",
       sharingProviders:
         "We share data with service providers who help us run the platform (for example, hosting, file storage, email delivery, and error monitoring), under agreements that require them to protect it.",
       sharingOrg:
-        "If you join through an invite code, your organization administrator (manager) can see your name, photo if you upload one, training progress, Profile summary, custom assessment responses, and certificates. Reviewers see cohort totals only, not your name or individual answers. Super-admins operate the platform catalog and organizations; they are not a substitute for your organization administrator.",
+        "If you join through an invite code, your organization administrator (manager) can see your name, training progress, assessment responses, and certificates. Reviewers see cohort totals only, not your name or individual answers. Super-admins operate the platform catalog and organizations; they are not a substitute for your organization administrator.",
       sharingLegal:
         "If we receive a subpoena or court order, we are required to respond. We will tell you before we do unless the law forbids it. If you would rather not write something down, do not write it down; completion never depends on what you disclose in a free-text note.",
       choices: "Your choices",
       choicesBody:
-        "You can update your photo and notification preferences in Account. For access, correction, or deletion of your account and results, contact your organization administrator. They can reach Fathers.com on your behalf.",
+        "You can update your notification preferences in Account. For access, correction, or deletion of your account and results, contact your organization administrator. They can reach Fathers.com on your behalf.",
       children: "Children’s privacy",
       childrenBody:
         "This service is built for adult fathers, future fathers, and mentors. You must be at least 18 years old to create an account. We do not knowingly collect personal information from children.",
@@ -148,12 +148,12 @@ export const en = {
         "You must be at least 18 years old to create an account. The service is built for fathers, future fathers, and mentors. Content is intended for adults.",
       account: "3. Your account and invite codes",
       accountLead:
-        "You create an account with an invite code from your organization administrator. You are responsible for your account and for keeping your sign-in secure. Do not share your password. Your Profile results, session notes, and assessments are yours; your manager can see the progress and responses described in the ",
+        "You create an account with an invite code from your organization administrator. You are responsible for your account and for keeping your sign-in secure. Do not share your password. Your session notes and assessments are yours; your manager can see the progress and responses described in the ",
       privacyLink: "Privacy Policy",
       accountEnd: ".",
-      profile: "4. Father Profile and assessments",
+      profile: "4. Assessments",
       profileBody:
-        "The Father Profile (also called the Keystone Profile) is an educational assessment grounded in the published research of the National Center for Fathering. Custom assessments are written by your organization. Neither is a clinical, diagnostic, legal, or medical instrument, and results should not be used as a substitute for professional advice.",
+        "Assessments are written by your organization. They are not a clinical, diagnostic, legal, or medical instrument, and results should not be used as a substitute for professional advice.",
       trainings: "5. Trainings and certificates",
       trainingsBody:
         "Trainings include films, check-ins, and weekly actions. Certificates of Completion are issued by your manager after the stated requirements are met. Certificates attest to completion of a Fathers.com training. Acceptance by any court, agency, or program is at that body’s discretion; we do not guarantee acceptance. Do not forge or alter a certificate.",
@@ -307,9 +307,9 @@ export const en = {
   },
   account: {
     title: "Account",
-    fatherLead: "Your photo, certificates, and notifications.",
-    managerLead: "Your photo, organization photos, and notifications.",
-    staffLead: "Your photo and notifications.",
+    fatherLead: "Your certificates, language, and notifications.",
+    managerLead: "Your language, notifications, and training requests.",
+    staffLead: "Your language and notifications.",
     languageTitle: "Language",
     languageLead:
       "This account can follow the organization default, or you can choose a language.",
@@ -541,10 +541,12 @@ export const en = {
       themeReturn: "Keep coming back",
     },
     assessments: {
-      title: "Assigned assessments",
+      title: "Assessments",
       quietTitle: "Assessments",
-      quietLead: "From your manager. Separate from your Profile.",
-      lead: "Assessments from your manager. Separate from your Father Profile.",
+      quietLead: "From your manager.",
+      lead: "Assessments your manager assigned.",
+      emptyTitle: "No assessments yet",
+      emptyBody: "When your manager assigns an assessment, it will appear here.",
       answered: "{answered}/{total} answered",
       notStarted: "Not started",
       inProgress: "In progress",
@@ -556,6 +558,7 @@ export const en = {
       saveExit: "Save & Exit",
       canStop: "You can stop and continue anytime.",
       backHome: "Back to Home",
+      backToAssessments: "Back to Assessments",
       answer: "Answer",
     },
     session: {
@@ -615,6 +618,7 @@ export const en = {
       sessionMany: "{count} sessions",
       active: "Active Participants",
       profiles: "Profiles Completed",
+      assessmentsCompleted: "Assessments Completed",
       sessions: "Sessions Completed",
       trainings: "Trainings Completed",
       pending: "Pending Actions",
@@ -623,9 +627,9 @@ export const en = {
       groupName: "Group name",
       createGroup: "Create group",
       attention: "Needs attention",
-      attentionLead: "Profile gaps, unfinished sessions, and certificates ready to send.",
+      attentionLead: "Unfinished sessions and certificates ready to send.",
       caughtUp: "You’re caught up",
-      caughtUpBody: "No profile gaps, unfinished sessions, or certificates waiting to send.",
+      caughtUpBody: "No unfinished sessions or certificates waiting to send.",
       viewParticipants: "View all participants",
       impactLead: "One page of enrollment, completion, and certificate numbers for a board or funder.",
       openImpact: "Open Impact Snapshot",
@@ -762,7 +766,8 @@ export const en = {
       determination: "Determination: {determination}",
       profileInProgress: "He started the Profile and hasn’t finished.",
       profileNotStarted: "He hasn’t started the Profile yet.",
-      customAssessments: "Custom assessments",
+      customAssessments: "Assessments",
+      assessments: "Assessments",
       trainings: "Trainings",
       noCatalogTitle: "No trainings in the catalog",
       noCatalogBody: "An admin needs to add a training before you can assign work.",
@@ -894,7 +899,7 @@ export const en = {
     reports: {
       title: "Reports",
       lead:
-        "Export fathers in your group. Date range filters last activity (join, profile, session, assignment, or certificate). Email is omitted. It is not on profiles, and managers cannot read auth emails under RLS.",
+        "Export fathers in your group. Date range filters last activity (join, session, assignment, or certificate). Email is omitted. Managers cannot read auth emails under RLS.",
       impact: "Impact Snapshot",
       training: "Training",
       allTrainings: "All trainings",
@@ -956,6 +961,10 @@ export const en = {
       lead: "One page of numbers for a board, funder, or leader. Your organization only. Generated {date}.",
       pdf: "Download PDF",
       compare: "Compare",
+      tabs: "Impact views",
+      tabSnapshot: "Snapshot",
+      tabCompare: "Compare",
+      compareLead: "Set two groups or two time windows side by side.",
       emptyTitle: "No one has joined yet",
       emptyBody: "Share your invite code from the Dashboard. This snapshot fills in after someone joins {org}.",
       enrolled: "Fathers enrolled",
@@ -1324,7 +1333,7 @@ export const en = {
     tableStatusCatalog: "status is across the catalog",
     noCohortTitle: "No cohort data yet",
     noCohortBody:
-      "Totals stay at zero until fathers join a group and start a Profile or training. This view stays anonymized.",
+      "Totals stay at zero until fathers join a group and start a training. This view stays anonymized.",
     noMatchTitle: "No matching participants",
     noMatchBody: "No one matches these filters. Clear them to see the full cohort.",
     participant: "Participant",

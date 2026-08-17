@@ -191,10 +191,6 @@ export default async function ManagerReportsPage({
                     <p className="font-medium">{row.name}</p>
                     <p className="text-sm text-muted-foreground">{row.groupName}</p>
                     <p className="flex justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">{t("manager.reports.profile")}</span>
-                      <span>{translateAssignmentStatus(row.profileStatus === "not_started" ? "not_started" : row.profileStatus === "in_progress" ? "in_progress" : "completed", t)}</span>
-                    </p>
-                    <p className="flex justify-between gap-3 text-sm">
                       <span className="text-muted-foreground">{t("manager.reports.statusCol")}</span>
                       <span>{translateAssignmentStatus(row.completionStatus, t)}</span>
                     </p>
@@ -228,7 +224,6 @@ export default async function ManagerReportsPage({
                 <thead>
                   <tr className="border-b border-border text-xs tracking-wide text-muted-foreground uppercase">
                     <th className="px-6 py-3 font-medium">{t("manager.reports.name")}</th>
-                    <th className="px-4 py-3 font-medium">{t("manager.reports.profile")}</th>
                     <th className="px-4 py-3 font-medium">{t("manager.reports.statusCol")}</th>
                     <th className="px-4 py-3 font-medium">{t("manager.reports.assignments")}</th>
                     <th className="px-4 py-3 font-medium">{t("manager.reports.serials")}</th>
@@ -249,16 +244,6 @@ export default async function ManagerReportsPage({
                           {row.name}
                         </Link>
                         <p className="text-muted-foreground">{row.groupName}</p>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">
-                        {translateAssignmentStatus(
-                          row.profileStatus === "not_started"
-                            ? "not_started"
-                            : row.profileStatus === "in_progress"
-                              ? "in_progress"
-                              : "completed",
-                          t
-                        )}
                       </td>
                       <td className="px-4 py-3">
                         {translateAssignmentStatus(row.completionStatus, t)}

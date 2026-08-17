@@ -121,7 +121,6 @@ export default async function ManagerParticipantsPage({
             name: participant.name,
             avatarUrl: participant.avatarUrl,
             groupName: participant.groupName,
-            profileStatus: participant.profileStatus,
             progressLabel: participant.progressLabel === "None assigned"
               ? t("manager.participants.noneAssigned")
               : participant.progressLabel.endsWith(" complete")

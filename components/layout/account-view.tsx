@@ -1,17 +1,15 @@
 import Link from "next/link";
 
-import { AvatarUpload } from "@/components/account/avatar-upload";
 import { NotificationPrefs } from "@/components/account/notification-prefs";
 import { LanguageForm } from "@/components/i18n/language-form";
 import { LegalLinks } from "@/components/legal/legal-links";
 import { Flash } from "@/components/manager/flash";
+import { UserAvatar } from "@/components/layout/user-avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { loadAccountState, loadOrganizationName } from "@/lib/account/data";
 import { signOut } from "@/lib/auth/actions";
 import { ROLE_HELP, type AppRole } from "@/lib/auth/roles";
-import { photoPackForCode } from "@/lib/brand/photos";
 import { getI18n } from "@/lib/i18n/server";
-import { loadManagerGroups } from "@/lib/manager/data";
 import { cn } from "@/lib/utils";
 
 export async function AccountView({
@@ -30,26 +28,11 @@ export async function AccountView({
   children?: React.ReactNode;
 }) {
   const { t } = await getI18n();
-  const [account, organizationName, managedOrgs] = await Promise.all([
+  const [account, organizationName] = await Promise.all([
     loadAccountState(userId),
     role === "father" ? loadOrganizationName(userId) : Promise.resolve(null),
-    role === "manager" ? loadManagerGroups(userId) : Promise.resolve([]),
   ]);
   const identityLabel = role === "father" ? organizationName?.trim() || null : t(`role.${role}`);
-  const managedNames = managedOrgs
-    .map((organization) => organization.name.trim())
-    .filter(Boolean);
-  const photosLabel =
-    managedNames.length === 1
-      ? t(
-          photoPackForCode(managedOrgs[0]?.code) === "il"
-            ? "account.orgPhotosPlaceholder"
-            : "account.orgPhotosOne",
-          { name: managedNames[0] }
-        )
-      : managedNames.length > 1
-        ? t("account.orgPhotosMany", { names: managedNames.join(" · ") })
-        : t("account.orgPhotosFallback");
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
@@ -66,28 +49,23 @@ export async function AccountView({
       <Flash error={error} notice={notice} />
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <AvatarUpload
-          name={account.fullName}
-          email={email}
-          avatarUrl={account.avatarUrl}
-          caption={identityLabel}
-        />
+        <div className="flex min-w-0 items-center gap-4 sm:gap-5">
+          <UserAvatar
+            name={account.fullName || email}
+            className="size-16 text-xl font-semibold sm:size-20 sm:text-2xl"
+          />
+          <div className="min-w-0 flex-1 space-y-1">
+            <p className="font-heading truncate text-xl font-semibold tracking-tight sm:text-2xl">
+              {account.fullName || email?.split("@")[0] || t("account.title")}
+            </p>
+            <p className="truncate text-sm text-muted-foreground">
+              {[email, identityLabel].filter(Boolean).join(" · ")}
+            </p>
+          </div>
+        </div>
       </section>
 
       <LanguageForm savedLocale={account.locale} />
-
-      {role === "manager" ? (
-        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">{t("account.orgPhotos")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{photosLabel}</p>
-          <Link
-            href="/manager/account/photos"
-            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
-          >
-            {t("account.managePhotos")}
-          </Link>
-        </section>
-      ) : null}
 
       {children}
 

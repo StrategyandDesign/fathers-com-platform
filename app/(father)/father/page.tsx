@@ -4,23 +4,19 @@ import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { CoverPhoto } from "@/components/brand/cover";
 import { FirstVisitIntro } from "@/components/father/first-visit-intro";
 import { SessionCompleteMark } from "@/components/father/session-complete-mark";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
-import { startProfile } from "@/lib/father/profile-actions";
 import { loadFatherHome } from "@/lib/father/data";
 import {
   loadFatherOrgPhotoCovers,
   resolveHomeHeroCover,
-  resolveHomeProfileCover,
   resolveTrainingCardCover,
 } from "@/lib/org-photos/data";
-import { PROFILE_QUESTION_COUNT, firstUnanswered } from "@/lib/father/questions";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
-import { translateThemeLabel } from "@/lib/i18n/flash";
-import { formatLongDate, getI18n } from "@/lib/i18n/server";
+import { getI18n } from "@/lib/i18n/server";
 import { homePrimaryCtaClassName, interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -44,17 +40,15 @@ export default async function FatherHomePage({
 }) {
   const { done } = await searchParams;
   const { user } = await requireRole("father");
-  const { t, locale } = await getI18n();
-  const [{ trainingCards, next, profile, draft }, customAssignments, orgPhotos] =
-    await Promise.all([
-      loadFatherHome(user.id),
-      loadFatherAssignments(user.id),
-      loadFatherOrgPhotoCovers(user.id),
-    ]);
+  const { t } = await getI18n();
+  const [{ trainingCards, next }, customAssignments, orgPhotos] = await Promise.all([
+    loadFatherHome(user.id),
+    loadFatherAssignments(user.id),
+    loadFatherOrgPhotoCovers(user.id),
+  ]);
   const heroCover = next
     ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl, orgPhotos.photoPack)
     : null;
-  const profileCoverSrc = resolveHomeProfileCover(orgPhotos.profileUrl, orgPhotos.photoPack);
 
   const nextCard = next
     ? trainingCards.find((card) => card.training.id === next.training.id)
@@ -71,12 +65,10 @@ export default async function FatherHomePage({
   const nextPercent =
     next && nextTotal > 0 ? Math.round((nextCompleted / nextTotal) * 100) : 0;
   const hasTraining = trainingCards.length > 0;
-  const profileNeedsAction = !profile;
-  const profileIsPrimary = !next && profileNeedsAction;
   const pendingAssessment = customAssignments.find(
     (item) => item.assignment.status !== "completed"
   );
-  const assessmentIsPrimary = !next && !profileNeedsAction && Boolean(pendingAssessment);
+  const assessmentIsPrimary = !next && Boolean(pendingAssessment);
   const issuedCertificates = trainingCards.filter((card) => card.certificate);
   const nextInProgress = sessionInProgress(next?.progress ?? null);
   const neverStarted = Boolean(next) && nextCompleted === 0 && !nextInProgress;
@@ -91,12 +83,6 @@ export default async function FatherHomePage({
   const continueLabel = nextInProgress
     ? t("father.home.continueSession")
     : t("father.home.startSession");
-  const profileResumeAt = draft ? firstUnanswered(draft.answers) : 1;
-  const profileContinueHref = `/father/profile/take?q=${profileResumeAt}`;
-  const profileCardActionClassName = cn(
-    buttonVariants({ variant: "outline" }),
-    "w-full min-h-11"
-  );
 
   const emptyEyebrow = hasTraining
     ? trainingCards.length === 1
@@ -107,30 +93,20 @@ export default async function FatherHomePage({
     ? t("father.home.doneForNow")
     : hasTraining
       ? t("father.home.caughtUp")
-      : profileIsPrimary
-        ? draft
-          ? t("father.home.continueProfile")
-          : t("father.home.takeProfile")
-        : assessmentIsPrimary
-          ? (pendingAssessment?.assessment.title ?? t("father.home.takeAssessment"))
-          : t("father.home.waitingManager");
-  const emptyBody = justFinished
-    ? profileIsPrimary
-      ? t("father.home.everyCompleteProfile")
       : assessmentIsPrimary
-        ? t("father.home.everyCompleteAssessment")
-        : t("father.home.doneForNowBody")
+        ? (pendingAssessment?.assessment.title ?? t("father.home.takeAssessment"))
+        : t("father.home.waitingManager");
+  const emptyBody = justFinished
+    ? assessmentIsPrimary
+      ? t("father.home.everyCompleteAssessment")
+      : t("father.home.doneForNowBody")
     : hasTraining
-      ? profileIsPrimary
-        ? t("father.home.everyCompleteProfile")
-        : assessmentIsPrimary
-          ? t("father.home.everyCompleteAssessment")
-          : t("father.home.everyComplete")
-      : profileIsPrimary
-        ? t("father.home.waitProfile")
-        : assessmentIsPrimary
-          ? t("father.home.waitAssessment")
-          : t("father.home.waitEmpty");
+      ? assessmentIsPrimary
+        ? t("father.home.everyCompleteAssessment")
+        : t("father.home.everyComplete")
+      : assessmentIsPrimary
+        ? t("father.home.waitAssessment")
+        : t("father.home.waitEmpty");
   const finishedTotal = finishedCard?.total ?? 0;
   const finishedCompleted = finishedCard?.completed ?? 0;
   const finishedPercent =
@@ -142,14 +118,9 @@ export default async function FatherHomePage({
   );
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,1fr)] lg:gap-8">
+    <div className="space-y-6">
       {next ? (
-        <div
-          className={cn(
-            "order-1 min-w-0 lg:col-start-1 lg:row-start-1",
-            neverStarted && "max-lg:min-h-[calc(100svh-8.75rem)]"
-          )}
-        >
+        <div className={cn(neverStarted && "max-lg:min-h-[calc(100svh-8.75rem)]")}>
           {neverStarted && firstSession ? (
             <FirstVisitIntro
               href={firstSessionHref}
@@ -217,7 +188,7 @@ export default async function FatherHomePage({
           )}
         </div>
       ) : (
-        <section className="order-1 flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:col-start-1 lg:row-start-1 lg:p-8">
+        <section className="flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:p-8">
           {justFinished ? (
             <SessionCompleteMark />
           ) : (
@@ -238,21 +209,6 @@ export default async function FatherHomePage({
             </div>
           ) : null}
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">{emptyBody}</p>
-          {profileIsPrimary ? (
-            <div className="mt-6">
-              {draft ? (
-                <Link href={profileContinueHref} className={primaryCtaClassName}>
-                  {t("father.home.continueProfile")}
-                </Link>
-              ) : (
-                <form action={startProfile}>
-                  <Button type="submit" variant="default" size="lg" className={homePrimaryCtaClassName}>
-                    {t("father.home.takeProfile")}
-                  </Button>
-                </form>
-              )}
-            </div>
-          ) : null}
           {assessmentIsPrimary && pendingAssessment ? (
             <div className="mt-6">
               <Link href={takeHref(pendingAssessment.assignment.id)} className={primaryCtaClassName}>
@@ -262,186 +218,75 @@ export default async function FatherHomePage({
               </Link>
             </div>
           ) : null}
-          {!justFinished && !profileIsPrimary && !assessmentIsPrimary && profile ? (
-            <div className="mt-6">
-              <Link href="/father/profile/results" className={primaryCtaClassName}>
-                {t("father.home.viewProfile")}
-              </Link>
-            </div>
-          ) : null}
         </section>
       )}
 
-      <section
-        className={cn(
-          "relative flex min-h-56 flex-col overflow-hidden rounded-xl border border-border bg-card",
-          next ? (neverStarted ? "order-2 lg:order-2" : "order-3 lg:order-2") : "order-2",
-          neverStarted && "max-lg:hidden",
-          "lg:col-start-2 lg:row-start-1"
-        )}
-      >
-          <div className="pointer-events-none absolute inset-0" aria-hidden>
-            {/* Local public photo or org override; plain img matches CoverPhoto usage. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={profileCoverSrc}
-              alt=""
-              className="h-full w-full object-cover object-[center_62%] opacity-45"
-            />
-            <div className="absolute inset-0 bg-[#141414]/50" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a]/50 via-[#0a0a0a]/25 to-transparent" />
-            {profile ? (
-              <div className="absolute inset-0 bg-gradient-to-br from-[#1c1c1c]/70 to-[#101510]/80" />
-            ) : null}
-          </div>
-          <div className="relative z-10 flex flex-1 flex-col p-4 sm:p-5">
-            <p className={eyebrowClassName}>
-              {t("father.home.profile")}
-            </p>
-            {profile ? (
-              <>
-                <p className="mt-4 text-sm text-muted-foreground">
-                  {t("father.home.primaryDetermination")}
-                </p>
-                <p className="font-heading mt-1 text-xl font-semibold tracking-tight uppercase">
-                  {translateThemeLabel(profile.primary_determination, t)}
-                </p>
-                <p className="mt-3 text-sm text-muted-foreground">{t("father.home.primaryEdge")}</p>
-                <p className="mt-1 font-medium uppercase">
-                  {translateThemeLabel(profile.primary_edge, t)}
-                </p>
-                <p className="mt-3 text-sm text-muted-foreground">
-                  {t("father.home.taken", { date: formatLongDate(profile.taken_at, locale) })}
-                </p>
-                <div className="mt-auto pt-5">
-                  <Link href="/father/profile/results" className={profileCardActionClassName}>
-                    {t("father.profile.viewResults")}
+      {trainingCards.length > 0 || customAssignments.length > 0 ? (
+        <div className="space-y-8">
+          {trainingCards.length > 0 ? (
+            <section className="space-y-3">
+              <div className="flex items-end justify-between gap-3">
+                <p className={eyebrowClassName}>{t("father.home.yourTrainings")}</p>
+                {issuedCertificates.length > 0 ? (
+                  <Link
+                    href="/father/certificates"
+                    className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
+                  >
+                    {t("father.home.viewCertificates")}
                   </Link>
-                </div>
-              </>
-            ) : neverStarted ? (
-              <p className="mt-3 text-sm text-muted-foreground">
-                {t("father.home.profileLater")}
-              </p>
-            ) : draft ? (
-              <>
-                <h2 className="font-heading mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
-                  {t("father.home.inProgress")}
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {t("father.home.questionOf", {
-                    n: firstUnanswered(draft.answers),
-                    total: PROFILE_QUESTION_COUNT,
-                  })}
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {t("father.home.profileReminder")}
-                </p>
-                {profileIsPrimary ? null : (
-                  <div className="mt-auto pt-5">
-                    <Link href={profileContinueHref} className={profileCardActionClassName}>
-                      {t("father.home.continueProfile")}
-                    </Link>
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <h2 className="font-heading mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
-                  {t("father.home.takeProfileTitle")}
-                </h2>
-                <p className="mt-3 text-sm text-muted-foreground">
-                  {t("father.home.takeProfileBody")}
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {t("father.home.profileReminder")}
-                </p>
-                {profileIsPrimary ? null : (
-                  <form action={startProfile} className="mt-auto pt-5">
-                    <Button type="submit" variant="outline" className="w-full min-h-11">
-                      {t("father.home.takeProfile")}
-                    </Button>
-                  </form>
-                )}
-              </>
-            )}
-          </div>
-        </section>
-
-      {!next && (trainingCards.length > 0 || customAssignments.length > 0) ? (
-      <div
-        className={cn(
-          "space-y-8",
-          next ? "order-2 lg:order-3" : "order-3",
-          "lg:col-span-2"
-        )}
-      >
-      {trainingCards.length > 0 ? (
-        <section className="space-y-3">
-          <div className="flex items-end justify-between gap-3">
-            <p className={eyebrowClassName}>
-              {t("father.home.yourTrainings")}
-            </p>
-            {issuedCertificates.length > 0 ? (
-              <Link
-                href="/father/certificates"
-                className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
-              >
-                {t("father.home.viewCertificates")}
-              </Link>
-            ) : null}
-          </div>
-          <div className="grid gap-3 lg:grid-cols-3">
-            {trainingCards.map(({ training, completed, total, next: trainingNext, nextProgress }) => {
-              const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
-              return (
-                <Link
-                  key={training.id}
-                  href={
-                    trainingNext
-                      ? continueHref(trainingNext.id, nextProgress)
-                      : "/father/trainings"
-                  }
-                  className={cn(
-                    "overflow-hidden rounded-xl border border-border bg-card",
-                    interactiveSurfaceClassName
-                  )}
-                >
-                  <div className="h-28 overflow-hidden rounded-t-xl bg-[#101510] sm:h-32">
-                    <CoverPhoto
-                      src={resolveTrainingCardCover(
-                        training.slug,
-                        orgPhotos.trainingUrls[training.slug],
-                        orgPhotos.photoPack
+                ) : null}
+              </div>
+              <div className="grid gap-3 lg:grid-cols-3">
+                {trainingCards.map(({ training, completed, total, next: trainingNext, nextProgress }) => {
+                  const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+                  return (
+                    <Link
+                      key={training.id}
+                      href={
+                        trainingNext
+                          ? continueHref(trainingNext.id, nextProgress)
+                          : "/father/trainings"
+                      }
+                      className={cn(
+                        "overflow-hidden rounded-xl border border-border bg-card",
+                        interactiveSurfaceClassName
                       )}
-                    />
-                  </div>
-                  <div className="p-4 sm:p-5">
-                    <p className="font-heading text-sm font-semibold sm:text-base">
-                      {training.title}
-                    </p>
-                    <div className="mt-4 space-y-2">
-                      <ProgressBar value={percent} />
-                      <p className="text-sm text-muted-foreground">
-                        {total === 0
-                          ? t("father.home.sessionsReady")
-                          : t("father.home.sessionsCount", { completed, total })}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      ) : null}
+                    >
+                      <div className="h-28 overflow-hidden rounded-t-xl bg-[#101510] sm:h-32">
+                        <CoverPhoto
+                          src={resolveTrainingCardCover(
+                            training.slug,
+                            orgPhotos.trainingUrls[training.slug],
+                            orgPhotos.photoPack
+                          )}
+                        />
+                      </div>
+                      <div className="p-4 sm:p-5">
+                        <p className="font-heading text-sm font-semibold sm:text-base">
+                          {training.title}
+                        </p>
+                        <div className="mt-4 space-y-2">
+                          <ProgressBar value={percent} />
+                          <p className="text-sm text-muted-foreground">
+                            {total === 0
+                              ? t("father.home.sessionsReady")
+                              : t("father.home.sessionsCount", { completed, total })}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
 
-      <AssignedAssessmentList
-        assignments={customAssignments}
-        title={t("father.home.assessments")}
-        quiet
-      />
-      </div>
+          <AssignedAssessmentList
+            assignments={customAssignments}
+            title={t("father.home.assessments")}
+            quiet
+          />
+        </div>
       ) : null}
     </div>
   );
