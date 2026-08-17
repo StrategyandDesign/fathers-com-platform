@@ -85,8 +85,8 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
     fail("/manager/reviews", "That training is not waiting on your review.");
   }
 
-  if (status === "accepted" && current.status === "declined") {
-    if (confirm !== REVERSE_ACCEPT_CONFIRM) {
+  if (status === "accepted") {
+    if (current.status === "declined" && confirm !== REVERSE_ACCEPT_CONFIRM) {
       fail(path, `Type ${REVERSE_ACCEPT_CONFIRM} to accept this training after declining it.`);
     }
     const { data: catalog, error: catalogError } = await supabase

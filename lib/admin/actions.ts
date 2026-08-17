@@ -319,7 +319,7 @@ export async function releaseTraining(formData: FormData) {
   const supabase = await createClient();
   const { data: current, error: currentError } = await supabase
     .from("trainings")
-    .select("id, title, published, released_at, first_published_at, session_count")
+    .select("id, title, published, released_at, first_published_at, first_released_at, session_count")
     .eq("id", trainingId)
     .maybeSingle();
 
@@ -388,7 +388,7 @@ export async function unreleaseTraining(formData: FormData) {
   if (currentError) fail(path, RELEASE_WRITE_ERROR);
   if (!current) fail("/admin/trainings", "That training was not found.");
   if (!current.released_at) {
-    ok(path, "This training is already in draft. It is not released to managers.");
+    ok(path, "This training is not released to managers.");
   }
 
   const result = await unreleaseTrainingFromManagers(supabase, trainingId);

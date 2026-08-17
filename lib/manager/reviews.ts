@@ -163,7 +163,9 @@ export async function loadReviewQueue(managerId: string) {
       const supabase = await createClient();
       return supabase
         .from("trainings")
-        .select("id, slug, title, description, session_count, order_index, published, released_at")
+        .select(
+          "id, slug, title, description, session_count, order_index, published, released_at, first_published_at, first_released_at"
+        )
         .order("order_index");
     })(),
     (async () => {

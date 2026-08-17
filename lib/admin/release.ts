@@ -22,8 +22,12 @@ export function trainingReleaseState(training: {
   published?: boolean | null;
   released_at?: string | null;
   first_published_at?: string | null;
+  first_released_at?: string | null;
 }): TrainingReleaseState {
   if (training.released_at) return "released";
+  if (training.first_released_at) {
+    return isTrainingPublished(training) ? "ready" : "draft";
+  }
   if (training.first_published_at) return "catalog";
   if (isTrainingPublished(training)) return "ready";
   return "draft";

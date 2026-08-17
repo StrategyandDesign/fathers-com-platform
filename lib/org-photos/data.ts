@@ -161,7 +161,13 @@ export async function loadFatherOrgPhotoCovers(
     trainingUrls: {},
   };
 
-  const supabase = await createClient();
+  let supabase;
+  try {
+    supabase = await createClient();
+  } catch {
+    return empty;
+  }
+
   const { data: membership, error: memberError } = await supabase
     .from("group_members")
     .select("group_id, joined_at")
@@ -170,14 +176,19 @@ export async function loadFatherOrgPhotoCovers(
     .limit(1)
     .maybeSingle();
 
-  if (memberError) throw memberError;
-  if (!membership?.group_id) return empty;
+  if (memberError || !membership?.group_id) return empty;
 
-  const [groupRes, rows] = await Promise.all([
-    supabase.from("groups").select("id, name").eq("id", membership.group_id).maybeSingle(),
-    loadPhotoRows([membership.group_id]),
-  ]);
-  if (groupRes.error) throw groupRes.error;
+  let groupRes;
+  let rows: OrganizationPhotoRow[] = [];
+  try {
+    [groupRes, rows] = await Promise.all([
+      supabase.from("groups").select("id, name").eq("id", membership.group_id).maybeSingle(),
+      loadPhotoRows([membership.group_id]),
+    ]);
+  } catch {
+    return empty;
+  }
+  if (groupRes.error) return empty;
 
   const signed = await signStorageUrls(
     supabase,

@@ -27,7 +27,7 @@ export async function assignTrainingToFather(
 ): Promise<MutationResult> {
   const { data: catalog, error: catalogError } = await supabase
     .from("trainings")
-    .select("id, title, published, released_at")
+    .select("id, title, published, released_at, first_published_at, first_released_at")
     .eq("id", trainingId)
     .maybeSingle();
 
@@ -36,32 +36,32 @@ export async function assignTrainingToFather(
     return { status: "failed", reason: "That training is not published." };
   }
 
-  if (catalog.released_at) {
-    const { data: membership, error: membershipError } = await supabase
-      .from("group_members")
-      .select("group_id")
-      .eq("father_id", fatherId)
-      .maybeSingle();
+  const { data: membership, error: membershipError } = await supabase
+    .from("group_members")
+    .select("group_id")
+    .eq("father_id", fatherId)
+    .maybeSingle();
 
-    if (membershipError) return { status: "failed", reason: "Couldn’t verify this participant." };
-    if (!membership) {
-      return { status: "failed", reason: "That participant is not in your group." };
-    }
+  if (membershipError) return { status: "failed", reason: "Couldn’t verify this participant." };
+  if (!membership) {
+    return { status: "failed", reason: "That participant is not in your group." };
+  }
 
-    const { data: review, error: reviewError } = await supabase
-      .from("organization_training_reviews")
-      .select("status")
-      .eq("group_id", membership.group_id)
-      .eq("training_id", trainingId)
-      .maybeSingle();
+  const { data: review, error: reviewError } = await supabase
+    .from("organization_training_reviews")
+    .select("status")
+    .eq("group_id", membership.group_id)
+    .eq("training_id", trainingId)
+    .maybeSingle();
 
-    if (reviewError) return { status: "failed", reason: "Couldn’t check this training’s review." };
-    if (!isTrainingAssignable(catalog, review?.status)) {
-      return {
-        status: "failed",
-        reason: "This training is not available for your organization yet.",
-      };
-    }
+  if (reviewError) return { status: "failed", reason: "Couldn’t check this training’s review." };
+  if (!isTrainingAssignable(catalog, review?.status)) {
+    return {
+      status: "failed",
+      reason: catalog.released_at
+        ? "This training is not available for your organization yet."
+        : "This training is not available to assign.",
+    };
   }
 
   const { error } = await supabase.from("training_assignments").insert({

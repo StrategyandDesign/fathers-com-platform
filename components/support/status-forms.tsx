@@ -11,12 +11,21 @@ export function SupportStatusForms({
 }) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-      {status !== "looking" ? (
+      {status === "new" ? (
         <form action={updateSupportStatus}>
           <input type="hidden" name="report_id" value={reportId} />
           <input type="hidden" name="status" value="looking" />
           <Button type="submit" variant="outline" className="w-full sm:w-auto">
             Looking into it
+          </Button>
+        </form>
+      ) : null}
+      {status === "looking" ? (
+        <form action={updateSupportStatus}>
+          <input type="hidden" name="report_id" value={reportId} />
+          <input type="hidden" name="status" value="new" />
+          <Button type="submit" variant="outline" className="w-full sm:w-auto">
+            Back to new
           </Button>
         </form>
       ) : null}

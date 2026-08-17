@@ -9,6 +9,7 @@ export type Training = {
   released_at?: string | null;
   released_by?: string | null;
   first_published_at?: string | null;
+  first_released_at?: string | null;
 };
 
 export function isTrainingPublished(training: { published?: boolean | null }) {
@@ -18,8 +19,13 @@ export function isTrainingPublished(training: { published?: boolean | null }) {
 export function isLegacyCatalogTraining(training: {
   released_at?: string | null;
   first_published_at?: string | null;
+  first_released_at?: string | null;
 }) {
-  return !training.released_at && Boolean(training.first_published_at);
+  return (
+    !training.released_at &&
+    !training.first_released_at &&
+    Boolean(training.first_published_at)
+  );
 }
 
 export function isTrainingAssignable(
@@ -27,6 +33,7 @@ export function isTrainingAssignable(
     published?: boolean | null;
     released_at?: string | null;
     first_published_at?: string | null;
+    first_released_at?: string | null;
   },
   reviewStatus: string | null | undefined
 ) {
@@ -40,6 +47,7 @@ export function isTrainingVisibleInCatalog(
     published?: boolean | null;
     released_at?: string | null;
     first_published_at?: string | null;
+    first_released_at?: string | null;
   },
   access: {
     accepted: boolean;
