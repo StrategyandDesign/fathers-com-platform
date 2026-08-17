@@ -92,6 +92,76 @@ const EXACT: Record<string, string> = {
   "Choose a training.": "flash.chooseTraining",
   "Too many bulk actions just now. Try again in a few minutes.": "manager.bulk.tooMany",
   "1 participant needs a closer look.": "manager.bulk.closerLook",
+  "The group didn’t save. Try again.": "flash.groupSaveFailed",
+  "Group created. Share the invite code with fathers.": "flash.groupCreated",
+  "Choose a training to assign.": "flash.chooseTrainingAssign",
+  "That training is already assigned.": "flash.trainingAlreadyAssigned",
+  "Training assigned.": "flash.trainingAssigned",
+  "Choose a training to mark complete.": "flash.chooseTrainingComplete",
+  "Training marked complete.": "flash.trainingMarkedComplete",
+  "Choose a training for the certificate.": "flash.chooseTrainingCertificate",
+  "Couldn’t verify this participant. Try again.": "flash.verifyParticipantFailed",
+  "A certificate is already on file for this training.": "flash.certAlreadyOnFileTraining",
+  "Assessment created.": "flash.assessmentCreated",
+  "Assessment updated.": "flash.assessmentUpdated",
+  "Private note saved.": "flash.noteSaved",
+  "Private note cleared.": "flash.noteCleared",
+  "Preferences didn’t save. Try again.": "flash.prefsSaveFailed",
+  "Sign in again to save preferences.": "flash.signInAgainPrefs",
+  "Add a second group to compare groups. Time periods still work.": "flash.compareNeedSecondGroup",
+  "Choose two different groups.": "flash.compareDifferentGroups",
+  "Photo updated.": "account.photoUpdated",
+  "Photo removed.": "account.photoRemoved",
+  "Choose a photo to upload.": "account.photoChoose",
+  "Photo must be 2 MB or smaller.": "account.photoTooBig2",
+  "Use a JPEG, PNG, WebP, or GIF.": "account.photoTypeGif",
+  "The photo didn’t save. Try a JPEG, PNG, WebP, or GIF under 2 MB.": "account.photoSaveHint2",
+  "The photo didn’t save. Try again.": "account.photoSaveFailed",
+  "The photo didn’t remove. Try again.": "account.photoRemoveFailed",
+  "Too many photo uploads. Wait a few minutes and try again.": "account.photoUploadsTooMany",
+  "Too many photo changes. Wait a few minutes and try again.": "account.photoChangesTooMany",
+  "Choose an organization.": "manager.photos.chooseOrg",
+  "Couldn’t load that organization. Try again.": "manager.photos.loadFailed",
+  "That organization isn’t yours.": "manager.photos.notYours",
+  "That photo slot isn’t available.": "manager.photos.slotUnavailable",
+  "Photo must be 5 MB or smaller.": "manager.photos.tooBig5",
+  "Use a JPEG, PNG, or WebP.": "manager.photos.type",
+  "The photo didn’t save. Try a JPEG, PNG, or WebP under 5 MB.": "manager.photos.saveHint5",
+  "Couldn’t reset that photo. Try again.": "manager.photos.resetFailed",
+  "That file doesn’t look like a photo. Use a JPEG, PNG, or WebP.": "manager.photos.notAPhoto",
+  "Use a clearer photo. That one is too small.": "manager.photos.tooSmall",
+  "Choose a training to review.": "manager.reviews.chooseTraining",
+  "Too many review actions just now. Try again in a minute.": "manager.reviews.tooMany",
+  "Couldn’t verify this organization. Try again.": "manager.reviews.verifyOrgFailed",
+  "That training is not in your organization.": "manager.reviews.notInOrg",
+  "Couldn’t load that review. Try again.": "manager.reviews.loadFailed",
+  "That training is not waiting on your review.": "manager.reviews.notWaiting",
+  "Couldn’t check this training. Try again.": "manager.reviews.checkFailed",
+  "This training is no longer released. A Super-admin must release it again.":
+    "manager.reviews.noLongerReleased",
+  "The decision didn’t save. Try again.": "manager.reviews.decisionFailed",
+  "Training is available to assign again.": "manager.reviews.availableAgain",
+  "Training is available to assign. Fathers are not enrolled until you assign it.":
+    "manager.reviews.availableAssign",
+  "Training is hidden from new assignment for your organization.": "manager.reviews.hiddenFromNew",
+  "Training is hidden from your organization.": "manager.reviews.hiddenFromOrg",
+  "Too many requests just now. Try again in a few minutes.": "manager.request.tooMany",
+  "Add a topic or suggested title.": "manager.request.topicError",
+  "Say why this training is needed.": "manager.request.whyError",
+  "Keep the description under 2000 characters.": "manager.request.descriptionTooLong",
+  "Unable to send request. Please try again.": "manager.request.sendFailed",
+  "Thanks — your request has been received": "manager.request.received",
+  "Start date must be a valid date.": "manager.reports.startDateInvalid",
+  "End date must be a valid date.": "manager.reports.endDateInvalid",
+  "Completion status must be not started, in progress, or completed.":
+    "manager.reports.statusInvalid",
+  "The start date must be on or before the end date.": "manager.reports.dateOrder",
+  "Too many reports just now. Try again in a few minutes.": "help.tooMany",
+  "Choose a category.": "help.chooseCategory",
+  "Write a message before sending.": "help.writeMessage",
+  "Screenshot must be 2 MB or smaller.": "help.screenshotTooBig",
+  "Unable to send right now. Please try again.": "help.sendFailed",
+  "Thanks — we’ve received your report": "help.received",
 };
 
 const BULK_REASON: Record<string, string> = {
@@ -173,7 +243,8 @@ export function translateFlash(message: string | undefined, t: Translate) {
     message.startsWith("account.") ||
     message.startsWith("manager.") ||
     message.startsWith("father.") ||
-    message.startsWith("reviewer.")
+    message.startsWith("reviewer.") ||
+    message.startsWith("help.")
   ) {
     return t(message);
   }
@@ -192,6 +263,12 @@ export function translateFlash(message: string | undefined, t: Translate) {
   if (reminderDays) {
     return t("manager.participants.nudgeInDays", { days: reminderDays[1] });
   }
+  const reminderUnrecorded = message.match(
+    /^Reminder sent to (.+)\. We couldn’t record it — wait a few days before sending another\.$/
+  );
+  if (reminderUnrecorded) {
+    return t("flash.reminderSentUnrecorded", { name: reminderUnrecorded[1] });
+  }
   const reminderSent = message.match(/^Reminder sent to (.+)\.$/);
   if (reminderSent) return t("flash.reminderSent", { name: reminderSent[1] });
   const noteLength = message.match(/^Keep the note under (\d+) characters\.$/);
@@ -200,6 +277,30 @@ export function translateFlash(message: string | undefined, t: Translate) {
   if (typeConfirm) return t("manager.bulk.typeConfirm", { word: typeConfirm[1] });
   const closerLook = message.match(/^(\d+) participants need a closer look\.$/);
   if (closerLook) return t("manager.bulk.closerLookMany", { n: closerLook[1] });
+  const certificateIssued = message.match(/^Certificate issued: (.+)$/);
+  if (certificateIssued) return t("flash.certificateIssued", { serial: certificateIssued[1] });
+  const validDate = message.match(/^(.+) must be a valid date\.$/);
+  if (validDate) return t("manager.reports.dateInvalid", { label: validDate[1] });
+  const acceptAfterDecline = message.match(
+    /^Type (.+) to accept this training after declining it\.$/
+  );
+  if (acceptAfterDecline) {
+    return t("manager.reviews.typeAcceptAfterDecline", { word: acceptAfterDecline[1] });
+  }
+  const topicLength = message.match(/^Keep the topic under (\d+) characters\.$/);
+  if (topicLength) return t("manager.request.topicTooLong", { n: topicLength[1] });
+  const messageLength = message.match(/^Keep the message under (\d+) characters\.$/);
+  if (messageLength) return t("help.messageTooLong", { n: messageLength[1] });
+
+  const tryAgain = message.match(/^(.+) Try again\.$/);
+  if (tryAgain) {
+    const reason = tryAgain[1];
+    const reasonKey = EXACT[reason] ?? BULK_REASON[reason];
+    if (reasonKey) return t("flash.tryAgain", { reason: t(reasonKey) });
+  }
+
+  const bulk = BULK_REASON[message];
+  if (bulk) return t(bulk);
 
   return message;
 }
