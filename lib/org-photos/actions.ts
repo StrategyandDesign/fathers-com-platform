@@ -20,9 +20,9 @@ export type OrganizationPhotoResult = {
 };
 
 function revalidateOrgPhotos() {
-  revalidatePath("/manager/account/photos");
   revalidatePath("/manager/account");
-  revalidatePath("/father");
+  revalidatePath("/manager");
+  revalidatePath("/father", "layout");
   revalidatePath("/father/trainings");
 }
 

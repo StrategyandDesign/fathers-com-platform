@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { OrganizationMark } from "@/components/brand/organization-mark";
 import { CompanionPanel } from "@/components/manager/companion-panel";
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
@@ -17,6 +18,7 @@ import {
 } from "@/lib/manager/companion";
 import { loadManagerAssessments } from "@/lib/assessments/data";
 import { loadManagerWorkspace } from "@/lib/manager/data";
+import { loadManagerOrganizationMarks } from "@/lib/org-photos/data";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
 import { needsNudge } from "@/lib/manager/nudges";
 import { loadReviewQueue } from "@/lib/manager/reviews";
@@ -30,10 +32,11 @@ export default async function ManagerHomePage({
   const params = await searchParams;
   const { user } = await requireRole("manager");
   const { t } = await getI18n();
-  const [workspace, reviews, assessments] = await Promise.all([
+  const [workspace, reviews, assessments, marks] = await Promise.all([
     loadManagerWorkspace(user.id),
     loadReviewQueue(user.id),
     loadManagerAssessments(user.id),
+    loadManagerOrganizationMarks(user.id),
   ]);
   const { groups, summary, needsAttention, participants, trainingProgressFor, certificates } =
     workspace;
@@ -73,6 +76,18 @@ export default async function ManagerHomePage({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
+          {marks.length > 0 ? (
+            <div className="mb-3 space-y-2">
+              {marks.map((mark) => (
+                <OrganizationMark
+                  key={mark.groupId}
+                  name={mark.name}
+                  logoUrl={mark.logoUrl}
+                  size="large"
+                />
+              ))}
+            </div>
+          ) : null}
           <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("manager.dashboard.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {t("manager.dashboard.lead")}

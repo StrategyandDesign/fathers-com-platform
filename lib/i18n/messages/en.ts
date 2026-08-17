@@ -308,7 +308,19 @@ export const en = {
   account: {
     title: "Account",
     fatherLead: "Your certificates, language, and notifications.",
-    managerLead: "Your language, notifications, and training requests.",
+    managerLead: "Your language, organization mark, notifications, and training requests.",
+    logoTitle: "Organization mark",
+    logoLead:
+      "Fathers in {name} see this at the top of every page, next to the organization name.",
+    logoPreview: "What he sees",
+    logoEmpty: "No logo yet. The name still appears.",
+    logoUpload: "Upload logo",
+    logoReplace: "Replace logo",
+    logoRemove: "Remove logo",
+    logoHint:
+      "PNG, JPEG, or WebP. A square or wide mark works. We keep the whole logo; we do not crop it.",
+    logoSaved: "Logo saved. Fathers will see it next to the organization name.",
+    logoRemoved: "Logo removed. Fathers will see the organization name only.",
     staffLead: "Your language and notifications.",
     languageTitle: "Language",
     languageLead:

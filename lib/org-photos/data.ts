@@ -11,6 +11,7 @@ import type { Group } from "@/lib/manager/types";
 import {
   HOME_HERO_SLOT,
   HOME_PROFILE_SLOT,
+  ORG_LOGO_SLOT,
   homeHeroGuidance,
   homeProfileGuidance,
   parseTrainingSlug,
@@ -40,8 +41,15 @@ export type FatherOrgPhotoCovers = {
   organizationName: string | null;
   heroUrl: string | null;
   profileUrl: string | null;
+  logoUrl: string | null;
   trainingUrls: Record<string, string>;
   photoPack: PhotoPack;
+};
+
+export type OrganizationMark = {
+  groupId: string;
+  name: string;
+  logoUrl: string | null;
 };
 
 /**
@@ -199,6 +207,7 @@ export async function loadFatherOrgPhotoCovers(
     organizationName: null,
     heroUrl: null,
     profileUrl: null,
+    logoUrl: null,
     trainingUrls: {},
     photoPack: "default",
   };
@@ -241,6 +250,7 @@ export async function loadFatherOrgPhotoCovers(
   const trainingUrls: Record<string, string> = {};
   let heroUrl: string | null = null;
   let profileUrl: string | null = null;
+  let logoUrl: string | null = null;
   for (const row of rows) {
     const url = signed.get(row.storage_path);
     if (!url) continue;
@@ -252,6 +262,10 @@ export async function loadFatherOrgPhotoCovers(
       profileUrl = url;
       continue;
     }
+    if (row.slot === ORG_LOGO_SLOT) {
+      logoUrl = url;
+      continue;
+    }
     const slug = parseTrainingSlug(row.slot);
     if (slug) trainingUrls[slug] = url;
   }
@@ -260,9 +274,44 @@ export async function loadFatherOrgPhotoCovers(
     organizationName: organizationName(groupRes.data?.name),
     heroUrl,
     profileUrl,
+    logoUrl,
     trainingUrls,
     photoPack: photoPackForCode(
       (groupRes.data as { code?: string | null } | null)?.code
     ),
   };
+}
+
+export async function loadFatherOrganizationMark(fatherId: string): Promise<OrganizationMark | null> {
+  const covers = await loadFatherOrgPhotoCovers(fatherId);
+  const name = covers.organizationName?.trim();
+  if (!name && !covers.logoUrl) return null;
+  return {
+    groupId: "",
+    name: name ?? "",
+    logoUrl: covers.logoUrl,
+  };
+}
+
+export async function loadManagerOrganizationMarks(
+  managerId: string
+): Promise<OrganizationMark[]> {
+  const organizations = await loadManagerGroups(managerId);
+  const rows = await loadPhotoRows(organizations.map((org) => org.id));
+  const supabase = await createClient();
+  const logoRows = rows.filter((row) => row.slot === ORG_LOGO_SLOT);
+  const signed = await signStorageUrls(
+    supabase,
+    ORG_PHOTOS_BUCKET,
+    logoRows.map((row) => row.storage_path)
+  );
+  const logoByGroup = new Map(
+    logoRows.map((row) => [row.group_id, signed.get(row.storage_path) ?? null])
+  );
+
+  return organizations.map((organization) => ({
+    groupId: organization.id,
+    name: organization.name?.trim() || "Your organization",
+    logoUrl: logoByGroup.get(organization.id) ?? null,
+  }));
 }

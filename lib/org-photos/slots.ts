@@ -1,12 +1,14 @@
 export const HOME_HERO_SLOT = "home_hero" as const;
 export const HOME_PROFILE_SLOT = "home_profile" as const;
+export const ORG_LOGO_SLOT = "org_logo" as const;
 
 export type HomeHeroSlot = typeof HOME_HERO_SLOT;
 export type HomeProfileSlot = typeof HOME_PROFILE_SLOT;
+export type OrgLogoSlot = typeof ORG_LOGO_SLOT;
 export type TrainingPhotoSlot = `training_${string}`;
-export type OrgPhotoSlot = HomeHeroSlot | HomeProfileSlot | TrainingPhotoSlot;
+export type OrgPhotoSlot = HomeHeroSlot | HomeProfileSlot | OrgLogoSlot | TrainingPhotoSlot;
 
-export type OrgPhotoKind = "home_hero" | "home_profile" | "training";
+export type OrgPhotoKind = "home_hero" | "home_profile" | "org_logo" | "training";
 
 export type OrgPhotoGuidance = {
   kind: OrgPhotoKind;
@@ -34,6 +36,10 @@ export function isHomeProfileSlot(slot: string): slot is HomeProfileSlot {
   return slot === HOME_PROFILE_SLOT;
 }
 
+export function isOrgLogoSlot(slot: string): slot is OrgLogoSlot {
+  return slot === ORG_LOGO_SLOT;
+}
+
 export function parseTrainingSlug(slot: string): string | null {
   if (!slot.startsWith("training_")) return null;
   const slug = slot.slice("training_".length);
@@ -41,7 +47,9 @@ export function parseTrainingSlug(slot: string): string | null {
 }
 
 export function isOrgPhotoSlot(value: string, trainingSlugs: string[]): value is OrgPhotoSlot {
-  if (value === HOME_HERO_SLOT || value === HOME_PROFILE_SLOT) return true;
+  if (value === HOME_HERO_SLOT || value === HOME_PROFILE_SLOT || value === ORG_LOGO_SLOT) {
+    return true;
+  }
   const slug = parseTrainingSlug(value);
   return Boolean(slug && trainingSlugs.includes(slug));
 }

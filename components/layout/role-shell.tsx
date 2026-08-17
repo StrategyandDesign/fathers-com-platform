@@ -17,12 +17,14 @@ export async function RoleShell({
   email,
   avatarUrl,
   organizationName,
+  organizationLogoUrl,
   children,
 }: {
   role: AppRole;
   email?: string | null;
   avatarUrl?: string | null;
   organizationName?: string | null;
+  organizationLogoUrl?: string | null;
   children: React.ReactNode;
 }) {
   const { t } = await getI18n();
@@ -30,6 +32,7 @@ export async function RoleShell({
   const managerMobileNav = role === "manager";
   const chromeLabel = role === "father" ? null : t(`role.${role}`);
   const groupName = role === "father" ? organizationName?.trim() || null : null;
+  const groupLogo = role === "father" ? organizationLogoUrl ?? null : null;
 
   return (
     <div className="min-h-svh bg-background">
@@ -105,10 +108,10 @@ export async function RoleShell({
         <div
           className={cn(
             "mx-auto w-full min-w-0 max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-6 lg:px-8 lg:py-8",
-            groupName && "space-y-5 md:space-y-6"
+            (groupName || groupLogo) && "space-y-5 md:space-y-6"
           )}
         >
-          <FatherGroupMembership role={role} name={groupName} />
+          <FatherGroupMembership role={role} name={groupName} logoUrl={groupLogo} />
           {children}
         </div>
       </main>
