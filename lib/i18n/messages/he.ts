@@ -10,6 +10,8 @@ export const he = {
     participants: "משתתפים",
     assessments: "הערכות",
     reports: "דוחות",
+    impact: "תמונת השפעה",
+    photos: "תמונות הארגון",
     account: "חשבון",
     insights: "תובנות",
     organizations: "ארגונים",

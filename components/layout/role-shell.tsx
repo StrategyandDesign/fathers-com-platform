@@ -26,6 +26,7 @@ export async function RoleShell({
 }) {
   const { t } = await getI18n();
   const fatherMobile = role === "father";
+  const managerMobileNav = role === "manager";
   const chromeLabel = role === "father" ? null : t(`role.${role}`);
   const groupName = role === "father" ? organizationName?.trim() || null : null;
 
@@ -33,7 +34,7 @@ export async function RoleShell({
     <div className="min-h-svh bg-background">
       <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center justify-between border-b border-border bg-background/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden lg:px-5">
         <div className="flex min-w-0 items-center gap-1.5 lg:gap-3">
-          {role !== "father" ? <StaffMenu role={role} /> : null}
+          {role !== "father" && role !== "manager" ? <StaffMenu role={role} /> : null}
           <BrandLogo href={ROLE_HOME[role]} />
           {chromeLabel ? (
             <Badge variant="secondary" className="hidden max-w-[14rem] truncate lg:inline-flex">
@@ -61,7 +62,13 @@ export async function RoleShell({
         </Link>
       </header>
 
-      <aside className="fixed bottom-0 start-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col border-e border-border bg-sidebar print:hidden lg:flex">
+      {managerMobileNav ? (
+        <div className="fixed inset-x-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 border-b border-border bg-background/90 backdrop-blur-md print:hidden lg:hidden">
+          <AppNav role={role} layout="bar" />
+        </div>
+      ) : null}
+
+      <aside className="fixed bottom-0 start-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col overflow-y-auto border-e border-border bg-sidebar print:hidden lg:flex">
         <AppNav role={role} layout="side" />
       </aside>
 
@@ -73,7 +80,10 @@ export async function RoleShell({
 
       <main
         className={cn(
-          "min-h-svh overflow-x-clip pt-[calc(3.5rem+env(safe-area-inset-top))]",
+          "min-h-svh overflow-x-clip",
+          managerMobileNav
+            ? "pt-[calc(6.5rem+env(safe-area-inset-top))] lg:pt-[calc(3.5rem+env(safe-area-inset-top))]"
+            : "pt-[calc(3.5rem+env(safe-area-inset-top))]",
           "lg:ps-[5.5rem] print:pt-0 print:ps-0",
           fatherMobile
             ? "max-lg:pb-[calc(3.75rem+env(safe-area-inset-bottom))]"

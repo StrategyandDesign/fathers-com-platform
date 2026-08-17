@@ -10,6 +10,7 @@ import {
   FileSpreadsheet,
   GraduationCap,
   Home,
+  Images,
   Inbox,
   LayoutDashboard,
   Settings,
@@ -70,6 +71,13 @@ export const NAV: Record<AppRole, NavItem[]> = {
       match: (path) => path.startsWith("/manager/participants"),
     },
     {
+      href: "/manager/impact",
+      labelKey: "nav.impact",
+      icon: BarChart3,
+      match: (path) =>
+        path.startsWith("/manager/impact") || path.startsWith("/manager/compare"),
+    },
+    {
       href: "/manager/assessments",
       labelKey: "nav.assessments",
       icon: ClipboardList,
@@ -82,10 +90,19 @@ export const NAV: Record<AppRole, NavItem[]> = {
       match: (path) => path.startsWith("/manager/reports"),
     },
     {
+      href: "/manager/account/photos",
+      labelKey: "nav.photos",
+      icon: Images,
+      match: (path) => path.startsWith("/manager/account/photos"),
+    },
+    {
       href: "/manager/account",
       labelKey: "nav.account",
       icon: Settings,
-      match: (path) => path.startsWith("/manager/account"),
+      match: (path) =>
+        (path.startsWith("/manager/account") &&
+          !path.startsWith("/manager/account/photos")) ||
+        path.startsWith("/manager/help"),
     },
   ],
   reviewer: [
@@ -147,7 +164,7 @@ export function AppNav({
   layout = "side",
 }: {
   role: AppRole;
-  layout?: "side" | "tabs" | "list";
+  layout?: "side" | "tabs" | "list" | "bar";
 }) {
   const pathname = usePathname();
   const t = useT();
@@ -157,8 +174,10 @@ export function AppNav({
     <nav
       className={cn(
         layout === "side" && "flex flex-col items-center gap-2 px-2 py-4",
-        layout === "tabs" && "grid h-[3.75rem] grid-cols-3",
-        layout === "list" && "flex flex-col gap-1"
+        layout === "tabs" && "flex h-[3.75rem] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        layout === "list" && "flex flex-col gap-1",
+        layout === "bar" &&
+          "flex h-12 items-center gap-0.5 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       )}
     >
       {items.map((item) => {
@@ -168,29 +187,31 @@ export function AppNav({
           <Link
             key={item.href}
             href={item.href}
+            aria-current={active ? "page" : undefined}
             className={cn(
               "flex items-center focus-visible:z-10",
               interactiveControlClassName,
               layout === "side" &&
-                "w-full flex-col gap-1 rounded-lg px-1 py-2.5 text-[11px] tracking-wide",
+                "w-full flex-col gap-1 rounded-lg px-1 py-2.5 text-center text-[11px] tracking-wide",
               layout === "tabs" &&
-                "h-full min-h-11 flex-col justify-center gap-0.5 px-1 text-[11px] leading-tight",
+                "h-full min-h-11 min-w-[4.25rem] flex-1 flex-col justify-center gap-0.5 px-1 text-[11px] leading-tight",
               layout === "list" && "min-h-11 gap-3 rounded-lg px-3 text-sm",
-              layout === "side" &&
+              layout === "bar" &&
+                "h-10 shrink-0 gap-1.5 rounded-lg px-2.5 text-xs whitespace-nowrap",
+              (layout === "side" || layout === "list" || layout === "bar") &&
                 (active
                   ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:bg-white/5 hover:text-foreground"),
               layout === "tabs" &&
                 (active
                   ? "text-foreground"
-                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"),
-              layout === "list" &&
-                (active
-                  ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:bg-white/5 hover:text-foreground")
             )}
           >
-            <Icon className={cn("size-5", layout === "tabs" && "size-[22px]")} strokeWidth={1.6} />
+            <Icon
+              className={cn("size-5", layout === "tabs" && "size-[22px]", layout === "bar" && "size-4")}
+              strokeWidth={1.6}
+            />
             {t(item.labelKey)}
           </Link>
         );

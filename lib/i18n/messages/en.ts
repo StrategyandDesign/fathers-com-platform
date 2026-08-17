@@ -8,6 +8,8 @@ export const en = {
     participants: "Participants",
     assessments: "Assessments",
     reports: "Reports",
+    impact: "Impact Snapshot",
+    photos: "Org Photos",
     account: "Account",
     insights: "Insights",
     organizations: "Organizations",
