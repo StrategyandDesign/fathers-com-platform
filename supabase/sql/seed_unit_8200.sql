@@ -1,0 +1,15 @@
+-- Pilot seed notes: Unit 8200 (code IL).
+-- Applied on the Pilot project. Idempotent recreation uses the same emails.
+--
+-- Organization: Unit 8200
+--   invite_code = il
+--   locale = he
+--   code = IL  (landscape photo pack)
+--
+-- Logins (password 12345):
+--   manager@il   Manager
+--   reviewer@il  Reviewer (scoped to Unit 8200 via profiles.home_group_id)
+--   father1@il   Father
+--   father2@il   Father
+--
+-- English organizations stay locale = en and keep the existing photo pack.

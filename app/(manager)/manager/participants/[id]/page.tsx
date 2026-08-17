@@ -10,6 +10,7 @@ import { ProgressBar } from "@/components/ui/progress";
 import { loadParticipantCustomAssignments } from "@/lib/assessments/data";
 import { ASSIGNMENT_STATUS_LABEL } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
+import { getI18n } from "@/lib/i18n/server";
 import {
   assignTraining,
   markTrainingComplete,
@@ -65,6 +66,7 @@ export default async function ManagerParticipantDetailPage({
   const { id } = await params;
   const flash = await searchParams;
   const { user } = await requireRole("manager");
+  const { t } = await getI18n();
   const detail = await loadManagedParticipant(user.id, id);
 
   if (!detail) {
@@ -102,7 +104,7 @@ export default async function ManagerParticipantDetailPage({
     <div className="space-y-6">
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
         <Link href="/manager/participants" className={interactiveLinkClassName}>
-          Participants
+          {t("manager.participants.title")}
         </Link>
         <span className="text-white/20">|</span>
         <span className="min-w-0">{participant.name}</span>
@@ -367,7 +369,7 @@ export default async function ManagerParticipantDetailPage({
 
       <section className="grid gap-4 md:grid-cols-3">
         <form action={assignTraining} className="rounded-xl border border-border bg-card p-4 sm:p-5">
-          <h2 className="font-heading font-semibold">Assign Training</h2>
+          <h2 className="font-heading font-semibold">{t("manager.participants.assignTraining")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">Adds this training to his path.</p>
           <input type="hidden" name="father_id" value={participant.fatherId} />
           <div className="mt-4">
@@ -397,7 +399,7 @@ export default async function ManagerParticipantDetailPage({
           </div>
           {unassigned.length > 0 ? (
             <Button type="submit" className="mt-4 w-full">
-              Assign Training
+              {t("manager.participants.assignTraining")}
             </Button>
           ) : null}
         </form>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
+import { useT } from "@/components/i18n/locale-provider";
 import { authFieldClassName, interactiveIconClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -18,11 +19,12 @@ export function PasswordField({
   defaultVisible?: boolean;
 }) {
   const [visible, setVisible] = useState(defaultVisible);
+  const t = useT();
 
   return (
     <div className="relative">
       <input
-        className={cn(authFieldClassName, "pr-12")}
+        className={cn(authFieldClassName, "pe-12")}
         type={visible ? "text" : "password"}
         name="password"
         autoComplete={autoComplete}
@@ -33,11 +35,11 @@ export function PasswordField({
       <button
         type="button"
         className={cn(
-          "absolute top-1/2 right-1 flex size-9 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground",
+          "absolute top-1/2 end-1 flex size-9 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground",
           interactiveIconClassName
         )}
         onClick={() => setVisible((current) => !current)}
-        aria-label={visible ? "Hide password" : "Show password"}
+        aria-label={visible ? t("auth.hidePassword") : t("auth.showPassword")}
         aria-pressed={visible}
       >
         {visible ? <EyeOff className="size-4" strokeWidth={1.6} /> : <Eye className="size-4" strokeWidth={1.6} />}

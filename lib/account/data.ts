@@ -51,7 +51,7 @@ export async function loadCurrentAvatarUrl(userId: string) {
 export async function loadAccountState(userId: string) {
   const supabase = await createClient();
   const [profileRes, prefsRes] = await Promise.all([
-    supabase.from("profiles").select("id, full_name, avatar_url").eq("id", userId).maybeSingle(),
+    supabase.from("profiles").select("id, full_name, avatar_url, locale").eq("id", userId).maybeSingle(),
     supabase.from("notification_preferences").select("*").eq("user_id", userId).maybeSingle(),
   ]);
 
@@ -73,5 +73,6 @@ export async function loadAccountState(userId: string) {
     fullName: profileRes.data?.full_name ?? null,
     avatarUrl: await signStorageUrl(supabase, AVATARS_BUCKET, profileRes.data?.avatar_url),
     preferences: parseNotificationPreferences(prefsRow),
+    locale: typeof profileRes.data?.locale === "string" ? profileRes.data.locale : null,
   };
 }

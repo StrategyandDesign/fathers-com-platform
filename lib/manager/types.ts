@@ -6,6 +6,8 @@ export type Group = {
   invite_code: string;
   manager_id: string;
   created_at: string;
+  code?: string | null;
+  locale?: string | null;
 };
 
 export type GroupMember = {

@@ -1,3 +1,4 @@
+import { getI18n } from "@/lib/i18n/server";
 import { Button } from "@/components/ui/button";
 import {
   acceptTrainingRelease,
@@ -6,12 +7,11 @@ import {
 import {
   DECLINE_REASON_MAX,
   REVERSE_ACCEPT_CONFIRM,
-  REVIEW_STATUS_LABEL,
   type ReviewStatus,
 } from "@/lib/manager/reviews";
 import { fieldClassName, textareaClassName } from "@/lib/ui";
 
-export function ReviewDecisionForms({
+export async function ReviewDecisionForms({
   trainingId,
   groupId,
   status,
@@ -24,6 +24,7 @@ export function ReviewDecisionForms({
   returnTo?: "detail" | "queue";
   declineReason?: string | null;
 }) {
+  const { t } = await getI18n();
   return (
     <div className="space-y-4">
       {status === "pending" ? (
@@ -32,11 +33,10 @@ export function ReviewDecisionForms({
           <input type="hidden" name="group_id" value={groupId} />
           <input type="hidden" name="return_to" value={returnTo} />
           <Button type="submit" className="w-full sm:w-auto">
-            Accept & Push to My Cohort
+            {t("manager.reviews.accept")}
           </Button>
           <p className="mt-2 text-sm text-muted-foreground">
-            Makes it available to assign. Fathers are not enrolled until you
-            choose who receives it.
+            {t("manager.reviews.acceptLead")}
           </p>
         </form>
       ) : null}
@@ -47,15 +47,11 @@ export function ReviewDecisionForms({
           <input type="hidden" name="group_id" value={groupId} />
           <input type="hidden" name="return_to" value={returnTo} />
           <p className="text-sm text-muted-foreground">
-            Hidden from assignment for your organization. Accepting makes it
-            available to assign. Fathers are not enrolled until you choose who
-            receives it.
+            {t("manager.reviews.declinedLead")}
           </p>
           <label className="block space-y-2">
             <span className="text-sm text-muted-foreground">
-              Type{" "}
-              <span className="font-medium text-foreground">{REVERSE_ACCEPT_CONFIRM}</span>{" "}
-              to confirm
+              {t("manager.reviews.typeConfirm", { word: REVERSE_ACCEPT_CONFIRM })}
             </span>
             <input
               className={fieldClassName}
@@ -65,7 +61,7 @@ export function ReviewDecisionForms({
             />
           </label>
           <Button type="submit" className="w-full sm:w-auto">
-            Accept & Push to My Cohort
+            {t("manager.reviews.accept")}
           </Button>
         </form>
       ) : null}
@@ -77,18 +73,18 @@ export function ReviewDecisionForms({
           <input type="hidden" name="return_to" value={returnTo} />
           <label className="block space-y-2">
             <span className="text-sm text-muted-foreground">
-              Decline reason (optional)
+              {t("manager.reviews.declineReason")}
             </span>
             <textarea
               className={textareaClassName}
               name="decline_reason"
               maxLength={DECLINE_REASON_MAX}
               defaultValue={declineReason ?? ""}
-              placeholder="Optional note for your records"
+              placeholder={t("manager.reviews.declinePlaceholder")}
             />
           </label>
           <Button type="submit" variant="outline" className="w-full sm:w-auto">
-            Decline
+            {t("manager.reviews.decline")}
           </Button>
         </form>
       ) : null}
@@ -96,8 +92,9 @@ export function ReviewDecisionForms({
   );
 }
 
-export function ReviewStatusBadge({ status }: { status: ReviewStatus }) {
-  const label = REVIEW_STATUS_LABEL[status];
+export async function ReviewStatusBadge({ status }: { status: ReviewStatus }) {
+  const { t } = await getI18n();
+  const label = t(`manager.reviews.${status}`);
   const className =
     status === "accepted"
       ? "text-primary"

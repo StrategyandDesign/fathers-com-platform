@@ -10,6 +10,7 @@ import { requireRole } from "@/lib/auth/session";
 import { sessionCover } from "@/lib/brand/photos";
 import { markFilmWatched } from "@/lib/father/actions";
 import { loadFatherHome, loadSessionContext } from "@/lib/father/data";
+import { loadFatherOrgPhotoCovers } from "@/lib/org-photos/data";
 import { youtubeEmbedUrl } from "@/lib/father/types";
 import { sessionCtaClassName } from "@/lib/ui";
 
@@ -36,7 +37,10 @@ export default async function SessionViewerPage({
   const { session, training, progress } = context;
   const embed = youtubeEmbedUrl(session.video_url);
   const filmDone = progress?.film_completed ?? false;
-  const { trainingCards } = await loadFatherHome(user.id);
+  const [{ trainingCards }, orgPhotos] = await Promise.all([
+    loadFatherHome(user.id),
+    loadFatherOrgPhotoCovers(user.id),
+  ]);
   const card = trainingCards.find((item) => item.training.id === training.id);
   const completedCount = card?.completed ?? 0;
   const sessionTotal = card?.total ?? training.session_count;
@@ -66,7 +70,7 @@ export default async function SessionViewerPage({
           </div>
         ) : (
           <div className="relative aspect-video">
-            <CoverPhoto src={sessionCover(session.session_number)} />
+            <CoverPhoto src={sessionCover(session.session_number, orgPhotos.photoPack)} />
           </div>
         )}
       </div>

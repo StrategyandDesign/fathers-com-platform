@@ -2,12 +2,14 @@ import Link from "next/link";
 
 import { AvatarUpload } from "@/components/account/avatar-upload";
 import { NotificationPrefs } from "@/components/account/notification-prefs";
+import { LanguageForm } from "@/components/i18n/language-form";
 import { LegalLinks } from "@/components/legal/legal-links";
 import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { loadAccountState, loadOrganizationName } from "@/lib/account/data";
 import { signOut } from "@/lib/auth/actions";
-import { ROLE_HELP, roleChromeLabel, type AppRole } from "@/lib/auth/roles";
+import { ROLE_HELP, type AppRole } from "@/lib/auth/roles";
+import { getI18n } from "@/lib/i18n/server";
 import { loadManagerGroups } from "@/lib/manager/data";
 import { cn } from "@/lib/utils";
 
@@ -26,32 +28,33 @@ export async function AccountView({
   notice?: string;
   children?: React.ReactNode;
 }) {
+  const { t } = await getI18n();
   const [account, organizationName, managedOrgs] = await Promise.all([
     loadAccountState(userId),
     role === "father" ? loadOrganizationName(userId) : Promise.resolve(null),
     role === "manager" ? loadManagerGroups(userId) : Promise.resolve([]),
   ]);
-  const identityLabel = roleChromeLabel(role, organizationName);
+  const identityLabel = role === "father" ? organizationName?.trim() || null : t(`role.${role}`);
   const managedNames = managedOrgs
     .map((organization) => organization.name.trim())
     .filter(Boolean);
   const photosLabel =
     managedNames.length === 1
-      ? `Photos ${managedNames[0]} participants see on Home, Profile, and Trainings.`
+      ? t("account.orgPhotosOne", { name: managedNames[0] })
       : managedNames.length > 1
-        ? `Photos ${managedNames.join(" and ")} participants see on Home, Profile, and Trainings.`
-        : "Photos your organization sees on Home, Profile, and Trainings.";
+        ? t("account.orgPhotosMany", { names: managedNames.join(" · ") })
+        : t("account.orgPhotosFallback");
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <header>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">Account</h1>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("account.title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {role === "manager"
-            ? "Your photo, organization photos, and notifications."
+            ? t("account.managerLead")
             : role === "father"
-              ? "Your photo, certificates, and notifications."
-              : "Your photo and notifications."}
+              ? t("account.fatherLead")
+              : t("account.staffLead")}
         </p>
       </header>
       <Flash error={error} notice={notice} />
@@ -65,15 +68,17 @@ export async function AccountView({
         />
       </section>
 
+      <LanguageForm savedLocale={account.locale} />
+
       {role === "manager" ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Organization Photos</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("account.orgPhotos")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{photosLabel}</p>
           <Link
             href="/manager/account/photos"
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
-            Manage photos
+            {t("account.managePhotos")}
           </Link>
         </section>
       ) : null}
@@ -82,15 +87,13 @@ export async function AccountView({
 
       {role === "manager" ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Request a Training</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Suggest a topic we should source for your organization.
-          </p>
+          <h2 className="font-heading text-lg font-semibold">{t("account.requestTraining")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("account.requestTrainingLead")}</p>
           <Link
             href="/manager/request"
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
-            Request a Training
+            {t("account.requestTraining")}
           </Link>
         </section>
       ) : null}
@@ -99,29 +102,24 @@ export async function AccountView({
 
       {role === "admin" ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Support Inbox</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Problem reports and training requests from the network.
-          </p>
+          <h2 className="font-heading text-lg font-semibold">{t("account.supportInbox")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("account.supportInboxLead")}</p>
           <Link
             href="/admin/support"
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
-            Open inbox
+            {t("account.openInbox")}
           </Link>
         </section>
       ) : (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Help</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Something not working, or a question? Send a short note. We read every
-            report.
-          </p>
+          <h2 className="font-heading text-lg font-semibold">{t("account.help")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("account.helpLead")}</p>
           <Link
             href={ROLE_HELP[role]}
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
-            Report a Problem
+            {t("account.reportProblem")}
           </Link>
         </section>
       )}
@@ -130,7 +128,7 @@ export async function AccountView({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <form action={signOut}>
             <Button type="submit" variant="destructive" className="w-full sm:w-auto">
-              Sign Out
+              {t("auth.signOut")}
             </Button>
           </form>
           <LegalLinks />

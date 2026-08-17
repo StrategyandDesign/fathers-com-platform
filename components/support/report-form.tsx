@@ -2,19 +2,26 @@
 
 import { useTransition } from "react";
 
+import { useT } from "@/components/i18n/locale-provider";
 import { Button } from "@/components/ui/button";
 import { submitSupportReport } from "@/lib/support/actions";
 import {
   MESSAGE_MAX_LENGTH,
   PAGE_MAX_LENGTH,
   SUPPORT_CATEGORIES,
-  SUPPORT_CATEGORY_LABEL,
 } from "@/lib/support/types";
 import { fieldClassName, radioOptionClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export function SupportReportForm() {
   const [pending, startTransition] = useTransition();
+  const t = useT();
+  const categoryLabel = {
+    bug: t("help.bug"),
+    not_working: t("help.notWorking"),
+    question: t("help.question"),
+    other: t("help.other"),
+  } as const;
 
   return (
     <form
@@ -27,7 +34,7 @@ export function SupportReportForm() {
       aria-busy={pending}
     >
       <fieldset className="space-y-2">
-        <legend className="text-sm text-muted-foreground">Category</legend>
+        <legend className="text-sm text-muted-foreground">{t("help.category")}</legend>
         <div className="grid gap-2 sm:grid-cols-2">
           {SUPPORT_CATEGORIES.map((category) => (
             <label key={category} className={radioOptionClassName}>
@@ -40,26 +47,26 @@ export function SupportReportForm() {
                 defaultChecked={category === "not_working"}
                 className="size-4 accent-primary"
               />
-              <span>{SUPPORT_CATEGORY_LABEL[category]}</span>
+              <span>{categoryLabel[category]}</span>
             </label>
           ))}
         </div>
       </fieldset>
 
       <label className="block space-y-2">
-        <span className="text-sm text-muted-foreground">Page or feature (optional)</span>
+        <span className="text-sm text-muted-foreground">{t("help.page")}</span>
         <input
           className={fieldClassName}
           name="page"
           maxLength={PAGE_MAX_LENGTH}
           disabled={pending}
-          placeholder="Home, a training, Account…"
+          placeholder={t("help.pagePlaceholder")}
           autoComplete="off"
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm text-muted-foreground">Message</span>
+        <span className="text-sm text-muted-foreground">{t("help.message")}</span>
         <textarea
           className={textareaClassName}
           name="message"
@@ -67,12 +74,12 @@ export function SupportReportForm() {
           maxLength={MESSAGE_MAX_LENGTH}
           disabled={pending}
           rows={6}
-          placeholder="What went wrong, or what you need help with."
+          placeholder={t("help.messagePlaceholder")}
         />
       </label>
 
       <label className="block space-y-2">
-        <span className="text-sm text-muted-foreground">Screenshot (optional)</span>
+        <span className="text-sm text-muted-foreground">{t("help.screenshot")}</span>
         <input
           className={cn(
             fieldClassName,
@@ -89,7 +96,7 @@ export function SupportReportForm() {
       </label>
 
       <Button type="submit" className="w-full sm:w-auto" disabled={pending}>
-        {pending ? "Sending…" : "Send report"}
+        {pending ? t("common.saving") : t("help.send")}
       </Button>
     </form>
   );

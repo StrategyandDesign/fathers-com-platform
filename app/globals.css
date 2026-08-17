@@ -17,6 +17,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans-family);
+  --font-hebrew: var(--font-hebrew-family), var(--font-sans-family);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans-family);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -124,6 +125,15 @@
     color-scheme: dark;
     overflow-x: clip;
     @apply font-sans;
+  }
+
+  html[lang="he"],
+  html[lang="he"] body {
+    font-family: var(--font-hebrew);
+  }
+
+  html[lang="he"] {
+    --font-heading: var(--font-hebrew-family), var(--font-sans-family);
   }
 
   body {

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
+import { useT } from "@/components/i18n/locale-provider";
 import { type AppRole } from "@/lib/auth/roles";
 import { AppNav } from "@/components/layout/app-nav";
 import { interactiveIconClassName } from "@/lib/ui";
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils";
 export function StaffMenu({ role }: { role: AppRole }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const t = useT();
 
   useEffect(() => {
     setOpen(false);
@@ -34,7 +36,7 @@ export function StaffMenu({ role }: { role: AppRole }) {
           "flex size-11 items-center justify-center rounded-lg text-foreground",
           interactiveIconClassName
         )}
-        aria-label="Open menu"
+        aria-label={t("nav.openMenu")}
         onClick={() => setOpen(true)}
       >
         <Menu className="size-5" />
@@ -44,10 +46,10 @@ export function StaffMenu({ role }: { role: AppRole }) {
           <button
             type="button"
             className="absolute inset-0 bg-black/70 outline-none"
-            aria-label="Close menu"
+            aria-label={t("nav.closeMenu")}
             onClick={() => setOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 flex w-[min(18rem,88vw)] flex-col border-r border-border bg-card p-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+          <div className="absolute inset-y-0 start-0 flex w-[min(18rem,88vw)] flex-col border-e border-border bg-card p-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
             <div className="mb-2 flex justify-end">
               <button
                 type="button"
@@ -55,7 +57,7 @@ export function StaffMenu({ role }: { role: AppRole }) {
                   "flex size-11 items-center justify-center rounded-lg",
                   interactiveIconClassName
                 )}
-                aria-label="Close menu"
+                aria-label={t("nav.closeMenu")}
                 onClick={() => setOpen(false)}
               >
                 <X className="size-5" />

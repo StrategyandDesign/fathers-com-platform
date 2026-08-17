@@ -1,9 +1,11 @@
 import Link from "next/link";
 
 import { PasswordField } from "@/components/auth/password-field";
+import { LocaleSwitch } from "@/components/i18n/locale-switch";
 import { Flash } from "@/components/manager/flash";
 import { signUp } from "@/lib/auth/actions";
 import { safeInternalPath } from "@/lib/auth/roles";
+import { getI18n } from "@/lib/i18n/server";
 import { authFieldClassName, interactiveUnderlineClassName } from "@/lib/ui";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,18 +22,19 @@ export default async function SignupPage({
 }) {
   const { error, next: nextParam } = await searchParams;
   const next = safeInternalPath(nextParam);
+  const { t } = await getI18n();
   const inviteInvalid = Boolean(error && /invite/i.test(error));
   const accountInvalid = Boolean(error && !inviteInvalid && !/too many/i.test(error));
 
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-xl font-medium">Create your account</CardTitle>
+        <CardTitle className="text-xl font-medium">{t("auth.createAccount")}</CardTitle>
       </CardHeader>
       <CardContent>
         <form action={signUp} className="space-y-5">
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Invite code</span>
+            <span className="text-sm text-muted-foreground">{t("auth.inviteCode")}</span>
             <input
               className={authFieldClassName}
               type="text"
@@ -41,11 +44,11 @@ export default async function SignupPage({
               aria-invalid={inviteInvalid || undefined}
             />
             <span className="block text-xs text-muted-foreground">
-              Enter the code provided by your manager.
+              {t("auth.inviteHint")}
             </span>
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Email</span>
+            <span className="text-sm text-muted-foreground">{t("auth.email")}</span>
             <input
               className={authFieldClassName}
               type="text"
@@ -60,7 +63,7 @@ export default async function SignupPage({
             />
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Password</span>
+            <span className="text-sm text-muted-foreground">{t("auth.password")}</span>
             <PasswordField
               autoComplete="new-password"
               invalid={accountInvalid}
@@ -69,18 +72,19 @@ export default async function SignupPage({
           </label>
           <Flash error={error} />
           <Button type="submit" size="lg" className="w-full rounded-full">
-            Create Account
+            {t("auth.createAccountCta")}
           </Button>
         </form>
         <p className="mt-5 text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
+          {t("auth.haveAccount")}{" "}
           <Link
             href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}
             className={interactiveUnderlineClassName}
           >
-            Sign in
+            {t("auth.signIn")}
           </Link>
         </p>
+        <LocaleSwitch className="mt-6 justify-center" compact />
       </CardContent>
     </Card>
   );

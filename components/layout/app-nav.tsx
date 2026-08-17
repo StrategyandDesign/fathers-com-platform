@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { BrandLogoArrow } from "@/components/brand/logo-arrow";
+import { useT } from "@/components/i18n/locale-provider";
 import { type AppRole } from "@/lib/auth/roles";
 import { interactiveControlClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -29,7 +30,7 @@ type NavIcon = ComponentType<{
 
 type NavItem = {
   href: string;
-  label: string;
+  labelKey: string;
   icon: NavIcon;
   match: (pathname: string) => boolean;
 };
@@ -38,19 +39,19 @@ export const NAV: Record<AppRole, NavItem[]> = {
   father: [
     {
       href: "/father",
-      label: "Home",
+      labelKey: "nav.home",
       icon: Home,
       match: (path) => path === "/father" || path === "/home",
     },
     {
       href: "/father/trainings",
-      label: "Trainings",
+      labelKey: "nav.trainings",
       icon: BrandLogoArrow,
       match: (path) => path === "/father/trainings" || path.startsWith("/father/sessions"),
     },
     {
       href: "/father/profile",
-      label: "Profile",
+      labelKey: "nav.profile",
       icon: User,
       match: (path) => path.startsWith("/father/profile"),
     },
@@ -58,31 +59,31 @@ export const NAV: Record<AppRole, NavItem[]> = {
   manager: [
     {
       href: "/manager",
-      label: "Dashboard",
+      labelKey: "nav.dashboard",
       icon: LayoutDashboard,
       match: (path) => path === "/manager",
     },
     {
       href: "/manager/participants",
-      label: "Participants",
+      labelKey: "nav.participants",
       icon: Users,
       match: (path) => path.startsWith("/manager/participants"),
     },
     {
       href: "/manager/assessments",
-      label: "Assessments",
+      labelKey: "nav.assessments",
       icon: ClipboardList,
       match: (path) => path.startsWith("/manager/assessments"),
     },
     {
       href: "/manager/reports",
-      label: "Reports",
+      labelKey: "nav.reports",
       icon: FileSpreadsheet,
       match: (path) => path.startsWith("/manager/reports"),
     },
     {
       href: "/manager/account",
-      label: "Account",
+      labelKey: "nav.account",
       icon: Settings,
       match: (path) => path.startsWith("/manager/account"),
     },
@@ -90,13 +91,13 @@ export const NAV: Record<AppRole, NavItem[]> = {
   reviewer: [
     {
       href: "/reviewer",
-      label: "Insights",
+      labelKey: "nav.insights",
       icon: BarChart3,
       match: (path) => path === "/reviewer" || path.startsWith("/reviewer/summary"),
     },
     {
       href: "/reviewer/account",
-      label: "Account",
+      labelKey: "nav.account",
       icon: Settings,
       match: (path) => path.startsWith("/reviewer/account"),
     },
@@ -104,37 +105,37 @@ export const NAV: Record<AppRole, NavItem[]> = {
   admin: [
     {
       href: "/admin",
-      label: "Dashboard",
+      labelKey: "nav.dashboard",
       icon: LayoutDashboard,
       match: (path) => path === "/admin",
     },
     {
       href: "/admin/organizations",
-      label: "Organizations",
+      labelKey: "nav.organizations",
       icon: Building2,
       match: (path) => path.startsWith("/admin/organizations"),
     },
     {
       href: "/admin/trainings",
-      label: "Trainings",
+      labelKey: "nav.trainings",
       icon: GraduationCap,
       match: (path) => path.startsWith("/admin/trainings"),
     },
     {
       href: "/admin/users",
-      label: "Users",
+      labelKey: "nav.users",
       icon: Users,
       match: (path) => path.startsWith("/admin/users"),
     },
     {
       href: "/admin/support",
-      label: "Inbox",
+      labelKey: "nav.inbox",
       icon: Inbox,
       match: (path) => path.startsWith("/admin/support"),
     },
     {
       href: "/admin/account",
-      label: "Account",
+      labelKey: "nav.account",
       icon: Settings,
       match: (path) => path.startsWith("/admin/account"),
     },
@@ -149,6 +150,7 @@ export function AppNav({
   layout?: "side" | "tabs" | "list";
 }) {
   const pathname = usePathname();
+  const t = useT();
   const items = NAV[role];
 
   return (
@@ -189,7 +191,7 @@ export function AppNav({
             )}
           >
             <Icon className={cn("size-5", layout === "tabs" && "size-[22px]")} strokeWidth={1.6} />
-            {item.label}
+            {t(item.labelKey)}
           </Link>
         );
       })}

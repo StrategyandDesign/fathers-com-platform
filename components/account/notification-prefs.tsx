@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 
 import { saveNotificationPreferences } from "@/lib/account/actions";
+import { useT } from "@/components/i18n/locale-provider";
 import { Flash } from "@/components/manager/flash";
 import {
   togglesForRole,
@@ -24,6 +25,7 @@ export function NotificationPrefs({
   const [status, setStatus] = useState<"idle" | "saved" | "error">("idle");
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const t = useT();
   const toggles = togglesForRole(role);
 
   function toggle(key: NotificationPrefKey) {
@@ -37,7 +39,7 @@ export function NotificationPrefs({
         return;
       }
       setStatus("saved");
-      setMessage("Preferences saved.");
+        setMessage("flash.prefsSaved");
     });
   }
 
@@ -47,17 +49,14 @@ export function NotificationPrefs({
       aria-busy={pending}
     >
       <div>
-        <h2 className="font-heading text-lg font-semibold">Notification preferences</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("notify.title")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          {role === "manager"
-            ? "Saved to your account. Emails and in-app notices are sent only for the items you leave on."
-            : "Saved to your account. Emails are sent only for the items you leave on."}
+          {role === "manager" ? t("notify.managerLead") : t("notify.otherLead")}
         </p>
       </div>
       {toggles.length === 0 ? (
         <p className="mt-5 text-sm text-muted-foreground">
-          This role doesn’t have email toggles yet. Account and security alerts
-          still apply when they ship.
+          {t("notify.none")}
         </p>
       ) : (
       <ul className="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
@@ -70,14 +69,14 @@ export function NotificationPrefs({
               disabled={pending}
               onClick={() => toggle(item.key)}
               className={cn(
-                "flex w-full items-start justify-between gap-3 px-4 py-4 text-left sm:gap-4",
+                "flex w-full items-start justify-between gap-3 px-4 py-4 text-start sm:gap-4",
                 interactiveSurfaceClassName,
                 "disabled:opacity-50"
               )}
             >
               <span className="min-w-0">
-                <span className="block font-medium leading-snug">{item.label}</span>
-                <span className="mt-0.5 block text-sm text-muted-foreground">{item.hint}</span>
+                <span className="block font-medium leading-snug">{t(item.labelKey)}</span>
+                <span className="mt-0.5 block text-sm text-muted-foreground">{t(item.hintKey)}</span>
               </span>
               <span
                 className="flex h-11 w-14 shrink-0 items-center justify-center"
@@ -91,8 +90,8 @@ export function NotificationPrefs({
                 >
                   <span
                     className={cn(
-                      "absolute top-0.5 left-0.5 size-5 rounded-full bg-white transition-transform duration-150 ease-out",
-                      prefs[item.key] && "translate-x-5"
+                      "absolute top-0.5 start-0.5 size-5 rounded-full bg-white transition-transform duration-150 ease-out",
+                      prefs[item.key] && "ltr:translate-x-5 rtl:-translate-x-5"
                     )}
                   />
                 </span>
@@ -104,7 +103,7 @@ export function NotificationPrefs({
       )}
       {pending ? (
         <p className="mt-4 text-sm text-muted-foreground" aria-live="polite">
-          Saving…
+          {t("common.saving")}
         </p>
       ) : message ? (
         <div className="mt-4">

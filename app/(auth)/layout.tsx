@@ -1,7 +1,7 @@
 import { BrandLogo } from "@/components/brand/logo";
 import { LegalLinks } from "@/components/legal/legal-links";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;

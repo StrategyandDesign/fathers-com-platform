@@ -32,56 +32,56 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
 
 export type NotificationToggle = {
   key: NotificationPrefKey;
-  label: string;
-  hint: string;
+  labelKey: string;
+  hintKey: string;
 };
 
 const MANAGER_TOGGLES: NotificationToggle[] = [
   {
     key: "training_releases",
-    label: "New trainings available for review",
-    hint: "When a Super-admin releases a training for your organization to preview and accept.",
+    labelKey: "notify.trainingReleases",
+    hintKey: "notify.trainingReleasesHint",
   },
   {
     key: "certificate_sent",
-    label: "Certificate sent",
-    hint: "When you issue a completion certificate.",
+    labelKey: "notify.certificateSent",
+    hintKey: "notify.certificateSentHint",
   },
   {
     key: "account_security_alerts",
-    label: "Account and security alerts",
-    hint: "Sign-in and account changes.",
+    labelKey: "notify.security",
+    hintKey: "notify.securityHint",
   },
 ];
 
 const FATHER_TOGGLES: NotificationToggle[] = [
   {
     key: "session_reminders",
-    label: "Session reminders",
-    hint: "When a session is waiting, including a calm note from his manager.",
+    labelKey: "notify.sessionReminders",
+    hintKey: "notify.sessionRemindersHint",
   },
   {
     key: "new_trainings",
-    label: "New trainings assigned",
-    hint: "When a manager assigns a training.",
+    labelKey: "notify.newTrainings",
+    hintKey: "notify.newTrainingsHint",
   },
   {
     key: "certificate_sent",
-    label: "Certificate issued",
-    hint: "When a completion certificate is ready to download.",
+    labelKey: "notify.certificateIssued",
+    hintKey: "notify.certificateIssuedHint",
   },
   {
     key: "account_security_alerts",
-    label: "Account and security alerts",
-    hint: "Sign-in and account changes.",
+    labelKey: "notify.security",
+    hintKey: "notify.securityHint",
   },
 ];
 
 const REVIEWER_TOGGLES: NotificationToggle[] = [
   {
     key: "account_security_alerts",
-    label: "Account and security alerts",
-    hint: "Sign-in and account changes.",
+    labelKey: "notify.security",
+    hintKey: "notify.securityHint",
   },
 ];
 

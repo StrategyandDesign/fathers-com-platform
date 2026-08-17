@@ -5,6 +5,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
+import { getI18n } from "@/lib/i18n/server";
+import { resolveUserLocale } from "@/lib/i18n/resolve";
 import {
   COMPLETION_STATUS_LABEL,
   COMPLETION_STATUSES,
@@ -76,46 +78,57 @@ export default async function ReviewerInsightsPage({
   }>;
 }) {
   const params = await searchParams;
-  await requireRole("reviewer");
+  const { user } = await requireRole("reviewer");
+  const { t } = await getI18n();
   const parsed = parseInsightSearchParams(params);
-  const insights = await loadReviewerInsights(parsed.filters);
-  const query = insightQuery(parsed.filters);
+  const resolved = await resolveUserLocale(user.id);
+  const scopedGroupId = resolved.homeGroupId;
+  const filters = {
+    ...parsed.filters,
+    groupId: scopedGroupId ?? parsed.filters.groupId,
+  };
+  const insights = await loadReviewerInsights(filters);
+  if (scopedGroupId) {
+    insights.groups = insights.groups.filter((group) => group.id === scopedGroupId);
+  }
+  const query = insightQuery(filters);
   const exportQuery = query ? `${query}&` : "";
-  const filtered = hasInsightFilters(parsed.filters);
+  const filtered = hasInsightFilters(filters);
   const trendMax = Math.max(1, ...insights.completion_trend.map((point) => point.count));
   const edgeMax = Math.max(1, ...insights.primary_edges.map((edge) => edge.count));
 
   const stats = [
-    { label: "Total Participants", value: String(insights.total_participants) },
+    { label: t("reviewer.total"), value: String(insights.total_participants) },
     {
-      label: "Profiles Completed",
+      label: t("reviewer.profiles"),
       value: `${insights.profiles_completed_pct}%`,
-      detail: `${insights.profiles_completed} of ${insights.total_participants}`,
+      detail: t("reviewer.profilesDetail", {
+        completed: insights.profiles_completed,
+        total: insights.total_participants,
+      }),
     },
     {
-      label: "Average Sessions Completed",
+      label: t("reviewer.avgSessions"),
       value: insights.average_sessions_completed.toFixed(1),
     },
-    { label: "Trainings Completed", value: String(insights.trainings_completed) },
-    { label: "Active Groups", value: String(insights.active_groups) },
+    { label: t("reviewer.trainings"), value: String(insights.trainings_completed) },
+    { label: t("reviewer.activeGroups"), value: String(insights.active_groups) },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">Insights</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("reviewer.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Anonymized cohort view. No names or emails. Use Impact Summary for a
-            funder or board. The CSV is internal — it uses coded labels, not
-            names.
+            {t("reviewer.lead")}
           </p>
         </div>
         <Link
           href={query ? `/reviewer/summary?${query}` : "/reviewer/summary"}
           className={cn(buttonVariants(), "w-full sm:w-auto")}
         >
-          Impact Summary
+          {t("reviewer.impact")}
         </Link>
       </div>
       <Flash error={params.error || parsed.error || insights.error} notice={params.notice} />
@@ -127,13 +140,14 @@ export default async function ReviewerInsightsPage({
       >
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Group</span>
+            <span className="text-sm text-muted-foreground">{t("reviewer.group")}</span>
             <select
               className={fieldClassName}
               name="group_id"
-              defaultValue={parsed.filters.groupId ?? ""}
+              defaultValue={filters.groupId ?? ""}
+              disabled={Boolean(scopedGroupId)}
             >
-              <option value="">All groups</option>
+              {scopedGroupId ? null : <option value="">{t("reviewer.allGroups")}</option>}
               {insights.groups.map((group) => (
                 <option key={group.id} value={group.id}>
                   {group.label}
@@ -142,13 +156,13 @@ export default async function ReviewerInsightsPage({
             </select>
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Training</span>
+            <span className="text-sm text-muted-foreground">{t("reviewer.training")}</span>
             <select
               className={fieldClassName}
               name="training_id"
               defaultValue={parsed.filters.trainingId ?? ""}
             >
-              <option value="">All trainings</option>
+              <option value="">{t("reviewer.allTrainings")}</option>
               {insights.trainings.map((training) => (
                 <option key={training.id} value={training.id}>
                   {training.title}
@@ -157,22 +171,22 @@ export default async function ReviewerInsightsPage({
             </select>
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Completion status</span>
+            <span className="text-sm text-muted-foreground">{t("reviewer.status")}</span>
             <select
               className={fieldClassName}
               name="status"
               defaultValue={parsed.filters.status ?? ""}
             >
-              <option value="">All statuses</option>
+              <option value="">{t("reviewer.allStatuses")}</option>
               {COMPLETION_STATUSES.map((status) => (
                 <option key={status} value={status}>
-                  {COMPLETION_STATUS_LABEL[status]}
+                  {t(`reviewer.${status === "not_started" ? "notStarted" : status === "in_progress" ? "inProgress" : "completed"}`)}
                 </option>
               ))}
             </select>
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Last activity from</span>
+            <span className="text-sm text-muted-foreground">{t("reviewer.from")}</span>
             <input
               className={fieldClassName}
               type="date"
@@ -181,7 +195,7 @@ export default async function ReviewerInsightsPage({
             />
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Last activity to</span>
+            <span className="text-sm text-muted-foreground">{t("reviewer.to")}</span>
             <input
               className={fieldClassName}
               type="date"
@@ -192,28 +206,28 @@ export default async function ReviewerInsightsPage({
         </div>
         <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Button type="submit" className="w-full sm:w-auto">
-            Apply filters
+            {t("reviewer.apply")}
           </Button>
-          {filtered ? (
+          {filtered && !scopedGroupId ? (
             <Link
               href="/reviewer"
               className={cn(buttonVariants({ variant: "ghost" }), "w-full sm:w-auto")}
             >
-              Clear filters
+              {t("reviewer.clear")}
             </Link>
           ) : null}
           <Link
             href={`/api/reviewer/insights/export?${exportQuery}format=csv`}
             className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
-            title="Internal use only. Labels are anonymized codes, not names."
+            title={t("reviewer.csvTitle")}
           >
-            Download CSV
+            {t("reviewer.csv")}
           </Link>
           <Link
             href={query ? `/reviewer/summary?${query}` : "/reviewer/summary"}
             className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
           >
-            Impact Summary
+            {t("reviewer.impact")}
           </Link>
         </div>
       </form>

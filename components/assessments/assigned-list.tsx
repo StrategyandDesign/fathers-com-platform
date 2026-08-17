@@ -1,18 +1,14 @@
 import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
-import {
-  ASSIGNMENT_STATUS_LABEL,
-  assignmentActionLabel,
-  takeHref,
-  type FatherAssignmentCard,
-} from "@/lib/assessments/types";
+import { takeHref, type FatherAssignmentCard } from "@/lib/assessments/types";
+import { getI18n } from "@/lib/i18n/server";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-export function AssignedAssessmentList({
+export async function AssignedAssessmentList({
   assignments,
-  title = "Assigned assessments",
+  title,
   quiet = false,
 }: {
   assignments: FatherAssignmentCard[];
@@ -20,6 +16,8 @@ export function AssignedAssessmentList({
   quiet?: boolean;
 }) {
   if (assignments.length === 0) return null;
+  const { t } = await getI18n();
+  const heading = title ?? t("father.assessments.title");
 
   return (
     <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
@@ -30,12 +28,10 @@ export function AssignedAssessmentList({
             : "font-heading text-lg font-semibold"
         }
       >
-        {title}
+        {heading}
       </h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        {quiet
-          ? "From your manager. Separate from your Profile."
-          : "Assessments from your manager. Separate from your Father Profile."}
+        {quiet ? t("father.assessments.quietLead") : t("father.assessments.lead")}
       </p>
       <ul className="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
         {assignments.map(({ assignment, assessment, questionCount, answeredCount }) => (
@@ -50,9 +46,12 @@ export function AssignedAssessmentList({
               <div className="min-w-0">
                 <p className="font-medium">{assessment.title}</p>
                 <p className="text-sm text-muted-foreground">
-                  {ASSIGNMENT_STATUS_LABEL[assignment.status]}
+                  {t(`father.assessments.${assignment.status === "not_started" ? "notStarted" : assignment.status === "in_progress" ? "inProgress" : "completed"}`)}
                   {questionCount > 0
-                    ? ` · ${answeredCount}/${questionCount} answered`
+                    ? ` · ${t("father.assessments.answered", {
+                        answered: answeredCount,
+                        total: questionCount,
+                      })}`
                     : ""}
                 </p>
               </div>
@@ -62,7 +61,11 @@ export function AssignedAssessmentList({
                   "pointer-events-none w-full sm:w-auto"
                 )}
               >
-                {assignmentActionLabel(assignment.status)}
+                {assignment.status === "completed"
+                  ? t("father.assessments.view")
+                  : assignment.status === "in_progress"
+                    ? t("father.assessments.continue")
+                    : t("father.assessments.take")}
               </span>
             </Link>
           </li>

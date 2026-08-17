@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Check, Film, Lock, RotateCcw, SquareCheck } from "lucide-react";
 
+import { getI18n } from "@/lib/i18n/server";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 type StepKey = "film" | "checkin" | "action";
 
-export function SessionSteps({
+export async function SessionSteps({
   sessionId,
   current,
   filmCompleted,
@@ -19,11 +20,12 @@ export function SessionSteps({
   checkinCompleted: boolean;
   actionCompleted: boolean;
 }) {
+  const { t } = await getI18n();
   const steps = [
     {
       key: "film" as const,
-      short: "Film",
-      label: filmCompleted ? "Watched" : "Watch the film",
+      short: t("father.session.film"),
+      label: filmCompleted ? t("father.session.watched") : t("father.session.watchFilm"),
       href: `/father/sessions/${sessionId}`,
       done: filmCompleted,
       locked: false,
@@ -31,8 +33,8 @@ export function SessionSteps({
     },
     {
       key: "checkin" as const,
-      short: "Check-in",
-      label: "Answer three practical questions",
+      short: t("father.session.checkin"),
+      label: t("father.session.checkinLabel"),
       href: `/father/sessions/${sessionId}/checkin`,
       done: checkinCompleted,
       locked: !filmCompleted,
@@ -40,8 +42,8 @@ export function SessionSteps({
     },
     {
       key: "action" as const,
-      short: "Action",
-      label: "Answer the skill check",
+      short: t("father.session.action"),
+      label: t("father.session.actionLabel"),
       href: `/father/sessions/${sessionId}/action`,
       done: actionCompleted,
       locked: !checkinCompleted,
@@ -63,17 +65,19 @@ export function SessionSteps({
         const inner = (
           <>
             {step.done ? (
-              <span className="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-primary lg:top-3 lg:right-3 lg:size-6">
+              <span className="absolute top-1.5 end-1.5 flex size-5 items-center justify-center rounded-full bg-primary lg:top-3 lg:end-3 lg:size-6">
                 <Check className="size-3 text-white lg:size-3.5" />
               </span>
             ) : step.locked ? (
-              <Lock className="absolute top-1.5 right-1.5 size-3.5 text-muted-foreground lg:top-3 lg:right-3 lg:size-4" />
+              <Lock className="absolute top-1.5 end-1.5 size-3.5 text-muted-foreground lg:top-3 lg:end-3 lg:size-4" />
             ) : null}
             <Icon className="size-5 text-muted-foreground lg:size-6" strokeWidth={1.5} />
             <span className="text-[11px] font-medium leading-tight lg:hidden">
               {step.short}
               {step.done ? (
-                <span className="mt-0.5 block font-normal text-muted-foreground">(Complete)</span>
+                <span className="mt-0.5 block font-normal text-muted-foreground">
+                  {t("father.session.stepComplete")}
+                </span>
               ) : null}
             </span>
             <span

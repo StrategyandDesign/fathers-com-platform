@@ -8,13 +8,16 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
+import { getI18n } from "@/lib/i18n/server";
 import { loadReviewQueue } from "@/lib/manager/reviews";
 import { formatShortDate } from "@/lib/manager/types";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-function sessionLabel(count: number) {
-  return count === 1 ? "1 session" : `${count} sessions`;
+function sessionLabel(count: number, t: (key: string, vars?: Record<string, string | number>) => string) {
+  return count === 1
+    ? t("manager.dashboard.sessionOne")
+    : t("manager.dashboard.sessionMany", { count });
 }
 
 export default async function ManagerReviewsPage({
@@ -24,43 +27,43 @@ export default async function ManagerReviewsPage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
+  const { t } = await getI18n();
   const { pending, history, unread, groups } = await loadReviewQueue(user.id);
 
   return (
     <div className="space-y-6">
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
         <Link href="/manager" className={interactiveLinkClassName}>
-          Dashboard
+          {t("manager.dashboard.title")}
         </Link>
         <span className="text-white/20">|</span>
-        <span>New trainings</span>
+        <span>{t("manager.reviews.crumb")}</span>
       </p>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight">
-            New trainings
+            {t("manager.reviews.title")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Preview a release, then accept to make it available to assign — or
-            decline to keep it hidden from {groups[0]?.name ?? "your organization"}.
+            {t("manager.reviews.lead", { org: groups[0]?.name ?? t("account.orgPhotosFallback") })}
           </p>
         </div>
         <Link
           href="/manager/request"
           className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
         >
-          Request a Training
+          {t("manager.reviews.request")}
         </Link>
       </div>
       <Flash error={params.error} notice={params.notice} />
 
       {unread.length > 0 ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Notifications</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.reviews.notifications")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {unread.length === 1
-              ? "One training is waiting on your review."
-              : `${unread.length} trainings are waiting on your review.`}
+              ? t("manager.reviews.waitingOne")
+              : t("manager.reviews.waitingMany", { count: unread.length })}
           </p>
           <ul className="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
             {unread.map((item) => (
@@ -84,16 +87,14 @@ export default async function ManagerReviewsPage({
 
       <section className="space-y-4">
         <div>
-          <h2 className="font-heading text-lg font-semibold">Pending review</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.reviews.pendingTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Accepted trainings appear in Assign Training. Nothing is sent to
-            fathers automatically.
+            {t("manager.reviews.pendingLead")}
           </p>
         </div>
         {pending.length === 0 ? (
-          <EmptyState title="You’re caught up">
-            No new trainings are waiting. Decisions you already made stay in
-            the history below.
+          <EmptyState title={t("manager.reviews.emptyTitle")}>
+            {t("manager.reviews.emptyBody")}
           </EmptyState>
         ) : (
           <div className="space-y-4">
@@ -108,7 +109,7 @@ export default async function ManagerReviewsPage({
                       {item.training.title}
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {sessionLabel(item.sessionCount)}
+                      {sessionLabel(item.sessionCount, t)}
                       {groups.length > 1 ? ` · ${item.groupName}` : ""}
                     </p>
                   </div>

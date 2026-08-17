@@ -1,3 +1,8 @@
+"use client";
+
+import { useT } from "@/components/i18n/locale-provider";
+import { translateFlash } from "@/lib/i18n/flash";
+
 export function Flash({
   error,
   notice,
@@ -5,24 +10,27 @@ export function Flash({
   error?: string;
   notice?: string;
 }) {
-  if (!error && !notice) return null;
+  const t = useT();
+  const errorText = translateFlash(error, t);
+  const noticeText = translateFlash(notice, t);
+  if (!errorText && !noticeText) return null;
 
   return (
     <div className="space-y-2">
-      {error ? (
+      {errorText ? (
         <p
           role="alert"
           className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
         >
-          {error}
+          {errorText}
         </p>
       ) : null}
-      {notice ? (
+      {noticeText ? (
         <p
           role="status"
           className="rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm text-foreground"
         >
-          {notice}
+          {noticeText}
         </p>
       ) : null}
     </div>

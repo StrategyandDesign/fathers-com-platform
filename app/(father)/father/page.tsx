@@ -25,14 +25,12 @@ import {
 import { PROFILE_QUESTION_COUNT, firstUnanswered } from "@/lib/father/questions";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
 import { readStoredDimensionScores } from "@/lib/profile/score";
+import { formatLongDate, getI18n } from "@/lib/i18n/server";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 const eyebrowClassName =
   "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
-
-const profileReminder =
-  "Your Profile gives you a clearer picture of your fathering strengths.";
 
 function sessionInProgress(progress: SessionProgress | null) {
   if (!progress) return false;
@@ -46,6 +44,7 @@ function sessionInProgress(progress: SessionProgress | null) {
 
 export default async function FatherHomePage() {
   const { user } = await requireRole("father");
+  const { t, locale } = await getI18n();
   const [{ trainingCards, next, profile, draft }, customAssignments, orgPhotos] =
     await Promise.all([
       loadFatherHome(user.id),
@@ -53,9 +52,9 @@ export default async function FatherHomePage() {
       loadFatherOrgPhotoCovers(user.id),
     ]);
   const heroCover = next
-    ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl)
+    ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl, orgPhotos.photoPack)
     : null;
-  const profileCover = resolveHomeProfileCover(orgPhotos.profileUrl);
+  const profileCoverSrc = resolveHomeProfileCover(orgPhotos.profileUrl, orgPhotos.photoPack);
 
   const nextCard = next
     ? trainingCards.find((card) => card.training.id === next.training.id)
@@ -79,11 +78,13 @@ export default async function FatherHomePage() {
   );
   const showFirstVisitIntro = neverStarted && !introSeen;
   const heroLabel = neverStarted
-    ? "Start Here"
+    ? t("father.home.startHere")
     : nextInProgress
-      ? "Continue Training"
-      : "Up Next";
-  const continueLabel = nextInProgress ? "Continue session" : "Start this session";
+      ? t("father.home.continueTraining")
+      : t("father.home.upNext");
+  const continueLabel = nextInProgress
+    ? t("father.home.continueSession")
+    : t("father.home.startSession");
   const profileResumeAt = draft ? firstUnanswered(draft.answers) : 1;
   const profileContinueHref = `/father/profile/take?q=${profileResumeAt}`;
   const profileScores = profile
@@ -93,28 +94,28 @@ export default async function FatherHomePage() {
   const emptyEyebrow = hasTraining
     ? trainingCards.length === 1
       ? trainingCards[0].training.title
-      : "All sessions complete"
-    : "No training assigned yet";
+      : t("father.home.allComplete")
+    : t("father.home.noTraining");
   const emptyTitle = hasTraining
-    ? "You’re caught up"
+    ? t("father.home.caughtUp")
     : profileIsPrimary
       ? draft
-        ? "Continue your Profile"
-        : "Take your Profile"
+        ? t("father.home.continueProfile")
+        : t("father.home.takeProfile")
       : assessmentIsPrimary
-        ? (pendingAssessment?.assessment.title ?? "Take this assessment")
-        : "Waiting on your manager";
+        ? (pendingAssessment?.assessment.title ?? t("father.home.takeAssessment"))
+        : t("father.home.waitingManager");
   const emptyBody = hasTraining
     ? profileIsPrimary
-      ? "Every session you have is complete. Next, take your Profile."
+      ? t("father.home.everyCompleteProfile")
       : assessmentIsPrimary
-        ? "Every session you have is complete. Your manager also sent an assessment."
-        : "Every session you have is complete."
+        ? t("father.home.everyCompleteAssessment")
+        : t("father.home.everyComplete")
     : profileIsPrimary
-      ? "Your manager hasn’t assigned a training yet. You can take your Profile while you wait."
+      ? t("father.home.waitProfile")
       : assessmentIsPrimary
-        ? "Your manager hasn’t assigned a training yet. They did send an assessment."
-        : "Your manager hasn’t assigned a training yet. It will show up here when they do.";
+        ? t("father.home.waitAssessment")
+        : t("father.home.waitEmpty");
 
   return (
     <div className="space-y-8">
@@ -142,19 +143,28 @@ export default async function FatherHomePage() {
                     <p className={eyebrowClassName}>
                       {neverStarted
                         ? nextTotal > 0
-                          ? `Session ${next.session.session_number} of ${nextTotal}`
-                          : `Session ${next.session.session_number}`
+                          ? t("father.home.sessionOf", {
+                              n: next.session.session_number,
+                              total: nextTotal,
+                            })
+                          : t("father.home.sessionN", { n: next.session.session_number })
                         : nextTotal > 0
-                          ? `Session ${next.session.session_number} of ${nextTotal} · ${next.training.title}`
-                          : `Session ${next.session.session_number} · ${next.training.title}`}
+                          ? t("father.home.sessionOfTraining", {
+                              n: next.session.session_number,
+                              total: nextTotal,
+                              title: next.training.title,
+                            })
+                          : t("father.home.sessionTraining", {
+                              n: next.session.session_number,
+                              title: next.training.title,
+                            })}
                     </p>
                     <h1 className="font-heading mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
                       {neverStarted ? next.training.title : next.session.title}
                     </h1>
                     {neverStarted ? (
                       <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                        Start with the Overview. Each session follows the same rhythm:
-                        Film → Check-in → Action.
+                        {t("father.home.startRhythm")}
                       </p>
                     ) : next.session.keyline ? (
                       <p className="mt-1 text-sm text-muted-foreground">{next.session.keyline}</p>
@@ -165,7 +175,10 @@ export default async function FatherHomePage() {
                       <div className="space-y-2">
                         <ProgressBar value={nextPercent} />
                         <p className="text-sm text-muted-foreground">
-                          {nextCompleted} of {nextTotal} sessions complete
+                          {t("father.home.sessionsComplete", {
+                            completed: nextCompleted,
+                            total: nextTotal,
+                          })}
                         </p>
                       </div>
                     ) : null}
@@ -176,7 +189,7 @@ export default async function FatherHomePage() {
                         "w-full sm:w-auto"
                       )}
                     >
-                      {neverStarted ? "Start the Overview" : continueLabel}
+                      {neverStarted ? t("father.home.startOverview") : continueLabel}
                     </Link>
                   </div>
                 </div>
@@ -202,12 +215,12 @@ export default async function FatherHomePage() {
                       "w-full sm:w-auto"
                     )}
                   >
-                    Continue Profile
+                    {t("father.home.continueProfile")}
                   </Link>
                 ) : (
                   <form action={startProfile}>
                     <Button type="submit" variant="inverse" size="lg" className="w-full sm:w-auto">
-                      Take your Profile
+                      {t("father.home.takeProfile")}
                     </Button>
                   </form>
                 )}
@@ -223,8 +236,8 @@ export default async function FatherHomePage() {
                   )}
                 >
                   {pendingAssessment.assignment.status === "in_progress"
-                    ? "Continue assessment"
-                    : "Take assessment"}
+                    ? t("father.home.continueAssessment")
+                    : t("father.home.takeAssessment")}
                 </Link>
               </div>
             ) : null}
@@ -237,7 +250,7 @@ export default async function FatherHomePage() {
                     "w-full sm:w-auto"
                   )}
                 >
-                  View your Profile
+                  {t("father.home.viewProfile")}
                 </Link>
               </div>
             ) : null}
@@ -249,7 +262,7 @@ export default async function FatherHomePage() {
             {/* Local public photo or org override; plain img matches CoverPhoto usage. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={profileCover}
+              src={profileCoverSrc}
               alt=""
               className="h-full w-full object-cover object-[center_62%] opacity-45"
             />
@@ -261,52 +274,56 @@ export default async function FatherHomePage() {
           </div>
           <div className="relative z-10 flex flex-1 flex-col p-4 sm:p-5">
             <p className={eyebrowClassName}>
-              Profile
+              {t("father.home.profile")}
             </p>
             {profile ? (
               <>
-                <p className="mt-4 text-sm text-muted-foreground">Primary Determination</p>
-                <p className="font-heading mt-1 text-xl font-semibold tracking-tight uppercase">
-                  {profile.primary_determination ?? "—"}
+                <p className="mt-4 text-sm text-muted-foreground">
+                  {t("father.home.primaryDetermination")}
                 </p>
-                <p className="mt-3 text-sm text-muted-foreground">Primary Edge</p>
-                <p className="mt-1 font-medium uppercase">{profile.primary_edge ?? "—"}</p>
+                <p className="font-heading mt-1 text-xl font-semibold tracking-tight uppercase">
+                  {profile.primary_determination ?? t("common.emDash")}
+                </p>
+                <p className="mt-3 text-sm text-muted-foreground">{t("father.home.primaryEdge")}</p>
+                <p className="mt-1 font-medium uppercase">
+                  {profile.primary_edge ?? t("common.emDash")}
+                </p>
                 {profileScores ? (
                   <DimensionScores scores={profileScores} className="mt-5 space-y-4" />
                 ) : null}
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Taken{" "}
-                  {new Date(profile.taken_at).toLocaleDateString(undefined, {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {t("father.home.taken", { date: formatLongDate(profile.taken_at, locale) })}
                 </p>
                 <div className="mt-auto pt-5">
                   <Link
                     href="/father/profile"
                     className={cn(buttonVariants({ variant: "outline" }), "w-full")}
                   >
-                    View your Profile
+                    {t("father.home.viewProfile")}
                   </Link>
                 </div>
               </>
             ) : draft ? (
               <>
                 <h2 className="font-heading mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
-                  In progress
+                  {t("father.home.inProgress")}
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Question {firstUnanswered(draft.answers)} of {PROFILE_QUESTION_COUNT}
+                  {t("father.home.questionOf", {
+                    n: firstUnanswered(draft.answers),
+                    total: PROFILE_QUESTION_COUNT,
+                  })}
                 </p>
-                <p className="mt-2 text-sm text-muted-foreground">{profileReminder}</p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t("father.home.profileReminder")}
+                </p>
                 {profileIsPrimary ? null : (
                   <div className="mt-auto pt-5">
                     <Link
                       href={profileContinueHref}
                       className={cn(buttonVariants({ variant: "outline" }), "w-full")}
                     >
-                      Continue Profile
+                      {t("father.home.continueProfile")}
                     </Link>
                   </div>
                 )}
@@ -314,16 +331,18 @@ export default async function FatherHomePage() {
             ) : (
               <>
                 <h2 className="font-heading mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
-                  Take your Profile
+                  {t("father.home.takeProfileTitle")}
                 </h2>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Optional. About twenty minutes, one question at a time.
+                  {t("father.home.takeProfileBody")}
                 </p>
-                <p className="mt-2 text-sm text-muted-foreground">{profileReminder}</p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t("father.home.profileReminder")}
+                </p>
                 {profileIsPrimary ? null : (
                   <form action={startProfile} className="mt-auto pt-5">
                     <Button type="submit" variant="outline" className="w-full">
-                      Take your Profile
+                      {t("father.home.takeProfile")}
                     </Button>
                   </form>
                 )}
@@ -337,14 +356,14 @@ export default async function FatherHomePage() {
         <section className="space-y-3">
           <div className="flex items-end justify-between gap-3">
             <p className={eyebrowClassName}>
-              Your trainings
+              {t("father.home.yourTrainings")}
             </p>
             {issuedCertificates.length > 0 ? (
               <Link
                 href="/father/certificates"
                 className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
               >
-                View certificates
+                {t("father.home.viewCertificates")}
               </Link>
             ) : null}
           </div>
@@ -369,7 +388,8 @@ export default async function FatherHomePage() {
                     <CoverPhoto
                       src={resolveTrainingCardCover(
                         training.slug,
-                        orgPhotos.trainingUrls[training.slug]
+                        orgPhotos.trainingUrls[training.slug],
+                        orgPhotos.photoPack
                       )}
                     />
                   </div>
@@ -381,10 +401,10 @@ export default async function FatherHomePage() {
                       <ProgressBar value={percent} />
                       <p className="text-sm text-muted-foreground">
                         {total === 0
-                          ? "Sessions will appear when this training is ready."
+                          ? t("father.home.sessionsReady")
                           : complete
-                            ? "Complete"
-                            : `${completed} of ${total} sessions`}
+                            ? t("common.complete")
+                            : t("father.home.sessionsCount", { completed, total })}
                       </p>
                     </div>
                   </div>
@@ -397,7 +417,7 @@ export default async function FatherHomePage() {
 
       <AssignedAssessmentList
         assignments={customAssignments}
-        title="Assessments"
+        title={t("father.home.assessments")}
         quiet
       />
     </div>

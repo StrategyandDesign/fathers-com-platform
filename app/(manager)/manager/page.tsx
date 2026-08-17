@@ -7,6 +7,8 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { fieldClassName, initials, interactiveSurfaceClassName } from "@/lib/ui";
 import { requireRole } from "@/lib/auth/session";
+import { translateAttention } from "@/lib/i18n/flash";
+import { getI18n } from "@/lib/i18n/server";
 import { createGroup } from "@/lib/manager/actions";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadReviewQueue } from "@/lib/manager/reviews";
@@ -19,26 +21,27 @@ export default async function ManagerHomePage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
+  const { t } = await getI18n();
   const [{ groups, summary, needsAttention }, reviews] = await Promise.all([
     loadManagerWorkspace(user.id),
     loadReviewQueue(user.id),
   ]);
 
   const stats = [
-    { label: "Active Participants", value: summary.activeParticipants },
-    { label: "Profiles Completed", value: summary.profilesCompleted },
-    { label: "Sessions Completed", value: summary.sessionsCompleted },
-    { label: "Trainings Completed", value: summary.trainingsCompleted },
-    { label: "Pending Actions", value: summary.pendingActions },
+    { label: t("manager.dashboard.active"), value: summary.activeParticipants },
+    { label: t("manager.dashboard.profiles"), value: summary.profilesCompleted },
+    { label: t("manager.dashboard.sessions"), value: summary.sessionsCompleted },
+    { label: t("manager.dashboard.trainings"), value: summary.trainingsCompleted },
+    { label: t("manager.dashboard.pending"), value: summary.pendingActions },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("manager.dashboard.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Your group’s progress. Fathers join with the invite code.
+            {t("manager.dashboard.lead")}
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -46,26 +49,26 @@ export default async function ManagerHomePage({
             href="/manager/impact"
             className={cn(buttonVariants(), "w-full sm:w-auto")}
           >
-            Impact Snapshot
+            {t("manager.dashboard.impact")}
           </Link>
           <Link
             href="/manager/compare"
             className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
           >
-            Compare
+            {t("manager.dashboard.compare")}
           </Link>
           <Link
             href="/manager/reviews"
             className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
           >
-            New trainings
+            {t("manager.dashboard.newTrainings")}
             {reviews.pending.length > 0 ? ` (${reviews.pending.length})` : ""}
           </Link>
           <Link
             href="/manager/request"
             className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
           >
-            Request a Training
+            {t("manager.dashboard.request")}
           </Link>
         </div>
       </div>
@@ -76,11 +79,10 @@ export default async function ManagerHomePage({
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h2 className="font-heading text-lg font-semibold">
-                New trainings to review
+                {t("manager.dashboard.reviewTitle")}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                A new training is available for your review. Preview it, then
-                accept to assign — or decline to keep it hidden.
+                {t("manager.dashboard.reviewLead")}
               </p>
             </div>
             <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto">
@@ -88,13 +90,13 @@ export default async function ManagerHomePage({
                 href="/manager/reviews"
                 className={cn(buttonVariants(), "w-full sm:w-auto")}
               >
-                Open review queue
+                {t("manager.dashboard.openQueue")}
               </Link>
               <Link
                 href="/manager/request"
                 className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
               >
-                Request a Training
+                {t("manager.dashboard.request")}
               </Link>
             </div>
           </div>
@@ -133,8 +135,8 @@ export default async function ManagerHomePage({
                       </span>
                       <span className="block text-sm text-muted-foreground">
                         {item.sessionCount === 1
-                          ? "1 session"
-                          : `${item.sessionCount} sessions`}
+                          ? t("manager.dashboard.sessionOne")
+                          : t("manager.dashboard.sessionMany", { count: item.sessionCount })}
                       </span>
                     </span>
                     <ReviewStatusBadge status={item.review.status} />
@@ -157,9 +159,9 @@ export default async function ManagerHomePage({
 
       <section className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Group invite code</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.inviteTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Fathers enter this code when they create an account.
+            {t("manager.dashboard.inviteLead")}
           </p>
           {groups.length > 0 ? (
             <div className="mt-5 space-y-3">
@@ -179,7 +181,7 @@ export default async function ManagerHomePage({
           ) : (
             <form action={createGroup} className="mt-5 space-y-4">
               <label className="block space-y-2">
-                <span className="text-sm text-muted-foreground">Group name</span>
+                <span className="text-sm text-muted-foreground">{t("manager.dashboard.groupName")}</span>
                 <input
                   className={fieldClassName}
                   name="name"
@@ -189,26 +191,25 @@ export default async function ManagerHomePage({
                 />
               </label>
               <Button type="submit" className="w-full sm:w-auto">
-                Create group
+                {t("manager.dashboard.createGroup")}
               </Button>
             </form>
           )}
         </div>
 
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Needs attention</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.attention")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Profile gaps, unfinished sessions, and certificates ready to send.
+            {t("manager.dashboard.attentionLead")}
           </p>
           <div className="mt-5">
             {needsAttention.length === 0 ? (
               <EmptyState
                 framed={false}
                 className="p-0"
-                title="You’re caught up"
+                title={t("manager.dashboard.caughtUp")}
               >
-                No profile gaps, unfinished sessions, or certificates waiting to
-                send.
+                {t("manager.dashboard.caughtUpBody")}
               </EmptyState>
             ) : (
               <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
@@ -224,7 +225,7 @@ export default async function ManagerHomePage({
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-medium">{item.name}</span>
                         <span className="block text-sm text-muted-foreground">
-                          {item.reason}
+                          {translateAttention(item.reason, t)}
                         </span>
                       </span>
                     </Link>
@@ -237,50 +238,48 @@ export default async function ManagerHomePage({
             href="/manager/participants"
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
-            View all participants
+            {t("manager.dashboard.viewParticipants")}
           </Link>
         </div>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Impact Snapshot</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.impact")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            One page of enrollment, completion, and certificate numbers for a board
-            or funder.
+            {t("manager.dashboard.impactLead")}
           </p>
           <Link
             href="/manager/impact"
             className={cn(buttonVariants(), "mt-5 w-full sm:w-auto")}
           >
-            Open Impact Snapshot
+            {t("manager.dashboard.openImpact")}
           </Link>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">Reports</h2>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.reports")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Filter by training, completion, and last activity. Download a CSV or PDF of
-            your group.
+            {t("manager.dashboard.reportsLead")}
           </p>
           <Link
             href="/manager/reports"
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
-            Open reports
+            {t("manager.dashboard.openReports")}
           </Link>
         </div>
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">Assessments</h2>
+        <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.assessments")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Create custom questions and assign them to fathers in your group.
+          {t("manager.dashboard.assessmentsLead")}
         </p>
         <Link
           href="/manager/assessments"
           className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
         >
-          View assessments
+          {t("manager.dashboard.viewAssessments")}
         </Link>
       </section>
     </div>

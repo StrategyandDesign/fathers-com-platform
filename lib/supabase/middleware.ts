@@ -8,6 +8,7 @@ import {
   resolveRole,
   roleForPath,
 } from "@/lib/auth/roles";
+import { isLocale, LOCALE_COOKIE, type Locale } from "@/lib/i18n/config";
 import { getSupabasePublishableKey, getSupabaseUrl } from "@/lib/supabase/env";
 
 function redirectWithSession(supabaseResponse: NextResponse, url: URL) {
@@ -67,10 +68,50 @@ export async function updateSession(request: NextRequest) {
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("role")
+      .select("role, locale, home_group_id")
       .eq("id", user.id)
       .maybeSingle();
     role = resolveProfileRole(profile?.role, user);
+
+    const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
+    if (!isLocale(cookieLocale)) {
+      let nextLocale: Locale | null = isLocale(profile?.locale) ? profile.locale : null;
+      if (!nextLocale) {
+        const { data: managed } = await supabase
+          .from("groups")
+          .select("locale")
+          .eq("manager_id", user.id)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle();
+        if (isLocale(managed?.locale)) nextLocale = managed.locale;
+      }
+      if (!nextLocale) {
+        const { data: membership } = await supabase
+          .from("group_members")
+          .select("group_id")
+          .eq("father_id", user.id)
+          .order("joined_at", { ascending: true })
+          .limit(1)
+          .maybeSingle();
+        const groupId = membership?.group_id ?? profile?.home_group_id ?? null;
+        if (groupId) {
+          const { data: group } = await supabase
+            .from("groups")
+            .select("locale")
+            .eq("id", groupId)
+            .maybeSingle();
+          if (isLocale(group?.locale)) nextLocale = group.locale;
+        }
+      }
+      if (nextLocale) {
+        supabaseResponse.cookies.set(LOCALE_COOKIE, nextLocale, {
+          path: "/",
+          maxAge: 60 * 60 * 24 * 365,
+          sameSite: "lax",
+        });
+      }
+    }
   }
 
   if (user && role && isAuthPath(pathname)) {

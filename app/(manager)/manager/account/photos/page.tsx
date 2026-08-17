@@ -4,6 +4,7 @@ import { OrganizationPhotoSlot } from "@/components/manager/organization-photo-s
 import { Flash } from "@/components/manager/flash";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
+import { getI18n } from "@/lib/i18n/server";
 import { loadManagerOrganizationPhotos } from "@/lib/org-photos/data";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,7 @@ export default async function ManagerOrganizationPhotosPage({
 }) {
   const flash = await searchParams;
   const { user } = await requireRole("manager");
+  const { t } = await getI18n();
   const sections = await loadManagerOrganizationPhotos(user.id);
   const single = sections.length === 1 ? sections[0] : null;
   const singleName = single?.organization.name.trim();
@@ -26,27 +28,26 @@ export default async function ManagerOrganizationPhotosPage({
           href="/manager/account"
           className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
         >
-          Account
+          {t("account.title")}
         </Link>
         <h1 className="font-heading mt-3 text-2xl font-semibold tracking-tight">
-          Organization Photos
+          {t("manager.photos.title")}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {singleName
-            ? `Replace the photos ${singleName} participants see on Home, Profile, and Trainings. Any photo works — we fit it to the card.`
-            : "Replace the photos each organization sees on Home, Profile, and Trainings. Any photo works — we fit it to the card."}
+            ? t("manager.photos.leadOne", { name: singleName })
+            : t("manager.photos.leadMany")}
         </p>
       </div>
       <Flash error={flash.error} notice={flash.notice} />
 
       {sections.length === 0 ? (
         <EmptyState
-          title="No organization yet"
+          title={t("manager.photos.emptyTitle")}
           actionHref="/manager"
-          actionLabel="Open Dashboard"
+          actionLabel={t("manager.photos.openDashboard")}
         >
-          Create a group on the Dashboard first. Photos are scoped to that
-          organization.
+          {t("manager.photos.emptyBody")}
         </EmptyState>
       ) : (
         <div className="space-y-8">
@@ -60,7 +61,7 @@ export default async function ManagerOrganizationPhotosPage({
                       {orgName}
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      These photos apply only to {orgName}.
+                      {t("manager.photos.appliesOnly", { name: orgName })}
                     </p>
                   </div>
                 ) : null}

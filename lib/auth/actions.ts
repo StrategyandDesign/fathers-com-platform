@@ -76,6 +76,15 @@ export async function signIn(formData: FormData) {
     await ensureFatherGroupJoin(data.user);
   }
 
+  try {
+    const { resolveUserLocale } = await import("@/lib/i18n/resolve");
+    const { writeLocaleCookie } = await import("@/lib/i18n/cookie");
+    const resolved = await resolveUserLocale(data.user.id);
+    await writeLocaleCookie(resolved.locale);
+  } catch {
+    // Locale cookie is best-effort; sign-in still proceeds.
+  }
+
   redirect(next ?? ROLE_HOME[resolveRole(data.user)]);
 }
 

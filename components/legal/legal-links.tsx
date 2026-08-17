@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { getI18n } from "@/lib/i18n/server";
 import { interactiveUnderlineClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -8,7 +9,7 @@ const linkClassName = cn(
   interactiveUnderlineClassName
 );
 
-export function LegalLinks({
+export async function LegalLinks({
   className,
   align = "start",
   copyright = false,
@@ -19,9 +20,10 @@ export function LegalLinks({
   copyright?: boolean;
   helpHref?: string;
 }) {
+  const { t } = await getI18n();
   const nav = (
     <nav
-      aria-label={helpHref ? "Legal and help" : "Legal"}
+      aria-label={helpHref ? t("legal.legalAndHelp") : t("legal.legal")}
       className={cn(
         "flex flex-wrap items-center gap-x-3",
         align === "center" && "justify-center",
@@ -29,13 +31,13 @@ export function LegalLinks({
       )}
     >
       <Link href="/privacy" className={linkClassName}>
-        Privacy
+        {t("legal.privacy")}
       </Link>
       <span className="text-muted-foreground" aria-hidden>
         ·
       </span>
       <Link href="/terms" className={linkClassName}>
-        Terms
+        {t("legal.terms")}
       </Link>
       {helpHref ? (
         <>
@@ -43,7 +45,7 @@ export function LegalLinks({
             ·
           </span>
           <Link href={helpHref} className={linkClassName}>
-            Help
+            {t("legal.help")}
           </Link>
         </>
       ) : null}
@@ -63,7 +65,7 @@ export function LegalLinks({
       )}
     >
       {nav}
-      <p className="text-xs text-muted-foreground">© 2026 Fathers.com</p>
+      <p className="text-xs text-muted-foreground">{t("legal.copyright")}</p>
     </div>
   );
 }

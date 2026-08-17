@@ -1,4 +1,11 @@
-import { BRAND_PHOTOS, sessionCover, trainingCover } from "@/lib/brand/photos";
+import {
+  BRAND_PHOTOS,
+  photoPackForCode,
+  profileCover,
+  sessionCover,
+  trainingCover,
+  type PhotoPack,
+} from "@/lib/brand/photos";
 import { isTrainingPublished, type Training } from "@/lib/father/types";
 import { loadManagerGroups } from "@/lib/manager/data";
 import type { Group } from "@/lib/manager/types";
@@ -35,6 +42,7 @@ export type FatherOrgPhotoCovers = {
   heroUrl: string | null;
   profileUrl: string | null;
   trainingUrls: Record<string, string>;
+  photoPack: PhotoPack;
 };
 
 /**
@@ -46,17 +54,25 @@ export type FatherOrgPhotoCovers = {
  */
 export function resolveHomeHeroCover(
   sessionNumber: number,
-  customUrl?: string | null
+  customUrl?: string | null,
+  pack: PhotoPack = "default"
 ) {
-  return customUrl || sessionCover(sessionNumber);
+  return customUrl || sessionCover(sessionNumber, pack);
 }
 
-export function resolveTrainingCardCover(slug: string, customUrl?: string | null) {
-  return customUrl || trainingCover(slug);
+export function resolveTrainingCardCover(
+  slug: string,
+  customUrl?: string | null,
+  pack: PhotoPack = "default"
+) {
+  return customUrl || trainingCover(slug, pack);
 }
 
-export function resolveHomeProfileCover(customUrl?: string | null) {
-  return customUrl || BRAND_PHOTOS.profile;
+export function resolveHomeProfileCover(
+  customUrl?: string | null,
+  pack: PhotoPack = "default"
+) {
+  return customUrl || profileCover(pack);
 }
 
 function organizationName(name: string | null | undefined) {
@@ -116,6 +132,7 @@ export async function loadManagerOrganizationPhotos(
 
   return organizations.map((organization) => {
     const orgName = organizationName(organization.name);
+    const pack = photoPackForCode(organization.code);
     const custom = rowsByGroup.get(organization.id) ?? new Map();
     const slots: OrganizationPhotoSlotView[] = [];
 
@@ -131,7 +148,7 @@ export async function loadManagerOrganizationPhotos(
         : `${heroCopy.where} Until you replace it, the card uses the platform photo for whichever session is next.`,
       applies: heroCopy.applies,
       previewUrl: heroCustom,
-      defaultUrl: sessionCover(1),
+      defaultUrl: sessionCover(1, pack),
       isCustom: Boolean(heroCustom),
       previewLabel: heroCustom
         ? `Custom for ${orgName}`
@@ -150,7 +167,7 @@ export async function loadManagerOrganizationPhotos(
         : `${profileCopy.where} Until you replace it, the card uses the platform photo.`,
       applies: profileCopy.applies,
       previewUrl: profileCustom,
-      defaultUrl: BRAND_PHOTOS.profile,
+      defaultUrl: profileCover(pack),
       isCustom: Boolean(profileCustom),
       previewLabel: profileCustom ? `Custom for ${orgName}` : "Platform default",
     });
@@ -166,7 +183,7 @@ export async function loadManagerOrganizationPhotos(
         where: copy.where,
         applies: copy.applies,
         previewUrl: customUrl,
-        defaultUrl: trainingCover(training.slug),
+        defaultUrl: trainingCover(training.slug, pack),
         isCustom: Boolean(customUrl),
         previewLabel: customUrl ? `Custom for ${orgName}` : "Platform default",
       });
@@ -184,6 +201,7 @@ export async function loadFatherOrgPhotoCovers(
     heroUrl: null,
     profileUrl: null,
     trainingUrls: {},
+    photoPack: "default",
   };
 
   let supabase;
@@ -207,7 +225,7 @@ export async function loadFatherOrgPhotoCovers(
   let rows: OrganizationPhotoRow[] = [];
   try {
     [groupRes, rows] = await Promise.all([
-      supabase.from("groups").select("id, name").eq("id", membership.group_id).maybeSingle(),
+      supabase.from("groups").select("id, name, code").eq("id", membership.group_id).maybeSingle(),
       loadPhotoRows([membership.group_id]),
     ]);
   } catch {
@@ -244,5 +262,8 @@ export async function loadFatherOrgPhotoCovers(
     heroUrl,
     profileUrl,
     trainingUrls,
+    photoPack: photoPackForCode(
+      (groupRes.data as { code?: string | null } | null)?.code
+    ),
   };
 }

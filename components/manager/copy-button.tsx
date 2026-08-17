@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { useT } from "@/components/i18n/locale-provider";
 import { Button } from "@/components/ui/button";
 
 export function CopyButton({
@@ -12,6 +13,7 @@ export function CopyButton({
   className?: string;
 }) {
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
+  const t = useT();
 
   async function copy() {
     try {
@@ -26,7 +28,11 @@ export function CopyButton({
 
   return (
     <Button type="button" variant="inverse" className={className} onClick={copy}>
-      {status === "copied" ? "Copied" : status === "error" ? "Couldn’t copy" : "Copy Code"}
+      {status === "copied"
+        ? t("common.copied")
+        : status === "error"
+          ? t("common.copyFailed")
+          : t("common.copy")}
     </Button>
   );
 }

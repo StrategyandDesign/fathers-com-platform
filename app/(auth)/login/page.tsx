@@ -1,9 +1,11 @@
 import Link from "next/link";
 
 import { PasswordField } from "@/components/auth/password-field";
+import { LocaleSwitch } from "@/components/i18n/locale-switch";
 import { Flash } from "@/components/manager/flash";
 import { signIn } from "@/lib/auth/actions";
 import { safeInternalPath } from "@/lib/auth/roles";
+import { getI18n } from "@/lib/i18n/server";
 import { authFieldClassName, interactiveUnderlineClassName } from "@/lib/ui";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,19 +22,20 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const next = safeInternalPath(params.next);
+  const { t } = await getI18n();
   const credentialsInvalid =
     Boolean(params.error) && !/deactivated|too many/i.test(params.error ?? "");
 
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-xl font-medium">Sign In</CardTitle>
+        <CardTitle className="text-xl font-medium">{t("auth.signIn")}</CardTitle>
       </CardHeader>
       <CardContent>
         <form action={signIn} className="space-y-5">
           {next ? <input type="hidden" name="next" value={next} /> : null}
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Email</span>
+            <span className="text-sm text-muted-foreground">{t("auth.email")}</span>
             <input
               className={authFieldClassName}
               type="text"
@@ -47,7 +50,7 @@ export default async function LoginPage({
             />
           </label>
           <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Password</span>
+            <span className="text-sm text-muted-foreground">{t("auth.password")}</span>
             <PasswordField
               autoComplete="current-password"
               invalid={credentialsInvalid}
@@ -56,18 +59,19 @@ export default async function LoginPage({
           </label>
           <Flash error={params.error} notice={params.notice} />
           <Button type="submit" size="lg" className="w-full rounded-full">
-            Sign In
+            {t("auth.signIn")}
           </Button>
         </form>
         <p className="mt-5 text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
+          {t("auth.noAccount")}{" "}
           <Link
             href={next ? `/signup?next=${encodeURIComponent(next)}` : "/signup"}
             className={interactiveUnderlineClassName}
           >
-            Create one
+            {t("auth.createOne")}
           </Link>
         </p>
+        <LocaleSwitch className="mt-6 justify-center" compact />
       </CardContent>
     </Card>
   );

@@ -1,16 +1,17 @@
 import Link from "next/link";
 
-import { ROLE_ACCOUNT, ROLE_HOME, ROLE_LABEL, type AppRole } from "@/lib/auth/roles";
 import { BrandLogo } from "@/components/brand/logo";
 import { FatherGroupMembership } from "@/components/father/group-membership";
 import { AppNav } from "@/components/layout/app-nav";
 import { StaffMenu } from "@/components/layout/staff-menu";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Badge } from "@/components/ui/badge";
+import { ROLE_ACCOUNT, ROLE_HOME, type AppRole } from "@/lib/auth/roles";
+import { getI18n } from "@/lib/i18n/server";
 import { interactiveIconClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-export function RoleShell({
+export async function RoleShell({
   role,
   email,
   avatarUrl,
@@ -23,8 +24,9 @@ export function RoleShell({
   organizationName?: string | null;
   children: React.ReactNode;
 }) {
+  const { t } = await getI18n();
   const fatherMobile = role === "father";
-  const chromeLabel = role === "father" ? null : ROLE_LABEL[role];
+  const chromeLabel = role === "father" ? null : t(`role.${role}`);
   const groupName = role === "father" ? organizationName?.trim() || null : null;
 
   return (
@@ -42,7 +44,7 @@ export function RoleShell({
         <Link
           href={ROLE_ACCOUNT[role]}
           className={cn(
-            "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full lg:border lg:border-border lg:bg-card lg:px-2 lg:py-1 lg:pr-3 lg:text-sm",
+            "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full lg:border lg:border-border lg:bg-card lg:px-2 lg:py-1 lg:pe-3 lg:text-sm",
             interactiveIconClassName
           )}
         >
@@ -59,7 +61,7 @@ export function RoleShell({
         </Link>
       </header>
 
-      <aside className="fixed bottom-0 left-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col border-r border-border bg-sidebar print:hidden lg:flex">
+      <aside className="fixed bottom-0 start-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col border-e border-border bg-sidebar print:hidden lg:flex">
         <AppNav role={role} layout="side" />
       </aside>
 
@@ -72,7 +74,7 @@ export function RoleShell({
       <main
         className={cn(
           "min-h-svh overflow-x-clip pt-[calc(3.5rem+env(safe-area-inset-top))]",
-          "lg:pl-[5.5rem] print:pt-0 print:pl-0",
+          "lg:ps-[5.5rem] print:pt-0 print:ps-0",
           fatherMobile
             ? "max-lg:pb-[calc(3.75rem+env(safe-area-inset-bottom))]"
             : "max-lg:pb-6"
