@@ -460,8 +460,36 @@ export const en = {
       markerThreeQuarters: "Three-quarters of the way through.",
       backToProfile: "Back to Profile",
       resultsComplete: "Your Father Profile is complete",
+      resultsLead:
+        "Here is the reading from your 128 answers. This is a pattern, not a verdict.",
       resultsDetermination: "Primary Determination: {value}",
       resultsEdge: "Primary Edge: {value}",
+      determinationWhat:
+        "Primary Determination is the stance your answers point to — the work to keep in front of you.",
+      edgeWhat:
+        "Primary Edge is the strength that came through most clearly — how you tend to father.",
+      meaningInvolvement:
+        "You stay in your child’s life, not only the big moments. Being away does not have to mean being gone.",
+      meaningConsistency:
+        "You keep your word. A child can learn a pattern from you even when you are not in the same place.",
+      meaningAwareness:
+        "You pay attention to who your child actually is, not who you assume they are.",
+      meaningNurturance:
+        "You let your child know they matter. Warmth can be sent as clearly as it can be spoken in a room.",
+      meaningPresence:
+        "When you are with your child — in person or on a line — you bring yourself, not the day you just had.",
+      meaningSteadiness:
+        "You can feel pressure rise without handing it to your child. Steady is a skill you can practice from anywhere.",
+      meaningRepair:
+        "When something breaks, you go first. A short, clean apology still counts from far away.",
+      meaningReturn:
+        "You keep showing up after you have been away. Return is a season of small deposits, not one grand gesture.",
+      useThisTitle: "How to use this",
+      useThis1:
+        "Hold your Determination as the standard when you make contact — a call, a letter, or the next time you are together.",
+      useThis2:
+        "Lean on your Edge on purpose. It is already in these answers. Use it when you reach out.",
+      scoresLead: "The full reading is below. The two names above are the ones that rose to the top.",
       resultsCompleted: "Completed {date}",
       resultsRetakeLead:
         "Retake anytime for a fresh reading. Your last results stay until a new Profile is completed.",

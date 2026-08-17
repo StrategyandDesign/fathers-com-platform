@@ -207,6 +207,17 @@ const THEME_LABEL: Record<string, string> = {
   "Keep coming back": "father.profile.themeReturn",
 };
 
+const THEME_MEANING: Record<string, string> = {
+  Involvement: "father.profile.meaningInvolvement",
+  Consistency: "father.profile.meaningConsistency",
+  Awareness: "father.profile.meaningAwareness",
+  Nurturance: "father.profile.meaningNurturance",
+  "Come home present": "father.profile.meaningPresence",
+  "Stay steady": "father.profile.meaningSteadiness",
+  "Repair first": "father.profile.meaningRepair",
+  "Keep coming back": "father.profile.meaningReturn",
+};
+
 const NUDGE_STATUS: Record<string, string> = {
   sent: "manager.nudge.sent",
   skipped_pref: "manager.nudge.skipped",
@@ -340,6 +351,12 @@ export function translateThemeLabel(label: string | null | undefined, t: Transla
   if (!label) return t("common.emDash");
   const key = THEME_LABEL[label];
   return key ? t(key) : label;
+}
+
+export function translateThemeMeaning(label: string | null | undefined, t: Translate) {
+  if (!label) return "";
+  const key = THEME_MEANING[label];
+  return key ? t(key) : "";
 }
 
 export function translateNudgeStatus(status: string, t: Translate) {
