@@ -491,8 +491,8 @@ export const en = {
         "Lean on your Edge on purpose. It is already in these answers. Use it when you reach out.",
       scoresLead: "The full reading is below. The two names above are the ones that rose to the top.",
       resultsCompleted: "Completed {date}",
-      resultsRetakeLead:
-        "Retake anytime for a fresh reading. Your last results stay until a new Profile is completed.",
+      resultsRetakeLead: "You can retake this later if you want to see what’s changed.",
+      retakeLater: "Retake later",
       goHome: "Go to Home",
       edges: "Edges",
       determinations: "Determinations",

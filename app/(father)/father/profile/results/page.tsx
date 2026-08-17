@@ -98,7 +98,7 @@ export default async function FatherProfileResultsPage() {
           </Link>
           <form action={retakeProfile} className="text-center">
             <Button type="submit" variant="ghost" className="text-sm text-muted-foreground">
-              {t("father.profile.retake")}
+              {t("father.profile.retakeLater")}
             </Button>
           </form>
         </div>
