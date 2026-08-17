@@ -1,10 +1,12 @@
-import { sessionCover, trainingCover } from "@/lib/brand/photos";
+import { BRAND_PHOTOS, sessionCover, trainingCover } from "@/lib/brand/photos";
 import { isTrainingPublished, type Training } from "@/lib/father/types";
 import { loadManagerGroups } from "@/lib/manager/data";
 import type { Group } from "@/lib/manager/types";
 import {
   HOME_HERO_SLOT,
+  HOME_PROFILE_SLOT,
   homeHeroGuidance,
+  homeProfileGuidance,
   parseTrainingSlug,
   slotCopy,
   trainingCardGuidance,
@@ -31,6 +33,7 @@ export type OrganizationPhotoSection = {
 export type FatherOrgPhotoCovers = {
   organizationName: string | null;
   heroUrl: string | null;
+  profileUrl: string | null;
   trainingUrls: Record<string, string>;
 };
 
@@ -50,6 +53,10 @@ export function resolveHomeHeroCover(
 
 export function resolveTrainingCardCover(slug: string, customUrl?: string | null) {
   return customUrl || trainingCover(slug);
+}
+
+export function resolveHomeProfileCover(customUrl?: string | null) {
+  return customUrl || BRAND_PHOTOS.profile;
 }
 
 function organizationName(name: string | null | undefined) {
@@ -131,6 +138,23 @@ export async function loadManagerOrganizationPhotos(
         : "Platform default (next session’s photo)",
     });
 
+    const profileGuidance = homeProfileGuidance();
+    const profileRow = custom.get(HOME_PROFILE_SLOT);
+    const profileCustom = profileRow ? signed.get(profileRow.storage_path) ?? null : null;
+    const profileCopy = slotCopy(orgName, "home_profile");
+    slots.push({
+      slot: HOME_PROFILE_SLOT,
+      guidance: profileGuidance,
+      where: profileCustom
+        ? profileCopy.where
+        : `${profileCopy.where} Until you replace it, the card uses the platform photo.`,
+      applies: profileCopy.applies,
+      previewUrl: profileCustom,
+      defaultUrl: BRAND_PHOTOS.profile,
+      isCustom: Boolean(profileCustom),
+      previewLabel: profileCustom ? `Custom for ${orgName}` : "Platform default",
+    });
+
     for (const training of trainings) {
       const guidance = trainingCardGuidance(training.slug, training.title);
       const row = custom.get(trainingPhotoSlot(training.slug));
@@ -158,6 +182,7 @@ export async function loadFatherOrgPhotoCovers(
   const empty: FatherOrgPhotoCovers = {
     organizationName: null,
     heroUrl: null,
+    profileUrl: null,
     trainingUrls: {},
   };
 
@@ -198,11 +223,16 @@ export async function loadFatherOrgPhotoCovers(
 
   const trainingUrls: Record<string, string> = {};
   let heroUrl: string | null = null;
+  let profileUrl: string | null = null;
   for (const row of rows) {
     const url = signed.get(row.storage_path);
     if (!url) continue;
     if (row.slot === HOME_HERO_SLOT) {
       heroUrl = url;
+      continue;
+    }
+    if (row.slot === HOME_PROFILE_SLOT) {
+      profileUrl = url;
       continue;
     }
     const slug = parseTrainingSlug(row.slot);
@@ -212,6 +242,7 @@ export async function loadFatherOrgPhotoCovers(
   return {
     organizationName: organizationName(groupRes.data?.name),
     heroUrl,
+    profileUrl,
     trainingUrls,
   };
 }

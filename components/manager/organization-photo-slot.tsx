@@ -58,6 +58,28 @@ export function OrganizationPhotoSlot({
               <CoverPhoto src={preview} />
             </div>
           </div>
+        ) : view.guidance.kind === "home_profile" ? (
+          <div>
+            <p className="mb-2 text-xs text-muted-foreground">{view.previewLabel} · Home Profile</p>
+            <div className="relative min-h-56 overflow-hidden rounded-lg bg-[#101510] sm:min-h-64">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={preview}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover object-[center_62%] opacity-45"
+              />
+              <div className="absolute inset-0 bg-[#141414]/50" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a]/50 via-[#0a0a0a]/25 to-transparent" />
+              <div className="relative z-10 flex min-h-56 flex-col justify-end p-4 sm:min-h-64">
+                <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+                  Profile
+                </p>
+                <p className="font-heading mt-2 text-lg font-semibold tracking-tight">
+                  Behind the Profile card
+                </p>
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             <div>

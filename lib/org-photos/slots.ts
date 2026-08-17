@@ -1,10 +1,12 @@
 export const HOME_HERO_SLOT = "home_hero" as const;
+export const HOME_PROFILE_SLOT = "home_profile" as const;
 
 export type HomeHeroSlot = typeof HOME_HERO_SLOT;
+export type HomeProfileSlot = typeof HOME_PROFILE_SLOT;
 export type TrainingPhotoSlot = `training_${string}`;
-export type OrgPhotoSlot = HomeHeroSlot | TrainingPhotoSlot;
+export type OrgPhotoSlot = HomeHeroSlot | HomeProfileSlot | TrainingPhotoSlot;
 
-export type OrgPhotoKind = "home_hero" | "training";
+export type OrgPhotoKind = "home_hero" | "home_profile" | "training";
 
 export type OrgPhotoGuidance = {
   kind: OrgPhotoKind;
@@ -28,6 +30,10 @@ export function isHomeHeroSlot(slot: string): slot is HomeHeroSlot {
   return slot === HOME_HERO_SLOT;
 }
 
+export function isHomeProfileSlot(slot: string): slot is HomeProfileSlot {
+  return slot === HOME_PROFILE_SLOT;
+}
+
 export function parseTrainingSlug(slot: string): string | null {
   if (!slot.startsWith("training_")) return null;
   const slug = slot.slice("training_".length);
@@ -35,7 +41,7 @@ export function parseTrainingSlug(slot: string): string | null {
 }
 
 export function isOrgPhotoSlot(value: string, trainingSlugs: string[]): value is OrgPhotoSlot {
-  if (value === HOME_HERO_SLOT) return true;
+  if (value === HOME_HERO_SLOT || value === HOME_PROFILE_SLOT) return true;
   const slug = parseTrainingSlug(value);
   return Boolean(slug && trainingSlugs.includes(slug));
 }
@@ -54,6 +60,20 @@ export function homeHeroGuidance(): OrgPhotoGuidance {
     minAspect: 1.6,
     maxAspect: 4.5,
     aspectLabel: "Any photo works. We crop it to fit this card.",
+    fileHint: FILE_HINT,
+  };
+}
+
+export function homeProfileGuidance(): OrgPhotoGuidance {
+  return {
+    kind: "home_profile",
+    slot: HOME_PROFILE_SLOT,
+    surface: "Home — Profile",
+    minWidth: 720,
+    minHeight: 960,
+    minAspect: 0.55,
+    maxAspect: 1.2,
+    aspectLabel: "Any photo works. We crop it to fit the Profile card.",
     fileHint: FILE_HINT,
   };
 }
@@ -88,6 +108,12 @@ export function slotCopy(orgName: string, kind: OrgPhotoKind) {
   if (kind === "home_hero") {
     return {
       where: `${name} participants will see this on Home, in the Up Next card.`,
+      applies: `This change applies only to ${name}.`,
+    };
+  }
+  if (kind === "home_profile") {
+    return {
+      where: `${name} participants will see this behind the Profile card on Home.`,
       applies: `This change applies only to ${name}.`,
     };
   }

@@ -37,10 +37,10 @@ export async function AccountView({
     .filter(Boolean);
   const photosLabel =
     managedNames.length === 1
-      ? `Photos ${managedNames[0]} participants see on Home and Trainings.`
+      ? `Photos ${managedNames[0]} participants see on Home, Profile, and Trainings.`
       : managedNames.length > 1
-        ? `Photos ${managedNames.join(" and ")} participants see on Home and Trainings.`
-        : "Photos your organization sees on Home and Trainings.";
+        ? `Photos ${managedNames.join(" and ")} participants see on Home, Profile, and Trainings.`
+        : "Photos your organization sees on Home, Profile, and Trainings.";
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">

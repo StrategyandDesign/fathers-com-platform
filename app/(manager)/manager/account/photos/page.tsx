@@ -33,8 +33,8 @@ export default async function ManagerOrganizationPhotosPage({
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {singleName
-            ? `Replace the photos ${singleName} participants see on Home and Trainings. Any photo works — we fit it to the card.`
-            : "Replace the photos each organization sees on Home and Trainings. Any photo works — we fit it to the card."}
+            ? `Replace the photos ${singleName} participants see on Home, Profile, and Trainings. Any photo works — we fit it to the card.`
+            : "Replace the photos each organization sees on Home, Profile, and Trainings. Any photo works — we fit it to the card."}
         </p>
       </div>
       <Flash error={flash.error} notice={flash.notice} />

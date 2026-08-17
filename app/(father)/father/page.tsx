@@ -11,12 +11,12 @@ import { loadOrganizationName } from "@/lib/account/data";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
-import { BRAND_PHOTOS } from "@/lib/brand/photos";
 import { startProfile } from "@/lib/father/profile-actions";
 import { loadFatherHome } from "@/lib/father/data";
 import {
   loadFatherOrgPhotoCovers,
   resolveHomeHeroCover,
+  resolveHomeProfileCover,
   resolveTrainingCardCover,
 } from "@/lib/org-photos/data";
 import {
@@ -57,6 +57,7 @@ export default async function FatherHomePage() {
   const heroCover = next
     ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl)
     : null;
+  const profileCover = resolveHomeProfileCover(orgPhotos.profileUrl);
 
   const nextCard = next
     ? trainingCards.find((card) => card.training.id === next.training.id)
@@ -247,24 +248,20 @@ export default async function FatherHomePage() {
         )}
 
         <section className="relative flex min-h-56 flex-col overflow-hidden rounded-xl border border-border bg-card">
-          {profile ? (
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/18 via-[#1c1c1c] to-[#101510]"
+          <div className="pointer-events-none absolute inset-0" aria-hidden>
+            {/* Local public photo or org override; plain img matches CoverPhoto usage. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={profileCover}
+              alt=""
+              className="h-full w-full object-cover object-[center_62%] opacity-45"
             />
-          ) : (
-            <div className="pointer-events-none absolute inset-0" aria-hidden>
-              {/* Local public photo; plain img matches CoverPhoto usage. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={BRAND_PHOTOS.profile}
-                alt=""
-                className="h-full w-full object-cover object-[center_62%] opacity-45"
-              />
-              <div className="absolute inset-0 bg-[#141414]/50" />
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a]/50 via-[#0a0a0a]/25 to-transparent" />
-            </div>
-          )}
+            <div className="absolute inset-0 bg-[#141414]/50" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a]/50 via-[#0a0a0a]/25 to-transparent" />
+            {profile ? (
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/18 via-[#1c1c1c]/70 to-[#101510]/80" />
+            ) : null}
+          </div>
           <div className="relative z-10 flex flex-1 flex-col p-4 sm:p-5">
             <p className={eyebrowClassName}>
               Profile
