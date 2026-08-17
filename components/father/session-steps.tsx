@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Check, Film, Lock, RotateCcw, SquareCheck } from "lucide-react";
 
+import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 type StepKey = "film" | "checkin" | "action";
@@ -93,10 +94,7 @@ export function SessionSteps({
             ) : (
               <Link
                 href={step.href}
-                className={cn(
-                  className,
-                  "outline-none transition-colors duration-150 ease-out hover:bg-white/5 focus-visible:ring-3 focus-visible:ring-ring/50 active:opacity-90"
-                )}
+                className={cn(className, interactiveSurfaceClassName)}
               >
                 {inner}
               </Link>

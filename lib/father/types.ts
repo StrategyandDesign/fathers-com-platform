@@ -50,21 +50,6 @@ export type FatherProfileSummary = {
   primary_determination?: string | null;
 };
 
-export const CHECKIN_QUESTIONS = [
-  {
-    key: "q1",
-    label: "What stood out to you in this session?",
-  },
-  {
-    key: "q2",
-    label: "Where does this show up in your life this week?",
-  },
-  {
-    key: "q3",
-    label: "What is one thing you will try?",
-  },
-] as const;
-
 export function isSessionComplete(
   progress: Pick<
     SessionProgress,
@@ -76,13 +61,6 @@ export function isSessionComplete(
       progress?.checkin_completed &&
       progress?.action_completed
   );
-}
-
-export function sessionAction(session: Pick<Session, "title" | "keyline">) {
-  if (session.keyline) {
-    return `This week’s action: live this out — ${session.keyline}`;
-  }
-  return `Put “${session.title}” into practice this week.`;
 }
 
 export function continueHref(

@@ -138,7 +138,13 @@ export default async function ManagerAssessmentDetailPage({
                 const assigned = assignedIds.has(father.fatherId);
                 return (
                   <li key={father.fatherId}>
-                    <label className="flex min-h-11 cursor-pointer items-center gap-3 px-4 py-3 outline-none transition-colors duration-150 ease-out hover:bg-white/5 focus-within:bg-white/5 focus-within:ring-3 focus-within:ring-ring/50 has-[:disabled]:cursor-default has-[:disabled]:hover:bg-transparent">
+                    <label
+                      className={cn(
+                        "flex min-h-11 cursor-pointer items-center gap-3 px-4 py-3",
+                        interactiveSurfaceClassName,
+                        "has-[:disabled]:pointer-events-none has-[:disabled]:hover:bg-transparent"
+                      )}
+                    >
                       <input
                         type="checkbox"
                         name="father_ids"

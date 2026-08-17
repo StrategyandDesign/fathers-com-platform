@@ -4,7 +4,7 @@ import { createTraining } from "@/lib/admin/actions";
 import { Flash } from "@/components/manager/flash";
 import { Button } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
-import { fieldClassName, interactiveLinkClassName, textareaClassName } from "@/lib/ui";
+import { checkboxOptionClassName, fieldClassName, interactiveLinkClassName, textareaClassName } from "@/lib/ui";
 
 export default async function AdminNewTrainingPage({
   searchParams,
@@ -53,7 +53,7 @@ export default async function AdminNewTrainingPage({
           <span className="text-sm text-muted-foreground">Catalog order</span>
           <input className={fieldClassName} name="order_index" type="number" defaultValue={0} />
         </label>
-        <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg text-sm outline-none transition-colors duration-150 ease-out hover:bg-white/5 focus-within:ring-3 focus-within:ring-ring/50 active:opacity-90">
+        <label className={checkboxOptionClassName}>
           <input
             type="checkbox"
             name="published"

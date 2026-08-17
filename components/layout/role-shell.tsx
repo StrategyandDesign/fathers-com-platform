@@ -6,6 +6,7 @@ import { AppNav } from "@/components/layout/app-nav";
 import { StaffMenu } from "@/components/layout/staff-menu";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Badge } from "@/components/ui/badge";
+import { interactiveIconClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export function RoleShell({
@@ -33,7 +34,10 @@ export function RoleShell({
         </div>
         <Link
           href={ROLE_ACCOUNT[role]}
-          className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full outline-none transition-colors duration-150 ease-out hover:bg-white/5 focus-visible:ring-3 focus-visible:ring-ring/50 active:opacity-90 lg:border lg:border-border lg:bg-card lg:px-2 lg:py-1 lg:pr-3 lg:text-sm"
+          className={cn(
+            "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full lg:border lg:border-border lg:bg-card lg:px-2 lg:py-1 lg:pr-3 lg:text-sm",
+            interactiveIconClassName
+          )}
         >
           <UserAvatar
             name={email}

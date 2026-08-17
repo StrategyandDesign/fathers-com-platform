@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
-import { CHECKIN_QUESTIONS } from "@/lib/father/types";
+import { CHECKIN_ANSWER_KEYS } from "@/lib/father/session-questions";
 import { createClient } from "@/lib/supabase/server";
 
 type ProgressPatch = {
@@ -92,14 +92,14 @@ export async function submitCheckin(formData: FormData) {
   }
 
   const answers: Record<string, string> = {};
-  for (const question of CHECKIN_QUESTIONS) {
-    const value = String(formData.get(question.key) ?? "").trim();
+  for (const key of CHECKIN_ANSWER_KEYS) {
+    const value = String(formData.get(key) ?? "").trim();
     if (!value) {
       redirect(
         `/father/sessions/${sessionId}/checkin?error=${encodeURIComponent("Answer all three questions to continue.")}`
       );
     }
-    answers[question.key] = value;
+    answers[key] = value;
   }
 
   try {

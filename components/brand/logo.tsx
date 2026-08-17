@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { interactiveControlClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 const WHITE_LOCKUP = "/brand/fathers-com-logo-white.png";
@@ -46,7 +47,10 @@ export function BrandLogo({
   return (
     <Link
       href={href}
-      className="inline-flex rounded-md outline-none transition-opacity duration-150 ease-out hover:opacity-80 focus-visible:ring-3 focus-visible:ring-ring/50"
+      className={cn(
+        "inline-flex rounded-md hover:opacity-80",
+        interactiveControlClassName
+      )}
     >
       {mark}
     </Link>

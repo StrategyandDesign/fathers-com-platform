@@ -224,7 +224,7 @@ export default async function ManagerReportsPage({
                   {report.rows.map((row) => (
                     <tr
                       key={row.fatherId}
-                      className="border-b border-border transition-colors duration-150 ease-out last:border-0 hover:bg-white/5"
+                      className="border-b border-border transition-[color,background-color] duration-150 ease-out last:border-0 hover:bg-white/5"
                     >
                       <td className="px-6 py-3">
                         <Link

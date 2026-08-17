@@ -166,7 +166,7 @@
   label:has(input[type="radio"]),
   label:has(input[type="checkbox"]),
   label:has(input[type="file"]) {
-    transition-property: color, background-color, border-color, opacity, box-shadow;
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
     transition-duration: 150ms;
     transition-timing-function: ease-out;
   }

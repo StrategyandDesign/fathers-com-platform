@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
 import { submitCheckin } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
-import { CHECKIN_QUESTIONS } from "@/lib/father/types";
+import { checkinQuestionsFor } from "@/lib/father/session-questions";
 import { interactiveUnderlineClassName, sessionCtaClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +32,7 @@ export default async function SessionCheckinPage({
   }
 
   const { session, training, progress } = context;
+  const questions = checkinQuestionsFor(session, training);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 lg:space-y-8">
@@ -44,10 +45,10 @@ export default async function SessionCheckinPage({
 
       <form action={submitCheckin} className="space-y-6 lg:space-y-8">
         <input type="hidden" name="session_id" value={session.id} />
-        {CHECKIN_QUESTIONS.map((question, index) => (
+        {questions.map((question, index) => (
           <label key={question.key} className="block space-y-3">
             <span className="block text-sm text-muted-foreground">
-              Question {index + 1} of {CHECKIN_QUESTIONS.length}
+              Question {index + 1} of {questions.length}
             </span>
             <span className="block text-base font-semibold leading-snug sm:text-lg lg:text-xl">
               {question.label}

@@ -8,6 +8,7 @@ import { requireRole } from "@/lib/auth/session";
 import { trainingCover } from "@/lib/brand/photos";
 import { loadFatherHome } from "@/lib/father/data";
 import { continueHref } from "@/lib/father/types";
+import { sessionDotClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export default async function FatherTrainingsPage() {
@@ -101,7 +102,7 @@ export default async function FatherTrainingsPage() {
                             title={dot.title}
                             aria-label={`Session ${dot.number}: ${dot.title}`}
                             className={cn(
-                              "flex size-11 shrink-0 items-center justify-center rounded-lg text-sm font-medium outline-none transition-colors duration-150 ease-out focus-visible:ring-3 focus-visible:ring-ring/50 active:translate-y-px active:opacity-90",
+                              sessionDotClassName,
                               dot.done
                                 ? "bg-primary text-primary-foreground hover:bg-primary/85"
                                 : "bg-white/8 text-muted-foreground hover:bg-white/10 hover:text-foreground"

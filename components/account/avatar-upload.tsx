@@ -5,6 +5,8 @@ import { useTransition } from "react";
 import { uploadAvatar } from "@/lib/account/actions";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Button } from "@/components/ui/button";
+import { interactiveControlClassName } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
 export function AvatarUpload({
   name,
@@ -27,7 +29,12 @@ export function AvatarUpload({
       className="flex min-w-0 items-center gap-4 sm:gap-5"
       aria-busy={pending}
     >
-      <label className="relative shrink-0 cursor-pointer rounded-full outline-none transition-opacity duration-150 ease-out hover:opacity-80 focus-within:ring-3 focus-within:ring-ring/50 active:opacity-90">
+      <label
+        className={cn(
+          "relative shrink-0 cursor-pointer rounded-full hover:opacity-80 focus-within:ring-3 focus-within:ring-ring/50",
+          interactiveControlClassName
+        )}
+      >
         <UserAvatar
           name={name || email}
           src={avatarUrl}

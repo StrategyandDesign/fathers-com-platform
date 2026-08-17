@@ -18,6 +18,7 @@ import {
 
 import { BrandLogoArrow } from "@/components/brand/logo-arrow";
 import { type AppRole } from "@/lib/auth/roles";
+import { interactiveControlClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 type NavIcon = ComponentType<{
@@ -159,7 +160,8 @@ export function AppNav({
             key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center outline-none transition-colors duration-150 ease-out focus-visible:z-10 focus-visible:ring-3 focus-visible:ring-ring/50 active:opacity-90",
+              "flex items-center focus-visible:z-10",
+              interactiveControlClassName,
               layout === "side" &&
                 "w-full flex-col gap-1 rounded-lg px-1 py-2.5 text-[11px] tracking-wide",
               layout === "tabs" &&

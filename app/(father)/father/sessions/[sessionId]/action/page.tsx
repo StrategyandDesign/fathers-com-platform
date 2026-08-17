@@ -7,7 +7,11 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
 import { completeAction } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
-import { sessionAction } from "@/lib/father/types";
+import {
+  ACTION_NOTE_LABEL,
+  ACTION_NOTE_PLACEHOLDER,
+  sessionAction,
+} from "@/lib/father/session-questions";
 import { interactiveUnderlineClassName, sessionCtaClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -47,7 +51,7 @@ export default async function SessionActionPage({
       />
 
       <p className="rounded-xl border border-border bg-card px-4 py-5 text-center text-lg font-semibold leading-snug sm:px-5 sm:py-6 sm:text-xl lg:border-0 lg:bg-transparent lg:px-0 lg:py-0 lg:text-2xl">
-        {sessionAction(session)}
+        {sessionAction(session, training)}
       </p>
 
       <Flash error={error} />
@@ -76,11 +80,11 @@ export default async function SessionActionPage({
           </Button>
         </div>
         <label className="block space-y-2">
-          <span className="text-sm text-muted-foreground">Add a quick note (optional)</span>
+          <span className="text-sm text-muted-foreground">{ACTION_NOTE_LABEL}</span>
           <textarea
             className={textareaClassName}
             name="action_note"
-            placeholder="e.g., How did it feel?"
+            placeholder={ACTION_NOTE_PLACEHOLDER}
             defaultValue={progress?.action_note ?? ""}
           />
         </label>
