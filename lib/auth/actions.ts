@@ -48,7 +48,7 @@ export async function signIn(formData: FormData) {
   }
 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const password = String(formData.get("password") ?? "");
+  const password = String(formData.get("password") ?? "").trim();
   const next = safeInternalPath(formData.get("next"));
 
   const supabase = await createClient();
@@ -85,7 +85,7 @@ export async function signUp(formData: FormData) {
   }
 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const password = String(formData.get("password") ?? "");
+  const password = String(formData.get("password") ?? "").trim();
   const inviteCode = String(formData.get("invite_code") ?? "").trim();
 
   if (!inviteCode) {

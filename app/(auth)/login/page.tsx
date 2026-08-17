@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { PasswordField } from "@/components/auth/password-field";
 import { Flash } from "@/components/manager/flash";
 import { signIn } from "@/lib/auth/actions";
 import { safeInternalPath } from "@/lib/auth/roles";
@@ -43,13 +44,10 @@ export default async function LoginPage({
           </label>
           <label className="block space-y-2">
             <span className="text-sm text-muted-foreground">Password</span>
-            <input
-              className={authFieldClassName}
-              type="password"
-              name="password"
+            <PasswordField
               autoComplete="current-password"
-              required
-              aria-invalid={credentialsInvalid || undefined}
+              invalid={credentialsInvalid}
+              defaultVisible
             />
           </label>
           <Flash error={params.error} notice={params.notice} />
