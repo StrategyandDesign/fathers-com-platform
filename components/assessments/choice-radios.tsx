@@ -7,47 +7,18 @@ import { useT } from "@/components/i18n/locale-provider";
 import { radioOptionClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-type ScaleOption = {
-  value: number;
-  label: string;
-};
-
-export function ProfileAnswerOptions({
+export function AssessmentChoiceRadios({
   options,
   saved,
   autoAdvance,
   invalid,
 }: {
-  options: readonly ScaleOption[];
-  saved?: number;
+  options: string[];
+  saved?: string;
   autoAdvance: boolean;
   invalid?: boolean;
 }) {
   const t = useT();
-  return (
-    <fieldset className="mt-8">
-      <legend className="sr-only">{t("common.answer")}</legend>
-      <ProfileAnswerRadios
-        options={options}
-        saved={saved}
-        autoAdvance={autoAdvance}
-        invalid={invalid}
-      />
-    </fieldset>
-  );
-}
-
-function ProfileAnswerRadios({
-  options,
-  saved,
-  autoAdvance,
-  invalid,
-}: {
-  options: readonly ScaleOption[];
-  saved?: number;
-  autoAdvance: boolean;
-  invalid?: boolean;
-}) {
   const { pending } = useFormStatus();
   const [advancing, setAdvancing] = useState(false);
   const started = useRef(false);
@@ -57,7 +28,7 @@ function ProfileAnswerRadios({
     if (!autoAdvance || locked || started.current || !form) return;
     started.current = true;
     setAdvancing(true);
-    const nextButton = form.querySelector<HTMLButtonElement>("[data-profile-advance]");
+    const nextButton = form.querySelector<HTMLButtonElement>("[data-assessment-advance]");
     requestAnimationFrame(() => {
       form.requestSubmit(nextButton ?? undefined);
     });
@@ -72,25 +43,29 @@ function ProfileAnswerRadios({
   }
 
   return (
-    <div
-      className={cn("space-y-1", locked && "pointer-events-none")}
+    <fieldset
+      className={cn("mt-8 space-y-1", locked && "pointer-events-none")}
       aria-invalid={invalid || undefined}
     >
+      <legend className="sr-only">{t("father.assessments.answer")}</legend>
       {options.map((option) => (
-        <label key={option.value} className={radioOptionClassName}>
+        <label key={option} className={radioOptionClassName}>
           <input
             type="radio"
             name="value"
-            value={option.value}
-            defaultChecked={saved === option.value}
+            value={option}
+            defaultChecked={saved === option}
             required
             className="size-4 accent-primary"
             onClick={handleClick}
             onChange={handleChange}
           />
-          <span>{option.label}</span>
+          <span>{option}</span>
         </label>
       ))}
-    </div>
+      {locked && autoAdvance ? (
+        <p className="pt-2 text-center text-sm text-muted-foreground">{t("common.saving")}</p>
+      ) : null}
+    </fieldset>
   );
 }

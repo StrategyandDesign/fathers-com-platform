@@ -317,16 +317,6 @@ export default async function FatherHomePage({
                 <p className="mt-3 text-sm text-muted-foreground">
                   {t("father.home.taken", { date: formatLongDate(profile.taken_at, locale) })}
                 </p>
-                {next ? null : (
-                  <div className="mt-auto pt-5">
-                    <Link
-                      href="/father/profile"
-                      className={cn(buttonVariants({ variant: "outline" }), "w-full")}
-                    >
-                      {t("father.home.viewProfile")}
-                    </Link>
-                  </div>
-                )}
               </>
             ) : neverStarted ? (
               <p className="mt-3 text-sm text-muted-foreground">
@@ -380,7 +370,7 @@ export default async function FatherHomePage({
           </div>
         </section>
 
-      {!neverStarted && (trainingCards.length > 0 || customAssignments.length > 0) ? (
+      {!next && (trainingCards.length > 0 || customAssignments.length > 0) ? (
       <div
         className={cn(
           "space-y-8",

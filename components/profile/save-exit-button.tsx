@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { useT } from "@/components/i18n/locale-provider";
-import { buttonVariants } from "@/components/ui/button";
+import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export function ProfileSaveExitButton({
@@ -27,7 +27,7 @@ export function ProfileSaveExitButton({
       disabled={pending}
       aria-busy={busy || undefined}
       onClick={() => setSaving(true)}
-      className={cn(buttonVariants({ variant: "outline" }), "w-full lg:order-3 lg:w-auto")}
+      className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
     >
       {busy ? t("common.saving") : t("common.saveAndExit")}
     </button>

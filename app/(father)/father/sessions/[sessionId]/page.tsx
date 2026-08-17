@@ -4,14 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import { CoverPhoto } from "@/components/brand/cover";
 import { SessionAdvanceButton } from "@/components/father/session-advance-button";
 import { SessionCrumbNote, SessionHeader } from "@/components/father/session-header";
-import { SessionSteps } from "@/components/father/session-steps";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
-import { ProgressBar } from "@/components/ui/progress";
 import { requireRole } from "@/lib/auth/session";
 import { sessionCover } from "@/lib/brand/photos";
 import { markFilmWatched } from "@/lib/father/actions";
-import { loadFatherHome, loadSessionContext } from "@/lib/father/data";
+import { loadSessionContext } from "@/lib/father/data";
 import { loadFatherOrgPhotoCovers } from "@/lib/org-photos/data";
 import { youtubeEmbedUrl } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
@@ -39,17 +37,22 @@ export default async function SessionViewerPage({
   }
 
   const { t } = await getI18n();
-  const { session, training, progress } = context;
+  const { session, training, progress, completedCount, sessionTotal } = context;
   const embed = youtubeEmbedUrl(session.video_url);
   const filmDone = progress?.film_completed ?? false;
-  const [{ trainingCards }, orgPhotos] = await Promise.all([
-    loadFatherHome(user.id),
-    loadFatherOrgPhotoCovers(user.id),
-  ]);
-  const card = trainingCards.find((item) => item.training.id === training.id);
-  const completedCount = card?.completed ?? 0;
-  const sessionTotal = card?.total ?? training.session_count;
-  const percent = sessionTotal ? Math.round((completedCount / sessionTotal) * 100) : 0;
+  const checkinDone = progress?.checkin_completed ?? false;
+  const actionDone = progress?.action_completed ?? false;
+  const orgPhotos = embed ? null : await loadFatherOrgPhotoCovers(user.id);
+  const nextHref = !checkinDone
+    ? `/father/sessions/${session.id}/checkin`
+    : !actionDone
+      ? `/father/sessions/${session.id}/action`
+      : `/father?done=${encodeURIComponent(session.id)}`;
+  const nextLabel = !checkinDone
+    ? t("father.session.continueCheckin")
+    : !actionDone
+      ? t("father.session.continueAction")
+      : t("father.session.continueHome");
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 sm:space-y-6">
@@ -59,7 +62,7 @@ export default async function SessionViewerPage({
         current="film"
         completedCount={completedCount}
         sessionTotal={sessionTotal}
-        backHref="/father/trainings"
+        backHref="/father"
       />
 
       <div className="overflow-hidden rounded-xl border border-border bg-black">
@@ -75,7 +78,7 @@ export default async function SessionViewerPage({
           </div>
         ) : (
           <div className="relative aspect-video">
-            <CoverPhoto src={sessionCover(session.session_number, orgPhotos.photoPack)} />
+            <CoverPhoto src={sessionCover(session.session_number, orgPhotos?.photoPack)} />
           </div>
         )}
       </div>
@@ -85,10 +88,10 @@ export default async function SessionViewerPage({
       {filmDone ? (
         <div className="flex justify-center max-lg:block">
           <Link
-            href={`/father/sessions/${session.id}/checkin`}
+            href={nextHref}
             className={cn(buttonVariants({ variant: "inverse", size: "lg" }), sessionCtaClassName)}
           >
-            {t("father.session.continueCheckin")}
+            {nextLabel}
           </Link>
         </div>
       ) : (
@@ -97,16 +100,6 @@ export default async function SessionViewerPage({
           <SessionAdvanceButton label={t("father.session.iWatched")} />
         </form>
       )}
-
-      <ProgressBar value={percent} className="hidden lg:block" />
-
-      <SessionSteps
-        sessionId={session.id}
-        current="film"
-        filmCompleted={progress?.film_completed ?? false}
-        checkinCompleted={progress?.checkin_completed ?? false}
-        actionCompleted={progress?.action_completed ?? false}
-      />
 
       <SessionCrumbNote />
     </div>

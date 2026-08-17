@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AssessmentChoiceRadios } from "@/components/assessments/choice-radios";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
@@ -8,7 +9,7 @@ import { saveCustomAnswer } from "@/lib/assessments/actions";
 import { loadAssignmentTake } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
-import { interactiveLinkClassName, radioOptionClassName, textareaClassName } from "@/lib/ui";
+import { interactiveLinkClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export default async function FatherAssessmentTakePage({
@@ -79,28 +80,12 @@ export default async function FatherAssessmentTakePage({
           <input type="hidden" name="question_id" value={question.id} />
 
           {question.question_type === "single_select" && question.options ? (
-            <fieldset
-              className="mt-8 space-y-1"
-              aria-invalid={Boolean(query.error) || undefined}
-            >
-              <legend className="sr-only">{t("father.assessments.answer")}</legend>
-              {question.options.map((option) => (
-                <label
-                  key={option}
-                  className={radioOptionClassName}
-                >
-                  <input
-                    type="radio"
-                    name="value"
-                    value={option}
-                    defaultChecked={saved === option}
-                    required
-                    className="size-4 accent-primary"
-                  />
-                  <span>{option}</span>
-                </label>
-              ))}
-            </fieldset>
+            <AssessmentChoiceRadios
+              options={question.options}
+              saved={saved}
+              autoAdvance
+              invalid={Boolean(query.error)}
+            />
           ) : (
             <label className="mt-8 block space-y-2">
               <span className="sr-only">{t("father.assessments.answer")}</span>
@@ -115,38 +100,42 @@ export default async function FatherAssessmentTakePage({
             </label>
           )}
 
-          <div className="mt-8 flex flex-col gap-3 lg:mt-10 lg:flex-row lg:flex-wrap lg:items-center lg:justify-center">
+          <div className="mt-8 flex flex-col gap-3 lg:mt-10 lg:items-center">
             <button
               type="submit"
               name="intent"
               value={isLast ? "complete" : "next"}
-              className={cn(buttonVariants({ size: "lg" }), "w-full lg:order-2 lg:w-auto")}
+              data-assessment-advance
+              className={
+                question.question_type === "single_select"
+                  ? "sr-only"
+                  : cn(buttonVariants({ size: "lg" }), "w-full min-h-12 lg:w-auto")
+              }
             >
               {isLast ? t("father.assessments.submit") : t("common.next")}
             </button>
-            {questionNumber > 1 ? (
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+              {questionNumber > 1 ? (
+                <button
+                  type="submit"
+                  name="intent"
+                  value="back"
+                  formNoValidate
+                  className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
+                >
+                  {t("common.back")}
+                </button>
+              ) : null}
               <button
                 type="submit"
                 name="intent"
-                value="back"
+                value="exit"
                 formNoValidate
-                className={cn(buttonVariants({ variant: "secondary" }), "w-full lg:order-1 lg:w-auto")}
+                className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
               >
-                {t("common.back")}
+                {t("father.assessments.saveExit")}
               </button>
-            ) : null}
-            <button
-              type="submit"
-              name="intent"
-              value="exit"
-              formNoValidate
-              className={cn(
-                buttonVariants({ variant: "secondary" }),
-                "w-full lg:order-3 lg:w-auto max-lg:border-0 max-lg:bg-transparent max-lg:underline max-lg:underline-offset-4 max-lg:hover:bg-transparent max-lg:hover:text-foreground/80"
-              )}
-            >
-              {t("father.assessments.saveExit")}
-            </button>
+            </div>
           </div>
           <p className="mt-6 text-center text-sm text-muted-foreground">
             {t("father.assessments.canStop")}
@@ -154,11 +143,16 @@ export default async function FatherAssessmentTakePage({
         </form>
       )}
 
-      <p className="text-center">
-        <Link href="/father" className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}>
-          {t("father.assessments.backHome")}
-        </Link>
-      </p>
+      {completed ? (
+        <div className="flex justify-center max-lg:block">
+          <Link
+            href="/father"
+            className={cn(buttonVariants({ size: "lg" }), "w-full min-h-12 sm:w-auto")}
+          >
+            {t("father.assessments.backHome")}
+          </Link>
+        </div>
+      ) : null}
     </div>
   );
 }

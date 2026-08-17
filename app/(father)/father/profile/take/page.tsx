@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Flash } from "@/components/manager/flash";
@@ -87,11 +86,11 @@ export default async function FatherProfileTakePage({
           </div>
         ) : null}
 
-        <div className="mt-8 flex flex-col gap-3 lg:mt-10 lg:flex-row lg:flex-wrap lg:items-center lg:justify-center">
+        <div className="mt-8 flex flex-col gap-3 lg:mt-10 lg:items-center">
           {isLast ? (
             <button
               type="submit"
-              className={cn(buttonVariants({ size: "lg" }), "w-full lg:order-2 lg:w-auto")}
+              className={cn(buttonVariants({ size: "lg" }), "w-full min-h-12 lg:w-auto")}
             >
               {t("father.profile.seeResults")}
             </button>
@@ -101,24 +100,26 @@ export default async function FatherProfileTakePage({
               name="intent"
               value="next"
               data-profile-advance
-              className={cn(buttonVariants(), "w-full lg:order-2 lg:w-auto")}
+              className="sr-only"
             >
               {t("common.next")}
             </button>
           )}
-          {question.id > 1 ? (
-            <button
-              type="submit"
-              name="intent"
-              value="back"
-              formNoValidate
-              formAction={saveProfileProgress}
-              className={cn(buttonVariants({ variant: "secondary" }), "w-full lg:order-1 lg:w-auto")}
-            >
-              {t("common.back")}
-            </button>
-          ) : null}
-          <ProfileSaveExitButton action={saveAndExitProfile} />
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            {question.id > 1 ? (
+              <button
+                type="submit"
+                name="intent"
+                value="back"
+                formNoValidate
+                formAction={saveProfileProgress}
+                className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
+              >
+                {t("common.back")}
+              </button>
+            ) : null}
+            <ProfileSaveExitButton action={saveAndExitProfile} />
+          </div>
         </div>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {isLast
@@ -126,15 +127,6 @@ export default async function FatherProfileTakePage({
             : t("father.profile.canStop")}
         </p>
       </form>
-
-      <p className="text-center">
-        <Link
-          href="/father/profile"
-          className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
-        >
-          {t("father.profile.backToProfile")}
-        </Link>
-      </p>
     </div>
   );
 }

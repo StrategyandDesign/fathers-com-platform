@@ -1,11 +1,8 @@
 import Link from "next/link";
 
-import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { Flash } from "@/components/manager/flash";
 import { DimensionScores } from "@/components/profile/dimension-scores";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
-import { loadFatherAssignments } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
 import { translateThemeLabel } from "@/lib/i18n/flash";
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
@@ -39,7 +36,6 @@ export default async function FatherProfilePage({
   const { user } = await requireRole("father");
   const { t, locale } = await getI18n();
   const { profile, draft } = await loadProfileState(user.id);
-  const customAssignments = await loadFatherAssignments(user.id);
   const banner = <Flash error={flash.error} notice={flash.notice} />;
   const header = (
     <ProfilePageHeader title={t("father.profile.title")} lead={t("father.profile.lead")} />
@@ -70,7 +66,10 @@ export default async function FatherProfilePage({
             {t("father.profile.lastProfile", { date: formatLongDate(profile.taken_at, locale) })}
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link href="/father/profile/results" className={cn(buttonVariants(), "w-full sm:w-auto")}>
+            <Link
+              href="/father/profile/results"
+              className={cn(buttonVariants({ variant: draft ? "outline" : "default" }), "w-full min-h-11 sm:w-auto")}
+            >
               {t("father.profile.viewResults")}
             </Link>
           </div>
@@ -85,20 +84,19 @@ export default async function FatherProfilePage({
           {draft ? (
             <Link
               href={`/father/profile/take?q=${firstUnanswered(draft.answers)}`}
-              className={cn(buttonVariants(), "mt-8 w-full lg:w-auto")}
+              className={cn(buttonVariants(), "mt-8 w-full min-h-11 lg:w-auto")}
             >
               {t("father.profile.continueRetake")}
             </Link>
           ) : (
             <form action={retakeProfile} className="mt-8">
-              <Button type="submit" className="w-full lg:w-auto">
+              <Button type="submit" variant="outline" className="w-full min-h-11 lg:w-auto">
                 {t("father.profile.retake")}
               </Button>
             </form>
           )}
         </section>
         </div>
-        <AssignedAssessmentList assignments={customAssignments} />
       </div>
     );
   }
@@ -110,8 +108,7 @@ export default async function FatherProfilePage({
     <div className="space-y-6">
       {banner}
       {header}
-      <div className="grid gap-6 lg:grid-cols-2">
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
+      <section className="max-w-xl rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
         <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
           {t("father.profile.keystone")}
         </p>
@@ -127,13 +124,13 @@ export default async function FatherProfilePage({
         {draft ? (
           <Link
             href={`/father/profile/take?q=${resumeAt}`}
-            className={cn(buttonVariants({ size: "lg" }), "mt-8 w-full lg:w-auto")}
+            className={cn(buttonVariants({ size: "lg" }), "mt-8 w-full min-h-12 lg:w-auto")}
           >
             {t("common.continue")}
           </Link>
         ) : (
           <form action={startProfile} className="mt-8">
-            <Button type="submit" size="lg" className="w-full lg:w-auto">
+            <Button type="submit" size="lg" className="w-full min-h-12 lg:w-auto">
               {t("father.profile.takeCta")}
             </Button>
           </form>
@@ -142,20 +139,6 @@ export default async function FatherProfilePage({
           {t("father.profile.takeHint")}
         </p>
       </section>
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
-        <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
-          {t("father.profile.yourKeystone")}
-        </p>
-        <EmptyState
-          framed={false}
-          className="mt-2 p-0"
-          title={t("father.profile.noResults")}
-        >
-          {t("father.profile.noResultsBody")}
-        </EmptyState>
-      </section>
-      </div>
-      <AssignedAssessmentList assignments={customAssignments} />
     </div>
   );
 }

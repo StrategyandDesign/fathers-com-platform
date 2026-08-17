@@ -47,12 +47,12 @@ export default async function FatherProfileResultsPage() {
         <p className="mt-6 text-sm text-muted-foreground">
           {t("father.profile.resultsRetakeLead")}
         </p>
-        <div className="mt-8 flex flex-col gap-3">
-          <Link href="/father" className={cn(buttonVariants({ size: "lg" }), "w-full")}>
+        <div className="mt-8 space-y-4">
+          <Link href="/father" className={cn(buttonVariants({ size: "lg" }), "w-full min-h-12")}>
             {t("father.profile.goHome")}
           </Link>
-          <form action={retakeProfile}>
-            <Button type="submit" variant="outline" size="lg" className="w-full">
+          <form action={retakeProfile} className="text-center">
+            <Button type="submit" variant="ghost" className="text-sm text-muted-foreground">
               {t("father.profile.retake")}
             </Button>
           </form>

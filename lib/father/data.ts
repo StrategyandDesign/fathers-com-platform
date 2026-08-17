@@ -286,6 +286,10 @@ export async function loadSessionContext(fatherId: string, sessionId: string) {
     training: typedTraining,
     progress: currentProgress,
     trainingSessions,
+    completedCount: trainingSessions.filter((row) =>
+      isSessionComplete(progressBySession.get(row.id) ?? null)
+    ).length,
+    sessionTotal: catalogSessionTotal(typedTraining, trainingSessions.length),
     unlocked,
     redirectSessionId: unlocked
       ? sessionId

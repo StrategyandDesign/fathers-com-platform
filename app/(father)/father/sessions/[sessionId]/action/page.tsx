@@ -100,18 +100,12 @@ export default async function SessionActionPage({
         />
       </form>
 
-      <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center">
+      <p className="text-center">
         <Link
           href="/father"
           className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
         >
           {t("father.session.doLater")}
-        </Link>
-        <Link
-          href={`/father/sessions/${sessionId}`}
-          className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
-        >
-          {t("father.session.backToSession")}
         </Link>
       </p>
     </div>
