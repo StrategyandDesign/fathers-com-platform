@@ -27,7 +27,7 @@ import { continueHref, type SessionProgress } from "@/lib/father/types";
 import { readStoredDimensionScores } from "@/lib/profile/score";
 import { translateThemeLabel } from "@/lib/i18n/flash";
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
-import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
+import { homePrimaryCtaClassName, interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 const eyebrowClassName =
@@ -118,15 +118,19 @@ export default async function FatherHomePage() {
         ? t("father.home.waitAssessment")
         : t("father.home.waitEmpty");
 
+  const primaryCtaClassName = cn(
+    buttonVariants({ variant: "default", size: "lg" }),
+    homePrimaryCtaClassName
+  );
+
   return (
-    <div className="space-y-8">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,1fr)]">
-        {next ? (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,1fr)] lg:gap-8">
+      {next ? (
+        <div className="order-1 min-w-0 lg:col-start-1 lg:row-start-1">
           <FirstVisitIntro
             eligible={showFirstVisitIntro}
             href={continueHref(next.session.id, next.progress)}
             trainingTitle={next.training.title}
-            trainingDescription={next.training.description}
             sessionNumber={next.session.session_number}
             total={nextTotal}
             completed={nextCompleted}
@@ -136,31 +140,12 @@ export default async function FatherHomePage() {
             <div className="min-w-0 space-y-2">
               <p className={eyebrowClassName}>{heroLabel}</p>
               <section className="overflow-hidden rounded-xl border border-border bg-card">
-                <div className="h-24 overflow-hidden bg-[#101510] sm:h-36 lg:h-44">
+                <div className="h-20 overflow-hidden bg-[#101510] sm:h-32 lg:h-40">
                   <CoverPhoto src={heroCover} />
                 </div>
                 <div className="space-y-5 p-4 sm:p-5 lg:p-6">
                   <div>
-                    <p className={eyebrowClassName}>
-                      {neverStarted
-                        ? nextTotal > 0
-                          ? t("father.home.sessionOf", {
-                              n: next.session.session_number,
-                              total: nextTotal,
-                            })
-                          : t("father.home.sessionN", { n: next.session.session_number })
-                        : nextTotal > 0
-                          ? t("father.home.sessionOfTraining", {
-                              n: next.session.session_number,
-                              total: nextTotal,
-                              title: next.training.title,
-                            })
-                          : t("father.home.sessionTraining", {
-                              n: next.session.session_number,
-                              title: next.training.title,
-                            })}
-                    </p>
-                    <h1 className="font-heading mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+                    <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
                       {neverStarted ? next.training.title : next.session.title}
                     </h1>
                     {neverStarted ? (
@@ -168,97 +153,86 @@ export default async function FatherHomePage() {
                         {t("father.home.startRhythm")}
                       </p>
                     ) : next.session.keyline ? (
-                      <p className="mt-1 text-sm text-muted-foreground">{next.session.keyline}</p>
+                      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                        {next.session.keyline}
+                      </p>
                     ) : null}
                   </div>
-                  <div className="space-y-4">
-                    {nextTotal > 0 ? (
-                      <div className="space-y-2">
-                        <ProgressBar value={nextPercent} />
-                        <p className="text-sm text-muted-foreground">
-                          {t("father.home.sessionsComplete", {
-                            completed: nextCompleted,
-                            total: nextTotal,
-                          })}
-                        </p>
-                      </div>
-                    ) : null}
-                    <Link
-                      href={continueHref(next.session.id, next.progress)}
-                      className={cn(
-                        buttonVariants({ variant: "inverse", size: "lg" }),
-                        "w-full sm:w-auto"
-                      )}
-                    >
-                      {neverStarted ? t("father.home.startOverview") : continueLabel}
-                    </Link>
-                  </div>
+                  <Link
+                    href={continueHref(next.session.id, next.progress)}
+                    className={primaryCtaClassName}
+                  >
+                    {neverStarted ? t("father.home.startOverview") : continueLabel}
+                  </Link>
+                  {nextTotal > 0 ? (
+                    <div className="space-y-2">
+                      <ProgressBar value={nextPercent} />
+                      <p className="text-sm text-muted-foreground">
+                        {t("father.home.sessionOf", {
+                          n: next.session.session_number,
+                          total: nextTotal,
+                        })}
+                        {" · "}
+                        {t("father.home.sessionsComplete", {
+                          completed: nextCompleted,
+                          total: nextTotal,
+                        })}
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
               </section>
             </div>
           </FirstVisitIntro>
-        ) : (
-          <section className="flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:p-8">
-            <p className={eyebrowClassName}>
-              {emptyEyebrow}
-            </p>
-            <h1 className="font-heading mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
-              {emptyTitle}
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground sm:text-base">{emptyBody}</p>
-            {profileIsPrimary ? (
-              <div className="mt-6">
-                {draft ? (
-                  <Link
-                    href={profileContinueHref}
-                    className={cn(
-                      buttonVariants({ variant: "inverse", size: "lg" }),
-                      "w-full sm:w-auto"
-                    )}
-                  >
-                    {t("father.home.continueProfile")}
-                  </Link>
-                ) : (
-                  <form action={startProfile}>
-                    <Button type="submit" variant="inverse" size="lg" className="w-full sm:w-auto">
-                      {t("father.home.takeProfile")}
-                    </Button>
-                  </form>
-                )}
-              </div>
-            ) : null}
-            {assessmentIsPrimary && pendingAssessment ? (
-              <div className="mt-6">
-                <Link
-                  href={takeHref(pendingAssessment.assignment.id)}
-                  className={cn(
-                    buttonVariants({ variant: "inverse", size: "lg" }),
-                    "w-full sm:w-auto"
-                  )}
-                >
-                  {pendingAssessment.assignment.status === "in_progress"
-                    ? t("father.home.continueAssessment")
-                    : t("father.home.takeAssessment")}
+        </div>
+      ) : (
+        <section className="order-1 flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:col-start-1 lg:row-start-1 lg:p-8">
+          <p className={eyebrowClassName}>{emptyEyebrow}</p>
+          <h1 className="font-heading mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
+            {emptyTitle}
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground sm:text-base">{emptyBody}</p>
+          {profileIsPrimary ? (
+            <div className="mt-6">
+              {draft ? (
+                <Link href={profileContinueHref} className={primaryCtaClassName}>
+                  {t("father.home.continueProfile")}
                 </Link>
-              </div>
-            ) : null}
-            {!profileIsPrimary && !assessmentIsPrimary && profile ? (
-              <div className="mt-6">
-                <Link
-                  href="/father/profile"
-                  className={cn(
-                    buttonVariants({ variant: "inverse", size: "lg" }),
-                    "w-full sm:w-auto"
-                  )}
-                >
-                  {t("father.home.viewProfile")}
-                </Link>
-              </div>
-            ) : null}
-          </section>
-        )}
+              ) : (
+                <form action={startProfile}>
+                  <Button type="submit" variant="default" size="lg" className={homePrimaryCtaClassName}>
+                    {t("father.home.takeProfile")}
+                  </Button>
+                </form>
+              )}
+            </div>
+          ) : null}
+          {assessmentIsPrimary && pendingAssessment ? (
+            <div className="mt-6">
+              <Link href={takeHref(pendingAssessment.assignment.id)} className={primaryCtaClassName}>
+                {pendingAssessment.assignment.status === "in_progress"
+                  ? t("father.home.continueAssessment")
+                  : t("father.home.takeAssessment")}
+              </Link>
+            </div>
+          ) : null}
+          {!profileIsPrimary && !assessmentIsPrimary && profile ? (
+            <div className="mt-6">
+              <Link href="/father/profile" className={primaryCtaClassName}>
+                {t("father.home.viewProfile")}
+              </Link>
+            </div>
+          ) : null}
+        </section>
+      )}
 
-        <section className="relative flex min-h-56 flex-col overflow-hidden rounded-xl border border-border bg-card">
+      <section
+        className={cn(
+          "relative flex min-h-56 flex-col overflow-hidden rounded-xl border border-border bg-card",
+          next ? "order-3 lg:order-2" : "order-2",
+          "lg:col-start-2 lg:row-start-1"
+        )}
+      >
           <div className="pointer-events-none absolute inset-0" aria-hidden>
             {/* Local public photo or org override; plain img matches CoverPhoto usage. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -295,14 +269,16 @@ export default async function FatherHomePage() {
                 <p className="mt-3 text-sm text-muted-foreground">
                   {t("father.home.taken", { date: formatLongDate(profile.taken_at, locale) })}
                 </p>
-                <div className="mt-auto pt-5">
-                  <Link
-                    href="/father/profile"
-                    className={cn(buttonVariants({ variant: "outline" }), "w-full")}
-                  >
-                    {t("father.home.viewProfile")}
-                  </Link>
-                </div>
+                {next ? null : (
+                  <div className="mt-auto pt-5">
+                    <Link
+                      href="/father/profile"
+                      className={cn(buttonVariants({ variant: "outline" }), "w-full")}
+                    >
+                      {t("father.home.viewProfile")}
+                    </Link>
+                  </div>
+                )}
               </>
             ) : draft ? (
               <>
@@ -318,7 +294,7 @@ export default async function FatherHomePage() {
                 <p className="mt-2 text-sm text-muted-foreground">
                   {t("father.home.profileReminder")}
                 </p>
-                {profileIsPrimary ? null : (
+                {profileIsPrimary || next ? null : (
                   <div className="mt-auto pt-5">
                     <Link
                       href={profileContinueHref}
@@ -340,7 +316,7 @@ export default async function FatherHomePage() {
                 <p className="mt-2 text-sm text-muted-foreground">
                   {t("father.home.profileReminder")}
                 </p>
-                {profileIsPrimary ? null : (
+                {profileIsPrimary || next ? null : (
                   <form action={startProfile} className="mt-auto pt-5">
                     <Button type="submit" variant="outline" className="w-full">
                       {t("father.home.takeProfile")}
@@ -351,8 +327,15 @@ export default async function FatherHomePage() {
             )}
           </div>
         </section>
-      </div>
 
+      {trainingCards.length > 0 || customAssignments.length > 0 ? (
+      <div
+        className={cn(
+          "space-y-8",
+          next ? "order-2 lg:order-3" : "order-3",
+          "lg:col-span-2"
+        )}
+      >
       {trainingCards.length > 0 ? (
         <section className="space-y-3">
           <div className="flex items-end justify-between gap-3">
@@ -421,6 +404,8 @@ export default async function FatherHomePage() {
         title={t("father.home.assessments")}
         quiet
       />
+      </div>
+      ) : null}
     </div>
   );
 }

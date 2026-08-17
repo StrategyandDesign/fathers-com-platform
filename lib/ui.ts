@@ -35,6 +35,10 @@ export const sessionDotClassName =
 export const sessionCtaClassName =
   "w-full min-h-11 max-lg:bg-primary max-lg:text-primary-foreground max-lg:hover:bg-primary/85 lg:w-auto";
 
+/** Dominant next-action control on Father Home. Full-width, thumb-height. */
+export const homePrimaryCtaClassName =
+  "w-full min-h-12 text-base sm:min-h-12";
+
 export function initials(value?: string | null) {
   const source = value?.trim() || "F";
   const parts = source.replace(/@.*/, "").split(/[\s._-]+/).filter(Boolean);

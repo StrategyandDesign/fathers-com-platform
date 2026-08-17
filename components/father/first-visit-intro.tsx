@@ -11,6 +11,7 @@ import {
   hasFathersIntroSeen,
   markFathersIntroSeen,
 } from "@/lib/father/intro-seen";
+import { homePrimaryCtaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 const eyebrowClassName =
@@ -20,7 +21,6 @@ export function FirstVisitIntro({
   eligible,
   href,
   trainingTitle,
-  trainingDescription,
   sessionNumber,
   total,
   completed,
@@ -31,7 +31,6 @@ export function FirstVisitIntro({
   eligible: boolean;
   href: string;
   trainingTitle: string;
-  trainingDescription?: string | null;
   sessionNumber: number;
   total: number;
   completed: number;
@@ -51,52 +50,39 @@ export function FirstVisitIntro({
 
   if (!eligible || !showFull) return children;
 
-  const sessionLine =
-    total > 0
-      ? t("father.home.sessionOf", { n: sessionNumber, total })
-      : t("father.home.sessionN", { n: sessionNumber });
-
   return (
     <div className="min-w-0 space-y-2">
-      <p className={eyebrowClassName}>{t("father.intro.welcome")}</p>
+      <p className={eyebrowClassName}>{t("father.home.startHere")}</p>
       <section className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="h-24 overflow-hidden bg-[#101510] sm:h-36 lg:h-44">
+        <div className="h-20 overflow-hidden bg-[#101510] sm:h-32 lg:h-40">
           <CoverPhoto src={coverSrc} />
         </div>
         <div className="space-y-5 p-4 sm:p-5 lg:p-6">
           <div>
-            <p className={eyebrowClassName}>{sessionLine}</p>
-            <h1 className="font-heading mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+            <h1 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
               {trainingTitle}
             </h1>
-            <div className="mt-3 space-y-3 text-sm text-muted-foreground sm:text-base">
-              <p>
-                {trainingDescription?.trim() ||
-                  t("father.intro.fallbackBody", { title: trainingTitle })}
+            <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+              {t("father.home.startRhythm")}
+            </p>
+          </div>
+          <Link
+            href={href}
+            onClick={markFathersIntroSeen}
+            className={cn(buttonVariants({ variant: "default", size: "lg" }), homePrimaryCtaClassName)}
+          >
+            {t("father.home.startOverview")}
+          </Link>
+          {total > 0 ? (
+            <div className="space-y-2">
+              <ProgressBar value={percent} />
+              <p className="text-sm text-muted-foreground">
+                {t("father.home.sessionOf", { n: sessionNumber, total })}
+                {" · "}
+                {t("father.home.sessionsComplete", { completed, total })}
               </p>
-              <p>{t("father.home.startRhythm")}</p>
             </div>
-          </div>
-          <div className="space-y-4">
-            {total > 0 ? (
-              <div className="space-y-2">
-                <ProgressBar value={percent} />
-                <p className="text-sm text-muted-foreground">
-                  {t("father.home.sessionsComplete", { completed, total })}
-                </p>
-              </div>
-            ) : null}
-            <Link
-              href={href}
-              onClick={markFathersIntroSeen}
-              className={cn(
-                buttonVariants({ variant: "inverse", size: "lg" }),
-                "w-full sm:w-auto"
-              )}
-            >
-              {t("father.home.startOverview")}
-            </Link>
-          </div>
+          ) : null}
         </div>
       </section>
     </div>
