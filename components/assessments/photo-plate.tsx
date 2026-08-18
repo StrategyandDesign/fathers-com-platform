@@ -32,7 +32,7 @@ export function AssessmentPhotoPlate({
           <div className="absolute inset-0 bg-gradient-to-br from-[#1c1c1c]/70 to-[#101510]/80" />
         ) : null}
       </div>
-      <div className="relative z-10">{children}</div>
+      <div className="relative z-10 flex h-full min-h-0 flex-col">{children}</div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { AssessmentHomeCard } from "@/components/assessments/home-card";
 import { HomeAssessmentCard } from "@/components/father/home-assessment-card";
 import { HomeEarnedRow } from "@/components/father/home-earned";
 import { HomePathRow } from "@/components/father/home-path";
@@ -15,9 +16,11 @@ import { scheduleDueReminderFlush } from "@/lib/jobs/flush-due-work";
 import {
   loadFatherOrgPhotoCovers,
   resolveHomeHeroCover,
+  resolveHomeProfileCover,
   resolveTrainingCardCover,
 } from "@/lib/org-photos/data";
 import { trainingCoverSlug } from "@/lib/trainings/series";
+import { cn } from "@/lib/utils";
 
 const eyebrowClassName =
   "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
@@ -80,9 +83,59 @@ export default async function FatherHomePage({
   const heroCover = next
     ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl, orgPhotos.photoPack)
     : null;
+  const profileCover = resolveHomeProfileCover(orgPhotos.profileUrl, orgPhotos.photoPack);
+  const pair = Boolean(next && assessment);
+
+  const upNext = next ? (
+    <HomeUpNextCard
+      href={continueHref(next.session.id, next.progress)}
+      trainingTitle={next.training.title}
+      sessionTitle={next.session.title}
+      subtitle={next.session.keyline}
+      durationSeconds={next.session.duration_seconds}
+      continueSession={nextInProgress}
+      completed={nextCompleted}
+      total={nextTotal}
+      justFinished={justFinished}
+      coverSrc={heroCover}
+      t={t}
+    />
+  ) : pathCards.length === 0 ? (
+    <section className="min-w-0 space-y-2">
+      <p className={eyebrowClassName}>{t("father.home.upNext")}</p>
+      <h1 className="font-heading text-xl font-semibold leading-snug tracking-tight sm:text-2xl">
+        {t("father.home.nothingAssigned")}
+      </h1>
+      <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+        {t("father.home.nothingAssignedBody")}
+      </p>
+    </section>
+  ) : null;
+
+  const assessmentCard = assessment ? (
+    assessment.kind === "custom" ? (
+      <HomeAssessmentCard assessment={assessment} coverSrc={profileCover} t={t} />
+    ) : (
+      <div className="flex h-full min-w-0 flex-col gap-3">
+        <p className={eyebrowClassName}>{t("father.profile.keystone")}</p>
+        <AssessmentHomeCard
+          className="min-h-0 flex-1"
+          coverSrc={profileCover}
+          profile={assessment.kind === "keystone-result" ? assessment.profile : null}
+          draft={assessment.kind === "keystone-draft" ? assessment.draft : null}
+          hideEyebrow
+        />
+      </div>
+    )
+  ) : null;
 
   return (
-    <div className="mx-auto w-full max-w-xl space-y-4 sm:space-y-5">
+    <div
+      className={cn(
+        "mx-auto w-full space-y-4 sm:space-y-5",
+        pair ? "max-w-4xl" : "max-w-xl"
+      )}
+    >
       <StreakNotices notices={streak.notices} />
       <HomeStreakRow
         weeks={streak.currentWeeks}
@@ -92,33 +145,17 @@ export default async function FatherHomePage({
         justFinished={justFinished}
       />
 
-      {next ? (
-        <HomeUpNextCard
-          href={continueHref(next.session.id, next.progress)}
-          trainingTitle={next.training.title}
-          sessionTitle={next.session.title}
-          subtitle={next.session.keyline}
-          durationSeconds={next.session.duration_seconds}
-          continueSession={nextInProgress}
-          completed={nextCompleted}
-          total={nextTotal}
-          justFinished={justFinished}
-          coverSrc={heroCover}
-          t={t}
-        />
-      ) : pathCards.length === 0 ? (
-        <section className="min-w-0 space-y-2">
-          <p className={eyebrowClassName}>{t("father.home.upNext")}</p>
-          <h1 className="font-heading text-xl font-semibold leading-snug tracking-tight sm:text-2xl">
-            {t("father.home.nothingAssigned")}
-          </h1>
-          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-            {t("father.home.nothingAssignedBody")}
-          </p>
-        </section>
-      ) : null}
-
-      {assessment ? <HomeAssessmentCard assessment={assessment} t={t} /> : null}
+      {pair ? (
+        <div className="grid items-stretch gap-4 lg:grid-cols-2">
+          {upNext}
+          {assessmentCard}
+        </div>
+      ) : (
+        <>
+          {upNext}
+          {assessmentCard}
+        </>
+      )}
       <HomePathRow cards={path} t={t} />
       <HomeEarnedRow marks={earned} t={t} />
     </div>

@@ -19,6 +19,7 @@ export async function AssessmentHomeCard({
   coverSrc,
   neverStarted = false,
   hideActions = false,
+  hideEyebrow = false,
   className,
 }: {
   profile: FatherProfileSummary | null;
@@ -26,6 +27,7 @@ export async function AssessmentHomeCard({
   coverSrc: string;
   neverStarted?: boolean;
   hideActions?: boolean;
+  hideEyebrow?: boolean;
   className?: string;
 }) {
   const { t, locale } = await getI18n();
@@ -33,14 +35,16 @@ export async function AssessmentHomeCard({
   const continueHref = `/father/profile/take?q=${draft ? firstUnanswered(draft.answers) : 1}`;
 
   return (
-    <section className={className} aria-label={t("father.profile.keystone")}>
+    <section className={cn("flex h-full min-h-0 flex-col", className)} aria-label={t("father.profile.keystone")}>
       <AssessmentPhotoPlate
         src={coverSrc}
         completed={Boolean(profile)}
-        className="flex min-h-56 flex-col sm:min-h-64"
+        className="flex h-full min-h-56 flex-col sm:min-h-64"
       >
-        <div className="flex min-h-56 flex-1 flex-col p-4 sm:min-h-64 sm:p-5">
-          <p className={eyebrowClassName}>{t("father.profile.keystone")}</p>
+        <div className="flex h-full min-h-56 flex-1 flex-col p-4 sm:min-h-64 sm:p-5">
+          {hideEyebrow ? null : (
+            <p className={eyebrowClassName}>{t("father.profile.keystone")}</p>
+          )}
           {profile ? (
             <>
               <p className="mt-4 text-sm text-white/65">{t("father.home.primaryDetermination")}</p>
