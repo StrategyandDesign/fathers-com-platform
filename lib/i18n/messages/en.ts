@@ -706,6 +706,8 @@ export const en = {
       notReadyTitle: "This assessment is not ready",
       notReadyBody:
         "This assessment has no questions yet. Check back after your leader adds some.",
+      questionOne: "1 question",
+      questionMany: "{count} questions",
     },
     session: {
       film: "Film",
@@ -1150,13 +1152,21 @@ export const en = {
       shareLead: "Makes it available to assign to fathers in this group.",
       shareKeystoneLead:
         "Fathers in this group can take the Keystone Assessment. They do not see it until you share it.",
+      sharePlatformLead:
+        "Fathers in this group can take this assessment. They do not see it until you share it.",
       removeFromGroup: "Remove from the group",
       removeKeystoneLead:
+        "Hides it from fathers who have not started. Those who already started or finished keep it.",
+      removePlatformLead:
         "Hides it from fathers who have not started. Those who already started or finished keep it.",
       removeCustomLead: "Hides it from new assignment. Fathers who already have it keep it.",
       keystoneLead:
         "The 128-question Keystone Assessment. A Super-admin shares it with you. You decide when fathers in the group can take it.",
       keystoneRosterLead: "Every father in this group. Keystone does not need a separate assignment.",
+      platformLead:
+        "A Super-admin built this weighted assessment. You decide when fathers in the group can take it.",
+      platformRosterLead:
+        "Every father in this group. Shared platform assessments do not need a separate assignment.",
       completedOfRoster: "{completed}/{total} completed",
       assignRemaining: "Assign to {n} remaining",
       assignHidden: "Share this assessment with the group before assigning it.",

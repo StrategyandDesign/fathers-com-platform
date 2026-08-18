@@ -27,7 +27,11 @@ function asReleaseRows(data: unknown): ReleaseRow[] {
   });
 }
 
-async function notifyNewRows(rows: ReleaseRow[], fallbackKey: string) {
+async function notifyNewRows(
+  rows: ReleaseRow[],
+  fallbackKey: string,
+  fallbackTitle?: string
+) {
   const seen = new Set<string>();
   const jobs = rows
     .filter((row) => row.is_new)
@@ -40,7 +44,7 @@ async function notifyNewRows(rows: ReleaseRow[], fallbackKey: string) {
         notifyAssessmentReleased({
           managerId: row.manager_id,
           assessmentKey,
-          assessmentTitle: platformAssessmentTitle(assessmentKey),
+          assessmentTitle: platformAssessmentTitle(assessmentKey, fallbackTitle),
         }),
       ];
     });
@@ -66,6 +70,7 @@ export async function releaseAssessmentToManagers(
     assessmentKey: string;
     releasedBy: string;
     groupIds?: string[] | null;
+    assessmentTitle?: string;
   }
 ) {
   try {
@@ -82,7 +87,7 @@ export async function releaseAssessmentToManagers(
 
     const rows = asReleaseRows(data);
     const newCount = rows.filter((row) => row.is_new).length;
-    const notify = await notifyNewRows(rows, input.assessmentKey);
+    const notify = await notifyNewRows(rows, input.assessmentKey, input.assessmentTitle);
     return {
       ok: true as const,
       newCount,

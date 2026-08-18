@@ -1,3 +1,5 @@
+import { isAuthoredPlatformAssessmentKey } from "@/lib/admin/platform-assessments";
+
 export const KEYSTONE_ASSESSMENT_KEY = "keystone";
 
 export const ASSESSMENT_VISIBILITY = ["available", "hidden"] as const;
@@ -89,6 +91,14 @@ export function fatherCanStartAssessment(input: {
       );
       return row?.status === "available";
     }
+  }
+
+  if (isAuthoredPlatformAssessmentKey(input.assessmentKey)) {
+    if (!input.release?.released_at || input.reviewStatus !== "accepted") return false;
+    const row = input.rows.find(
+      (item) => item.group_id === groupId && item.assessment_key === input.assessmentKey
+    );
+    return row?.status === "available";
   }
 
   return isAssessmentAvailable(input.rows, groupId, input.assessmentKey);

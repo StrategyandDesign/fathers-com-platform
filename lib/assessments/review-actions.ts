@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { isReviewableAssessmentKey } from "@/lib/admin/platform-assessments";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
 import { loadPlatformAssessmentRelease } from "@/lib/assessments/data";
 import {
@@ -52,7 +53,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
     ? reviewPath(assessmentKey, groupId, returnTo)
     : "/manager/assessments";
 
-  if (assessmentKey !== KEYSTONE_ASSESSMENT_KEY || !UUID.test(groupId)) {
+  if (!isReviewableAssessmentKey(assessmentKey) || !UUID.test(groupId)) {
     fail("/manager/assessments", "flash.assessmentReviewMissing");
   }
   if (!(await allowActionRateLimit("manager.assessment"))) {

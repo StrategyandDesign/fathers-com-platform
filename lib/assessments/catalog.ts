@@ -16,7 +16,7 @@ import {
 } from "@/lib/assessments/reviews";
 import type { AssessmentListItem } from "@/lib/assessments/types";
 
-export type AssessmentCatalogKind = "keystone" | "custom";
+export type AssessmentCatalogKind = "keystone" | "custom" | "platform";
 export type AssessmentCatalogSection = "pending" | "available" | "hidden" | "declined";
 
 export type AssessmentCatalogItem = {
@@ -37,12 +37,13 @@ export type AssessmentCatalogItem = {
   description?: string | null;
 };
 
-function keystoneSection(input: {
+function releasedPlatformSection(input: {
   release?: PlatformAssessmentRelease | null;
   reviewStatus: AssessmentReviewStatus | null;
   status: AssessmentVisibility;
+  allowLegacy?: boolean;
 }): AssessmentCatalogSection | null {
-  if (isLegacyCatalogAssessment(input.release)) {
+  if (input.allowLegacy && isLegacyCatalogAssessment(input.release)) {
     return input.status === "hidden" ? "hidden" : "available";
   }
   if (!isAssessmentCurrentlyReleased(input.release)) return null;
@@ -54,6 +55,15 @@ function keystoneSection(input: {
   return null;
 }
 
+export type PlatformCatalogSource = {
+  assessmentKey: string;
+  title: string;
+  description: string | null;
+  questionCount: number;
+  completedByGroup: Record<string, number>;
+  release?: PlatformAssessmentRelease | null;
+};
+
 export function buildManagerAssessmentCatalog(input: {
   groups: Array<{ id: string; name: string }>;
   custom: AssessmentListItem[];
@@ -62,6 +72,7 @@ export function buildManagerAssessmentCatalog(input: {
   groupSize: Record<string, number>;
   reviews?: OrganizationAssessmentReview[];
   keystoneRelease?: PlatformAssessmentRelease | null;
+  platform?: PlatformCatalogSource[];
 }): AssessmentCatalogItem[] {
   const showGroupName = input.groups.length > 1;
   const items: AssessmentCatalogItem[] = [];
@@ -95,10 +106,11 @@ export function buildManagerAssessmentCatalog(input: {
       availability: input.availability,
       reviewStatus: review?.status ?? null,
     });
-    const section = keystoneSection({
+    const section = releasedPlatformSection({
       release: input.keystoneRelease,
       reviewStatus: review?.status ?? null,
       status,
+      allowLegacy: true,
     });
     if (!section) continue;
 
@@ -119,6 +131,44 @@ export function buildManagerAssessmentCatalog(input: {
       assignedCount: input.groupSize[group.id] ?? 0,
       completedCount: input.keystoneCompletedByGroup[group.id] ?? 0,
     });
+  }
+
+  for (const platform of input.platform ?? []) {
+    for (const group of groups) {
+      const review = reviewForGroup(reviews, group.id, platform.assessmentKey);
+      const status = catalogVisibility({
+        assessmentKey: platform.assessmentKey,
+        groupId: group.id,
+        availability: input.availability,
+        reviewStatus: review?.status ?? null,
+      });
+      const section = releasedPlatformSection({
+        release: platform.release,
+        reviewStatus: review?.status ?? null,
+        status,
+      });
+      if (!section) continue;
+
+      items.push({
+        key: `${group.id}:${platform.assessmentKey}`,
+        assessmentKey: platform.assessmentKey,
+        kind: "platform",
+        status,
+        section,
+        reviewStatus: review?.status ?? null,
+        groupId: group.id,
+        groupName: showGroupName ? group.name : undefined,
+        href:
+          section === "pending" || section === "declined"
+            ? `/manager/assessment-reviews/${platform.assessmentKey}?group=${group.id}`
+            : `/manager/assessments/platform/${platform.assessmentKey}?group=${group.id}`,
+        questionCount: platform.questionCount,
+        assignedCount: input.groupSize[group.id] ?? 0,
+        completedCount: platform.completedByGroup[group.id] ?? 0,
+        title: platform.title,
+        description: platform.description,
+      });
+    }
   }
 
   for (const assessment of input.custom) {

@@ -8,6 +8,7 @@ import { HomeUpNextCard } from "@/components/father/home-up-next";
 import { LeaderMeta } from "@/components/father/leader-meta";
 import { StreakNotices } from "@/components/father/streak-notices";
 import { Flash } from "@/components/manager/flash";
+import { loadFatherPlatformCards } from "@/lib/admin/platform-assessment-data";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { loadFatherLeader, loadVisibleCohortNote } from "@/lib/cohort-note/data";
 import { requireRole } from "@/lib/auth/session";
@@ -51,6 +52,7 @@ export default async function FatherHomePage({
   const [
     { pathCards, trainingCards, next, profile, draft, certificates },
     customAssignments,
+    platformCards,
     orgPhotos,
     streak,
     leader,
@@ -58,6 +60,7 @@ export default async function FatherHomePage({
   ] = await Promise.all([
     loadFatherHome(user.id),
     loadFatherAssignments(user.id),
+    loadFatherPlatformCards(user.id),
     loadFatherOrgPhotoCovers(user.id),
     loadFatherStreakHome(user.id),
     loadFatherLeader(user.id),
@@ -75,6 +78,7 @@ export default async function FatherHomePage({
   const nextInProgress = sessionInProgress(next?.progress ?? null);
   const assessment = pickHomeAssessment({
     assignments: customAssignments,
+    platform: platformCards,
     profile,
     draft,
   });

@@ -1,3 +1,4 @@
+import { loadLeaderPlatformCards } from "@/lib/admin/platform-assessment-data";
 import {
   loadFatherAssignments,
   loadLeaderAssessmentAccess,
@@ -8,10 +9,11 @@ import type { Session, SessionProgress, Training } from "@/lib/father/types";
 
 export async function loadLeaderPractice(managerId: string) {
   const home = await loadFatherHome(managerId);
-  const [access, owned, assignments] = await Promise.all([
+  const [access, owned, assignments, platformAssessments] = await Promise.all([
     loadLeaderAssessmentAccess(managerId, Boolean(home.profile || home.draft)),
     loadManagerAssessments(managerId),
     loadFatherAssignments(managerId),
+    loadLeaderPlatformCards(managerId),
   ]);
 
   const nextCard = [...home.trainingCards]
@@ -41,5 +43,6 @@ export async function loadLeaderPractice(managerId: string) {
     draft: home.draft,
     canStartKeystone: Boolean(home.profile || home.draft || access.canStartKeystone),
     customAssessments,
+    platformAssessments,
   };
 }

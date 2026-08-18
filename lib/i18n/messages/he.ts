@@ -669,6 +669,8 @@ export const he = {
       recordCount: "{n} תשובות בתיק",
       notReadyTitle: "ההערכה הזו עדיין לא מוכנה",
       notReadyBody: "להערכה הזו עדיין אין שאלות. חזור אחרי שהמנהיג יוסיף.",
+      questionOne: "שאלה אחת",
+      questionMany: "{count} שאלות",
     },
     session: {
       film: "סרט",
@@ -1093,13 +1095,18 @@ export const he = {
       shareTitle: "שיתוף או הסרה",
       shareLead: "מאפשר להקצות לאבות בקבוצה.",
       shareKeystoneLead: "אבות בקבוצה יכולים לעשות את הערכת Keystone. הם לא רואים אותה עד שתשתף.",
+      sharePlatformLead: "אבות בקבוצה יכולים לעשות את ההערכה הזו. הם לא רואים אותה עד שתשתף.",
       removeFromGroup: "הסרה מהקבוצה",
       removeKeystoneLead:
+        "מסתיר מאבות שעדיין לא התחילו. מי שכבר התחיל או סיים שומר את הגישה.",
+      removePlatformLead:
         "מסתיר מאבות שעדיין לא התחילו. מי שכבר התחיל או סיים שומר את הגישה.",
       removeCustomLead: "מסתיר מהקצאה חדשה. אבות שכבר קיבלו שומרים אותה.",
       keystoneLead:
         "הערכת Keystone בת 128 שאלות. מנהל־על משתף אותה איתך. אתה מחליט מתי אבות בקבוצה יכולים לקחת אותה.",
       keystoneRosterLead: "כל אב בקבוצה. ל־Keystone אין הקצאה נפרדת.",
+      platformLead: "מנהל־על בנה את ההערכה המשוקללת הזו. אתה מחליט מתי אבות בקבוצה יכולים לקחת אותה.",
+      platformRosterLead: "כל אב בקבוצה. להערכות פלטפורמה משותפות אין הקצאה נפרדת.",
       completedOfRoster: "{completed}/{total} הושלמו",
       assignRemaining: "הקצאה ל־{n} הנותרים",
       assignHidden: "שתף את ההערכה עם הקבוצה לפני ההקצאה.",

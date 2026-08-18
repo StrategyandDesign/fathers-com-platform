@@ -6,6 +6,11 @@ import { Flash } from "@/components/manager/flash";
 import { ReviewStatusBadge } from "@/components/manager/review-decision-forms";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import {
+  loadPlatformCompletionsByGroup,
+  loadPlatformReleases,
+  loadPublishedPlatformAssessments,
+} from "@/lib/admin/platform-assessment-data";
 import { assignAssessmentToUnassigned } from "@/lib/assessments/actions";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
 import {
@@ -55,18 +60,16 @@ function AssessmentCard({
           </Link>
           <p className="mt-1 text-sm text-muted-foreground">
             {[
-              item.kind === "keystone"
-                ? t("manager.assessments.platform")
-                : null,
+              item.kind === "custom" ? null : t("manager.assessments.platform"),
               questionLabel(item.questionCount, t),
-              item.kind === "keystone"
-                ? t("manager.assessments.completedOfRoster", {
-                    completed: item.completedCount,
-                    total: item.assignedCount,
-                  })
-                : t("manager.assessments.completedOf", {
+              item.kind === "custom"
+                ? t("manager.assessments.completedOf", {
                     completed: item.completedCount,
                     assigned: item.assignedCount,
+                  })
+                : t("manager.assessments.completedOfRoster", {
+                    completed: item.completedCount,
+                    total: item.assignedCount,
                   }),
               item.groupName,
               item.status === "hidden"
@@ -126,12 +129,28 @@ export default async function ManagerAssessmentsPage({
     loadManagerAssessments(user.id),
   ]);
   const groupIds = workspace.groups.map((group) => group.id);
-  const [availability, reviews, keystoneRelease, notifications] = await Promise.all([
-    loadAssessmentAvailability(groupIds),
-    loadOrganizationAssessmentReviews(groupIds),
-    loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
-    loadManagerNotifications(user.id),
-  ]);
+  const publishedPlatform = await loadPublishedPlatformAssessments();
+  const [availability, reviews, keystoneRelease, notifications, platformReleases] =
+    await Promise.all([
+      loadAssessmentAvailability(groupIds),
+      loadOrganizationAssessmentReviews(groupIds),
+      loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
+      loadManagerNotifications(user.id),
+      loadPlatformReleases(publishedPlatform.map((row) => row.assessment_key)),
+    ]);
+  const platformCompletions = await Promise.all(
+    publishedPlatform.map(async (row) => ({
+      assessmentKey: row.assessment_key,
+      counts: await loadPlatformCompletionsByGroup({
+        assessmentId: row.id,
+        groupIds,
+      }),
+    }))
+  );
+  const releaseByKey = new Map(platformReleases.map((row) => [row.assessment_key, row]));
+  const completionsByKey = new Map(
+    platformCompletions.map((row) => [row.assessmentKey, row.counts])
+  );
   const unread = notifications.filter(
     (row) => !row.read_at && row.kind === "assessment_release"
   );
@@ -153,6 +172,14 @@ export default async function ManagerAssessmentsPage({
     groupSize,
     reviews,
     keystoneRelease,
+    platform: publishedPlatform.map((row) => ({
+      assessmentKey: row.assessment_key,
+      title: row.title,
+      description: row.description,
+      questionCount: row.questionCount,
+      completedByGroup: Object.fromEntries(completionsByKey.get(row.assessment_key) ?? []),
+      release: releaseByKey.get(row.assessment_key) ?? null,
+    })),
   });
   const { pending, available, hidden, declined } = partitionAssessmentCatalog(catalog);
   const orgName = workspace.groups[0]?.name ?? t("account.orgPhotosFallback");

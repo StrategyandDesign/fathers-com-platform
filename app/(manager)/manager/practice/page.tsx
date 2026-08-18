@@ -4,6 +4,7 @@ import { FatherTrainingCatalogCard, isTrainingInProgress } from "@/components/fa
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { platformTakeHref } from "@/lib/admin/platform-assessments";
 import { startLeaderAssessment } from "@/lib/assessments/actions";
 import { requireRole } from "@/lib/auth/session";
 import { startProfile } from "@/lib/father/profile-actions";
@@ -28,7 +29,8 @@ export default async function LeaderPracticePage({
     loadLeaderPractice(user.id),
     loadManagerOrgPhotoCovers(user.id),
   ]);
-  const { trainingCards, profile, draft, canStartKeystone, customAssessments } = practice;
+  const { trainingCards, profile, draft, canStartKeystone, customAssessments, platformAssessments } =
+    practice;
   const resumeAt = draft ? firstUnanswered(draft.answers) : 1;
   const answered = draft ? answeredCount(draft.answers) : 0;
   const keystoneHref = profile
@@ -46,7 +48,8 @@ export default async function LeaderPracticePage({
         })
       : t("father.profile.takeHint");
   const showKeystone = Boolean(profile || draft || canStartKeystone);
-  const showAssessments = showKeystone || customAssessments.length > 0;
+  const showAssessments =
+    showKeystone || customAssessments.length > 0 || platformAssessments.length > 0;
 
   return (
     <div className="space-y-8">
@@ -176,6 +179,49 @@ export default async function LeaderPracticePage({
                   )}
                 </li>
               ) : null}
+              {platformAssessments.map((card) => {
+                const status = card.attempt?.status ?? "not_started";
+                return (
+                  <li key={card.assessmentKey}>
+                    <Link
+                      href={platformTakeHref(card.assessmentKey, undefined, {
+                        root: PRACTICE_ROOT,
+                      })}
+                      className={cn(
+                        "flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between",
+                        interactiveSurfaceClassName
+                      )}
+                    >
+                      <div className="min-w-0">
+                        <p className="font-medium">{card.title}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {t(
+                            `father.assessments.${
+                              status === "not_started"
+                                ? "notStarted"
+                                : status === "in_progress"
+                                  ? "inProgress"
+                                  : "completed"
+                            }`
+                          )}
+                        </p>
+                      </div>
+                      <span
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "pointer-events-none w-full sm:w-auto"
+                        )}
+                      >
+                        {status === "completed"
+                          ? t("father.assessments.view")
+                          : status === "in_progress"
+                            ? t("father.assessments.continue")
+                            : t("father.assessments.take")}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
               {customAssessments.map(({ assessment, assignment }) => {
                 const status = assignment?.assignment.status ?? "not_started";
                 const href = assignment

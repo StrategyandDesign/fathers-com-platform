@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
+import { localizedText, platformTakeHref } from "@/lib/admin/platform-assessments";
+import { loadFatherPlatformCards } from "@/lib/admin/platform-assessment-data";
 import { loadFatherAssessmentAccess, loadFatherAssignments } from "@/lib/assessments/data";
 import { takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
@@ -19,10 +21,11 @@ export default async function FatherAssessmentsPage({
   const flash = await searchParams;
   const { user } = await requireRole("father");
   const { t, locale } = await getI18n();
-  const [assignments, { profile, draft }, access] = await Promise.all([
+  const [assignments, { profile, draft }, access, platformCards] = await Promise.all([
     loadFatherAssignments(user.id),
     loadProfileState(user.id),
     loadFatherAssessmentAccess(user.id),
+    loadFatherPlatformCards(user.id),
   ]);
   const showKeystone = Boolean(profile || draft || access.canStartKeystone);
   const resumeAt = draft ? firstUnanswered(draft.answers) : 1;
@@ -83,11 +86,63 @@ export default async function FatherAssessmentsPage({
             </Link>
           </li>
           ) : null}
-          {!showKeystone && assignments.length === 0 ? (
+          {!showKeystone && assignments.length === 0 && platformCards.length === 0 ? (
             <li className="px-4 py-4 text-sm text-muted-foreground">
               {t("father.assessments.emptyBody")}
             </li>
           ) : null}
+          {platformCards.map((card) => {
+            const status = card.attempt?.status ?? "not_started";
+            return (
+              <li key={card.assessmentKey}>
+                <Link
+                  href={platformTakeHref(card.assessmentKey)}
+                  className={cn(
+                    "flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between",
+                    interactiveSurfaceClassName
+                  )}
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium">
+                      {localizedText(card.title, card.titleHe, locale)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {t(
+                        `father.assessments.${
+                          status === "not_started"
+                            ? "notStarted"
+                            : status === "in_progress"
+                              ? "inProgress"
+                              : "completed"
+                        }`
+                      )}
+                      {card.questionCount > 0
+                        ? ` · ${
+                            card.questionCount === 1
+                              ? t("father.assessments.questionOne")
+                              : t("father.assessments.questionMany", {
+                                  count: card.questionCount,
+                                })
+                          }`
+                        : ""}
+                    </p>
+                  </div>
+                  <span
+                    className={cn(
+                      buttonVariants({ variant: "outline" }),
+                      "pointer-events-none w-full sm:w-auto"
+                    )}
+                  >
+                    {status === "completed"
+                      ? t("father.assessments.view")
+                      : status === "in_progress"
+                        ? t("father.assessments.continue")
+                        : t("father.assessments.take")}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
           {assignments.map(({ assignment, assessment, questionCount, answeredCount }) => (
             <li key={assignment.id}>
               <Link

@@ -88,6 +88,12 @@ export default async function AdminHomePage({
               Bring in a training
             </Link>
             <Link
+              href="/admin/assessments/new"
+              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            >
+              New assessment
+            </Link>
+            <Link
               href="/admin/assessments"
               className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
             >

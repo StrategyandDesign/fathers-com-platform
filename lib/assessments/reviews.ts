@@ -1,3 +1,4 @@
+import { isAuthoredPlatformAssessmentKey } from "@/lib/admin/platform-assessments";
 import {
   KEYSTONE_ASSESSMENT_KEY,
   availabilityStatus,
@@ -34,8 +35,9 @@ export function isAssessmentReviewStatus(value: unknown): value is AssessmentRev
   );
 }
 
-export function platformAssessmentTitle(assessmentKey: string) {
+export function platformAssessmentTitle(assessmentKey: string, fallbackTitle?: string) {
   if (assessmentKey === KEYSTONE_ASSESSMENT_KEY) return "Keystone Assessment";
+  if (fallbackTitle?.trim()) return fallbackTitle.trim();
   return assessmentKey;
 }
 
@@ -65,10 +67,16 @@ export function organizationMayOfferAssessment(input: {
   release?: PlatformAssessmentRelease | null;
   reviewStatus?: AssessmentReviewStatus | null;
 }) {
-  if (input.assessmentKey !== KEYSTONE_ASSESSMENT_KEY) return true;
-  if (isLegacyCatalogAssessment(input.release)) return true;
-  if (!isAssessmentCurrentlyReleased(input.release)) return false;
-  return input.reviewStatus === "accepted";
+  if (input.assessmentKey === KEYSTONE_ASSESSMENT_KEY) {
+    if (isLegacyCatalogAssessment(input.release)) return true;
+    if (!isAssessmentCurrentlyReleased(input.release)) return false;
+    return input.reviewStatus === "accepted";
+  }
+  if (isAuthoredPlatformAssessmentKey(input.assessmentKey)) {
+    if (!isAssessmentCurrentlyReleased(input.release)) return false;
+    return input.reviewStatus === "accepted";
+  }
+  return true;
 }
 
 export function catalogVisibility(input: {
@@ -81,7 +89,11 @@ export function catalogVisibility(input: {
     (item) => item.group_id === input.groupId && item.assessment_key === input.assessmentKey
   );
   if (row) return row.status;
-  if (input.assessmentKey === KEYSTONE_ASSESSMENT_KEY && input.reviewStatus === "accepted") {
+  if (
+    (input.assessmentKey === KEYSTONE_ASSESSMENT_KEY ||
+      isAuthoredPlatformAssessmentKey(input.assessmentKey)) &&
+    input.reviewStatus === "accepted"
+  ) {
     return "hidden";
   }
   return availabilityStatus(input.availability, input.groupId, input.assessmentKey);
