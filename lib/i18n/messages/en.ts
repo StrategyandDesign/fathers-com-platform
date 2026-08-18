@@ -200,7 +200,7 @@ export const en = {
     inviteCode: "Invite code",
     inviteHint: "Enter the code provided by your leader.",
     languageHint: "Language for this browser",
-    pilotNotice: "Official Fathers.com training pilot.",
+    pilotNotice: "The Fathers Performance Platform",
   },
   flash: {
     deactivated: "This account has been deactivated.",

@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     default: "Fathers.com Pilot",
     template: "%s · Fathers.com Pilot",
   },
-  description: "Official Fathers.com training pilot",
+  description: "The Fathers Performance Platform",
 };
 
 export const viewport: Viewport = {
