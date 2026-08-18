@@ -9,6 +9,7 @@ import { Flash } from "@/components/manager/flash";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { loadAccountState, loadOrganizationName } from "@/lib/account/data";
+import { loadFatherLeader } from "@/lib/cohort-note/data";
 import { signOut } from "@/lib/auth/actions";
 import { ROLE_HELP, type AppRole } from "@/lib/auth/roles";
 import { getI18n } from "@/lib/i18n/server";
@@ -30,9 +31,10 @@ export async function AccountView({
   children?: React.ReactNode;
 }) {
   const { t } = await getI18n();
-  const [account, organizationName] = await Promise.all([
+  const [account, organizationName, leader] = await Promise.all([
     loadAccountState(userId),
     role === "father" ? loadOrganizationName(userId) : Promise.resolve(null),
+    role === "father" ? loadFatherLeader(userId) : Promise.resolve(null),
   ]);
   const identityLabel =
     role === "father"
@@ -70,6 +72,16 @@ export async function AccountView({
             <p className="truncate text-sm text-muted-foreground">
               {[email, identityLabel].filter(Boolean).join(" · ")}
             </p>
+            {leader ? (
+              <p className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                <UserAvatar
+                  name={leader.name}
+                  src={leader.avatarUrl}
+                  className="size-6 text-[10px]"
+                />
+                <span>{t("account.leaderLabel", { name: leader.name })}</span>
+              </p>
+            ) : null}
           </div>
         </div>
       </section>

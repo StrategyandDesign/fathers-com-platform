@@ -1,11 +1,15 @@
 import { AssessmentHomeCard } from "@/components/assessments/home-card";
+import { CohortNoteCard } from "@/components/father/cohort-note-card";
 import { HomeAssessmentCard } from "@/components/father/home-assessment-card";
 import { HomeEarnedRow } from "@/components/father/home-earned";
 import { HomePathRow } from "@/components/father/home-path";
 import { HomeStreakRow } from "@/components/father/home-streak";
 import { HomeUpNextCard } from "@/components/father/home-up-next";
+import { LeaderMeta } from "@/components/father/leader-meta";
 import { StreakNotices } from "@/components/father/streak-notices";
+import { Flash } from "@/components/manager/flash";
 import { loadFatherAssignments } from "@/lib/assessments/data";
+import { loadFatherLeader, loadVisibleCohortNote } from "@/lib/cohort-note/data";
 import { requireRole } from "@/lib/auth/session";
 import { pickHomeAssessment, sortHomePath } from "@/lib/father/home";
 import { loadFatherHome } from "@/lib/father/data";
@@ -38,19 +42,27 @@ function sessionInProgress(progress: SessionProgress | null) {
 export default async function FatherHomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ done?: string }>;
+  searchParams: Promise<{ done?: string; error?: string; notice?: string }>;
 }) {
-  const { done } = await searchParams;
+  const { done, error, notice } = await searchParams;
   const { user } = await requireRole("father");
   const { t } = await getI18n();
   scheduleDueReminderFlush();
-  const [{ pathCards, trainingCards, next, profile, draft, certificates }, customAssignments, orgPhotos, streak] =
-    await Promise.all([
-      loadFatherHome(user.id),
-      loadFatherAssignments(user.id),
-      loadFatherOrgPhotoCovers(user.id),
-      loadFatherStreakHome(user.id),
-    ]);
+  const [
+    { pathCards, trainingCards, next, profile, draft, certificates },
+    customAssignments,
+    orgPhotos,
+    streak,
+    leader,
+    cohortNote,
+  ] = await Promise.all([
+    loadFatherHome(user.id),
+    loadFatherAssignments(user.id),
+    loadFatherOrgPhotoCovers(user.id),
+    loadFatherStreakHome(user.id),
+    loadFatherLeader(user.id),
+    loadVisibleCohortNote(user.id),
+  ]);
 
   const nextCard = next
     ? pathCards.find((card) => card.training.id === next.training.id)
@@ -136,6 +148,10 @@ export default async function FatherHomePage({
         pair ? "max-w-4xl" : "max-w-xl"
       )}
     >
+      {leader ? (
+        <LeaderMeta name={leader.name} avatarUrl={leader.avatarUrl} t={t} />
+      ) : null}
+      <Flash error={error} notice={notice} />
       <StreakNotices notices={streak.notices} />
       <HomeStreakRow
         weeks={streak.currentWeeks}
@@ -144,6 +160,9 @@ export default async function FatherHomePage({
         grid={streak.grid}
         justFinished={justFinished}
       />
+      {cohortNote ? (
+        <CohortNoteCard groupId={cohortNote.groupId} body={cohortNote.body} t={t} />
+      ) : null}
 
       {pair ? (
         <div className="grid items-stretch gap-4 lg:grid-cols-2">

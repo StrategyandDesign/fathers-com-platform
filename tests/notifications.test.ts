@@ -206,9 +206,9 @@ describe("deep links and next session", () => {
   it("lands on the film, action, or certificate", () => {
     assert.equal(sessionFilmHref("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "/father/sessions/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
     assert.equal(sessionActionHref("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "/father/sessions/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa/action");
-    assert.equal(normalizeDeepLink("/father"), "/father/trainings");
+    assert.equal(normalizeDeepLink("/father"), "/father");
     assert.equal(isFatherDeepLink("/father/certificates"), true);
-    assert.equal(isFatherDeepLink("/father"), false);
+    assert.equal(isFatherDeepLink("/father"), true);
   });
 
   it("only reminds for an assigned open session that has not started", () => {

@@ -19,6 +19,8 @@ import {
   organizationLabel,
 } from "@/lib/manager/companion";
 import { loadManagerAssessments } from "@/lib/assessments/data";
+import { CohortNoteDesk } from "@/components/manager/cohort-note-desk";
+import { loadManagerCohortNotes } from "@/lib/cohort-note/data";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadManagerOrganizationMarks } from "@/lib/org-photos/data";
 import { loadNudgePanel } from "@/lib/manager/nudge-panel-data";
@@ -36,11 +38,12 @@ export default async function ManagerHomePage({
   const { user, role } = await requireRole("manager");
   const { t } = await getI18n();
   scheduleDueReminderFlush();
-  const [workspace, reviews, assessments, marks] = await Promise.all([
+  const [workspace, reviews, assessments, marks, cohortNotes] = await Promise.all([
     loadManagerWorkspace(user.id),
     loadReviewQueue(user.id),
     loadManagerAssessments(user.id),
     loadManagerOrganizationMarks(user.id),
+    loadManagerCohortNotes(user.id),
   ]);
   const nudgePanel = await loadNudgePanel({
     role,
@@ -105,6 +108,7 @@ export default async function ManagerHomePage({
         </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
+      <CohortNoteDesk groups={cohortNotes} />
       <NudgePanel panel={nudgePanel} />
       <CompanionPanel briefing={companion} t={t} />
 
