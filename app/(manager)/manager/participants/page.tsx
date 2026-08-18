@@ -110,12 +110,6 @@ export default async function ManagerParticipantsPage({
         </section>
       ) : null}
 
-      <CertificateDesk
-        ready={certificateDesk.ready}
-        issued={certificateDesk.issued}
-        t={t}
-      />
-
       {participants.length === 0 ? (
         <EmptyState
           title={t("manager.participants.emptyTitle")}
@@ -166,6 +160,12 @@ export default async function ManagerParticipantsPage({
           />
         </div>
       )}
+
+      <CertificateDesk
+        ready={certificateDesk.ready}
+        issued={certificateDesk.issued}
+        t={t}
+      />
     </div>
   );
 }

@@ -1105,7 +1105,7 @@ export const en = {
       issuedMany: "{count} already issued",
       emptyReady:
         "No one is ready yet. A name appears here when every session in a training is done.",
-      how: "Open a name to preview and send, or use Bulk actions below and choose Issue certificates.",
+      how: "Open a name to preview and send, or use Bulk actions above and choose Issue certificates.",
     },
     nudge: {
       note: "Note",
