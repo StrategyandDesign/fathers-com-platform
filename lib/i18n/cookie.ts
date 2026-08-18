@@ -30,6 +30,11 @@ export async function writeLocaleCookie(locale: Locale) {
   jar.set(LOCALE_COOKIE, locale, localeCookieOptions());
 }
 
+export async function clearLocaleCookie() {
+  const jar = await cookies();
+  jar.set(LOCALE_COOKIE, "", { ...localeCookieOptions(), maxAge: 0 });
+}
+
 export function parseLocaleFormValue(value: FormDataEntryValue | null): Locale | null {
   const raw = String(value ?? "").trim();
   if (!raw) return null;

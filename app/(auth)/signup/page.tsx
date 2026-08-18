@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { PasswordField } from "@/components/auth/password-field";
-import { LocaleSwitch } from "@/components/i18n/locale-switch";
 import { Flash } from "@/components/manager/flash";
 import { signUp } from "@/lib/auth/actions";
 import { safeInternalPath } from "@/lib/auth/roles";
@@ -84,7 +83,6 @@ export default async function SignupPage({
             {t("auth.signIn")}
           </Link>
         </p>
-        <LocaleSwitch className="mt-6 justify-center" compact />
       </CardContent>
     </Card>
   );

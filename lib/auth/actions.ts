@@ -136,5 +136,11 @@ export async function signUp(formData: FormData) {
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  try {
+    const { clearLocaleCookie } = await import("@/lib/i18n/cookie");
+    await clearLocaleCookie();
+  } catch {
+    // Cookie clear is best-effort; sign-out still proceeds.
+  }
   redirect("/login");
 }
