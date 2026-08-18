@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { isReviewableAssessmentKey } from "@/lib/admin/platform-assessments";
-import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
 import { loadPlatformAssessmentRelease } from "@/lib/assessments/data";
 import {
   ASSESSMENT_DECLINE_REASON_MAX,
