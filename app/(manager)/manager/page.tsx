@@ -132,6 +132,7 @@ export default async function ManagerHomePage({
         </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
+      <CohortNoteDesk groups={cohortNotes} />
       <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
         <h2 className="font-heading text-lg font-semibold">
           {t("manager.dashboard.practiceTitle")}
@@ -154,7 +155,6 @@ export default async function ManagerHomePage({
           </Link>
         </div>
       </section>
-      <CohortNoteDesk groups={cohortNotes} />
       <NudgePanel panel={nudgePanel} />
       <CompanionPanel briefing={companion} t={t} />
 
