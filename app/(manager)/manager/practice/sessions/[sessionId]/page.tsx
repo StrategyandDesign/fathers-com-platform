@@ -51,12 +51,12 @@ export default async function LeaderPracticeFilmPage({
     ? PRACTICE_WALK.checkin(session.id)
     : !actionDone
       ? PRACTICE_WALK.action(session.id)
-      : PRACTICE_ROOT;
+      : PRACTICE_WALK.done(session.id);
   const nextLabel = !checkinDone
     ? t("father.session.continueCheckin")
     : !actionDone
       ? t("father.session.continueAction")
-      : t("manager.practice.backToPath");
+      : t("father.session.closeoutContinue");
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 sm:space-y-6">

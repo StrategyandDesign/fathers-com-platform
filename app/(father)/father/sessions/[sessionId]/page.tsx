@@ -56,12 +56,12 @@ export default async function SessionViewerPage({
     ? `/father/sessions/${session.id}/checkin`
     : !actionDone
       ? `/father/sessions/${session.id}/action`
-      : `/father?done=${encodeURIComponent(session.id)}`;
+      : `/father/sessions/${session.id}/done`;
   const nextLabel = !checkinDone
     ? t("father.session.continueCheckin")
     : !actionDone
       ? t("father.session.continueAction")
-      : t("father.session.continueHome");
+      : t("father.session.closeoutContinue");
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 sm:space-y-6">

@@ -349,11 +349,11 @@ export async function finishActionSession(formData: FormData) {
   revalidatePath(`/manager/practice/sessions/${sessionId}/action`);
 
   if (role === "manager") {
-    redirect(`${paths.home}?done=${encodeURIComponent(sessionId)}`);
+    redirect(paths.done(sessionId));
   }
 
   const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
-  redirect(startHref ?? `/father?done=${encodeURIComponent(sessionId)}`);
+  redirect(startHref ?? paths.done(sessionId));
 }
 
 export async function saveFilmPosition(sessionId: string, seconds: number) {

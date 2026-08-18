@@ -307,6 +307,7 @@ export async function loadSessionContext(fatherId: string, sessionId: string) {
       isSessionComplete(progressBySession.get(row.id) ?? null)
     ).length,
     sessionTotal: catalogSessionTotal(typedTraining, trainingSessions.length),
+    progressBySession,
     unlocked,
     gated: false,
     gateRedirect: null,
