@@ -12,6 +12,7 @@ import { fieldClassName, initials, interactiveSurfaceClassName } from "@/lib/ui"
 import { requireRole } from "@/lib/auth/session";
 import { translateAttention } from "@/lib/i18n/flash";
 import { getI18n } from "@/lib/i18n/server";
+import { scheduleDueReminderFlush } from "@/lib/jobs/flush-due-work";
 import { createGroup } from "@/lib/manager/actions";
 import {
   buildCompanionBriefing,
@@ -34,6 +35,7 @@ export default async function ManagerHomePage({
   const params = await searchParams;
   const { user, role } = await requireRole("manager");
   const { t } = await getI18n();
+  scheduleDueReminderFlush();
   const [workspace, reviews, assessments, marks] = await Promise.all([
     loadManagerWorkspace(user.id),
     loadReviewQueue(user.id),

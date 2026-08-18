@@ -21,7 +21,7 @@ export async function SessionHeader({
   filmHref,
   checkinHref,
   actionHref,
-  trainingHref = "/father/trainings",
+  trainingHref,
   unlockAll = false,
 }: {
   training: Training;
@@ -35,10 +35,11 @@ export async function SessionHeader({
   filmHref?: string;
   checkinHref?: string;
   actionHref?: string;
-  trainingHref?: string;
+  trainingHref?: string | null;
   unlockAll?: boolean;
 }) {
   const { t } = await getI18n();
+  const catalogHref = trainingHref === undefined ? "/father/trainings" : trainingHref;
   const total = sessionTotal ?? training.session_count;
   const subtitle =
     session.keyline && session.keyline !== session.title ? session.keyline : null;
@@ -75,9 +76,13 @@ export async function SessionHeader({
 
       <div className="space-y-1">
         <p className="text-xs text-muted-foreground">
-          <Link href={trainingHref} className={interactiveLinkClassName}>
-            {training.title}
-          </Link>
+          {catalogHref ? (
+            <Link href={catalogHref} className={interactiveLinkClassName}>
+              {training.title}
+            </Link>
+          ) : (
+            <span>{training.title}</span>
+          )}
         </p>
         {training.part_number && training.part_total ? (
           <p className="text-xs text-muted-foreground">

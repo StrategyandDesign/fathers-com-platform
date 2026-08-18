@@ -185,7 +185,7 @@ export function nextQuietEnd(at: Date, timeZone: string, quietEnd = DEFAULT_QUIE
   const parsed = parseClock(quietEnd) ?? DEFAULT_QUIET_END;
   const [hour, minute] = parsed.split(":").map((part) => Number.parseInt(part, 10));
   const local = localParts(at, timeZone);
-  let candidate = localDateTime(timeZone, local.year, local.month, local.day, hour, minute);
+  const candidate = localDateTime(timeZone, local.year, local.month, local.day, hour, minute);
   if (candidate.getTime() > at.getTime()) return candidate;
   const next = new Date(Date.UTC(local.year, local.month - 1, local.day + 1));
   return localDateTime(

@@ -21,6 +21,7 @@ export async function RoleShell({
   organizationName,
   organizationLogoUrl,
   roleLabel,
+  onboardingActive = false,
   children,
 }: {
   role: AppRole;
@@ -29,12 +30,14 @@ export async function RoleShell({
   organizationName?: string | null;
   organizationLogoUrl?: string | null;
   roleLabel?: string | null;
+  onboardingActive?: boolean;
   children: React.ReactNode;
 }) {
   const { t } = await getI18n();
   const pathname = await requestPathname();
   const startFlow = role === "father" && isFatherStartPath(pathname);
-  const fatherMobile = role === "father" && !startFlow;
+  const funnel = startFlow || (role === "father" && onboardingActive);
+  const fatherMobile = role === "father" && !funnel;
   const managerMobileNav = role === "manager";
   const chromeLabel = role === "father" ? null : roleLabel?.trim() || t(`role.${role}`);
   const groupName = role === "father" && !startFlow ? organizationName?.trim() || null : null;
@@ -45,7 +48,7 @@ export async function RoleShell({
       <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-border bg-background/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden lg:px-5">
         <div className="flex min-w-0 shrink-0 items-center gap-1.5 lg:gap-3">
           {role !== "father" && role !== "manager" ? <StaffMenu role={role} /> : null}
-          <BrandLogo href={startFlow ? "/father/start" : ROLE_HOME[role]} />
+          <BrandLogo href={funnel ? "/father/start" : ROLE_HOME[role]} />
           {chromeLabel ? (
             <Badge variant="secondary" className="hidden max-w-[14rem] truncate lg:inline-flex">
               {chromeLabel}
@@ -61,7 +64,7 @@ export async function RoleShell({
         ) : (
           <div className="hidden flex-1 md:block" />
         )}
-        {startFlow ? (
+        {funnel ? (
           <div className="flex-1" />
         ) : (
           <div className="flex shrink-0 justify-end">
@@ -93,7 +96,7 @@ export async function RoleShell({
         </div>
       ) : null}
 
-      {startFlow ? null : (
+      {funnel ? null : (
         <aside className="fixed bottom-0 start-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col overflow-y-auto border-e border-border bg-sidebar print:hidden lg:flex">
           <AppNav role={role} layout="side" />
         </aside>
@@ -111,7 +114,7 @@ export async function RoleShell({
           managerMobileNav
             ? "pt-[calc(6.5rem+env(safe-area-inset-top))] lg:pt-[calc(3.5rem+env(safe-area-inset-top))]"
             : "pt-[calc(3.5rem+env(safe-area-inset-top))]",
-          startFlow ? "print:pt-0" : "lg:ps-[5.5rem] print:pt-0 print:ps-0",
+          funnel ? "print:pt-0" : "lg:ps-[5.5rem] print:pt-0 print:ps-0",
           fatherMobile
             ? "max-lg:pb-[calc(3.75rem+env(safe-area-inset-bottom))]"
             : "max-lg:pb-6"

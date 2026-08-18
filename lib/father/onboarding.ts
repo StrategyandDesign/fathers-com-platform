@@ -156,6 +156,10 @@ export function onboardingHref(step: OnboardingStep) {
   return STEP_HREF[step];
 }
 
+export function isOnboardingActive(mode: OnboardingMode, step: OnboardingStep) {
+  return mode !== "done" && step !== "done";
+}
+
 export function stepRank(step: OnboardingStep) {
   return ONBOARDING_STEPS.indexOf(step);
 }

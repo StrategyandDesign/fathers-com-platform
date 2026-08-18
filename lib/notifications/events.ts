@@ -95,6 +95,7 @@ export async function queueActionReminder(input: {
     availableAt: input.availableAt,
     reschedule: true,
   });
+  await flushDueReminders();
 }
 
 export async function cancelActionReminder(fatherId: string, sessionId: string) {

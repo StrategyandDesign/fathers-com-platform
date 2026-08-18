@@ -16,7 +16,7 @@ export default async function FatherLayout({
   const { user, role } = await requireRole("father");
   await ensureFatherGroupJoin(user);
   const pathname = await requestPathname();
-  await gateFatherOnboarding(user.id, pathname);
+  const { active: onboardingActive } = await gateFatherOnboarding(user.id, pathname);
   const [avatarUrl, organization] = await Promise.all([
     loadCurrentAvatarUrl(user.id),
     loadFatherOrganizationMark(user.id),
@@ -29,6 +29,7 @@ export default async function FatherLayout({
       avatarUrl={avatarUrl}
       organizationName={organization?.name}
       organizationLogoUrl={organization?.logoUrl}
+      onboardingActive={onboardingActive}
     >
       {children}
     </RoleShell>

@@ -11,6 +11,7 @@ import { loadFatherHome } from "@/lib/father/data";
 import { loadFatherStreakHome } from "@/lib/father/streak-store";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
+import { scheduleDueReminderFlush } from "@/lib/jobs/flush-due-work";
 import {
   loadFatherOrgPhotoCovers,
   resolveHomeHeroCover,
@@ -39,6 +40,7 @@ export default async function FatherHomePage({
   const { done } = await searchParams;
   const { user } = await requireRole("father");
   const { t } = await getI18n();
+  scheduleDueReminderFlush();
   const [{ pathCards, trainingCards, next, profile, draft, certificates }, customAssignments, orgPhotos, streak] =
     await Promise.all([
       loadFatherHome(user.id),

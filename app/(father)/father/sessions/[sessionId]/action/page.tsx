@@ -24,6 +24,8 @@ import {
   markActionDone,
 } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
+import { loadOnboardingState } from "@/lib/father/onboarding-data";
+import { isOnboardingActive } from "@/lib/father/onboarding";
 import { parseSkillPrompt, sessionAction } from "@/lib/father/session-questions";
 import { getI18n } from "@/lib/i18n/server";
 import { interactiveUnderlineClassName } from "@/lib/ui";
@@ -39,7 +41,10 @@ export default async function SessionActionPage({
   const { sessionId } = await params;
   const { error, change } = await searchParams;
   const { user } = await requireRole("father");
-  const context = await loadSessionContext(user.id, sessionId);
+  const [context, onboarding] = await Promise.all([
+    loadSessionContext(user.id, sessionId),
+    loadOnboardingState(user.id),
+  ]);
 
   if (!context) {
     notFound();
@@ -69,6 +74,7 @@ export default async function SessionActionPage({
 
   const { t, dateLocale } = await getI18n();
   const { session, training, completedCount, sessionTotal } = context;
+  const funnel = isOnboardingActive(onboarding.mode, onboarding.step);
   const skill = actionSkillText(session, parseSkillPrompt(sessionAction(session, training)).stem);
   const timezone = await loadFatherTimeZone(user.id);
   const changing = change === "1" && state === "do";
@@ -96,6 +102,7 @@ export default async function SessionActionPage({
         completedCount={completedCount}
         sessionTotal={sessionTotal}
         backHref={`/father/sessions/${sessionId}/checkin`}
+        trainingHref={funnel ? null : undefined}
         filmCompleted
         checkinCompleted
       />
@@ -114,7 +121,7 @@ export default async function SessionActionPage({
             timezone={timezone}
             action={commitActionMoment}
           />
-          {state === "commit" ? (
+          {state === "commit" && !funnel ? (
             <p className="text-center">
               <Link
                 href="/father"

@@ -7,6 +7,7 @@ import {
   defaultRemindAt,
   isAssignedSessionPath,
   isFatherStartPath,
+  isOnboardingActive,
   nextStepAfterAnswer,
   onboardingHref,
   parseRemindAt,
@@ -149,6 +150,13 @@ describe("start routes", () => {
       true
     );
     assert.equal(isAssignedSessionPath("/father/sessions/other", "abc"), false);
+  });
+
+  it("treats first-run chrome as a closed funnel until the flow is done", () => {
+    assert.equal(isOnboardingActive("full", "session"), true);
+    assert.equal(isOnboardingActive("reminder-only", "reminder"), true);
+    assert.equal(isOnboardingActive("done", "done"), false);
+    assert.equal(isOnboardingActive("full", "done"), false);
   });
 
   it("keeps unknown setup answers off the profile", () => {

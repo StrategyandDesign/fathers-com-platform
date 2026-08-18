@@ -11,6 +11,8 @@ import { sessionCover } from "@/lib/brand/photos";
 import { loadActionCommitment } from "@/lib/father/action-commitment-data";
 import { markFilmWatched } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
+import { loadOnboardingState } from "@/lib/father/onboarding-data";
+import { isOnboardingActive } from "@/lib/father/onboarding";
 import { loadFatherOrgPhotoCovers } from "@/lib/org-photos/data";
 import { youtubeEmbedUrl } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
@@ -27,7 +29,10 @@ export default async function SessionViewerPage({
   const { sessionId } = await params;
   const { error } = await searchParams;
   const { user } = await requireRole("father");
-  const context = await loadSessionContext(user.id, sessionId);
+  const [context, onboarding] = await Promise.all([
+    loadSessionContext(user.id, sessionId),
+    loadOnboardingState(user.id),
+  ]);
 
   if (!context) {
     notFound();
@@ -39,6 +44,7 @@ export default async function SessionViewerPage({
 
   const { t } = await getI18n();
   const { session, training, progress, completedCount, sessionTotal } = context;
+  const funnel = isOnboardingActive(onboarding.mode, onboarding.step);
   const embed = youtubeEmbedUrl(session.video_url);
   const filmDone = progress?.film_completed ?? false;
   const checkinDone = progress?.checkin_completed ?? false;
@@ -65,7 +71,8 @@ export default async function SessionViewerPage({
         current="film"
         completedCount={completedCount}
         sessionTotal={sessionTotal}
-        backHref="/father"
+        backHref={funnel ? "/father/start" : "/father"}
+        trainingHref={funnel ? null : undefined}
         filmCompleted={filmDone}
         checkinCompleted={checkinDone}
       />
