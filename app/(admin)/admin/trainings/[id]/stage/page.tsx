@@ -9,6 +9,7 @@ import { FatherTrainingCatalogCard } from "@/components/father/training-catalog-
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ProgressBar } from "@/components/ui/progress";
 import {
   stageCatalogTotal,
   stagePaths,
@@ -181,9 +182,12 @@ export default async function AdminTrainingStagePage({
                       <p className="font-heading text-sm font-semibold sm:text-base">
                         {training.title}
                       </p>
-                      <p className="mt-3 text-sm text-muted-foreground">
-                        {t("father.home.sessionsCount", { completed: 0, total })}
-                      </p>
+                      <div className="mt-4 space-y-2">
+                        <ProgressBar value={0} />
+                        <p className="text-sm text-muted-foreground">
+                          {t("father.home.sessionsCount", { completed: 0, total })}
+                        </p>
+                      </div>
                     </div>
                   </Link>
                 </section>
