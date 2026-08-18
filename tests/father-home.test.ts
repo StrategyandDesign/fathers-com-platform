@@ -119,33 +119,27 @@ describe("home shelves", () => {
     const rows = splitHomeRows(
       [
         {
-          training: { id: "fundamentals-1" },
+          training: { id: "fundamentals" },
           completed: 4,
-          total: 5,
+          total: 9,
           gated: false,
           next: { id: "s4" },
           nextProgress: { status: "in_progress" },
         },
         {
-          training: { id: "fundamentals-2" },
-          completed: 0,
-          total: 6,
-          gated: true,
-        },
-        {
           training: { id: "anger" },
           completed: 0,
-          total: 6,
+          total: 12,
           gated: false,
           next: { id: "a1" },
           nextProgress: null,
         },
       ],
-      "fundamentals-1"
+      "fundamentals"
     );
     assert.deepEqual(
       rows.path.map((card) => card.training.id),
-      ["fundamentals-1"]
+      ["fundamentals"]
     );
     assert.deepEqual(
       rows.trainings.map((card) => card.training.id),
@@ -153,16 +147,22 @@ describe("home shelves", () => {
     );
   });
 
-  it("does not list a gated later part as a second Path card", () => {
+  it("does not list a finished training as available", () => {
     const rows = splitHomeRows(
       [
-        { training: { id: "part-1" }, completed: 2, total: 5, gated: false, next: { id: "s2" } },
-        { training: { id: "part-2" }, completed: 0, total: 5, gated: true },
+        { training: { id: "fundamentals" }, completed: 9, total: 9, gated: false },
+        { training: { id: "anger" }, completed: 0, total: 12, gated: false, next: { id: "a1" } },
       ],
-      "part-1"
+      "fundamentals"
     );
-    assert.equal(rows.path.length, 1);
-    assert.equal(rows.trainings.length, 0);
+    assert.deepEqual(
+      rows.path.map((card) => card.training.id),
+      ["fundamentals"]
+    );
+    assert.deepEqual(
+      rows.trainings.map((card) => card.training.id),
+      ["anger"]
+    );
   });
 });
 

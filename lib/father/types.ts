@@ -5,10 +5,6 @@ export type Training = {
   description: string | null;
   session_count: number;
   order_index: number;
-  series_id?: string | null;
-  series_title?: string | null;
-  part_number?: number | null;
-  part_total?: number | null;
   published?: boolean | null;
   released_at?: string | null;
   released_by?: string | null;

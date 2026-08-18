@@ -10,7 +10,6 @@ import { loadAdminTrainings } from "@/lib/admin/data";
 import { trainingReleaseState } from "@/lib/admin/release";
 import { requireRole } from "@/lib/auth/session";
 import { AdminFilmFlags } from "@/components/admin/film-flags";
-import { trainingPartSubtitle } from "@/lib/trainings/series";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -105,12 +104,9 @@ export default async function AdminTrainingsPage({
                       </span>
                     ) : null}
                     <span className="block truncate text-sm text-muted-foreground">
-                      {trainingPartSubtitle(training, training.sessions.length) ??
-                        (training.series_title
-                          ? training.series_title
-                          : `${training.sessions.length} session${
-                              training.sessions.length === 1 ? "" : "s"
-                            }`)}
+                      {`${training.sessions.length} session${
+                        training.sessions.length === 1 ? "" : "s"
+                      }`}
                     </span>
                     <span className="block truncate text-xs text-muted-foreground">
                       Edited {formatEditedAt(training.last_edited_at)}

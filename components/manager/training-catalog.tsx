@@ -4,22 +4,12 @@ import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { ManagerCatalogItem } from "@/lib/manager/catalog";
 import type { Translate } from "@/lib/i18n/translate";
-import { trainingPartCopyVars } from "@/lib/trainings/series";
 import { cn } from "@/lib/utils";
 
 function sessionLabel(count: number, t: Translate) {
   return count === 1
     ? t("manager.dashboard.sessionOne")
     : t("manager.dashboard.sessionMany", { count });
-}
-
-function partLabel(item: ManagerCatalogItem, t: Translate) {
-  const vars = trainingPartCopyVars(item.training, item.sessionCount);
-  if (!vars) return sessionLabel(item.sessionCount, t);
-  const { one, ...copy } = vars;
-  return one
-    ? t("manager.trainings.partSubtitleOne", copy)
-    : t("manager.trainings.partSubtitle", copy);
 }
 
 function statusLabel(status: ManagerCatalogItem["status"], t: Translate) {
@@ -53,7 +43,7 @@ export function TrainingCatalog({
                 <div className="min-w-0">
                   <p className="font-medium">{item.training.title}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {[partLabel(item, t), statusLabel(item.status, t), item.groupName]
+                    {[sessionLabel(item.sessionCount, t), statusLabel(item.status, t), item.groupName]
                       .filter(Boolean)
                       .join(" · ")}
                   </p>

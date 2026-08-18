@@ -1,8 +1,4 @@
 import { continueHref, isSessionComplete, type Session, type SessionProgress, type Training } from "@/lib/father/types";
-import {
-  isLaterSeriesPart,
-  isSeriesPartGated,
-} from "@/lib/trainings/series";
 import { createClient } from "@/lib/supabase/server";
 
 function sortByCatalog(a: Session, b: Session) {
@@ -52,7 +48,6 @@ export async function loadFirstAssignedSession(
   const progressBySession = new Map(
     ((progressRes.data ?? []) as SessionProgress[]).map((row) => [row.session_id, row])
   );
-  const allTrainings = (trainingsRes.data ?? []) as Training[];
 
   const ordered = [...trainings].sort((left, right) => {
     const leftAssigned = assignedAt.get(left.id) ?? 0;
@@ -62,12 +57,6 @@ export async function loadFirstAssignedSession(
   });
 
   for (const training of ordered) {
-    if (
-      isLaterSeriesPart(training) &&
-      isSeriesPartGated(training, allTrainings, sessions, progressBySession)
-    ) {
-      continue;
-    }
     const trainingSessions = sessions
       .filter((session) => session.training_id === training.id)
       .sort(sortByCatalog);

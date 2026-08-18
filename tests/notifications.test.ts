@@ -21,7 +21,7 @@ function training(id: string, extra: Partial<Training> = {}): Training {
   return {
     id,
     slug: id,
-    title: "Fathering Fundamentals: Part 1",
+    title: "Fathering Fundamentals",
     description: null,
     session_count: 2,
     order_index: 1,
@@ -173,13 +173,13 @@ describe("channel and copy", () => {
 
   it("uses catalog copy and never father writing", () => {
     const weekly = notificationCopy("weekly_session", {
-      trainingTitle: "Fathering Fundamentals: Part 1",
+      trainingTitle: "Fathering Fundamentals",
       minutes: 5,
     });
     assert.equal(weekly.title, "Your next session is ready");
     assert.equal(
       weekly.body,
-      "Fathering Fundamentals: Part 1. 5 min. This is your weekly reminder."
+      "Fathering Fundamentals. 5 min. This is your weekly reminder."
     );
     assert.equal(weekly.body.includes("!"), false);
     assert.equal(weekly.body.includes("—"), false);
@@ -194,7 +194,7 @@ describe("channel and copy", () => {
     assert.match(action.body, /Practice one calm check-in tonight/);
 
     const leaked = safePayload({
-      trainingTitle: "Fathering Fundamentals: Part 1",
+      trainingTitle: "Fathering Fundamentals",
       actionSummary: "I yelled at my kid",
       notes: "skip me",
       outcome_note: "Named the bedtime check-in",

@@ -84,20 +84,11 @@ export async function SessionHeader({
             <span>{training.title}</span>
           )}
         </p>
-        {training.part_number && training.part_total ? (
-          <p className="text-xs text-muted-foreground">
-            {total === 1
-              ? t("father.trainings.partSubtitleOne", {
-                  n: training.part_number,
-                  total: training.part_total,
-                })
-              : t("father.trainings.partSubtitle", {
-                  n: training.part_number,
-                  total: training.part_total,
-                  sessions: total,
-                })}
-          </p>
-        ) : null}
+        <p className="text-xs text-muted-foreground">
+          {total === 1
+            ? t("father.home.sessionOne")
+            : t("father.home.sessionMany", { n: total })}
+        </p>
         <h1 className="text-xl font-medium leading-snug tracking-tight sm:text-2xl">
           {session.title}
         </h1>

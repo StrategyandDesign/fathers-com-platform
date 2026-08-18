@@ -46,13 +46,6 @@ import {
   isOverLengthFilm,
   parseDurationInput,
 } from "@/lib/trainings/runtime";
-import {
-  MAX_TRAINING_SESSIONS,
-  SESSION_LIMIT_CREATE_ERROR,
-  SESSION_LIMIT_PUBLISH_ERROR,
-  SESSION_LIMIT_RELEASE_ERROR,
-  sessionCountWouldExceedLimit,
-} from "@/lib/trainings/series";
 import { fetchYoutubeDurationSeconds } from "@/lib/trainings/youtube-duration";
 
 const YOUTUBE_URL_ERROR =
@@ -457,14 +450,6 @@ export async function updateTraining(formData: FormData) {
 
   if (published) {
     if (isArchivedTraining(current)) fail(path, ARCHIVED_PUBLISH_ERROR);
-    const { count, error: countError } = await supabase
-      .from("sessions")
-      .select("id", { count: "exact", head: true })
-      .eq("training_id", trainingId);
-    if (countError) fail(path, countError.message);
-    if ((count ?? 0) > MAX_TRAINING_SESSIONS) {
-      fail(path, SESSION_LIMIT_PUBLISH_ERROR);
-    }
     if (current.published !== true) {
       await assertTrainingFilmsPublishable(supabase, trainingId, path);
     }
@@ -517,14 +502,6 @@ export async function setTrainingPublished(formData: FormData) {
   if (!current) fail("/admin/trainings", "Training not found.");
   if (published) {
     if (isArchivedTraining(current)) fail(path, ARCHIVED_PUBLISH_ERROR);
-    const { count, error: countError } = await supabase
-      .from("sessions")
-      .select("id", { count: "exact", head: true })
-      .eq("training_id", trainingId);
-    if (countError) fail(path, countError.message);
-    if ((count ?? 0) > MAX_TRAINING_SESSIONS) {
-      fail(path, SESSION_LIMIT_PUBLISH_ERROR);
-    }
     await assertTrainingFilmsPublishable(supabase, trainingId, path);
   }
   const { error } = await supabase.from("trainings").update({ published }).eq("id", trainingId);
@@ -574,9 +551,6 @@ export async function releaseTraining(formData: FormData) {
   if (countError) fail(path, RELEASE_WRITE_ERROR);
   if ((count ?? current.session_count ?? 0) < 1) {
     fail(path, "Add at least one session before releasing to organizations.");
-  }
-  if ((count ?? current.session_count ?? 0) > MAX_TRAINING_SESSIONS) {
-    fail(path, SESSION_LIMIT_RELEASE_ERROR);
   }
   if (!current.released_at) {
     await assertTrainingFilmsPublishable(supabase, trainingId, path);
@@ -744,14 +718,6 @@ export async function createSession(formData: FormData) {
   if (duration === "invalid") fail(path, FILM_DURATION_FORMAT_ERROR);
 
   const supabase = await createClient();
-  const { count, error: countError } = await supabase
-    .from("sessions")
-    .select("id", { count: "exact", head: true })
-    .eq("training_id", trainingId);
-  if (countError) fail(path, countError.message);
-  if (sessionCountWouldExceedLimit(count ?? 0)) {
-    fail(path, SESSION_LIMIT_CREATE_ERROR);
-  }
   if (await trainingIsLive(supabase, trainingId, path)) {
     assertLiveSessionDuration(path, duration, null);
   }
@@ -888,9 +854,6 @@ export async function duplicateSession(formData: FormData) {
     .eq("training_id", trainingId)
     .order("order_index");
   if (listError) fail(path, listError.message);
-  if (sessionCountWouldExceedLimit(sessions?.length ?? 0)) {
-    fail(path, SESSION_LIMIT_CREATE_ERROR);
-  }
 
   const source = (sessions ?? []).find((row) => row.id === sessionId);
   if (!source) fail(path, "Session not found.");

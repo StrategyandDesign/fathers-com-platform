@@ -4,10 +4,6 @@ import {
 } from "@/lib/father/session-questions";
 import { youtubeVideoId, type Session, type Training } from "@/lib/father/types";
 import { firstFilmPublishError } from "@/lib/trainings/runtime";
-import {
-  MAX_TRAINING_SESSIONS,
-  SESSION_LIMIT_RELEASE_ERROR,
-} from "@/lib/trainings/series";
 
 export const DEVELOPMENT_STATUSES = [
   "draft",
@@ -254,9 +250,6 @@ export function firstReadyBlocker(
   training: DevelopmentChecklistInput,
   options?: { sessionHasHardcoded?: (session: DevelopmentChecklistInput["sessions"][number]) => boolean }
 ) {
-  if (training.sessions.length > MAX_TRAINING_SESSIONS) {
-    return SESSION_LIMIT_RELEASE_ERROR;
-  }
   const filmError = firstFilmPublishError(training.sessions);
   if (filmError) return filmError;
   return trainingDevelopmentChecklist(training, options).firstMissing;

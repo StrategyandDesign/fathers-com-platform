@@ -38,13 +38,6 @@ function HomeShelfRow({
       <p className={eyebrowClassName}>{title}</p>
       <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {cards.map((card) => {
-          const part =
-            card.training.part_number && card.training.part_total
-              ? t("father.home.partShort", {
-                  n: card.training.part_number,
-                  total: card.training.part_total,
-                })
-              : null;
           const meta =
             variant === "available" && card.completed === 0
               ? t("father.home.trainingNotStarted")
@@ -69,7 +62,6 @@ function HomeShelfRow({
                 <p className="line-clamp-2 font-heading text-sm font-semibold leading-snug">
                   {homeTrainingLabel(card.training)}
                 </p>
-                {part ? <p className="text-xs text-muted-foreground">{part}</p> : null}
                 <p className="text-xs text-muted-foreground">{meta}</p>
               </div>
             </Link>

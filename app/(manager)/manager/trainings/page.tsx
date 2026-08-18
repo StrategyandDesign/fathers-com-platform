@@ -15,7 +15,6 @@ import { buildManagerCatalog } from "@/lib/manager/catalog";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadReviewQueue } from "@/lib/manager/reviews";
 import { assignTrainingToUnassigned } from "@/lib/manager/training-actions";
-import { trainingPartCopyVars } from "@/lib/trainings/series";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -26,19 +25,6 @@ function sessionLabel(
   return count === 1
     ? t("manager.dashboard.sessionOne")
     : t("manager.dashboard.sessionMany", { count });
-}
-
-function partLabel(
-  training: { part_number?: number | null; part_total?: number | null },
-  sessionCount: number,
-  t: (key: string, vars?: Record<string, string | number>) => string
-) {
-  const vars = trainingPartCopyVars(training, sessionCount);
-  if (!vars) return null;
-  const { one, ...copy } = vars;
-  return one
-    ? t("manager.trainings.partSubtitleOne", copy)
-    : t("manager.trainings.partSubtitle", copy);
 }
 
 export default async function ManagerTrainingsPage({
@@ -160,8 +146,7 @@ export default async function ManagerTrainingsPage({
                   <div className="min-w-0">
                     <h3 className="font-heading text-lg font-semibold">{item.training.title}</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {partLabel(item.training, item.sessionCount, t) ??
-                        sessionLabel(item.sessionCount, t)}
+                      {sessionLabel(item.sessionCount, t)}
                       {groups.length > 1 ? ` · ${item.groupName}` : ""}
                     </p>
                   </div>
@@ -219,7 +204,7 @@ export default async function ManagerTrainingsPage({
                       </Link>
                       <p className="mt-1 text-sm text-muted-foreground">
                         {[
-                          partLabel(item.training, item.sessionCount, t),
+                          sessionLabel(item.sessionCount, t),
                           t("manager.trainings.assignedOf", { assigned, total }),
                           item.review.decided_at
                             ? t("manager.trainings.acceptedOn", {
@@ -295,7 +280,7 @@ export default async function ManagerTrainingsPage({
                     </Link>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {[
-                        partLabel(training, training.session_count, t),
+                        sessionLabel(training.session_count, t),
                         t("manager.trainings.assignedOf", { assigned, total }),
                         t("manager.trainings.catalogItem"),
                       ]

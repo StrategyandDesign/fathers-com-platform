@@ -34,7 +34,6 @@ import { formatShortDate } from "@/lib/manager/types";
 import { checkboxOptionClassName, fieldClassName, interactiveLinkClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 import { AdminFilmFlags, AdminSessionFilmFlags } from "@/components/admin/film-flags";
-import { MAX_TRAINING_SESSIONS, trainingPartSubtitle } from "@/lib/trainings/series";
 
 export default async function AdminTrainingDetailPage({
   params,
@@ -89,11 +88,11 @@ export default async function AdminTrainingDetailPage({
             <h1 className="font-heading text-2xl font-semibold tracking-tight">
               {training.title}
             </h1>
-            {trainingPartSubtitle(training, training.sessions.length) ? (
-              <p className="text-sm text-muted-foreground">
-                {trainingPartSubtitle(training, training.sessions.length)}
-              </p>
-            ) : null}
+            <p className="text-sm text-muted-foreground">
+              {`${training.sessions.length} session${
+                training.sessions.length === 1 ? "" : "s"
+              }`}
+            </p>
           </div>
           <div className="flex flex-col items-start gap-1 sm:items-end">
             <DevelopmentStatusBadge status={developmentStatus} />
@@ -378,7 +377,6 @@ export default async function AdminTrainingDetailPage({
                 formAction={duplicateSession}
                 variant="outline"
                 className="w-full sm:w-auto"
-                disabled={training.sessions.length >= MAX_TRAINING_SESSIONS}
               >
                 Duplicate
               </Button>
@@ -394,14 +392,6 @@ export default async function AdminTrainingDetailPage({
           </form>
         ))}
 
-        {training.sessions.length >= MAX_TRAINING_SESSIONS ? (
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4 sm:p-6">
-            <h3 className="font-heading text-lg font-semibold">Add session</h3>
-            <p className="text-sm text-muted-foreground">
-              A training cannot have more than 6 sessions.
-            </p>
-          </div>
-        ) : (
         <form action={createSession} className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
           <input type="hidden" name="training_id" value={training.id} />
           <h3 className="font-heading text-lg font-semibold">Add session</h3>
@@ -414,7 +404,6 @@ export default async function AdminTrainingDetailPage({
             Add session
           </Button>
         </form>
-        )}
       </section>
 
       <form action={deleteTraining} className="rounded-xl border border-border bg-card p-4 sm:p-6">

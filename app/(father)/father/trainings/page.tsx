@@ -5,7 +5,7 @@ import { loadFatherHome } from "@/lib/father/data";
 import type { Session, SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
-import { gatedPartLabel, trainingCoverSlug, trainingPartSubtitle } from "@/lib/trainings/series";
+import { trainingCoverSlug } from "@/lib/trainings/series";
 import { cn } from "@/lib/utils";
 
 function cardRank(card: {
@@ -72,18 +72,9 @@ export default async function FatherTrainingsPage() {
                   title={card.training.title}
                   description={card.training.description}
                   subtitle={
-                    card.training.part_number && card.training.part_total
-                      ? card.total === 1
-                        ? t("father.trainings.partSubtitleOne", {
-                            n: card.training.part_number,
-                            total: card.training.part_total,
-                          })
-                        : t("father.trainings.partSubtitle", {
-                            n: card.training.part_number,
-                            total: card.training.part_total,
-                            sessions: card.total,
-                          })
-                      : trainingPartSubtitle(card.training, card.total)
+                    card.total === 1
+                      ? t("father.home.sessionOne")
+                      : t("father.home.sessionMany", { n: card.total })
                   }
                   coverSrc={resolveTrainingCardCover(
                     trainingCoverSlug(card.training),
@@ -98,12 +89,8 @@ export default async function FatherTrainingsPage() {
                   certificateId={card.certificate?.id ?? null}
                   featured={featured}
                   quiet={inProgressCount > 0 && !inProgress}
-                  gated={card.gated}
-                  gatedLabel={
-                    card.gated
-                      ? t("father.trainings.gatedPart", { n: gatedPartLabel(card.training) })
-                      : null
-                  }
+                  gated={false}
+                  gatedLabel={null}
                   t={t}
                 />
               </div>

@@ -6,7 +6,7 @@ import {
   type PhotoPack,
 } from "@/lib/brand/photos";
 import { isTrainingPublished, type Training } from "@/lib/father/types";
-import { isLaterSeriesPart, trainingCoverSlug } from "@/lib/trainings/series";
+import { trainingCoverSlug } from "@/lib/trainings/series";
 import { loadManagerGroups } from "@/lib/manager/data";
 import type { Group } from "@/lib/manager/types";
 import {
@@ -112,7 +112,7 @@ export async function loadCatalogTrainings() {
   const { data, error } = await supabase
     .from("trainings")
     .select(
-      "id, slug, title, description, session_count, order_index, published, series_id, series_title, part_number, part_total"
+      "id, slug, title, description, session_count, order_index, published"
     )
     .order("order_index");
   if (error) throw error;
@@ -184,7 +184,6 @@ export async function loadManagerOrganizationPhotos(
     });
 
     for (const training of trainings) {
-      if (isLaterSeriesPart(training)) continue;
       const coverSlug = trainingCoverSlug(training);
       const guidance = trainingCardGuidance(coverSlug, training.title);
       const row = custom.get(trainingPhotoSlot(coverSlug));

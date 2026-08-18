@@ -5,7 +5,6 @@ import {
   type SessionProgress,
   type Training,
 } from "@/lib/father/types";
-import { isLaterSeriesPart, isSeriesPartGated } from "@/lib/trainings/series";
 import { sessionFilmHref, trainingsHref } from "@/lib/notifications/links";
 
 function sortSessions(a: Session, b: Session) {
@@ -30,12 +29,6 @@ export function nextAssignedSession(input: {
   });
 
   for (const { training } of ordered) {
-    if (
-      isLaterSeriesPart(training) &&
-      isSeriesPartGated(training, input.allTrainings, input.sessions, progressBySession)
-    ) {
-      continue;
-    }
     const catalog = input.sessions
       .filter((session) => session.training_id === training.id)
       .sort(sortSessions);

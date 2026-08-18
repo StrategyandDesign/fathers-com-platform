@@ -21,10 +21,8 @@ export type HomeShelfCard = HomePathCard & {
 
 export function homeTrainingLabel(training: {
   title: string;
-  series_title?: string | null;
 }) {
-  const series = training.series_title?.trim();
-  return series || training.title;
+  return training.title;
 }
 
 export function isHomeTrainingStarted(card: HomeShelfCard) {
