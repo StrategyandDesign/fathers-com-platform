@@ -26,7 +26,7 @@ This is a **pilot**. Legal pages are labeled as counsel templates. Test password
 | Auth and data on Pilot Supabase project `koeplcybddrvbliuepsy` | Production fathers.com DNS or the production Supabase project |
 | Four app roles: father, manager (shown as Leader), reviewer, admin | The older HTML role set (`admin.html`, `studio.html`, `lead.html`, Keystone Profile) |
 | Certificates issued by a Leader | Public certificate URLs |
-| Assessments assigned by a Leader | The retired Keystone / Father Profile product (those URLs redirect) |
+| Assessments assigned by a Leader, plus the restored 128-question Keystone | The older HTML Keystone / Father Profile product |
 
 ---
 
@@ -37,7 +37,7 @@ This is a **pilot**. Legal pages are labeled as counsel templates. Test password
 | **https://fathers-com-pilot.vercel.app** | **Live clean-pilot app.** This is the deployment to investigate. | Start here. |
 | **https://fathers-com-platform.vercel.app** | Older **static HTML** production project. Different product. | Do **not** use this to judge clean-pilot. |
 | **https://github.com/StrategyandDesign/fathers-com-platform** | Source repo. Live app tracks branch `clean-pilot`. | Read code / PRs only. |
-| **https://github.com/StrategyandDesign/fathers-com-platform/pull/90** | Open PR with work **not fully on live yet** (see §4). | Use only if asked to review unreleased surfaces. |
+| **https://github.com/StrategyandDesign/fathers-com-platform/pull/91** | The PR that shipped series parts, first-run, reminders, streaks, and the Leader nudge panel onto `clean-pilot`. | History only after merge. |
 | **https://koeplcybddrvbliuepsy.supabase.co** | Pilot Auth + Postgres + Storage API. Not a human homepage. | No click-through product UI. |
 | **https://supabase.com/dashboard/project/koeplcybddrvbliuepsy** | Pilot Supabase dashboard (requires a Supabase login). | Infrastructure only. |
 | `fathers.com` / `app.fathers.com` | Canonical public brand / future production. | **Not** attached to this pilot. |
@@ -70,24 +70,27 @@ Signup (`/signup`) is **fathers only** and needs an organization invite code. Le
 
 ---
 
-## 4. Live `clean-pilot` vs this PR
+## 4. Live `clean-pilot`
 
-Investigate **live** first. Then, if asked, the open PR.
+Investigate **https://fathers-com-pilot.vercel.app**. The Next app tracks `clean-pilot`. Do not use `fathers-com-platform.vercel.app`.
 
-| Surface | Live `fathers-com-pilot.vercel.app` (`clean-pilot`) | PR #90 (this branch) |
-|---|---|---|
-| Father Home, Film → Check-in → Action | Yes | Same |
-| Assessments (Leader-assigned, not Keystone) | Yes | Same; empty assessments cannot be assigned |
-| Certificates (manager-issued PDF) | Yes (Account + Home when issued) | Also in father **nav** |
-| Leader dashboard, participants, impact, reports | Yes | Same |
-| Reviewer Insights (codes, not names) | Yes | Impact Summary also in **nav** |
-| Super-admin orgs / catalog / users / inbox | Yes | Same |
-| Super-admin **Gathering** (anonymous opt-in counts) | Route is gated; UI may 404 until this PR is deployed | Yes — `/admin/gathering` |
-| Super-admin **Stage** (walk a training without writing progress) | Not on live | Yes — `/admin/trainings/{id}/stage` |
-| Login language toggle | **Visible** (English / עברית) | **Removed** — login stays English |
-| Retired Profile URLs | Redirect to Assessments | Same |
+| Surface | Live |
+|---|---|
+| Father Home, Film → Check-in → Action | Yes. Action is commit / do / optional outcome. Completing Action still completes the session. |
+| First-run `/father/start` | Yes. New fathers finish a reminder and session 1 before Home. Existing fathers with a completed session see the reminder once. |
+| Keystone (128 questions) | Yes. `/father/profile`, `/father/profile/take`, `/father/profile/results`. Also listed on Assessments. |
+| Leader-assigned assessments | Yes. Empty assessments cannot be assigned. |
+| Certificates (manager-issued PDF) | Yes. Account, Home when issued, and father nav. |
+| Weekly streak | Yes. On Father Home only. Leaders never see it. |
+| Reminders | Yes. Chosen day/time, push or email. Daily cron plus a flush when someone opens Home or the Leader dashboard. |
+| Leader dashboard, participants, impact, reports | Yes. **Who needs a nudge** sits above the metric tiles. The Assistant panel is unchanged. |
+| Reviewer Insights (codes, not names) | Yes. Impact Summary is in reviewer nav. |
+| Super-admin orgs / catalog / users / inbox | Yes |
+| Super-admin **Gathering** | Yes — `/admin/gathering` |
+| Super-admin **Stage** | Yes — `/admin/trainings/{id}/stage` |
+| Login language | English only. After sign-in, Unit 8200 seats resolve to Hebrew + RTL. |
 
-Database pieces for Gathering (share columns + RPC + k-anonymity) are already on Pilot. The Gathering **page** ships with this PR.
+Pilot schema for series parts, film runtime, first-run, reminders, action commitments, streaks, and nudge reachability is already applied. `session_progress` stays **10** rows / **8** completed.
 
 ---
 
@@ -134,10 +137,10 @@ After login, these old bookmarks must not 404.
 | You open | You land on | Why |
 |---|---|---|
 | `/home` | `/father` | Old father home |
-| `/father/profile` | `/father/assessments` | Keystone Profile retired |
-| `/father/profile/take` | `/father/assessments` | Same |
-| `/father/profile/results` | `/father/assessments` | Same |
-| `/api/profile/evaluate` | `/father/assessments` | Old scoring POST retired |
+| `/father/profile` | Keystone hub | Restored. Not a redirect. |
+| `/father/profile/take` | Keystone questions | Restored. |
+| `/father/profile/results` | Keystone results | Restored. |
+| `/api/profile/evaluate` | Scores, then `/father/profile/results` | Live scoring POST. |
 | `/manager/compare` | `/manager/impact?tab=compare` | Compare is a tab |
 | `/manager/reviews` | `/manager/trainings` | Review queue lives on Trainings |
 | `/manager/account/photos` | `/manager/account` | Org logo is on Account now |
@@ -150,15 +153,15 @@ After login, these old bookmarks must not 404.
 
 ### 7.1 Father — `father1@il`
 
-Chrome: logo (home), bottom/side nav **Home / Trainings / Assessments / Certificates** (Certificates is on the PR; live: open from Account or Home). Avatar (top right) → Account.
+Chrome: logo (home), bottom/side nav **Home / Trainings / Assessments / Certificates**. Avatar (top right) → Account. During first-run, nav and account are hidden.
 
 **A. Home** — `/father`
 
 1. Organization mark (Unit 8200) at the top.
-2. **Start Here / Continue Training** card for the next session. Primary CTA starts Film.
-3. Assessment overlay card if a Leader assigned one.
-4. **Your trainings** cards. **View certificates** → `/father/certificates`.
-5. Completing an Action returns to `/father?done={sessionId}` with a completion mark.
+2. Weekly streak row, then one **Up Next** card. Primary CTA starts or continues Film.
+3. Assessment text link only when Keystone or a Leader assignment is due or has a result.
+4. **Your path** row, then **Earned** marks after a certificate is issued.
+5. Completing an Action returns to `/father?done={sessionId}` after first-run is finished.
 
 **B. One session (the core product)**
 
@@ -166,7 +169,7 @@ From Home or Trainings, open a session. Example first Fundamentals film after lo
 
 1. **Film** `/father/sessions/{sessionId}` — cover + YouTube embed (`youtube-nocookie` / `youtube.com/embed/{id}`). Mark watched.
 2. **Check-in** `/father/sessions/{sessionId}/checkin` — short questions. Save & Exit returns Home; session stays in progress.
-3. **Action** `/father/sessions/{sessionId}/action` — one skill. **I’ll do this later** → Home (not complete). **I completed this Action** → Home, session counts as done.
+3. **Action** `/father/sessions/{sessionId}/action` — name a moment, then **I did it**. **Skip for now** returns Home after first-run (session stays open). Completing Action still completes the session.
 4. Next incomplete session becomes the Home CTA. Earlier sessions stay locked until prior ones finish.
 
 **C. Trainings catalog** — `/father/trainings`
@@ -175,7 +178,7 @@ Lists assigned trainings and session dots. Same continue links as Home.
 
 **D. Assessments** — `/father/assessments`
 
-Leader-written instruments only. Take/continue at `/father/assessments/{assignmentId}`. Results stay on that assignment. This is **not** Keystone.
+Keystone is first. Leader-written instruments appear as extra rows. Take/continue Keystone at `/father/profile/take`. Custom take/continue at `/father/assessments/{assignmentId}`.
 
 **E. Certificates** — `/father/certificates`
 
@@ -199,7 +202,7 @@ Chrome: Dashboard / Trainings / Participants / Impact Snapshot / Assessments / R
 
 **Walk this order:**
 
-1. **`/manager`** — Active fathers, assessments completed, sessions, trainings, pending actions. Invite code (copy). Companion panel (who is quiet, who is ready for a certificate). Review queue if a release is waiting. Links to Participants, Impact, Reports, Trainings, Assessments.
+1. **`/manager`** — **Who needs a nudge** at the top, then Active fathers, assessments completed, sessions, trainings, pending actions. Invite code (copy). Companion panel (unchanged). Review queue if a release is waiting. Links to Participants, Impact, Reports, Trainings, Assessments.
 2. **`/manager/trainings`** — Accept or decline a released catalog training. Assign after accept. **Request a Training** → `/manager/request`.
 3. **`/manager/reviews/{trainingId}?group={groupId}`** — Preview + accept / decline one release. Email CTA from “new training available” lands here.
 4. **`/manager/participants`** — Named roster. Open one father.
@@ -216,7 +219,7 @@ Chrome: Dashboard / Trainings / Participants / Impact Snapshot / Assessments / R
 
 ### 7.3 Reviewer — `reviewer@il`
 
-Chrome: **Insights** `/reviewer`, **Impact Summary** `/reviewer/summary` (nav on the PR; live: button on Insights), **Account** `/reviewer/account`.
+Chrome: **Insights** `/reviewer`, **Impact Summary** `/reviewer/summary`, **Account** `/reviewer/account`.
 
 1. **`/reviewer`** — Totals, training distribution, anonymized table (`P-00n` codes, not names). Filters: group, training, status, last-activity dates. CSV is internal (`/api/reviewer/insights/export?format=csv`).
 2. **`/reviewer/summary`** — Funder/board page. PDF `/api/reviewer/summary/export?format=pdf`. No names, emails, or serials.
@@ -274,9 +277,10 @@ Chrome: Dashboard, Gathering, Organizations, Trainings, Users, Inbox, Account.
 | `/father/account` | father | |
 | `/father/help` | father | |
 | `/home` | father | → `/father` |
-| `/father/profile` | father | → assessments |
-| `/father/profile/take` | father | → assessments |
-| `/father/profile/results` | father | → assessments |
+| `/father/profile` | father | Keystone hub |
+| `/father/profile/take` | father | Keystone questions |
+| `/father/profile/results` | father | Keystone results |
+| `/father/start` | father | First-run. Incomplete fathers are sent here. |
 
 ### Leader
 
@@ -339,7 +343,7 @@ Chrome: Dashboard, Gathering, Organizations, Trainings, Users, Inbox, Account.
 
 ## 9. Download / API URLs
 
-All of these are same-origin. Signed-out requests 307 to `/login`, except the retired profile evaluate route.
+All of these are same-origin. Signed-out requests 307 to `/login`. `/api/profile/evaluate` is the live Keystone scoring POST.
 
 | URL | Who | What |
 |---|---|---|
@@ -349,7 +353,9 @@ All of these are same-origin. Signed-out requests 307 to `/login`, except the re
 | `/api/manager/reports/export?format=csv` | Leader | Named report |
 | `/api/manager/reports/export?format=pdf` | Leader | Named report |
 | `/api/manager/impact/export` | Leader | Impact snapshot export |
-| `/api/profile/evaluate` | Anyone | **Retired.** 307 → `/father/assessments` |
+| `/api/profile/evaluate` | Father | Keystone scoring POST |
+| `/api/cron/reminders` | Cron (`CRON_SECRET`) | Daily reminder dispatch |
+| `/api/cron/streaks` | Cron (`CRON_SECRET`) | Daily closed-week streak eval |
 
 Query strings on Insights / Summary / Reports (`group_id`, `training_id`, `status`, `from`, `to`) are preserved on those export links.
 
@@ -359,14 +365,17 @@ Query strings on Insights / Summary / Reports (`group_id`, `training_id`, `statu
 
 Four published trainings. Super-admin IDs (not personal):
 
-| Order | Title | Slug | Sessions | Training id |
-|---|---|---|---|---|
-| 1 | Fathering Fundamentals – Seven Secrets of Effective Fathers | `fundamentals` | 9 | `9bdcc386-a0f7-432d-9220-fe7f27cfa080` |
-| 2 | Steady Under Pressure | `anger` | 12 | `75348a76-1ca2-4b2d-994c-d9249bf37660` |
-| 3 | Coming Home Present | `reentry` | 12 | `533e4d96-3642-4e50-93a2-8a3c37252732` |
-| 4 | Flourishing Faith | `flourishingfaith` | **0** | `a7aefb94-505f-4abf-b466-97840a57c2f3` |
+| Order | Title | Slug | Sessions |
+|---|---|---|---|
+| 1 | Fathering Fundamentals: Part 1 | `fundamentals` | 5 |
+| 2 | Fathering Fundamentals: Part 2 | `fundamentals-2` | 4 |
+| 3 | Steady Under Pressure: Part 1 | `anger` | 6 |
+| 4 | Steady Under Pressure: Part 2 | `anger-2` | 6 |
+| 5 | Coming Home Present: Part 1 | `reentry` | 6 |
+| 6 | Coming Home Present: Part 2 | `reentry-2` | 6 |
+| 7 | Flourishing Faith | `flourishingfaith` | **0** |
 
-Flourishing Faith is published with no sessions yet. Staging / father path will show an empty session list. That is expected.
+No assigned training has more than 6 sessions. Later parts stay gated until the earlier part is complete. Flourishing Faith is published with no sessions yet. Staging / father path will show an empty session list. That is expected. The father-facing `reentry` slug is never rendered as a label.
 
 ### Organizations on Pilot (no invite codes in this file)
 
@@ -449,7 +458,7 @@ Permissions are in **Postgres RLS**, not only the UI.
 | Super-admin Gathering | No names, emails, notes, answers, or serials |
 | Super-admin Stage | Banner: nothing is saved; `session_progress` unchanged |
 | Certificate download as the wrong father | Denied |
-| `/api/profile/evaluate` | Redirect to assessments; no scoring |
+| `/api/profile/evaluate` | Scores Keystone for the signed-in father |
 
 Avatar **upload is disabled**. Leaders issue certificates. Super-admins do not issue them from the father path.
 
@@ -483,21 +492,21 @@ For a Super-admin:
 
 1. Create organizations and users; publish and release trainings (YouTube only).
 2. Read support reports and training requests.
-3. *(PR)* Stage a training as a father would, without writing his progress.
-4. *(PR)* Read Gathering only after enough people opt in.
+3. Stage a training as a father would, without writing his progress.
+4. Read Gathering only after enough people opt in.
 
-Retired on this stack: Keystone / Father Profile (128 questions, Primary Edge, Primary Determination). Those URLs remain as redirects so old bookmarks do not 404.
+Keystone is live on this stack: 128 questions, Primary Edge, Primary Determination. `/father/profile` is the hub, not a redirect.
 
 ---
 
 ## 14. Suggested investigation script (90 minutes)
 
-1. Open `/`, `/login`, `/signup`, `/privacy`, `/terms`, a junk path. Confirm English public chrome (live still has a language toggle).
-2. Sign in as `father1@il`. Walk one Fundamentals session Film → Check-in → Action. Open Assessments, Certificates, Account, Help. Confirm Hebrew on this seat.
-3. Sign out (Account). Confirm you are back on English login (PR) or the live toggle.
-4. Sign in as `manager@il`. Dashboard → Trainings → one participant → Impact → Reports → Assessments. Open `/manager/reviews` and `/manager/compare` and confirm redirects.
+1. Open `/`, `/login`, `/signup`, `/privacy`, `/terms`, a junk path. Confirm English public chrome (no language toggle on login).
+2. Sign in as `father1@il`. If first-run is still open, finish the reminder. Walk one Fundamentals session Film → Check-in → Action. Open Assessments (Keystone first), Certificates, Account, Help. Confirm Hebrew on this seat.
+3. Sign out (Account). Confirm you are back on English login.
+4. Sign in as `manager@il`. Who needs a nudge → Dashboard tiles → Trainings → one participant → Impact → Reports → Assessments. Open `/manager/reviews` and `/manager/compare` and confirm redirects.
 5. Sign in as `reviewer@il`. Confirm codes, not names. Open Impact Summary. Try `/manager` and confirm bounce.
-6. Sign in as `admin@fathers`. Organizations, Trainings, Users, Inbox. On the PR / post-deploy: Gathering (expect 0 sharing) and Stage on Fundamentals (film plays; progress for `father1` does not change).
+6. Sign in as `admin@fathers`. Organizations, Trainings, Users, Inbox, Gathering (expect 0 sharing if the cell is small), and Stage on Fundamentals Part 1 (film plays; progress for `father1` does not change).
 7. Signed out, hit `/api/manager/reports/export` and `/api/certificates/{any}/download` — both must bounce to login.
 8. Do **not** treat `fathers-com-platform.vercel.app` as this audit.
 
