@@ -8,6 +8,8 @@ import { StaffMenu } from "@/components/layout/staff-menu";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import { ROLE_ACCOUNT, ROLE_HOME, type AppRole } from "@/lib/auth/roles";
+import { isFatherStartPath } from "@/lib/father/onboarding";
+import { requestPathname } from "@/lib/http/pathname";
 import { getI18n } from "@/lib/i18n/server";
 import { interactiveIconClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -30,18 +32,20 @@ export async function RoleShell({
   children: React.ReactNode;
 }) {
   const { t } = await getI18n();
-  const fatherMobile = role === "father";
+  const pathname = await requestPathname();
+  const startFlow = role === "father" && isFatherStartPath(pathname);
+  const fatherMobile = role === "father" && !startFlow;
   const managerMobileNav = role === "manager";
   const chromeLabel = role === "father" ? null : roleLabel?.trim() || t(`role.${role}`);
-  const groupName = role === "father" ? organizationName?.trim() || null : null;
-  const groupLogo = role === "father" ? organizationLogoUrl ?? null : null;
+  const groupName = role === "father" && !startFlow ? organizationName?.trim() || null : null;
+  const groupLogo = role === "father" && !startFlow ? organizationLogoUrl ?? null : null;
 
   return (
     <div className="min-h-svh bg-background">
       <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-border bg-background/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden lg:px-5">
         <div className="flex min-w-0 shrink-0 items-center gap-1.5 lg:gap-3">
           {role !== "father" && role !== "manager" ? <StaffMenu role={role} /> : null}
-          <BrandLogo href={ROLE_HOME[role]} />
+          <BrandLogo href={startFlow ? "/father/start" : ROLE_HOME[role]} />
           {chromeLabel ? (
             <Badge variant="secondary" className="hidden max-w-[14rem] truncate lg:inline-flex">
               {chromeLabel}
@@ -57,26 +61,30 @@ export async function RoleShell({
         ) : (
           <div className="hidden flex-1 md:block" />
         )}
-        <div className="flex shrink-0 justify-end">
-          <Link
-            href={ROLE_ACCOUNT[role]}
-            className={cn(
-              "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full lg:border lg:border-border lg:bg-card lg:px-2 lg:py-1 lg:pe-3 lg:text-sm",
-              interactiveIconClassName
-            )}
-          >
-            <UserAvatar
-              name={email}
-              src={avatarUrl}
-              className="size-10 text-xs font-medium lg:size-7"
-            />
-            {email || chromeLabel ? (
-              <span className="hidden max-w-[12rem] truncate lg:inline">
-                {email ?? chromeLabel}
-              </span>
-            ) : null}
-          </Link>
-        </div>
+        {startFlow ? (
+          <div className="flex-1" />
+        ) : (
+          <div className="flex shrink-0 justify-end">
+            <Link
+              href={ROLE_ACCOUNT[role]}
+              className={cn(
+                "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full lg:border lg:border-border lg:bg-card lg:px-2 lg:py-1 lg:pe-3 lg:text-sm",
+                interactiveIconClassName
+              )}
+            >
+              <UserAvatar
+                name={email}
+                src={avatarUrl}
+                className="size-10 text-xs font-medium lg:size-7"
+              />
+              {email || chromeLabel ? (
+                <span className="hidden max-w-[12rem] truncate lg:inline">
+                  {email ?? chromeLabel}
+                </span>
+              ) : null}
+            </Link>
+          </div>
+        )}
       </header>
 
       {managerMobileNav ? (
@@ -85,9 +93,11 @@ export async function RoleShell({
         </div>
       ) : null}
 
-      <aside className="fixed bottom-0 start-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col overflow-y-auto border-e border-border bg-sidebar print:hidden lg:flex">
-        <AppNav role={role} layout="side" />
-      </aside>
+      {startFlow ? null : (
+        <aside className="fixed bottom-0 start-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col overflow-y-auto border-e border-border bg-sidebar print:hidden lg:flex">
+          <AppNav role={role} layout="side" />
+        </aside>
+      )}
 
       {fatherMobile ? (
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md print:hidden lg:hidden">
@@ -101,7 +111,7 @@ export async function RoleShell({
           managerMobileNav
             ? "pt-[calc(6.5rem+env(safe-area-inset-top))] lg:pt-[calc(3.5rem+env(safe-area-inset-top))]"
             : "pt-[calc(3.5rem+env(safe-area-inset-top))]",
-          "lg:ps-[5.5rem] print:pt-0 print:ps-0",
+          startFlow ? "print:pt-0" : "lg:ps-[5.5rem] print:pt-0 print:ps-0",
           fatherMobile
             ? "max-lg:pb-[calc(3.75rem+env(safe-area-inset-bottom))]"
             : "max-lg:pb-6"

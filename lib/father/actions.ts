@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { getAuthContext, requireRole } from "@/lib/auth/session";
 import { loadSessionContext } from "@/lib/father/data";
 import { writeFilmSeconds } from "@/lib/father/film-position";
+import { advanceOnboardingAfterSession } from "@/lib/father/start-actions";
 import {
   ACTION_ANSWER_KEY,
   CHECKIN_CHOICE_KEY,
@@ -168,7 +169,8 @@ export async function completeAction(formData: FormData) {
 
   const context = await requireReachableSession(user.id, sessionId);
   if (context.progress?.action_completed) {
-    redirect(`/father?done=${encodeURIComponent(sessionId)}`);
+    const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
+    redirect(startHref ?? `/father?done=${encodeURIComponent(sessionId)}`);
   }
 
   const answer = String(formData.get(ACTION_ANSWER_KEY) ?? "").trim();
@@ -190,7 +192,8 @@ export async function completeAction(formData: FormData) {
     );
   }
 
-  redirect(`/father?done=${encodeURIComponent(sessionId)}`);
+  const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
+  redirect(startHref ?? `/father?done=${encodeURIComponent(sessionId)}`);
 }
 
 export async function saveFilmPosition(sessionId: string, seconds: number) {
