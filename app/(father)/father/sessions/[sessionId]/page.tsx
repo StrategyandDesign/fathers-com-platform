@@ -70,6 +70,8 @@ export default async function SessionViewerPage({
       <SessionFilmPlayer
         session={session}
         coverSrc={sessionCover(session.session_number, orgPhotos?.photoPack)}
+        resumeSeconds={progress?.film_seconds ?? 0}
+        persistSessionId={session.id}
       />
 
       <Flash error={error} />

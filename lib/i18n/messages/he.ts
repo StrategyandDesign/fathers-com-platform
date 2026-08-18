@@ -621,6 +621,7 @@ export const he = {
       doLater: "אעשה את זה אחר כך",
       actionNoteLabel: "אופציונלי: רשום את נקודת ההוראה הנכונה במילים שלך (בלי פרטים אישיים).",
       actionNotePlaceholder: "נקודת הוראה בלבד. בלי פרטים אישיים.",
+      runtime: "{n} דק׳",
     },
     intro: {
       welcome: "ברוך הבא",

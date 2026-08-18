@@ -651,6 +651,7 @@ export const en = {
       actionNoteLabel:
         "Optional: note the correct teaching point in your own words (do not include personal details).",
       actionNotePlaceholder: "Teaching point only. No personal details.",
+      runtime: "{n} min",
     },
     intro: {
       welcome: "Welcome",

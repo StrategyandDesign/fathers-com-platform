@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CoverPhoto } from "@/components/brand/cover";
+import { FilmRuntime } from "@/components/father/film-runtime";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { continueHref, type Session, type SessionProgress } from "@/lib/father/types";
@@ -168,6 +169,7 @@ export function FatherTrainingCatalogCard({
                 {t("father.trainings.sessionOf", { n: next.session_number, total })}
               </p>
             ) : null}
+            <FilmRuntime seconds={next.duration_seconds} t={t} />
           </div>
         ) : complete ? (
           <p className="text-sm text-muted-foreground">{t("father.trainings.trainingComplete")}</p>

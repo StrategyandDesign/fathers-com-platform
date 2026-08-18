@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
+import { FilmRuntime } from "@/components/father/film-runtime";
 import type { Session, Training } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { interactiveLinkClassName } from "@/lib/ui";
@@ -95,6 +96,7 @@ export async function SessionHeader({
         <h1 className="text-xl font-medium leading-snug tracking-tight sm:text-2xl">
           {session.title}
         </h1>
+        <FilmRuntime seconds={session.duration_seconds} t={t} />
         {subtitle ? (
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         ) : null}

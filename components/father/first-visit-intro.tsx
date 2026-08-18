@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CoverPhoto } from "@/components/brand/cover";
+import { FilmRuntime } from "@/components/father/film-runtime";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { getI18n } from "@/lib/i18n/server";
@@ -19,6 +20,7 @@ export async function FirstVisitIntro({
   completed,
   percent,
   coverSrc,
+  durationSeconds,
   assessmentLater = false,
   profileLater = false,
 }: {
@@ -30,6 +32,7 @@ export async function FirstVisitIntro({
   completed: number;
   percent: number;
   coverSrc?: string | null;
+  durationSeconds?: number | null;
   assessmentLater?: boolean;
   profileLater?: boolean;
 }) {
@@ -57,6 +60,7 @@ export async function FirstVisitIntro({
                 title: sessionTitle,
               })}
             </p>
+            <FilmRuntime seconds={durationSeconds} t={t} className="mt-1 sm:text-base" />
             <p className="mt-1 text-sm text-muted-foreground sm:text-base">
               {t("father.home.startRhythm")}
             </p>

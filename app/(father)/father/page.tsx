@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AssessmentHomeCard } from "@/components/assessments/home-card";
 import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { CoverPhoto } from "@/components/brand/cover";
+import { FilmRuntime } from "@/components/father/film-runtime";
 import { FirstVisitIntro } from "@/components/father/first-visit-intro";
 import { SessionCompleteMark } from "@/components/father/session-complete-mark";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -155,6 +156,7 @@ export default async function FatherHomePage({
               completed={nextCompleted}
               percent={nextPercent}
               coverSrc={heroCover}
+              durationSeconds={firstSession.duration_seconds}
               assessmentLater={!profile || Boolean(pendingAssessment)}
             />
           ) : (
@@ -189,6 +191,11 @@ export default async function FatherHomePage({
                         {next.session.keyline}
                       </p>
                     ) : null}
+                    <FilmRuntime
+                      seconds={next.session.duration_seconds}
+                      t={t}
+                      className="mt-2 sm:text-base"
+                    />
                   </div>
                   <Link
                     href={continueHref(next.session.id, next.progress)}
@@ -322,6 +329,9 @@ export default async function FatherHomePage({
                                   sessions: total,
                                 })}
                           </p>
+                        ) : null}
+                        {!gated ? (
+                          <FilmRuntime seconds={trainingNext?.duration_seconds} t={t} className="mt-1" />
                         ) : null}
                         <div className="mt-4 space-y-2">
                           {gated ? (

@@ -27,6 +27,7 @@ import { requireRole } from "@/lib/auth/session";
 import { formatShortDate } from "@/lib/manager/types";
 import { checkboxOptionClassName, fieldClassName, interactiveLinkClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+import { AdminFilmFlags, AdminSessionFilmFlags, adminDurationHint } from "@/components/admin/film-flags";
 import { MAX_TRAINING_SESSIONS, trainingPartSubtitle } from "@/lib/trainings/series";
 
 export default async function AdminTrainingDetailPage({
@@ -275,10 +276,11 @@ export default async function AdminTrainingDetailPage({
         <div>
           <h2 className="font-heading text-lg font-semibold">Sessions</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Title, order, YouTube URL, and keyline. Open staging to walk Film →
-            Check-in → Action as participants will see it. Sessions with progress
-            cannot be deleted.
+            Title, order, YouTube URL, runtime, and keyline. Open staging to walk
+            Film → Check-in → Action as participants will see it. Sessions with
+            progress cannot be deleted. A film cannot be published over 6:00.
           </p>
+          <AdminFilmFlags sessions={training.sessions} />
           {training.sessions.length === 0 ? (
             <EmptyState
               framed={false}
@@ -300,6 +302,7 @@ export default async function AdminTrainingDetailPage({
             <input type="hidden" name="training_id" value={training.id} />
             <input type="hidden" name="session_id" value={session.id} />
             <p className="text-sm text-muted-foreground">Session {session.session_number}</p>
+            <AdminSessionFilmFlags session={session} />
             <label className="block space-y-2">
               <span className="text-sm text-muted-foreground">Title</span>
               <input className={fieldClassName} name="title" defaultValue={session.title} required />
@@ -341,6 +344,20 @@ export default async function AdminTrainingDetailPage({
               <span className="block text-xs text-muted-foreground">
                 A YouTube watch, share, Shorts, or youtu.be link. Playlists will
                 not play.
+              </span>
+            </label>
+            <label className="block space-y-2">
+              <span className="text-sm text-muted-foreground">Runtime</span>
+              <input
+                className={fieldClassName}
+                name="duration_seconds"
+                defaultValue={session.duration_seconds ?? ""}
+                inputMode="numeric"
+                placeholder="seconds or m:ss"
+              />
+              <span className="block text-xs text-muted-foreground">
+                {adminDurationHint(session.duration_seconds)} Filled from YouTube
+                when a server key is configured.
               </span>
             </label>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -416,6 +433,19 @@ export default async function AdminTrainingDetailPage({
             <span className="block text-xs text-muted-foreground">
               A YouTube watch, share, Shorts, or youtu.be link. Playlists will
               not play.
+            </span>
+          </label>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Runtime</span>
+            <input
+              className={fieldClassName}
+              name="duration_seconds"
+              inputMode="numeric"
+              placeholder="seconds or m:ss"
+            />
+            <span className="block text-xs text-muted-foreground">
+              Whole seconds or m:ss. Required before publish. Filled from YouTube
+              when a server key is configured.
             </span>
           </label>
           <Button type="submit" className="w-full sm:w-auto">

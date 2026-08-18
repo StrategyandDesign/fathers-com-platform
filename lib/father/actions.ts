@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { requireRole } from "@/lib/auth/session";
+import { getAuthContext, requireRole } from "@/lib/auth/session";
 import { loadSessionContext } from "@/lib/father/data";
+import { writeFilmSeconds } from "@/lib/father/film-position";
 import {
   ACTION_ANSWER_KEY,
   CHECKIN_CHOICE_KEY,
@@ -68,6 +69,10 @@ async function saveProgress(
         patch.session_note !== undefined
           ? patch.session_note
           : existing?.session_note ?? null,
+      film_seconds:
+        typeof existing?.film_seconds === "number" && existing.film_seconds >= 0
+          ? existing.film_seconds
+          : 0,
       status: allDone ? "completed" : film || checkin || action ? "in_progress" : "not_started",
       completed_at: allDone
         ? (existing?.completed_at ?? new Date().toISOString())
@@ -186,4 +191,10 @@ export async function completeAction(formData: FormData) {
   }
 
   redirect(`/father?done=${encodeURIComponent(sessionId)}`);
+}
+
+export async function saveFilmPosition(sessionId: string, seconds: number) {
+  const { user, role } = await getAuthContext();
+  if (!user || role !== "father") return { ok: false as const };
+  return writeFilmSeconds(user.id, sessionId, seconds);
 }

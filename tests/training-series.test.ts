@@ -55,6 +55,7 @@ function progress(
     checkin_answers: {},
     action_note: null,
     session_note: null,
+    film_seconds: 0,
     status: done ? "completed" : "not_started",
     completed_at: done ? "2026-08-01T00:00:00Z" : null,
   };
