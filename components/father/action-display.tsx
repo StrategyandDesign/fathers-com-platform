@@ -15,7 +15,7 @@ export function ActionDisplay({
     <section className="space-y-10">
       <ActionSkillCard eyebrow={eyebrow} skill={skill} />
       {children ? <div className="space-y-8">{children}</div> : null}
-      {footer ? <div className="text-center">{footer}</div> : null}
+      {footer ? <footer>{footer}</footer> : null}
     </section>
   );
 }
