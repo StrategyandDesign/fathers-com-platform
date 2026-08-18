@@ -1,17 +1,12 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import {
-  ActionCommitmentForm,
-  ActionDoneForm,
-  ActionFinishForm,
-} from "@/components/father/action-commitment-form";
-import { ActionSkillCard } from "@/components/father/action-skill-card";
+import { ActionLoop } from "@/components/father/action-loop";
 import { SessionHeader } from "@/components/father/session-header";
 import { Flash } from "@/components/manager/flash";
 import { requireRole } from "@/lib/auth/session";
 import {
   actionLoopState,
+  actionSessionEyebrow,
   actionSkillText,
   customMomentParts,
   formatNamedMoment,
@@ -28,8 +23,6 @@ import { loadOnboardingState } from "@/lib/father/onboarding-data";
 import { isOnboardingActive } from "@/lib/father/onboarding";
 import { parseSkillPrompt, sessionAction } from "@/lib/father/session-questions";
 import { getI18n } from "@/lib/i18n/server";
-import { interactiveUnderlineClassName } from "@/lib/ui";
-import { cn } from "@/lib/utils";
 
 export default async function SessionActionPage({
   params,
@@ -78,7 +71,6 @@ export default async function SessionActionPage({
   const skill = actionSkillText(session, parseSkillPrompt(sessionAction(session, training)).stem);
   const timezone = await loadFatherTimeZone(user.id);
   const changing = change === "1" && state === "do";
-  const showCommit = state === "commit" || changing;
   const customParts =
     commitment?.intentionLabel === "custom" && commitment.intentionAt
       ? customMomentParts(commitment.intentionAt, timezone)
@@ -94,7 +86,7 @@ export default async function SessionActionPage({
     : "";
 
   return (
-    <div className="mx-auto max-w-xl space-y-5 lg:space-y-8">
+    <div className="mx-auto max-w-lg space-y-8 lg:space-y-10">
       <SessionHeader
         training={training}
         session={session}
@@ -109,53 +101,24 @@ export default async function SessionActionPage({
 
       <Flash error={error} />
 
-      <ActionSkillCard skill={skill} />
-
-      {showCommit ? (
-        <>
-          <ActionCommitmentForm
-            sessionId={session.id}
-            defaultOption={changing ? commitment?.intentionLabel : null}
-            defaultDate={customParts?.date}
-            defaultTime={customParts?.time}
-            timezone={timezone}
-            action={commitActionMoment}
-          />
-          {state === "commit" && !funnel ? (
-            <p className="text-center">
-              <Link
-                href="/father"
-                className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
-              >
-                {t("father.session.skipForNow")}
-              </Link>
-            </p>
-          ) : null}
-        </>
-      ) : null}
-
-      {state === "do" && !changing ? (
-        <>
-          <p className="text-center text-sm text-muted-foreground">{namedMoment}</p>
-          <ActionDoneForm sessionId={session.id} action={markActionDone} />
-          <p className="text-center">
-            <Link
-              href={`/father/sessions/${session.id}/action?change=1`}
-              className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
-            >
-              {t("father.session.changeMoment")}
-            </Link>
-          </p>
-        </>
-      ) : null}
-
-      {state === "finish" ? (
-        <ActionFinishForm
-          sessionId={session.id}
-          defaultNote={commitment?.outcomeNote}
-          action={finishActionSession}
-        />
-      ) : null}
+      <ActionLoop
+        sessionId={session.id}
+        sessionTitle={actionSessionEyebrow(session, skill)}
+        skill={skill}
+        state={state}
+        changing={changing}
+        namedMoment={namedMoment}
+        timezone={timezone}
+        defaultOption={commitment?.intentionLabel}
+        defaultDate={customParts?.date}
+        defaultTime={customParts?.time}
+        defaultNote={commitment?.outcomeNote}
+        skipHref={state === "commit" && !funnel ? "/father" : null}
+        changeHref={`/father/sessions/${session.id}/action?change=1`}
+        commitAction={commitActionMoment}
+        doneAction={markActionDone}
+        finishAction={finishActionSession}
+      />
     </div>
   );
 }
