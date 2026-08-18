@@ -4,6 +4,7 @@ import type { ComponentType } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Award,
   BarChart3,
   Building2,
   ClipboardList,
@@ -54,6 +55,12 @@ export const NAV: Record<AppRole, NavItem[]> = {
       icon: ClipboardList,
       match: (path) => path.startsWith("/father/assessments"),
     },
+    {
+      href: "/father/certificates",
+      labelKey: "nav.certificates",
+      icon: Award,
+      match: (path) => path.startsWith("/father/certificates"),
+    },
   ],
   manager: [
     {
@@ -102,7 +109,13 @@ export const NAV: Record<AppRole, NavItem[]> = {
       href: "/reviewer",
       labelKey: "nav.insights",
       icon: BarChart3,
-      match: (path) => path === "/reviewer" || path.startsWith("/reviewer/summary"),
+      match: (path) => path === "/reviewer",
+    },
+    {
+      href: "/reviewer/summary",
+      labelKey: "nav.impactSummary",
+      icon: FileSpreadsheet,
+      match: (path) => path.startsWith("/reviewer/summary"),
     },
     {
       href: "/reviewer/account",

@@ -30,7 +30,6 @@ export type AdminGathering = {
     sessionsCompleted: number | null;
     certificates: number | null;
     assessmentsCompleted: number | null;
-    profilesCompleted: number | null;
     trainingDistribution: GatheringTrainingRow[];
     completionTrend: GatheringTrendPoint[];
   };
@@ -88,7 +87,6 @@ export function emptyAdminGathering(unavailable = false): AdminGathering {
       sessionsCompleted: null,
       certificates: null,
       assessmentsCompleted: null,
-      profilesCompleted: null,
       trainingDistribution: [],
       completionTrend: [],
     },
@@ -147,7 +145,6 @@ export async function loadAdminGathering(): Promise<AdminGathering> {
           fathersRaw.assessments_completed,
           fathers.ready
         ),
-        profilesCompleted: asOptionalInt(fathersRaw.profiles_completed, fathers.ready),
         trainingDistribution: distribution.flatMap((row) => {
           if (!row || typeof row !== "object") return [];
           const item = row as Record<string, unknown>;

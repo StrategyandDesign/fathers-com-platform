@@ -180,10 +180,7 @@ export default async function ReviewerImpactSummaryPage({
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">{t("reviewer.summary.periodTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {summary.trend.unit === "completion rate" ||
-            summary.trend.unit === t("reviewer.summary.completionRate")
-              ? t("reviewer.summary.periodCompletion")
-              : t("reviewer.summary.periodProfiles")}
+            {t("reviewer.summary.periodCompletion")}
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg border border-border px-4 py-4">

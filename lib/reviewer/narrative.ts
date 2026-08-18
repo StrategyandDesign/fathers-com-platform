@@ -30,19 +30,11 @@ export function draftReviewerFunderNarrative(
   ];
 
   if (summary.trend) {
-    const completion =
-      summary.trend.unit === "completion rate" ||
-      summary.trend.unit === t("reviewer.summary.completionRate");
     parts.push(
-      t(
-        completion
-          ? "reviewer.summary.narrativeTrendCompletion"
-          : "reviewer.summary.narrativeTrendProfiles",
-        {
-          left: summary.trend.left,
-          right: summary.trend.right,
-        }
-      )
+      t("reviewer.summary.narrativeTrendCompletion", {
+        left: summary.trend.left,
+        right: summary.trend.right,
+      })
     );
   }
 

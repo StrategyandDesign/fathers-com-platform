@@ -1,10 +1,7 @@
-import Link from "next/link";
-
 import { loadAdminGathering } from "@/lib/admin/gathering";
 import { requireRole } from "@/lib/auth/session";
 import { formatShortDate } from "@/lib/i18n/server";
 import { EmptyState } from "@/components/ui/empty-state";
-import { interactiveLinkClassName } from "@/lib/ui";
 
 function Stat({ label, value }: { label: string; value: string | number | null }) {
   return (
@@ -94,7 +91,7 @@ export default async function AdminGatheringPage() {
           value={`${fathers.optedIn} of ${fathers.eligible}`}
         />
         <Stat
-          label="Managers sharing"
+          label="Leaders sharing"
           value={`${managers.optedIn} of ${managers.eligible}`}
         />
         <Stat
@@ -120,7 +117,6 @@ export default async function AdminGatheringPage() {
               <Stat label="Sessions completed" value={fathers.sessionsCompleted} />
               <Stat label="Certificates" value={fathers.certificates} />
               <Stat label="Assessments finished" value={fathers.assessmentsCompleted} />
-              <Stat label="Profiles finished" value={fathers.profilesCompleted} />
             </div>
             {fathers.trainingDistribution.length > 0 ? (
               <div className="space-y-3">
@@ -186,9 +182,9 @@ export default async function AdminGatheringPage() {
 
       <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
         <div>
-          <h2 className="font-heading text-lg font-semibold">Managers</h2>
+          <h2 className="font-heading text-lg font-semibold">Leaders</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Assignments, certificates issued, and review decisions from managers
+            Assignments, certificates issued, and review decisions from leaders
             who opted in. Organizations stay unnamed.
           </p>
         </div>
@@ -201,7 +197,7 @@ export default async function AdminGatheringPage() {
             <Stat label="Reviews pending" value={managers.reviewsPending} />
           </div>
         ) : (
-          <Waiting role="managers" optedIn={managers.optedIn} needed={minCohort} />
+          <Waiting role="leaders" optedIn={managers.optedIn} needed={minCohort} />
         )}
       </section>
 
@@ -225,17 +221,14 @@ export default async function AdminGatheringPage() {
 
       {fathers.optedIn + managers.optedIn + reviewers.optedIn === 0 ? (
         <EmptyState title="Waiting on consent">
-          Gathering stays empty until a father, manager, or reviewer turns on
+          Gathering stays empty until a father, leader, or reviewer turns on
           anonymous sharing in Account. Super-admins do not turn it on for them.
         </EmptyState>
       ) : null}
 
       <p className="text-sm text-muted-foreground">
-        People change this on{" "}
-        <Link href="/admin/account" className={interactiveLinkClassName}>
-          their own Account
-        </Link>
-        . Super-admin Account does not share, because this tab is the receiving
+        Fathers, leaders, and reviewers turn sharing on from their own Account.
+        Super-admin Account does not share, because this tab is the receiving
         side.
       </p>
     </div>

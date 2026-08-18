@@ -75,7 +75,6 @@ export default async function FatherHomePage({
     (item) => item.assignment.status !== "completed" && item.questionCount > 0
   );
   const assessmentIsPrimary = !next && Boolean(pendingAssessment);
-  const issuedCertificates = trainingCards.filter((card) => card.certificate);
   const nextInProgress = sessionInProgress(next?.progress ?? null);
   const neverStarted = Boolean(next) && nextCompleted === 0 && !nextInProgress;
   const firstSession =
@@ -246,14 +245,12 @@ export default async function FatherHomePage({
             <section className="space-y-3">
               <div className="flex items-end justify-between gap-3">
                 <p className={eyebrowClassName}>{t("father.home.yourTrainings")}</p>
-                {issuedCertificates.length > 0 ? (
-                  <Link
-                    href="/father/certificates"
-                    className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
-                  >
-                    {t("father.home.viewCertificates")}
-                  </Link>
-                ) : null}
+                <Link
+                  href="/father/certificates"
+                  className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
+                >
+                  {t("father.home.viewCertificates")}
+                </Link>
               </div>
               <div className="grid gap-3 lg:grid-cols-3">
                 {trainingCards.map(({ training, completed, total, next: trainingNext, nextProgress }) => {

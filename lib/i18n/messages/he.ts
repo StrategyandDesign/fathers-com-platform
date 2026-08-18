@@ -16,6 +16,8 @@ export const he = {
     photos: "תמונות הארגון",
     account: "חשבון",
     insights: "תובנות",
+    impactSummary: "סיכום השפעה",
+    certificates: "תעודות",
     organizations: "ארגונים",
     users: "משתמשים",
     inbox: "תיבת דואר",

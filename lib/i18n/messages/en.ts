@@ -14,6 +14,8 @@ export const en = {
     photos: "Org Photos",
     account: "Account",
     insights: "Insights",
+    impactSummary: "Impact Summary",
+    certificates: "Certificates",
     organizations: "Organizations",
     users: "Users",
     inbox: "Inbox",
