@@ -147,7 +147,7 @@ export async function submitCheckin(formData: FormData) {
     redirect(paths.home);
   }
 
-  const context = await requireReachableSession(user.id, sessionId, paths);
+  await requireReachableSession(user.id, sessionId, paths);
 
   const choice = String(formData.get(CHECKIN_CHOICE_KEY) ?? "").trim();
   if (!choice) {
