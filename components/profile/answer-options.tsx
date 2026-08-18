@@ -1,8 +1,6 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent, type MouseEvent } from "react";
-import { useFormStatus } from "react-dom";
-
+import { useAutoAdvanceSubmit } from "@/components/form/use-auto-advance-submit";
 import { useT } from "@/components/i18n/locale-provider";
 import { radioOptionClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -48,28 +46,10 @@ function ProfileAnswerRadios({
   autoAdvance: boolean;
   invalid?: boolean;
 }) {
-  const { pending } = useFormStatus();
-  const [advancing, setAdvancing] = useState(false);
-  const started = useRef(false);
-  const locked = pending || advancing;
-
-  function advance(form: HTMLFormElement | null) {
-    if (!autoAdvance || locked || started.current || !form) return;
-    started.current = true;
-    setAdvancing(true);
-    const nextButton = form.querySelector<HTMLButtonElement>("[data-profile-advance]");
-    requestAnimationFrame(() => {
-      form.requestSubmit(nextButton ?? undefined);
-    });
-  }
-
-  function handleClick(event: MouseEvent<HTMLInputElement>) {
-    advance(event.currentTarget.form);
-  }
-
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    advance(event.currentTarget.form);
-  }
+  const { locked, handleChange } = useAutoAdvanceSubmit(
+    autoAdvance,
+    "[data-profile-advance]"
+  );
 
   return (
     <div
@@ -85,7 +65,6 @@ function ProfileAnswerRadios({
             defaultChecked={saved === option.value}
             required
             className="size-4 accent-primary"
-            onClick={handleClick}
             onChange={handleChange}
           />
           <span>{option.label}</span>
