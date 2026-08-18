@@ -10,6 +10,7 @@ export type WalkPaths = {
   session: (sessionId: string) => string;
   checkin: (sessionId: string) => string;
   action: (sessionId: string) => string;
+  done: (sessionId: string) => string;
   profileTake: string;
   profileResults: string;
   assessments: string;
@@ -22,6 +23,7 @@ export const FATHER_WALK: WalkPaths = {
   session: (sessionId) => `/father/sessions/${sessionId}`,
   checkin: (sessionId) => `/father/sessions/${sessionId}/checkin`,
   action: (sessionId) => `/father/sessions/${sessionId}/action`,
+  done: (sessionId) => `/father/sessions/${sessionId}/done`,
   profileTake: "/father/profile/take",
   profileResults: "/father/profile/results",
   assessments: "/father/assessments",
@@ -37,6 +39,7 @@ export const PRACTICE_WALK: WalkPaths = {
   session: (sessionId) => `${PRACTICE_ROOT}/sessions/${sessionId}`,
   checkin: (sessionId) => `${PRACTICE_ROOT}/sessions/${sessionId}/checkin`,
   action: (sessionId) => `${PRACTICE_ROOT}/sessions/${sessionId}/action`,
+  done: (sessionId) => `${PRACTICE_ROOT}/sessions/${sessionId}/done`,
   profileTake: `${PRACTICE_ROOT}/profile/take`,
   profileResults: `${PRACTICE_ROOT}/profile/results`,
   assessments: `${PRACTICE_ROOT}#assessments`,

@@ -58,7 +58,7 @@ export default async function LeaderPracticeActionPage({
   });
 
   if (state === "closed") {
-    redirect(`${PRACTICE_ROOT}?done=${encodeURIComponent(context.session.id)}`);
+    redirect(PRACTICE_WALK.done(sessionId));
   }
 
   const { t, dateLocale } = await getI18n();

@@ -62,7 +62,7 @@ export default async function SessionActionPage({
   });
 
   if (state === "closed") {
-    redirect(`/father?done=${encodeURIComponent(context.session.id)}`);
+    redirect(`/father/sessions/${sessionId}/done`);
   }
 
   const { t, dateLocale } = await getI18n();
