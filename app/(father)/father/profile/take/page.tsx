@@ -42,7 +42,7 @@ export default async function FatherProfileTakePage({
   ]);
 
   if (completed && !existingDraft) {
-    redirect("/father/profile/results");
+    redirect("/father/assessments");
   }
   if (!existingDraft && !access.canStartKeystone) {
     redirect("/father/assessments?error=flash.keystoneUnavailable");
