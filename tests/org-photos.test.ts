@@ -26,7 +26,7 @@ describe("organization photo slots", () => {
     assert.equal(orgPhotoObjectPath("group-1", HOME_HERO_SLOT), "group-1/home_hero");
   });
 
-  it("hides the father chrome mark until a group logo is uploaded", () => {
+  it("hides the father chrome mark until a group logo is uploaded for the side ribbon", () => {
     assert.equal(hasOrganizationLogo(null), false);
     assert.equal(hasOrganizationLogo("   "), false);
     assert.equal(hasOrganizationLogo("/brand/group.png"), true);

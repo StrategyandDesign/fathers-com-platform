@@ -48,9 +48,6 @@ export async function RoleShell({
       <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-border bg-background/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden lg:px-5">
         <div className="flex min-w-0 shrink-0 items-center gap-1.5 lg:gap-3">
           {role !== "father" && role !== "manager" ? <StaffMenu role={role} /> : null}
-          {groupLogo ? (
-            <OrganizationMark name={groupName} logoUrl={groupLogo} size="icon" />
-          ) : null}
           <BrandLogo href={funnel ? "/father/start" : ROLE_HOME[role]} />
           {groupName ? (
             <p className="hidden min-w-0 max-w-[12rem] truncate text-sm text-muted-foreground sm:block">
@@ -108,6 +105,7 @@ export async function RoleShell({
         <aside className="fixed bottom-0 start-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col overflow-y-auto border-e border-border bg-sidebar print:hidden lg:flex">
           {role === "father" && groupLogo ? (
             <div className="flex justify-center px-2 pt-4">
+              {/* Uploaded group mark lives only here, above Home — not beside the Fathers lockup. */}
               <OrganizationMark name={groupName} logoUrl={groupLogo} size="icon" />
             </div>
           ) : null}
