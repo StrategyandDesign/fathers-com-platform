@@ -808,7 +808,7 @@ export const en = {
       caughtUp: "Nothing waiting",
       caughtUpBody: "No unfinished sessions or certificates waiting to send.",
       viewParticipants: "View all participants",
-      impactLead: "One page of enrollment, completion, and certificate numbers for a board or funder.",
+      impactLead: "One page of enrollment, completion, and certificate numbers for your organization.",
       openImpact: "Open Impact Snapshot",
       reports: "Reports",
       reportsLead: "Filter by training, completion, and last activity. Download a CSV or PDF of your group.",
@@ -871,17 +871,17 @@ export const en = {
       collapse: "Hide assistant",
       expand: "Show assistant",
       narrateEmpty:
-        "No fathers have joined {org} yet. Share the invite code. This assistant will describe progress and draft funder language when someone starts.",
+        "No fathers have joined {org} yet. Share the invite code. This assistant will describe progress when someone starts.",
       narrate:
         "{org} has {fathers} fathers. {startedPct}% have started training. {quiet} are quiet, and {certs} certificates are ready to issue.",
       narrateClear:
         "{org} has {fathers} fathers. {startedPct}% have started training. No one is quiet, and {certs} certificates are ready to issue.",
       questionsTitle: "At a glance",
-      fundingTitle: "For a funder or board",
+      fundingTitle: "What you can show",
       fundingBody:
         "{certsIssued} certificates on file and a {startedPct}% start rate are documented participation. Draft the paragraph on Impact Snapshot.",
       fundingEmpty:
-        "When fathers begin, completion and certificates become the proof you take to a funder. Nothing extra to assemble.",
+        "When fathers begin, completion and certificates become a short record of participation. Nothing extra to assemble.",
       savingsTitle: "Quiet seats",
       savingsBody:
         "{quiet} assigned seats have no recent activity. A confirmed note takes a moment.",
@@ -894,7 +894,7 @@ export const en = {
       extraBody:
         "Nothing sends or assigns on its own. You confirm or dismiss. Your existing tools stay where they are.",
       viewQuiet: "Review quiet participants",
-      viewImpact: "Draft funder narrative",
+      viewImpact: "Draft a summary",
       issueCerts: "Certificates ready",
       noNext: "Nothing is waiting on a confirmation.",
       attentionTitle: "Open items",
@@ -919,18 +919,18 @@ export const en = {
       detailTitle: "Assistant suggestion",
       detailLead: "Shown because this father is quiet, stalled, or ready for a certificate. You confirm any send.",
       detailCert: "A certificate is ready for {title}. Preview it. Nothing issues until you confirm on the next screen.",
-      narrativeTitle: "Draft funder narrative",
-      narrativeLead: "Anonymized. No names. Copy it into a board or funder update.",
+      narrativeTitle: "Draft a summary",
+      narrativeLead: "Anonymized. No names. Copy it into an update for your organization.",
       narrativeEmpty:
-        "{org} does not have enrollment to describe yet. When fathers join, this paragraph will write the last {days} days in funder language, still without names.",
+        "{org} does not have enrollment to describe yet. When fathers join, this paragraph will describe the last {days} days, still without names.",
       narrative:
         "Over the last {days} days, {org} enrolled {enrolled} fathers. {startedPct}% started training, {onePct}% completed at least one session, and {fullyPct}% finished a training. {certs} certificates were issued.",
       trendUp:
-        "Session completions rose from {previous} to {current} versus the prior {days} days. These are documented participation numbers a funder or board can use. No individual names.",
+        "Session completions rose from {previous} to {current} versus the prior {days} days. These are documented participation numbers. No individual names.",
       trendDown:
-        "Session completions moved from {previous} to {current} versus the prior {days} days. These are documented participation numbers a funder or board can use. No individual names.",
+        "Session completions moved from {previous} to {current} versus the prior {days} days. These are documented participation numbers. No individual names.",
       trendSame:
-        "Session completions held steady versus the prior {days} days. These are documented participation numbers a funder or board can use. No individual names.",
+        "Session completions held steady versus the prior {days} days. These are documented participation numbers. No individual names.",
       copyNarrative: "Copy narrative",
       copiedNarrative: "Copied",
     },
@@ -1178,7 +1178,7 @@ export const en = {
     impact: {
       yourOrg: "Your organization",
       title: "Impact Snapshot",
-      lead: "One page of numbers for a board, funder, or leader. Your organization only. Generated {date}.",
+      lead: "One page of numbers for your organization. Generated {date}.",
       pdf: "Download PDF",
       compare: "Compare",
       tabs: "Impact views",
@@ -1224,7 +1224,7 @@ export const en = {
       plus: "+{n} vs previous 30 days",
       minus: "−{n} vs previous 30 days",
       pdfTitle: "Fathers.com Impact Snapshot",
-      scoped: "Organization-scoped. Ready for a board, funder, or leader.",
+      scoped: "Organization-scoped. Counts only. No individual names.",
       thisPeriod: "{n} this period",
       footer: "Fathers.com  ·  Presence is a skill.  ·  Your organization only.",
       periodCompare: "{current} compared with {previous}.",

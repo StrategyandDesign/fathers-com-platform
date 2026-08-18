@@ -213,7 +213,7 @@ export function buildCompanionBriefing(input: {
   };
 }
 
-export function funderTrendCopy(snapshot: ImpactSnapshot): CompanionCopy {
+export function snapshotTrendCopy(snapshot: ImpactSnapshot): CompanionCopy {
   const current = snapshot.trend.sessionsCompleted.current;
   const previous = snapshot.trend.sessionsCompleted.previous;
   if (current > previous) {
@@ -231,7 +231,7 @@ export function funderTrendCopy(snapshot: ImpactSnapshot): CompanionCopy {
   return { key: "manager.companion.trendSame", vars: { days: snapshot.periodDays } };
 }
 
-export function funderNarrativeVars(
+export function snapshotNarrativeVars(
   snapshot: ImpactSnapshot,
   organizationName: string
 ) {

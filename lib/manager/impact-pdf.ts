@@ -138,7 +138,7 @@ async function renderImpactPdfWithLocale(snapshot: ImpactSnapshot, locale: Local
     page,
     locale === "he"
       ? t("manager.impact.scoped")
-      : "Organization-scoped. Ready for a board, funder, or leader.",
+      : "Organization-scoped. Counts only. No individual names.",
     MARGIN,
     y,
     font,
