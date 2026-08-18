@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { parseDisplayName } from "@/lib/account/display-name";
 import { isManagerDisplayTitle } from "@/lib/account/display-title";
 import { parseNotificationPreferences, type NotificationPreferences } from "@/lib/account/preferences";
 import { parseWeekday } from "@/lib/father/onboarding";
@@ -14,6 +15,36 @@ import { createClient } from "@/lib/supabase/server";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
+}
+
+export async function saveDisplayName(formData: FormData) {
+  const { user, role } = await getAuthContext();
+  const path = ROLE_ACCOUNT.manager;
+  const parsed = parseDisplayName(formData.get("full_name"));
+
+  if (!user || role !== "manager") {
+    redirect("/login");
+  }
+  if ("error" in parsed) {
+    redirect(
+      `${path}?error=${encodeURIComponent(
+        parsed.error === "tooLong" ? "flash.displayNameTooLong" : "flash.displayNameRequired"
+      )}`
+    );
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ full_name: parsed.name })
+    .eq("id", user.id);
+
+  if (error) {
+    redirect(`${path}?error=${encodeURIComponent("flash.displayNameFailed")}`);
+  }
+
+  revalidatePath("/", "layout");
+  redirect(`${path}?notice=${encodeURIComponent("flash.displayNameSaved")}`);
 }
 
 export async function saveDisplayTitle(formData: FormData) {

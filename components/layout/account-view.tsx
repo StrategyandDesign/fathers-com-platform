@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AnonymousShareToggle } from "@/components/account/anonymous-share-toggle";
+import { DisplayNameForm } from "@/components/account/display-name-form";
 import { DisplayTitleForm } from "@/components/account/display-title-form";
 import { NotificationPrefs } from "@/components/account/notification-prefs";
 import { LanguageForm } from "@/components/i18n/language-form";
@@ -86,7 +87,12 @@ export async function AccountView({
         </div>
       </section>
 
-      {role === "manager" ? <DisplayTitleForm savedTitle={account.displayTitle} /> : null}
+      {role === "manager" ? (
+        <>
+          <DisplayNameForm savedName={account.fullName?.trim() ?? ""} />
+          <DisplayTitleForm savedTitle={account.displayTitle} />
+        </>
+      ) : null}
 
       <LanguageForm savedLocale={account.locale} />
 
