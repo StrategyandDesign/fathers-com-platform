@@ -17,8 +17,8 @@ export function OrganizationMark({
   const logo = logoUrl?.trim() || null;
   if (!label && !logo) return null;
 
-  // Icon chrome is reserved for an uploaded mark. Initials placeholders
-  // steal header and sidebar space from the Fathers lockup and Home icon.
+  // Icon chrome is reserved for an uploaded mark in the side ribbon.
+  // Initials placeholders steal space from the Home icon.
   if (size === "icon") {
     if (!logo) return null;
     return (
