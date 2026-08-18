@@ -56,7 +56,7 @@ export default async function AdminHomePage({
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Organizations</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Create a group with a manager and invite code.
@@ -68,34 +68,34 @@ export default async function AdminHomePage({
             New organization
           </Link>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Catalog</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Create trainings and assessments here, then share them with
             organization Leaders. Leaders decide what reaches their fathers.
           </p>
-          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Link
               href="/admin/trainings/new"
-              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+              className={cn(buttonVariants({ variant: "outline" }), "w-full max-w-full sm:w-auto")}
             >
               New training
             </Link>
             <Link
               href="/admin/trainings/sources"
-              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+              className={cn(buttonVariants({ variant: "outline" }), "w-full max-w-full sm:w-auto")}
             >
               Bring in a training
             </Link>
             <Link
               href="/admin/assessments"
-              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+              className={cn(buttonVariants({ variant: "outline" }), "w-full max-w-full sm:w-auto")}
             >
               Assessments
             </Link>
           </div>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Gathering</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Anonymous participation from people who turned sharing on in
@@ -108,7 +108,7 @@ export default async function AdminHomePage({
             Open Gathering
           </Link>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Users</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Change roles and deactivate accounts.
@@ -120,7 +120,7 @@ export default async function AdminHomePage({
             Manage users
           </Link>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Support Inbox</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {[
@@ -142,7 +142,7 @@ export default async function AdminHomePage({
               .filter(Boolean)
               .join(" ")}
           </p>
-          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Link
               href="/admin/support"
               className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
