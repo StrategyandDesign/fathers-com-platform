@@ -55,7 +55,6 @@ export default async function FatherHomePage({
     : null;
   const assessmentCoverSrc = resolveHomeProfileCover(orgPhotos.profileUrl, orgPhotos.photoPack);
   const featuredAssessment = pickFeaturedAssignment(customAssignments);
-  const showAssessmentCard = Boolean(featuredAssessment);
 
   const nextCard = next
     ? trainingCards.find((card) => card.training.id === next.training.id)
@@ -125,17 +124,11 @@ export default async function FatherHomePage({
   );
 
   return (
-    <div
-      className={
-        showAssessmentCard
-          ? "grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,1fr)] lg:gap-8"
-          : "space-y-6"
-      }
-    >
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,1fr)] lg:gap-8">
       {next ? (
         <div
           className={cn(
-            showAssessmentCard && "order-1 lg:col-start-1 lg:row-start-1",
+            "order-1 lg:col-start-1 lg:row-start-1",
             neverStarted && "max-lg:min-h-[calc(100svh-8.75rem)]"
           )}
         >
@@ -207,12 +200,7 @@ export default async function FatherHomePage({
           )}
         </div>
       ) : (
-        <section
-          className={cn(
-            "flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:p-8",
-            showAssessmentCard && "order-1 lg:col-start-1 lg:row-start-1"
-          )}
-        >
+        <section className="order-1 flex flex-col justify-center rounded-xl border border-border bg-card p-4 sm:p-6 lg:col-start-1 lg:row-start-1 lg:p-8">
           {justFinished ? (
             <SessionCompleteMark />
           ) : (
@@ -245,21 +233,15 @@ export default async function FatherHomePage({
         </section>
       )}
 
-      {featuredAssessment ? (
-        <AssessmentHomeCard
-          card={featuredAssessment}
-          coverSrc={assessmentCoverSrc}
-          fatherName={fatherName}
-          className={cn(
-            next ? (neverStarted ? "order-2" : "order-3") : "order-2",
-            neverStarted && "max-lg:hidden",
-            "lg:col-start-2 lg:row-start-1"
-          )}
-        />
-      ) : null}
+      <AssessmentHomeCard
+        card={featuredAssessment}
+        coverSrc={assessmentCoverSrc}
+        fatherName={fatherName}
+        className="order-2 lg:col-start-2 lg:row-start-1"
+      />
 
       {trainingCards.length > 0 || customAssignments.length > 0 ? (
-        <div className={cn("space-y-8", showAssessmentCard && "order-4 lg:col-span-2")}>
+        <div className="order-4 space-y-8 lg:col-span-2">
           {trainingCards.length > 0 ? (
             <section className="space-y-3">
               <div className="flex items-end justify-between gap-3">

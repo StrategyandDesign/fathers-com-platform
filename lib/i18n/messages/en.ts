@@ -440,6 +440,7 @@ export const en = {
       profileLater: "Optional. You can take this after you start.",
       assessment: "Assessment",
       assessmentLater: "An assessment can wait until after you start.",
+      assessmentWaiting: "It will show up here when your manager assigns one.",
       yourTrainings: "Your trainings",
       viewCertificates: "View certificates",
       sessionsReady: "Sessions will appear when this training is ready.",

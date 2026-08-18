@@ -15,20 +15,23 @@ export async function AssessmentHomeCard({
   fatherName,
   className,
 }: {
-  card: FatherAssignmentCard;
+  card?: FatherAssignmentCard | null;
   coverSrc: string;
   fatherName?: string | null;
   className?: string;
 }) {
   const { t, locale } = await getI18n();
-  const { assignment, assessment, questionCount, answeredCount } = card;
-  const completed = assignment.status === "completed";
-  const href = takeHref(assignment.id);
+  const assignment = card?.assignment ?? null;
+  const assessment = card?.assessment ?? null;
+  const questionCount = card?.questionCount ?? 0;
+  const answeredCount = card?.answeredCount ?? 0;
+  const completed = assignment?.status === "completed";
+  const href = assignment ? takeHref(assignment.id) : "/father/assessments";
   const actionClassName = cn(buttonVariants({ variant: "outline" }), "w-full min-h-11");
   const displayName = fatherName?.trim() || null;
 
   return (
-    <section className={className}>
+    <section className={className} aria-label={t("father.home.assessment")}>
       <AssessmentPhotoPlate
         src={coverSrc}
         completed={completed}
@@ -36,7 +39,14 @@ export async function AssessmentHomeCard({
       >
         <div className="flex min-h-56 flex-1 flex-col p-4 sm:min-h-64 sm:p-5">
           <p className={eyebrowClassName}>{t("father.home.assessment")}</p>
-          {completed ? (
+          {!assignment || !assessment ? (
+            <>
+              <h2 className="font-display mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
+                {t("father.assessments.emptyTitle")}
+              </h2>
+              <p className="mt-2 text-sm text-white/65">{t("father.home.assessmentWaiting")}</p>
+            </>
+          ) : completed ? (
             <>
               <h2 className="font-display mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
                 {assessment.title}

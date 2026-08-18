@@ -93,9 +93,9 @@ export function asStringOptions(value: unknown): string[] | null {
 
 export function pickFeaturedAssignment(cards: FatherAssignmentCard[]) {
   return (
+    cards.find((card) => card.assignment.status === "completed") ??
     cards.find((card) => card.assignment.status === "in_progress") ??
     cards.find((card) => card.assignment.status === "not_started") ??
-    cards.find((card) => card.assignment.status === "completed") ??
     null
   );
 }

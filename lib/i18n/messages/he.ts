@@ -421,6 +421,7 @@ export const he = {
       profileLater: "אופציונלי. אפשר לעשות את זה אחרי שמתחילים.",
       assessment: "הערכה",
       assessmentLater: "הערכה יכולה לחכות עד אחרי שמתחילים.",
+      assessmentWaiting: "היא תופיע כאן כשהמנהל יקצה אחת.",
       yourTrainings: "ההכשרות שלך",
       viewCertificates: "צפייה בתעודות",
       sessionsReady: "המפגשים יופיעו כשההכשרה תהיה מוכנה.",
