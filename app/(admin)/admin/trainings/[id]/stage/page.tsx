@@ -18,6 +18,7 @@ import {
 import { sessionCover } from "@/lib/brand/photos";
 import { getI18n } from "@/lib/i18n/server";
 import { resolveTrainingCardCover } from "@/lib/org-photos/data";
+import { trainingCoverSlug, trainingPartSubtitle } from "@/lib/trainings/series";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -37,7 +38,8 @@ export default async function AdminTrainingStagePage({
   const first = training.sessions[0] ?? null;
   const total = stageCatalogTotal(training);
   const walked = training.sessions.find((session) => session.id === flash.walked);
-  const coverSrc = resolveTrainingCardCover(training.slug, null, "default");
+  const coverSrc = resolveTrainingCardCover(trainingCoverSlug(training), null, "default");
+  const partSubtitle = trainingPartSubtitle(training, total);
   const heroCover = first ? sessionCover(first.session_number, "default") : coverSrc;
   const firstHref = first ? paths.session(first.id) : paths.edit;
   const sessionDots = training.sessions.map((session) => ({
@@ -131,6 +133,7 @@ export default async function AdminTrainingStagePage({
                   <FatherTrainingCatalogCard
                     title={training.title}
                     description={training.description}
+                    subtitle={partSubtitle}
                     coverSrc={coverSrc}
                     completed={0}
                     total={total}
@@ -182,6 +185,9 @@ export default async function AdminTrainingStagePage({
                       <p className="font-heading text-sm font-semibold sm:text-base">
                         {training.title}
                       </p>
+                      {partSubtitle ? (
+                        <p className="mt-1 text-sm text-muted-foreground">{partSubtitle}</p>
+                      ) : null}
                       <div className="mt-4 space-y-2">
                         <ProgressBar value={0} />
                         <p className="text-sm text-muted-foreground">

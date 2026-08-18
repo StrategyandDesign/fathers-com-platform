@@ -67,6 +67,7 @@ export type TrainingProgress = {
   completed: number;
   total: number;
   assigned: boolean;
+  gated: boolean;
   certificate: Certificate | null;
   current: {
     session: Session;

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { transactionalEmailAttrs } from "@/lib/email/layout";
+
 export function getAppUrl() {
   const raw =
     process.env.APP_URL ||
@@ -27,12 +29,15 @@ export function renderTransactionalEmail({
   body,
   ctaLabel,
   ctaHref,
+  locale,
 }: {
   title: string;
   body: string;
   ctaLabel?: string;
   ctaHref?: string;
+  locale?: string | null;
 }) {
+  const attrs = transactionalEmailAttrs(locale);
   const paragraphs = body
     .split(/\n+/)
     .map((line) => line.trim())
@@ -46,7 +51,7 @@ export function renderTransactionalEmail({
   const htmlBody = paragraphs
     .map(
       (line) =>
-        `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#3a352e;">${escapeHtml(line)}</p>`
+        `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#3a352e;text-align:${attrs.textAlign};">${escapeHtml(line)}</p>`
     )
     .join("");
   const cta = ctaLabel && ctaHref
@@ -54,19 +59,19 @@ export function renderTransactionalEmail({
     : "";
 
   const html = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"></head>
-<body style="margin:0;padding:0;background:#e9e3d7;font-family:Georgia,'Times New Roman',serif;">
+<html lang="${attrs.lang}" dir="${attrs.dir}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"></head>
+<body dir="${attrs.dir}" style="margin:0;padding:0;background:#e9e3d7;font-family:Georgia,'Times New Roman',serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e9e3d7;"><tr><td align="center" style="padding:32px 12px;">
 <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#f4f0e8;border-radius:8px;">
-<tr><td style="padding:28px 32px 8px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#6b6257;">Fathers.com</td></tr>
-<tr><td style="padding:8px 32px 32px;">
-<h1 style="margin:0 0 16px;font-size:26px;line-height:1.25;color:#141210;">${escapeHtml(title)}</h1>
+<tr><td align="${attrs.textAlign}" style="padding:28px 32px 8px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#6b6257;text-align:${attrs.textAlign};">Fathers.com</td></tr>
+<tr><td align="${attrs.textAlign}" style="padding:8px 32px 32px;text-align:${attrs.textAlign};">
+<h1 style="margin:0 0 16px;font-size:26px;line-height:1.25;color:#141210;text-align:${attrs.textAlign};">${escapeHtml(title)}</h1>
 ${htmlBody}
 ${cta}
 </td></tr>
 </table>
 <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
-<tr><td style="padding:20px 32px;font-size:12px;line-height:1.6;color:#8a8378;">Fathers.com is a program of the National Center for Fathering.</td></tr>
+<tr><td align="${attrs.textAlign}" style="padding:20px 32px;font-size:12px;line-height:1.6;color:#8a8378;text-align:${attrs.textAlign};">Fathers.com is a program of the National Center for Fathering.</td></tr>
 </table>
 </td></tr></table>
 </body></html>`;

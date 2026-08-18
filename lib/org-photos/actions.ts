@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/session";
 import { loadCatalogTrainings } from "@/lib/org-photos/data";
+import { trainingCoverSlug } from "@/lib/trainings/series";
 import { readImageMeta, validateOrgPhoto } from "@/lib/org-photos/image";
 import { isOrgPhotoSlot, orgPhotoObjectPath } from "@/lib/org-photos/slots";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
@@ -62,7 +63,7 @@ export async function uploadOrganizationPhoto(
   }
 
   const trainings = await loadCatalogTrainings();
-  const slugs = trainings.map((training) => training.slug);
+  const slugs = [...new Set(trainings.map((training) => trainingCoverSlug(training)))];
   if (!isOrgPhotoSlot(slotValue, slugs)) {
     return { error: "That photo slot isn’t available." };
   }
@@ -125,7 +126,7 @@ export async function resetOrganizationPhoto(
   }
 
   const trainings = await loadCatalogTrainings();
-  const slugs = trainings.map((training) => training.slug);
+  const slugs = [...new Set(trainings.map((training) => trainingCoverSlug(training)))];
   if (!isOrgPhotoSlot(slotValue, slugs)) {
     return { error: "That photo slot isn’t available." };
   }

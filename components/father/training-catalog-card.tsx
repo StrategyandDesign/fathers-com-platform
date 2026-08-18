@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CoverPhoto } from "@/components/brand/cover";
+import { FilmRuntime } from "@/components/father/film-runtime";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { continueHref, type Session, type SessionProgress } from "@/lib/father/types";
@@ -42,6 +43,7 @@ export function isTrainingInProgress(
 export function FatherTrainingCatalogCard({
   title,
   description,
+  subtitle,
   coverSrc,
   completed,
   total,
@@ -51,12 +53,15 @@ export function FatherTrainingCatalogCard({
   certificateId,
   featured,
   quiet,
+  gated,
+  gatedLabel,
   hrefOverride,
   sessionHref,
   t,
 }: {
   title: string;
   description: string | null;
+  subtitle?: string | null;
   coverSrc: string | null | undefined;
   completed: number;
   total: number;
@@ -66,11 +71,15 @@ export function FatherTrainingCatalogCard({
   certificateId?: string | null;
   featured?: boolean;
   quiet?: boolean;
+  gated?: boolean;
+  gatedLabel?: string | null;
   hrefOverride?: string | null;
   sessionHref?: (sessionId: string) => string;
   t: Translate;
 }) {
-  const href = hrefOverride ?? (next ? continueHref(next.id, nextProgress) : null);
+  const href = gated
+    ? null
+    : hrefOverride ?? (next ? continueHref(next.id, nextProgress) : null);
   const started = completed > 0 || sessionInProgress(nextProgress);
   const complete = !next && total > 0 && completed >= total;
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
@@ -129,7 +138,14 @@ export function FatherTrainingCatalogCard({
           ) : (
             <h2 className="font-heading text-xl font-semibold tracking-tight">{title}</h2>
           )}
-          {description ? (
+          {subtitle ? (
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
+          ) : null}
+          {gated ? (
+            <p className="text-sm text-muted-foreground">
+              {gatedLabel ?? t("father.trainings.gatedPart", { n: 1 })}
+            </p>
+          ) : description ? (
             <p
               className={cn(
                 "text-sm text-muted-foreground",
@@ -143,7 +159,7 @@ export function FatherTrainingCatalogCard({
           ) : null}
         </div>
 
-        {next ? (
+        {gated ? null : next ? (
           <div className="space-y-1">
             <p className="text-base font-medium text-foreground">
               {t("father.trainings.nextSession", { title: next.title })}
@@ -153,12 +169,13 @@ export function FatherTrainingCatalogCard({
                 {t("father.trainings.sessionOf", { n: next.session_number, total })}
               </p>
             ) : null}
+            <FilmRuntime seconds={next.duration_seconds} t={t} />
           </div>
         ) : complete ? (
           <p className="text-sm text-muted-foreground">{t("father.trainings.trainingComplete")}</p>
         ) : null}
 
-        {total > 0 ? (
+        {!gated && total > 0 ? (
           <div className="space-y-2">
             <p className="text-sm tabular-nums text-muted-foreground">
               {t("father.trainings.sessionsComplete", { completed, total })}
@@ -196,7 +213,7 @@ export function FatherTrainingCatalogCard({
               {t("father.trainings.downloadCertificate")}
             </a>
           ) : null}
-          {sessionDots.length > 0 ? (
+          {!gated && sessionDots.length > 0 ? (
             <SessionList dots={sessionDots} nextId={next?.id} sessionHref={sessionHref} t={t} />
           ) : null}
         </div>

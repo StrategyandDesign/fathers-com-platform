@@ -53,7 +53,7 @@ export function organizationLabel(
 
 export function stallPoint(cards: TrainingProgress[]) {
   const card = cards.find(
-    (row) => row.assigned && row.completed < row.total && row.current?.session
+    (row) => row.assigned && !row.gated && row.completed < row.total && row.current?.session
   );
   if (!card?.current?.session) return null;
   return {

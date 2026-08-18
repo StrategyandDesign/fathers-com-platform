@@ -5,6 +5,7 @@ import {
   type SessionProgress,
   type Training,
 } from "@/lib/father/types";
+import { isSeriesPartGated } from "@/lib/trainings/series";
 import { loadOrganizationReviews } from "@/lib/manager/reviews";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrls } from "@/lib/storage";
@@ -141,9 +142,12 @@ export async function loadManagerWorkspace(managerId: string) {
       const completed = trainingSessions.filter((session) =>
         isSessionComplete(fatherProgress.get(session.id) ?? null)
       ).length;
-      const currentSession = trainingSessions.find(
-        (session) => !isSessionComplete(fatherProgress.get(session.id) ?? null)
-      );
+      const gated = isSeriesPartGated(training, trainings, sessions, fatherProgress);
+      const currentSession = gated
+        ? undefined
+        : trainingSessions.find(
+            (session) => !isSessionComplete(fatherProgress.get(session.id) ?? null)
+          );
 
       return {
         training,
@@ -151,6 +155,7 @@ export async function loadManagerWorkspace(managerId: string) {
         completed,
         total: trainingSessions.length,
         assigned: assignedIds.has(training.id),
+        gated,
         certificate:
           certificates.find(
             (row) => row.father_id === fatherId && row.training_id === training.id
@@ -174,8 +179,9 @@ export async function loadManagerWorkspace(managerId: string) {
   function progressLabel(fatherId: string) {
     const cards = trainingProgressFor(fatherId);
     const active =
-      cards.find((card) => card.assigned && card.completed < card.total) ??
-      cards.find((card) => card.completed > 0 && card.completed < card.total) ??
+      cards.find((card) => card.assigned && !card.gated && card.completed < card.total) ??
+      cards.find((card) => !card.gated && card.completed > 0 && card.completed < card.total) ??
+      cards.find((card) => card.assigned && !card.gated) ??
       cards.find((card) => card.assigned) ??
       cards[0];
 
@@ -264,6 +270,7 @@ export async function loadManagerWorkspace(managerId: string) {
     participants,
     progress,
     certificates,
+    assignments,
     trainingProgressFor,
     summary: {
       activeParticipants: fatherIds.length,

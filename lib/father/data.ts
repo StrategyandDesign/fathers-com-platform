@@ -12,6 +12,8 @@ import {
 } from "@/lib/father/types";
 import { loadAcceptedTrainingIds } from "@/lib/manager/reviews";
 import type { Certificate } from "@/lib/manager/types";
+import { parseTimeZone } from "@/lib/notifications/schedule";
+import { isLaterSeriesPart, isSeriesPartGated } from "@/lib/trainings/series";
 
 function asProgress(row: SessionProgress): SessionProgress {
   return asSessionProgress(row);
@@ -74,7 +76,7 @@ function pickNextSession(
 export async function loadFatherHome(fatherId: string) {
   const supabase = await createClient();
 
-  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes, certificatesRes, assignmentsRes, accepted] =
+  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes, certificatesRes, assignmentsRes, accepted, zoneRes] =
     await Promise.all([
       supabase.from("trainings").select("*").order("order_index"),
       supabase.from("sessions").select("*").order("order_index"),
@@ -93,6 +95,11 @@ export async function loadFatherHome(fatherId: string) {
         .select("training_id, assigned_at")
         .eq("father_id", fatherId),
       loadAcceptedTrainingIds(),
+      supabase
+        .from("notification_preferences")
+        .select("timezone")
+        .eq("user_id", fatherId)
+        .maybeSingle(),
     ]);
 
   if (trainingsRes.error) throw trainingsRes.error;
@@ -123,16 +130,20 @@ export async function loadFatherHome(fatherId: string) {
   const progressSessionIds = new Set(progressBySession.keys());
   const certificateIds = new Set(certificates.map((row) => row.training_id));
 
-  const trainings = allTrainings.filter((training) =>
-    isTrainingVisibleInCatalog(training, {
+  const trainings = allTrainings.filter((training) => {
+    const access = {
       accepted: accepted.ids.has(training.id),
       assigned: assignedIds.has(training.id),
       hasCertificate: certificateIds.has(training.id),
       hasProgress: sessions.some(
         (session) => session.training_id === training.id && progressSessionIds.has(session.id)
       ),
-    })
-  );
+    };
+    if (isLaterSeriesPart(training)) {
+      return access.assigned || access.hasProgress || access.hasCertificate;
+    }
+    return isTrainingVisibleInCatalog(training, access);
+  });
 
   const trainingCards = trainings.map((training) => {
     const trainingSessions = sessions
@@ -141,7 +152,10 @@ export async function loadFatherHome(fatherId: string) {
     const completed = trainingSessions.filter((session) =>
       isSessionComplete(progressBySession.get(session.id) ?? null)
     ).length;
-    const next = pickNextSession(trainingSessions, progressBySession, completed);
+    const gated = isSeriesPartGated(training, allTrainings, sessions, progressBySession);
+    const next = gated
+      ? undefined
+      : pickNextSession(trainingSessions, progressBySession, completed);
 
     return {
       training,
@@ -159,20 +173,27 @@ export async function loadFatherHome(fatherId: string) {
       next,
       nextProgress: next ? progressBySession.get(next.id) ?? null : null,
       certificate: certificates.find((row) => row.training_id === training.id) ?? null,
+      gated,
     };
   });
 
-  const activeCard = [...trainingCards]
+  const pathCards = trainingCards.filter((card) => assignedIds.has(card.training.id));
+  const activeCard = [...pathCards]
     .sort((left, right) => {
       const leftAssigned = assignedAt.get(left.training.id) ?? 0;
       const rightAssigned = assignedAt.get(right.training.id) ?? 0;
       if (leftAssigned !== rightAssigned) return rightAssigned - leftAssigned;
       return left.training.order_index - right.training.order_index;
     })
-    .find((card) => card.next);
+    .find((card) => card.next && !card.gated);
+
+  const completedAts = ((progressRes.data ?? []) as SessionProgress[])
+    .filter((row) => isSessionComplete(asProgress(row)) && row.completed_at)
+    .map((row) => row.completed_at as string);
 
   return {
     trainingCards,
+    pathCards,
     next: activeCard?.next
       ? {
           session: activeCard.next,
@@ -182,6 +203,9 @@ export async function loadFatherHome(fatherId: string) {
       : null,
     profile: (profileRes.data as FatherProfileSummary | null) ?? null,
     draft,
+    certificates,
+    completedAts,
+    timezone: parseTimeZone(zoneRes.data?.timezone) ?? "UTC",
   };
 }
 
@@ -218,6 +242,17 @@ export async function loadSessionContext(fatherId: string, sessionId: string) {
   const typedSession = session as Session;
   const typedTraining = training as Training;
 
+  const seriesRes = typedTraining.series_id
+    ? await supabase
+        .from("trainings")
+        .select("*")
+        .eq("series_id", typedTraining.series_id)
+        .order("part_number")
+    : { data: [typedTraining], error: null };
+  if (seriesRes.error) throw seriesRes.error;
+  const seriesTrainings = (seriesRes.data ?? [typedTraining]) as Training[];
+  const seriesIds = seriesTrainings.map((row) => row.id);
+
   const { data: siblings, error: siblingsError } = await supabase
     .from("sessions")
     .select("*")
@@ -227,15 +262,24 @@ export async function loadSessionContext(fatherId: string, sessionId: string) {
   if (siblingsError) throw siblingsError;
 
   const trainingSessions = (siblings ?? []) as Session[];
+  const { data: seriesSessions, error: seriesSessionsError } = await supabase
+    .from("sessions")
+    .select("*")
+    .in("training_id", seriesIds);
+
+  if (seriesSessionsError) throw seriesSessionsError;
+
   const siblingIds = trainingSessions.map((row) => row.id);
+  const seriesSessionIds = ((seriesSessions ?? []) as Session[]).map((row) => row.id);
+  const progressIds = [...new Set([...siblingIds, ...seriesSessionIds])];
   const { data: siblingProgress, error: siblingProgressError } =
-    siblingIds.length === 0
+    progressIds.length === 0
       ? { data: [] as SessionProgress[], error: null }
       : await supabase
           .from("session_progress")
           .select("*")
           .eq("father_id", fatherId)
-          .in("session_id", siblingIds);
+          .in("session_id", progressIds);
 
   if (siblingProgressError) throw siblingProgressError;
 
@@ -249,7 +293,14 @@ export async function loadSessionContext(fatherId: string, sessionId: string) {
     progressBySession.set(sessionId, currentProgress);
   }
 
-  const unlocked = isSessionUnlocked(trainingSessions, progressBySession, sessionId);
+  const gated = isSeriesPartGated(
+    typedTraining,
+    seriesTrainings,
+    (seriesSessions ?? []) as Session[],
+    progressBySession
+  );
+  const unlocked =
+    !gated && isSessionUnlocked(trainingSessions, progressBySession, sessionId);
 
   const [accepted, assignmentRes, certificateRes] = await Promise.all([
     loadAcceptedTrainingIds(),
@@ -270,14 +321,16 @@ export async function loadSessionContext(fatherId: string, sessionId: string) {
   if (assignmentRes.error) throw assignmentRes.error;
   if (certificateRes.error) throw certificateRes.error;
 
-  if (
-    !isTrainingVisibleInCatalog(typedTraining, {
-      accepted: accepted.ids.has(typedTraining.id),
-      assigned: Boolean(assignmentRes.data),
-      hasProgress: progressBySession.size > 0,
-      hasCertificate: Boolean(certificateRes.data),
-    })
-  ) {
+  const access = {
+    accepted: accepted.ids.has(typedTraining.id),
+    assigned: Boolean(assignmentRes.data),
+    hasProgress: trainingSessions.some((session) => progressBySession.has(session.id)),
+    hasCertificate: Boolean(certificateRes.data),
+  };
+  const visible = isLaterSeriesPart(typedTraining)
+    ? access.assigned || access.hasProgress || access.hasCertificate
+    : isTrainingVisibleInCatalog(typedTraining, access);
+  if (!visible) {
     return null;
   }
 
@@ -291,6 +344,8 @@ export async function loadSessionContext(fatherId: string, sessionId: string) {
     ).length,
     sessionTotal: catalogSessionTotal(typedTraining, trainingSessions.length),
     unlocked,
+    gated,
+    gateRedirect: gated ? "/father" : null,
     redirectSessionId: unlocked
       ? sessionId
       : firstReachableSessionId(trainingSessions, progressBySession) ?? sessionId,

@@ -7,6 +7,8 @@ import { Flash } from "@/components/manager/flash";
 import { requireRole } from "@/lib/auth/session";
 import { submitCheckin } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
+import { loadOnboardingState } from "@/lib/father/onboarding-data";
+import { isOnboardingActive } from "@/lib/father/onboarding";
 import { checkinQuestionsFor, parseSkillPrompt } from "@/lib/father/session-questions";
 import { getI18n } from "@/lib/i18n/server";
 
@@ -20,14 +22,17 @@ export default async function SessionCheckinPage({
   const { sessionId } = await params;
   const { error } = await searchParams;
   const { user } = await requireRole("father");
-  const context = await loadSessionContext(user.id, sessionId);
+  const [context, onboarding] = await Promise.all([
+    loadSessionContext(user.id, sessionId),
+    loadOnboardingState(user.id),
+  ]);
 
   if (!context) {
     notFound();
   }
 
   if (!context.unlocked) {
-    redirect(`/father/sessions/${context.redirectSessionId}`);
+    redirect(context.gateRedirect ?? `/father/sessions/${context.redirectSessionId}`);
   }
 
   if (!context.progress?.film_completed) {
@@ -39,7 +44,8 @@ export default async function SessionCheckinPage({
   }
 
   const { t } = await getI18n();
-  const { session, training, progress } = context;
+  const { session, training, progress, completedCount, sessionTotal } = context;
+  const funnel = isOnboardingActive(onboarding.mode, onboarding.step);
   const questions = checkinQuestionsFor(session, training);
   const canAutoAdvance =
     questions.length === 1 && Boolean(parseSkillPrompt(questions[0].label).choices);
@@ -50,7 +56,10 @@ export default async function SessionCheckinPage({
         training={training}
         session={session}
         current="checkin"
+        completedCount={completedCount}
+        sessionTotal={sessionTotal}
         backHref={`/father/sessions/${sessionId}`}
+        trainingHref={funnel ? null : undefined}
         filmCompleted
         checkinCompleted={Boolean(progress?.checkin_completed)}
       />

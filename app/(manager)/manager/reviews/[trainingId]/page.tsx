@@ -12,6 +12,7 @@ import { requireRole } from "@/lib/auth/session";
 import { youtubeEmbedUrl } from "@/lib/father/types";
 import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { loadReviewDetail } from "@/lib/manager/reviews";
+import { trainingPartCopyVars } from "@/lib/trainings/series";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -89,10 +90,18 @@ export default async function ManagerTrainingReviewPage({
               {training.title}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {sessions.length === 1
-                ? t("manager.dashboard.sessionOne")
-                : t("manager.dashboard.sessionMany", { count: sessions.length })}
-              {otherGroups.length > 0 ? ` · ${groupName}` : ""}
+              {(() => {
+                const part = trainingPartCopyVars(training, sessions.length);
+                const copy = part ? { n: part.n, total: part.total, sessions: part.sessions } : null;
+                const sessionsLabel = part && copy
+                  ? part.one
+                    ? t("manager.trainings.partSubtitleOne", copy)
+                    : t("manager.trainings.partSubtitle", copy)
+                  : sessions.length === 1
+                    ? t("manager.dashboard.sessionOne")
+                    : t("manager.dashboard.sessionMany", { count: sessions.length });
+                return otherGroups.length > 0 ? `${sessionsLabel} · ${groupName}` : sessionsLabel;
+              })()}
             </p>
           </div>
           {review ? <ReviewStatusBadge status={review.status} /> : null}

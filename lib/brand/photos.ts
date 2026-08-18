@@ -60,12 +60,13 @@ export function sessionCover(sessionNumber: number, pack: PhotoPack = "default")
 }
 
 export function trainingCover(slug: string, pack: PhotoPack = "default"): string {
+  const root = slug.replace(/-\d+$/, "");
   if (pack === "il") {
-    if (slug === "anger") return IL_PHOTOS.desert;
-    if (slug === "reentry") return IL_PHOTOS.hills;
+    if (root === "anger") return IL_PHOTOS.desert;
+    if (root === "reentry") return IL_PHOTOS.hills;
     return IL_PHOTOS.grove;
   }
-  if (slug === "fundamentals") return BRAND_PHOTOS.running;
+  if (root === "fundamentals") return BRAND_PHOTOS.running;
   return "";
 }
 

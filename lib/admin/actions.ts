@@ -18,6 +18,24 @@ import { getAuthContext, requireRole } from "@/lib/auth/session";
 import { youtubeVideoId } from "@/lib/father/types";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
+import {
+  FILM_DURATION_FORMAT_ERROR,
+  FILM_RUNTIME_MISSING,
+  canStoreOverLengthDuration,
+  filmOverageMessage,
+  filmRuntimeErrorMessage,
+  firstFilmPublishError,
+  isOverLengthFilm,
+  parseDurationInput,
+} from "@/lib/trainings/runtime";
+import {
+  MAX_TRAINING_SESSIONS,
+  SESSION_LIMIT_CREATE_ERROR,
+  SESSION_LIMIT_PUBLISH_ERROR,
+  SESSION_LIMIT_RELEASE_ERROR,
+  sessionCountWouldExceedLimit,
+} from "@/lib/trainings/series";
+import { fetchYoutubeDurationSeconds } from "@/lib/trainings/youtube-duration";
 
 const YOUTUBE_URL_ERROR =
   "Use a YouTube video link. Playlists and other sites will not play.";
@@ -91,6 +109,60 @@ async function uniqueSlug(supabase: Awaited<ReturnType<typeof createClient>>, ti
     if (!data || data.id === currentId) return candidate;
   }
   return `${base}-${crypto.randomUUID().slice(0, 8)}`;
+}
+
+function failDb(path: string, error: { message?: string }, fallback: string): never {
+  fail(path, filmRuntimeErrorMessage(error.message) ?? error.message ?? fallback);
+}
+
+async function assertTrainingFilmsPublishable(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  trainingId: string,
+  path: string
+) {
+  const { data, error } = await supabase
+    .from("sessions")
+    .select("id, video_url, duration_seconds")
+    .eq("training_id", trainingId);
+  if (error) fail(path, error.message);
+  const filmError = firstFilmPublishError(data ?? []);
+  if (filmError) fail(path, filmError);
+}
+
+async function resolveSessionDuration(videoUrl: string, rawDuration: string) {
+  const parsed = parseDurationInput(rawDuration);
+  if (parsed === "invalid") return "invalid" as const;
+  const videoId = youtubeVideoId(videoUrl);
+  if (videoId) {
+    const fetched = await fetchYoutubeDurationSeconds(videoId);
+    if (fetched != null) return fetched;
+  }
+  return parsed;
+}
+
+function assertLiveSessionDuration(
+  path: string,
+  duration: number | null,
+  previous: number | null | undefined
+) {
+  if (duration == null) fail(path, FILM_RUNTIME_MISSING);
+  if (isOverLengthFilm(duration) && !canStoreOverLengthDuration(duration, previous)) {
+    fail(path, filmOverageMessage(duration));
+  }
+}
+
+async function trainingIsLive(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  trainingId: string,
+  path: string
+) {
+  const { data, error } = await supabase
+    .from("trainings")
+    .select("published, released_at")
+    .eq("id", trainingId)
+    .maybeSingle();
+  if (error) fail(path, error.message);
+  return Boolean(data?.published || data?.released_at);
 }
 
 async function syncSessionCount(
@@ -260,12 +332,26 @@ export async function updateTraining(formData: FormData) {
   const supabase = await createClient();
   const { data: current, error: currentError } = await supabase
     .from("trainings")
-    .select("id, slug")
+    .select("id, slug, published")
     .eq("id", trainingId)
     .maybeSingle();
 
   if (currentError) fail(path, currentError.message);
   if (!current) fail("/admin/trainings", "Training not found.");
+
+  if (published) {
+    const { count, error: countError } = await supabase
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("training_id", trainingId);
+    if (countError) fail(path, countError.message);
+    if ((count ?? 0) > MAX_TRAINING_SESSIONS) {
+      fail(path, SESSION_LIMIT_PUBLISH_ERROR);
+    }
+    if (current.published !== true) {
+      await assertTrainingFilmsPublishable(supabase, trainingId, path);
+    }
+  }
 
   const lockedSlug = current.slug === "fundamentals";
   let slug = current.slug;
@@ -288,7 +374,7 @@ export async function updateTraining(formData: FormData) {
     })
     .eq("id", trainingId);
 
-  if (error) fail(path, error.message);
+  if (error) failDb(path, error, error.message);
 
   revalidateAdmin(path);
   ok(path, published ? "Training saved and published." : "Training saved. It is hidden from new assignment.");
@@ -303,8 +389,19 @@ export async function setTrainingPublished(formData: FormData) {
   if (!trainingId) fail("/admin/trainings", "Choose a training.");
 
   const supabase = await createClient();
+  if (published) {
+    const { count, error: countError } = await supabase
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("training_id", trainingId);
+    if (countError) fail(path, countError.message);
+    if ((count ?? 0) > MAX_TRAINING_SESSIONS) {
+      fail(path, SESSION_LIMIT_PUBLISH_ERROR);
+    }
+    await assertTrainingFilmsPublishable(supabase, trainingId, path);
+  }
   const { error } = await supabase.from("trainings").update({ published }).eq("id", trainingId);
-  if (error) fail(path, error.message);
+  if (error) failDb(path, error, error.message);
 
   revalidateAdmin(path);
   ok(path, published ? "Training published." : "Training unpublished. Existing progress stays reachable.");
@@ -341,6 +438,12 @@ export async function releaseTraining(formData: FormData) {
   if (countError) fail(path, RELEASE_WRITE_ERROR);
   if ((count ?? current.session_count ?? 0) < 1) {
     fail(path, "Add at least one session before releasing to organizations.");
+  }
+  if ((count ?? current.session_count ?? 0) > MAX_TRAINING_SESSIONS) {
+    fail(path, SESSION_LIMIT_RELEASE_ERROR);
+  }
+  if (!current.released_at) {
+    await assertTrainingFilmsPublishable(supabase, trainingId, path);
   }
 
   if (!current.released_at && isLegacyCatalogTraining(current) && confirm !== RELEASE_CONFIRM) {
@@ -471,13 +574,30 @@ export async function createSession(formData: FormData) {
   const videoUrl = String(formData.get("video_url") ?? "").trim();
   const sessionNumber = readInt(formData, "session_number", 0);
   const orderIndex = readInt(formData, "order_index", sessionNumber);
+  const duration = await resolveSessionDuration(
+    videoUrl,
+    String(formData.get("duration_seconds") ?? "")
+  );
 
   if (!trainingId) fail("/admin/trainings", "Choose a training.");
   if (!title) fail(path, "Session title is required.");
   if (sessionNumber < 1) fail(path, "Session number must be 1 or higher.");
   if (videoUrl && !youtubeVideoId(videoUrl)) fail(path, YOUTUBE_URL_ERROR);
+  if (duration === "invalid") fail(path, FILM_DURATION_FORMAT_ERROR);
 
   const supabase = await createClient();
+  const { count, error: countError } = await supabase
+    .from("sessions")
+    .select("id", { count: "exact", head: true })
+    .eq("training_id", trainingId);
+  if (countError) fail(path, countError.message);
+  if (sessionCountWouldExceedLimit(count ?? 0)) {
+    fail(path, SESSION_LIMIT_CREATE_ERROR);
+  }
+  if (await trainingIsLive(supabase, trainingId, path)) {
+    assertLiveSessionDuration(path, duration, null);
+  }
+
   const { error } = await supabase.from("sessions").insert({
     training_id: trainingId,
     title,
@@ -485,9 +605,10 @@ export async function createSession(formData: FormData) {
     video_url: videoUrl || null,
     session_number: sessionNumber,
     order_index: orderIndex,
+    duration_seconds: duration,
   });
 
-  if (error) fail(path, error.message);
+  if (error) failDb(path, error, error.message);
 
   try {
     await syncSessionCount(supabase, trainingId);
@@ -509,13 +630,29 @@ export async function updateSession(formData: FormData) {
   const videoUrl = String(formData.get("video_url") ?? "").trim();
   const sessionNumber = readInt(formData, "session_number", 0);
   const orderIndex = readInt(formData, "order_index", sessionNumber);
+  const duration = await resolveSessionDuration(
+    videoUrl,
+    String(formData.get("duration_seconds") ?? "")
+  );
 
   if (!trainingId || !sessionId) fail(path || "/admin/trainings", "Choose a session.");
   if (!title) fail(path, "Session title is required.");
   if (sessionNumber < 1) fail(path, "Session number must be 1 or higher.");
   if (videoUrl && !youtubeVideoId(videoUrl)) fail(path, YOUTUBE_URL_ERROR);
+  if (duration === "invalid") fail(path, FILM_DURATION_FORMAT_ERROR);
 
   const supabase = await createClient();
+  const { data: existing, error: existingError } = await supabase
+    .from("sessions")
+    .select("duration_seconds")
+    .eq("id", sessionId)
+    .eq("training_id", trainingId)
+    .maybeSingle();
+  if (existingError) fail(path, existingError.message);
+  if (await trainingIsLive(supabase, trainingId, path)) {
+    assertLiveSessionDuration(path, duration, existing?.duration_seconds);
+  }
+
   const { error } = await supabase
     .from("sessions")
     .update({
@@ -524,11 +661,12 @@ export async function updateSession(formData: FormData) {
       video_url: videoUrl || null,
       session_number: sessionNumber,
       order_index: orderIndex,
+      duration_seconds: duration,
     })
     .eq("id", sessionId)
     .eq("training_id", trainingId);
 
-  if (error) fail(path, error.message);
+  if (error) failDb(path, error, error.message);
 
   revalidateAdmin(path);
   ok(path, "Session updated.");

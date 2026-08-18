@@ -379,6 +379,13 @@ export default async function ManagerParticipantDetailPage({
                 <span className="shrink-0 text-sm tabular-nums text-muted-foreground">{percent}%</span>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
+                {card.training.part_number && card.training.part_total
+                  ? `${t("manager.participants.partSubtitle", {
+                      n: card.training.part_number,
+                      total: card.training.part_total,
+                      sessions: card.total,
+                    })} · `
+                  : ""}
                 {t("manager.participants.sessionsOf", {
                   completed: card.completed,
                   total: card.total,
@@ -386,6 +393,13 @@ export default async function ManagerParticipantDetailPage({
                 {card.assigned ? ` · ${t("manager.participants.assigned")}` : ""}
                 {card.certificate ? ` · ${t("manager.participants.certified")}` : ""}
               </p>
+              {card.gated ? (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t("manager.participants.gatedPart", {
+                    n: (card.training.part_number ?? 1) - 1,
+                  })}
+                </p>
+              ) : null}
               <ProgressBar value={percent} className="mt-4" />
               {card.certificate ? (
                 <div className="mt-4 space-y-3">

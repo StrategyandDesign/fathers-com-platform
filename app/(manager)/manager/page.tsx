@@ -4,6 +4,7 @@ import { OrganizationMark } from "@/components/brand/organization-mark";
 import { CompanionPanel } from "@/components/manager/companion-panel";
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
+import { NudgePanel } from "@/components/manager/nudge-panel";
 import { ReviewStatusBadge } from "@/components/manager/review-decision-forms";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -11,6 +12,7 @@ import { fieldClassName, initials, interactiveSurfaceClassName } from "@/lib/ui"
 import { requireRole } from "@/lib/auth/session";
 import { translateAttention } from "@/lib/i18n/flash";
 import { getI18n } from "@/lib/i18n/server";
+import { scheduleDueReminderFlush } from "@/lib/jobs/flush-due-work";
 import { createGroup } from "@/lib/manager/actions";
 import {
   buildCompanionBriefing,
@@ -19,6 +21,7 @@ import {
 import { loadManagerAssessments } from "@/lib/assessments/data";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadManagerOrganizationMarks } from "@/lib/org-photos/data";
+import { loadNudgePanel } from "@/lib/manager/nudge-panel-data";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
 import { needsNudge } from "@/lib/manager/nudges";
 import { loadReviewQueue } from "@/lib/manager/reviews";
@@ -30,14 +33,21 @@ export default async function ManagerHomePage({
   searchParams: Promise<{ error?: string; notice?: string }>;
 }) {
   const params = await searchParams;
-  const { user } = await requireRole("manager");
+  const { user, role } = await requireRole("manager");
   const { t } = await getI18n();
+  scheduleDueReminderFlush();
   const [workspace, reviews, assessments, marks] = await Promise.all([
     loadManagerWorkspace(user.id),
     loadReviewQueue(user.id),
     loadManagerAssessments(user.id),
     loadManagerOrganizationMarks(user.id),
   ]);
+  const nudgePanel = await loadNudgePanel({
+    role,
+    managerId: user.id,
+    workspace,
+    t,
+  });
   const { groups, summary, needsAttention, participants, trainingProgressFor, certificates } =
     workspace;
   const quietIds = participants
@@ -95,6 +105,7 @@ export default async function ManagerHomePage({
         </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
+      <NudgePanel panel={nudgePanel} />
       <CompanionPanel briefing={companion} t={t} />
 
       {reviews.pending.length > 0 || reviews.unread.length > 0 ? (

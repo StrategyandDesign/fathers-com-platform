@@ -13,6 +13,7 @@ import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadReviewQueue } from "@/lib/manager/reviews";
 import { assignTrainingToUnassigned } from "@/lib/manager/training-actions";
+import { trainingPartCopyVars } from "@/lib/trainings/series";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,19 @@ function sessionLabel(
   return count === 1
     ? t("manager.dashboard.sessionOne")
     : t("manager.dashboard.sessionMany", { count });
+}
+
+function partLabel(
+  training: { part_number?: number | null; part_total?: number | null },
+  sessionCount: number,
+  t: (key: string, vars?: Record<string, string | number>) => string
+) {
+  const vars = trainingPartCopyVars(training, sessionCount);
+  if (!vars) return null;
+  const { one, ...copy } = vars;
+  return one
+    ? t("manager.trainings.partSubtitleOne", copy)
+    : t("manager.trainings.partSubtitle", copy);
 }
 
 export default async function ManagerTrainingsPage({
@@ -126,7 +140,8 @@ export default async function ManagerTrainingsPage({
                   <div className="min-w-0">
                     <h3 className="font-heading text-lg font-semibold">{item.training.title}</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {sessionLabel(item.sessionCount, t)}
+                      {partLabel(item.training, item.sessionCount, t) ??
+                        sessionLabel(item.sessionCount, t)}
                       {groups.length > 1 ? ` · ${item.groupName}` : ""}
                     </p>
                   </div>
@@ -183,13 +198,18 @@ export default async function ManagerTrainingsPage({
                         {item.training.title}
                       </Link>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        {t("manager.trainings.assignedOf", { assigned, total })}
-                        {item.review.decided_at
-                          ? ` · ${t("manager.trainings.acceptedOn", {
-                              date: formatShortDate(item.review.decided_at, locale),
-                            })}`
-                          : ""}
-                        {groups.length > 1 ? ` · ${item.groupName}` : ""}
+                        {[
+                          partLabel(item.training, item.sessionCount, t),
+                          t("manager.trainings.assignedOf", { assigned, total }),
+                          item.review.decided_at
+                            ? t("manager.trainings.acceptedOn", {
+                                date: formatShortDate(item.review.decided_at, locale),
+                              })
+                            : null,
+                          groups.length > 1 ? item.groupName : null,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
                       </p>
                     </div>
                     <ReviewStatusBadge status={item.review.status} />
@@ -254,8 +274,13 @@ export default async function ManagerTrainingsPage({
                       {training.title}
                     </Link>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {t("manager.trainings.assignedOf", { assigned, total })}
-                      {` · ${t("manager.trainings.catalogItem")}`}
+                      {[
+                        partLabel(training, training.session_count, t),
+                        t("manager.trainings.assignedOf", { assigned, total }),
+                        t("manager.trainings.catalogItem"),
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
                     </p>
                   </div>
                   <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">

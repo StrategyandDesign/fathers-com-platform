@@ -97,7 +97,7 @@ export async function AccountView({
         </section>
       ) : null}
 
-      <NotificationPrefs role={role} initial={account.preferences} />
+      <NotificationPrefs role={role} initial={account.preferences} schedule={account.schedule} />
 
       {role === "admin" ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">

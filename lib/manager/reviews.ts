@@ -165,9 +165,7 @@ export async function loadReviewQueue(managerId: string) {
       const supabase = await createClient();
       return supabase
         .from("trainings")
-        .select(
-          "id, slug, title, description, session_count, order_index, published, released_at, first_published_at, first_released_at"
-        )
+        .select("*")
         .order("order_index");
     })(),
     (async () => {
@@ -275,9 +273,7 @@ async function loadCatalogTrainingDetail(groups: Group[], trainingId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("trainings")
-    .select(
-      "id, slug, title, description, session_count, order_index, published, released_at, first_published_at, first_released_at"
-    )
+    .select("*")
     .eq("id", trainingId)
     .maybeSingle();
 

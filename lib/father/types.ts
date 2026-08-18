@@ -5,6 +5,10 @@ export type Training = {
   description: string | null;
   session_count: number;
   order_index: number;
+  series_id?: string | null;
+  series_title?: string | null;
+  part_number?: number | null;
+  part_total?: number | null;
   published?: boolean | null;
   released_at?: string | null;
   released_by?: string | null;
@@ -78,6 +82,7 @@ export type Session = {
   keyline: string | null;
   video_url: string | null;
   order_index: number;
+  duration_seconds?: number | null;
 };
 
 export type SessionProgress = {
@@ -90,8 +95,10 @@ export type SessionProgress = {
   checkin_answers: Record<string, string>;
   action_note: string | null;
   session_note: string | null;
+  film_seconds: number;
   status: "not_started" | "in_progress" | "completed";
   completed_at: string | null;
+  action_try_at?: string | null;
 };
 
 export function asSessionProgress(row: SessionProgress): SessionProgress {
@@ -104,10 +111,18 @@ export function asSessionProgress(row: SessionProgress): SessionProgress {
   delete answers.notes;
   const fromColumn = typeof row.session_note === "string" ? row.session_note.trim() : "";
 
+  const filmSeconds =
+    typeof row.film_seconds === "number" &&
+    Number.isFinite(row.film_seconds) &&
+    row.film_seconds >= 0
+      ? Math.floor(row.film_seconds)
+      : 0;
+
   return {
     ...row,
     checkin_answers: answers,
     session_note: fromColumn || fromAnswers || null,
+    film_seconds: filmSeconds,
   };
 }
 
@@ -202,7 +217,28 @@ export function youtubeVideoId(url: string | null | undefined) {
   return null;
 }
 
-export function youtubeEmbedUrl(url: string | null) {
+export function youtubeEmbedUrl(
+  url: string | null,
+  options?: { startSeconds?: number; origin?: string; language?: string }
+) {
   const id = youtubeVideoId(url);
-  return id ? `https://www.youtube.com/embed/${id}` : null;
+  if (!id) return null;
+
+  const params = new URLSearchParams({
+    rel: "0",
+    modestbranding: "1",
+    playsinline: "1",
+    cc_load_policy: "1",
+    enablejsapi: "1",
+  });
+  const language = options?.language?.trim();
+  if (language) {
+    params.set("hl", language);
+    params.set("cc_lang_pref", language);
+  }
+  const start = Math.floor(options?.startSeconds ?? 0);
+  if (start > 0) params.set("start", String(start));
+  if (options?.origin) params.set("origin", options.origin);
+
+  return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`;
 }

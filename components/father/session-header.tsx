@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
+import { FilmRuntime } from "@/components/father/film-runtime";
 import type { Session, Training } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { interactiveLinkClassName } from "@/lib/ui";
@@ -20,7 +21,7 @@ export async function SessionHeader({
   filmHref,
   checkinHref,
   actionHref,
-  trainingHref = "/father/trainings",
+  trainingHref,
   unlockAll = false,
 }: {
   training: Training;
@@ -34,10 +35,11 @@ export async function SessionHeader({
   filmHref?: string;
   checkinHref?: string;
   actionHref?: string;
-  trainingHref?: string;
+  trainingHref?: string | null;
   unlockAll?: boolean;
 }) {
   const { t } = await getI18n();
+  const catalogHref = trainingHref === undefined ? "/father/trainings" : trainingHref;
   const total = sessionTotal ?? training.session_count;
   const subtitle =
     session.keyline && session.keyline !== session.title ? session.keyline : null;
@@ -74,13 +76,32 @@ export async function SessionHeader({
 
       <div className="space-y-1">
         <p className="text-xs text-muted-foreground">
-          <Link href={trainingHref} className={interactiveLinkClassName}>
-            {training.title}
-          </Link>
+          {catalogHref ? (
+            <Link href={catalogHref} className={interactiveLinkClassName}>
+              {training.title}
+            </Link>
+          ) : (
+            <span>{training.title}</span>
+          )}
         </p>
+        {training.part_number && training.part_total ? (
+          <p className="text-xs text-muted-foreground">
+            {total === 1
+              ? t("father.trainings.partSubtitleOne", {
+                  n: training.part_number,
+                  total: training.part_total,
+                })
+              : t("father.trainings.partSubtitle", {
+                  n: training.part_number,
+                  total: training.part_total,
+                  sessions: total,
+                })}
+          </p>
+        ) : null}
         <h1 className="text-xl font-medium leading-snug tracking-tight sm:text-2xl">
           {session.title}
         </h1>
+        <FilmRuntime seconds={session.duration_seconds} t={t} />
         {subtitle ? (
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         ) : null}

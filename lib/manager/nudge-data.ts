@@ -40,7 +40,7 @@ export async function loadReminderPrefAllowed(fatherId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("notification_recipient", {
     target_user_id: fatherId,
-    pref_key: "session_reminders",
+    pref_key: "leader_encouragement",
   });
   if (error) {
     console.error("[nudges] reminder pref lookup failed", error.message);
