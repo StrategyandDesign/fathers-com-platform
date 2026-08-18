@@ -1,12 +1,10 @@
-import Link from "next/link";
-
+import { AdminDeskList, AdminDeskRow } from "@/components/admin/desk-list";
+import { DevelopmentStatusBadge } from "@/components/admin/development-status";
+import { ReleaseStatusBadge } from "@/components/admin/release-status";
 import { Flash } from "@/components/manager/flash";
-import { buttonVariants } from "@/components/ui/button";
-import { loadAdminKeystoneRelease } from "@/lib/admin/assessment-data";
+import { EmptyState } from "@/components/ui/empty-state";
+import { loadAdminAssessmentDesk } from "@/lib/admin/assessment-data";
 import { requireRole } from "@/lib/auth/session";
-import { PROFILE_QUESTION_COUNT } from "@/lib/father/questions";
-import { interactiveSurfaceClassName } from "@/lib/ui";
-import { cn } from "@/lib/utils";
 
 export default async function AdminAssessmentsPage({
   searchParams,
@@ -15,48 +13,63 @@ export default async function AdminAssessmentsPage({
 }) {
   const flash = await searchParams;
   await requireRole("admin");
-  const keystone = await loadAdminKeystoneRelease();
-  const released = Boolean(keystone.releasedAt);
-  const pending = keystone.releaseTargets.filter((row) => row.reviewStatus === "pending").length;
-  const accepted = keystone.releaseTargets.filter((row) => row.reviewStatus === "accepted").length;
+  const assessments = await loadAdminAssessmentDesk();
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">Assessments</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Super-admins create and share assessments with organization Leaders.
-          Leaders then decide what their fathers can take.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">Assessments</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            You create and share assessments with organization Leaders. Leaders
+            then decide what their fathers can take. Finish the instrument, mark
+            Ready, then Release.
+          </p>
+        </div>
       </div>
       <Flash error={flash.error} notice={flash.notice} />
 
-      <Link
-        href="/admin/assessments/keystone"
-        className={cn(
-          "block rounded-xl border border-border bg-card p-4 sm:p-6",
-          interactiveSurfaceClassName
-        )}
+      <AdminDeskList
+        countHeader="Questions"
+        actionHeader="Release"
+        empty={
+          assessments.length === 0 ? (
+            <EmptyState
+              framed={false}
+              title="No assessments yet"
+              actionHref="/admin/assessments"
+              actionLabel="Back to Assessments"
+            >
+              Platform assessments will appear here. Release one when you want
+              Leaders to review it.
+            </EmptyState>
+          ) : undefined
+        }
       >
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <h2 className="font-heading text-lg font-semibold">Keystone Assessment</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {PROFILE_QUESTION_COUNT} questions · Platform assessment
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground">
-              {released
-                ? `${accepted} accepted · ${pending} waiting`
-                : keystone.firstReleasedAt
-                  ? "Un-released. Leaders cannot accept it again until you release it."
-                  : "Not in Leader review yet. Every organization can already offer it."}
-            </p>
-          </div>
-          <span className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}>
-            Open
-          </span>
-        </div>
-      </Link>
+        {assessments.map((assessment) => (
+          <AdminDeskRow
+            key={assessment.key}
+            href={assessment.href}
+            title={assessment.title}
+            count={assessment.questionCount}
+            countLabel="Questions"
+            development={<DevelopmentStatusBadge status={assessment.developmentStatus} />}
+            release={<ReleaseStatusBadge state={assessment.releaseState} />}
+            actionHref={assessment.actionHref}
+            actionLabel={assessment.actionLabel}
+          >
+            <span className="block truncate text-sm text-muted-foreground">
+              {assessment.subtitle}
+            </span>
+            <span className="block truncate text-xs text-muted-foreground">
+              {assessment.editedLabel}
+            </span>
+            {assessment.note ? (
+              <span className="block text-sm text-foreground">{assessment.note}</span>
+            ) : null}
+          </AdminDeskRow>
+        ))}
+      </AdminDeskList>
     </div>
   );
 }
