@@ -1499,6 +1499,7 @@ export const he = {
       viewTraining: "צפייה בהכשרה",
       removeLead: "הסרה מסתירה מהקצאה חדשה. אבות שכבר קיבלו אותה נשארים.",
       catalogItem: "בקטלוג",
+      fromSource: "מאת {name}",
       hiddenTitle: "מוסתר",
       hiddenLead: "נדחה עבור הארגון שלך. אפשר לאשר שוב אם עדיין משוחרר.",
       hiddenEmpty: "אין הכשרות מוסתרות.",

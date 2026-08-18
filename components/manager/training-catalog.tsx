@@ -43,7 +43,14 @@ export function TrainingCatalog({
                 <div className="min-w-0">
                   <p className="font-medium">{item.training.title}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {[sessionLabel(item.sessionCount, t), statusLabel(item.status, t), item.groupName]
+                    {[
+                      sessionLabel(item.sessionCount, t),
+                      statusLabel(item.status, t),
+                      item.groupName,
+                      item.training.attribution
+                        ? t("manager.trainings.fromSource", { name: item.training.attribution })
+                        : null,
+                    ]
                       .filter(Boolean)
                       .join(" · ")}
                   </p>

@@ -2,7 +2,8 @@ import Link from "next/link";
 
 import { createTraining } from "@/lib/admin/actions";
 import { Flash } from "@/components/manager/flash";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { requireRole } from "@/lib/auth/session";
 import { checkboxOptionClassName, fieldClassName, interactiveLinkClassName, textareaClassName } from "@/lib/ui";
 
@@ -29,6 +30,8 @@ export default async function AdminNewTrainingPage({
           Created as a draft idea. Add sessions next, Stage the Father path,
           then mark Ready. Publishing does not notify Leaders. Release is a
           separate step, and only Released trainings enter accept/decline.
+          To bring work from someone outside the platform, use Bring in a
+          training.
         </p>
       </div>
       <Flash error={flash.error} notice={flash.notice} />
@@ -82,9 +85,17 @@ export default async function AdminNewTrainingPage({
           />
           <span>Published (catalog flag only — still not released to Leaders)</span>
         </label>
-        <Button type="submit" className="w-full sm:w-auto">
-          Create training
-        </Button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button type="submit" className="w-full sm:w-auto">
+            Create training
+          </Button>
+          <Link
+            href="/admin/trainings/sources/new"
+            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+          >
+            Bring in a training
+          </Link>
+        </div>
       </form>
     </div>
   );

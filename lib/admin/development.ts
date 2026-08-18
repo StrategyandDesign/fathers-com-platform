@@ -34,6 +34,7 @@ export const DEVELOPMENT_STATUS_LABEL: Record<DevelopmentStatus, string> = {
 export const WORKING_TITLE_MAX = 120;
 export const DEVELOPMENT_NOTES_MAX = 4000;
 export const SKILL_PROMPT_MAX = 2000;
+export { ATTRIBUTION_MAX } from "@/lib/admin/sourcing";
 
 export const ARCHIVE_CONFIRM = "ARCHIVE";
 

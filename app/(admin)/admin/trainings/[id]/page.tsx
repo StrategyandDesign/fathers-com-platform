@@ -17,6 +17,9 @@ import { DevelopmentDesk } from "@/components/admin/development-desk";
 import { DevelopmentStatusBadge } from "@/components/admin/development-status";
 import { SessionAuthoringFields } from "@/components/admin/session-authoring-fields";
 import { loadAdminTraining, loadTrainingUsage } from "@/lib/admin/data";
+import { loadIntakeForTraining } from "@/lib/admin/sourcing-data";
+import { sourcedReleaseBlocker } from "@/lib/admin/sourcing";
+import { IntakeStatusBadge, RightsStatusBadge } from "@/components/admin/sourcing-status";
 import { asDevelopmentStatus, isArchivedTraining } from "@/lib/admin/development";
 import {
   isLegacyCatalogTraining,
@@ -50,6 +53,8 @@ export default async function AdminTrainingDetailPage({
   if (!training) notFound();
 
   const usage = await loadTrainingUsage(training.id);
+  const intake = await loadIntakeForTraining(training.id);
+  const rightsBlocker = sourcedReleaseBlocker(intake);
   const seeded = training.slug === "fundamentals";
   const canDelete =
     !seeded && usage.assignmentCount + usage.progressCount + usage.certificateCount === 0;
@@ -58,8 +63,12 @@ export default async function AdminTrainingDetailPage({
   const releaseState = trainingReleaseState(training);
   const legacy = isLegacyCatalogTraining(training);
   const archived = isArchivedTraining(training);
-  const canRelease = !archived && training.published && training.sessions.length > 0;
   const alreadyReleased = releaseState === "released";
+  const canRelease =
+    !archived &&
+    training.published &&
+    training.sessions.length > 0 &&
+    (!rightsBlocker || alreadyReleased);
   const developmentStatus = asDevelopmentStatus(training.development_status);
 
   return (
@@ -145,6 +154,16 @@ export default async function AdminTrainingDetailPage({
           />
         </label>
         <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">Credit (Leaders see this)</span>
+          <input
+            className={fieldClassName}
+            name="attribution"
+            defaultValue={training.attribution ?? ""}
+            maxLength={120}
+            placeholder="Name of the outside teacher, if any"
+          />
+        </label>
+        <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Development notes</span>
           <textarea
             className={textareaClassName}
@@ -179,6 +198,33 @@ export default async function AdminTrainingDetailPage({
       </form>
 
       <DevelopmentDesk training={training} usage={usage} />
+
+      {intake ? (
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 className="font-heading text-lg font-semibold">Sourced training</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Brought in from {intake.sourceName}. Rights must be cleared
+                before the first release.
+              </p>
+            </div>
+            <div className="flex flex-col items-start gap-1 sm:items-end">
+              <RightsStatusBadge status={intake.rightsStatus} />
+              <IntakeStatusBadge status={intake.status} />
+            </div>
+          </div>
+          {rightsBlocker ? (
+            <p className="mt-4 text-sm text-muted-foreground">{rightsBlocker}</p>
+          ) : null}
+          <Link
+            href={`/admin/trainings/intakes/${intake.id}`}
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
+            Open intake
+          </Link>
+        </section>
+      ) : null}
 
       <form action={setTrainingPublished} className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <input type="hidden" name="training_id" value={training.id} />
@@ -270,6 +316,8 @@ export default async function AdminTrainingDetailPage({
               <p className="text-sm text-muted-foreground">
                 Add at least one session before releasing it for review.
               </p>
+            ) : rightsBlocker ? (
+              <p className="text-sm text-muted-foreground">{rightsBlocker}</p>
             ) : legacy ? (
               <p className="text-sm text-muted-foreground">
                 This training is already in the catalog and assignable. Releasing

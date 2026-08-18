@@ -11,6 +11,7 @@ import {
   TRAINING_REQUEST_STATUS_LABEL,
   trainingRequestStatusClassName,
 } from "@/lib/training-requests/types";
+import { buttonVariants } from "@/components/ui/button";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -154,6 +155,12 @@ export default async function AdminTrainingRequestDetailPage({
         <p className="mt-4 whitespace-pre-wrap text-base leading-relaxed">
           {request.description}
         </p>
+        <Link
+          href={`/admin/trainings/sources/new?request=${request.id}`}
+          className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+        >
+          Bring this in
+        </Link>
       </section>
     </div>
   );

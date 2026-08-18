@@ -16,6 +16,7 @@ export type Training = {
   last_edited_at?: string | null;
   last_edited_by?: string | null;
   previewed_at?: string | null;
+  attribution?: string | null;
 };
 
 export function isTrainingPublished(training: { published?: boolean | null }) {

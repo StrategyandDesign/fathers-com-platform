@@ -37,9 +37,17 @@ export default async function AdminTrainingsPage({
             the Father path, mark Ready, then Release.
           </p>
         </div>
-        <Link href="/admin/trainings/new" className={cn(buttonVariants(), "w-full sm:w-auto")}>
-          New training
-        </Link>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <Link
+            href="/admin/trainings/sources"
+            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+          >
+            Bring in a training
+          </Link>
+          <Link href="/admin/trainings/new" className={cn(buttonVariants(), "w-full sm:w-auto")}>
+            New training
+          </Link>
+        </div>
       </div>
       <Flash error={flash.error} notice={flash.notice} />
 
@@ -101,6 +109,11 @@ export default async function AdminTrainingsPage({
                     {training.working_title ? (
                       <span className="block truncate text-sm text-muted-foreground">
                         Working title: {training.working_title}
+                      </span>
+                    ) : null}
+                    {training.attribution ? (
+                      <span className="block truncate text-sm text-muted-foreground">
+                        From {training.attribution}
                       </span>
                     ) : null}
                     <span className="block truncate text-sm text-muted-foreground">

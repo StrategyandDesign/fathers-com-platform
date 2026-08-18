@@ -1580,6 +1580,7 @@ export const en = {
       viewTraining: "View training",
       removeLead: "Removing hides it from new assignment. Fathers who already have it keep it.",
       catalogItem: "In the catalog",
+      fromSource: "From {name}",
       hiddenTitle: "Hidden",
       hiddenLead: "Declined for your organization. You can accept again if it is still released.",
       hiddenEmpty: "No hidden trainings.",

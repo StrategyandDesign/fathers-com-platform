@@ -8,6 +8,7 @@ import {
   ARCHIVE_RELEASE_ERROR,
   ARCHIVED_PUBLISH_ERROR,
   ARCHIVED_STATUS_ERROR,
+  ATTRIBUTION_MAX,
   DEVELOPMENT_NOTES_MAX,
   READY_REQUIRED_ERROR,
   SKILL_PROMPT_MAX,
@@ -47,6 +48,7 @@ import {
   parseDurationInput,
 } from "@/lib/trainings/runtime";
 import { fetchYoutubeDurationSeconds } from "@/lib/trainings/youtube-duration";
+import { sourcedReleaseBlocker } from "@/lib/admin/sourcing";
 
 const YOUTUBE_URL_ERROR =
   "Use a YouTube video link. Playlists and other sites will not play.";
@@ -377,6 +379,7 @@ export async function createTraining(formData: FormData) {
     path,
     "Development notes"
   );
+  const attribution = readCappedText(formData, "attribution", ATTRIBUTION_MAX, path, "Credit");
 
   if (!title) fail(path, "Title is required.");
 
@@ -400,6 +403,7 @@ export async function createTraining(formData: FormData) {
       development_status: "draft",
       working_title: workingTitle || null,
       development_notes: developmentNotes || null,
+      attribution: attribution || null,
     })
     .select("id")
     .single();
@@ -434,6 +438,7 @@ export async function updateTraining(formData: FormData) {
     path,
     "Development notes"
   );
+  const attribution = readCappedText(formData, "attribution", ATTRIBUTION_MAX, path, "Credit");
 
   if (!trainingId) fail("/admin/trainings", "Choose a training.");
   if (!title) fail(path, "Title is required.");
@@ -475,6 +480,7 @@ export async function updateTraining(formData: FormData) {
       order_index: orderIndex,
       working_title: workingTitle || null,
       development_notes: developmentNotes || null,
+      attribution: attribution || null,
     })
     .eq("id", trainingId);
 
@@ -542,6 +548,13 @@ export async function releaseTraining(formData: FormData) {
     if (asDevelopmentStatus(current.development_status) !== "ready_for_review") {
       fail(path, READY_REQUIRED_ERROR);
     }
+    const { data: intake } = await supabase
+      .from("training_intakes")
+      .select("rights_status")
+      .eq("training_id", trainingId)
+      .maybeSingle();
+    const rightsBlocker = sourcedReleaseBlocker(intake);
+    if (rightsBlocker) fail(path, rightsBlocker);
   }
 
   const { count, error: countError } = await supabase
@@ -604,6 +617,15 @@ export async function releaseTraining(formData: FormData) {
     console.error("[release] development status update failed", statusError.message);
   }
 
+  const { error: intakeError } = await supabase
+    .from("training_intakes")
+    .update({ status: "released" })
+    .eq("training_id", trainingId)
+    .neq("status", "archived");
+  if (intakeError) {
+    console.error("[release] intake status update failed", intakeError.message);
+  }
+
   revalidateAdmin(path);
   finish(path, {
     notice,
@@ -653,6 +675,15 @@ export async function unreleaseTraining(formData: FormData) {
     if (statusError) {
       console.error("[unrelease] development status update failed", statusError.message);
     }
+  }
+
+  const { error: intakeError } = await supabase
+    .from("training_intakes")
+    .update({ status: "drafting" })
+    .eq("training_id", trainingId)
+    .eq("status", "released");
+  if (intakeError) {
+    console.error("[unrelease] intake status update failed", intakeError.message);
   }
 
   revalidateAdmin(path);

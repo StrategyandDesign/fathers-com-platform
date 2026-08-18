@@ -94,7 +94,12 @@ export default async function ManagerTrainingReviewPage({
                   sessions.length === 1
                     ? t("manager.dashboard.sessionOne")
                     : t("manager.dashboard.sessionMany", { count: sessions.length });
-                return otherGroups.length > 0 ? `${sessionsLabel} · ${groupName}` : sessionsLabel;
+                const source = training.attribution
+                  ? t("manager.trainings.fromSource", { name: training.attribution })
+                  : null;
+                return [sessionsLabel, otherGroups.length > 0 ? groupName : null, source]
+                  .filter(Boolean)
+                  .join(" · ");
               })()}
             </p>
           </div>
