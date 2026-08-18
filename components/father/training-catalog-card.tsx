@@ -57,6 +57,7 @@ export function FatherTrainingCatalogCard({
   gatedLabel,
   hrefOverride,
   sessionHref,
+  hasOverview,
   t,
 }: {
   title: string;
@@ -75,6 +76,7 @@ export function FatherTrainingCatalogCard({
   gatedLabel?: string | null;
   hrefOverride?: string | null;
   sessionHref?: (sessionId: string) => string;
+  hasOverview?: boolean;
   t: Translate;
 }) {
   const href = gated
@@ -83,14 +85,18 @@ export function FatherTrainingCatalogCard({
   const started = completed > 0 || sessionInProgress(nextProgress);
   const complete = !next && total > 0 && completed >= total;
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
-  const ctaLabel = next
-    ? started
-      ? t("father.trainings.openSession", { n: next.session_number })
-      : t("father.trainings.startSessionN", { n: next.session_number })
-    : null;
-  const openLabel = next
-    ? t("father.trainings.sessionLabel", { n: next.session_number, title: next.title })
-    : title;
+  const ctaLabel = hasOverview
+    ? t("father.trainings.watchOverview")
+    : next
+      ? started
+        ? t("father.trainings.openSession", { n: next.session_number })
+        : t("father.trainings.startSessionN", { n: next.session_number })
+      : null;
+  const openLabel = hasOverview
+    ? t("father.trainings.overviewTitle", { title })
+    : next
+      ? t("father.trainings.sessionLabel", { n: next.session_number, title: next.title })
+      : title;
 
   return (
     <article
@@ -105,7 +111,7 @@ export function FatherTrainingCatalogCard({
           href={href}
           aria-label={openLabel}
           className={cn(
-            "block overflow-hidden bg-[#101510]",
+            "relative block overflow-hidden bg-[#101510]",
             featured
               ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]"
               : quiet
@@ -115,11 +121,16 @@ export function FatherTrainingCatalogCard({
           )}
         >
           <CoverPhoto src={coverSrc} />
+          {hasOverview ? (
+            <span className="absolute bottom-3 left-3 rounded-md bg-primary px-2.5 py-1 text-[11px] font-medium tracking-[0.14em] text-primary-foreground uppercase">
+              {t("father.trainings.overviewBadge")}
+            </span>
+          ) : null}
         </Link>
       ) : (
         <div
           className={cn(
-            "overflow-hidden bg-[#101510]",
+            "relative overflow-hidden bg-[#101510]",
             featured ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]" : "h-32 sm:h-36"
           )}
         >
@@ -156,6 +167,10 @@ export function FatherTrainingCatalogCard({
             <p className="text-sm text-muted-foreground">{t("father.home.sessionsReady")}</p>
           ) : null}
         </div>
+
+        {gated || !hasOverview ? null : (
+          <p className="text-sm font-medium text-primary">{t("father.trainings.overviewCardLine")}</p>
+        )}
 
         {gated ? null : next ? (
           <div className="space-y-1">

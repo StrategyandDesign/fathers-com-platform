@@ -17,7 +17,12 @@ export type Training = {
   last_edited_by?: string | null;
   previewed_at?: string | null;
   attribution?: string | null;
+  overview_video_url?: string | null;
 };
+
+export function trainingOverviewPath(trainingId: string) {
+  return `/father/trainings/${trainingId}`;
+}
 
 export function isTrainingPublished(training: { published?: boolean | null }) {
   return training.published !== false;
