@@ -851,6 +851,10 @@ export const en = {
       assessments: "Assessments",
       assessmentsLead: "Keystone and any assessments you create. Share or remove them, then assign your own.",
       viewAssessments: "View assessments",
+      certificates: "Certificate of Completion",
+      certificatesLead:
+        "You send these after a father finishes every session in a training. Preview, then issue the PDF.",
+      viewCertificates: "Open certificates",
       noteTitle: "Cohort note",
       noteLead:
         "One short note for the group. Fathers see it once on Home. They can dismiss it. Progress does not depend on it.",
@@ -971,7 +975,7 @@ export const en = {
     },
     participants: {
       title: "Participants",
-      lead: "Fathers in your group. Open anyone, or select several for a reviewed bulk action.",
+      lead: "Fathers in your group. Send a Certificate of Completion from the section below, or open anyone.",
       goneQuiet: "Gone quiet",
       goneQuietLead:
         "No activity in 14 days, and training is still open. A note emails only if he left session reminders on.",
@@ -1046,12 +1050,25 @@ export const en = {
       noCatalogYet: "No trainings in the catalog yet. An admin needs to add one.",
       doneSuffix: "(done)",
       sendCertificate: "Send Certificate",
-      sendCertificateLead: "Preview, then issue a serial and downloadable PDF.",
+      sendCertificateLead:
+        "Preview first, then issue a serial and a downloadable PDF. Nothing is sent until you confirm.",
       finishSessions: "Finish the remaining sessions first.",
       certOnFile: "A certificate is already on file for each completed training.",
       previewCertificate: "Preview Certificate",
       view: "View",
       downloadPdf: "Download PDF",
+    },
+    certificates: {
+      eyebrow: "Certificates",
+      title: "Certificate of Completion",
+      lead: "You send these after a father finishes every session in a training. Preview first. Nothing is issued until you confirm.",
+      readyOne: "1 ready to send",
+      readyMany: "{count} ready to send",
+      issuedOne: "1 already issued",
+      issuedMany: "{count} already issued",
+      emptyReady:
+        "No one is ready yet. A name appears here when every session in a training is done.",
+      how: "Open a name to preview and send, or use Bulk actions below and choose Issue certificates.",
     },
     nudge: {
       note: "Note",

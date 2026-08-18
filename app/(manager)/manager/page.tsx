@@ -321,7 +321,7 @@ export default async function ManagerHomePage({
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
+      <section className="grid gap-4 lg:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">{t("nav.trainings")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -349,6 +349,20 @@ export default async function ManagerHomePage({
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
             {t("manager.dashboard.viewAssessments")}
+          </Link>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">
+            {t("manager.dashboard.certificates")}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("manager.dashboard.certificatesLead")}
+          </p>
+          <Link
+            href="/manager/participants#certificates"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
+            {t("manager.dashboard.viewCertificates")}
           </Link>
         </div>
       </section>
