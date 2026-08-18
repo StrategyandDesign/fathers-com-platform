@@ -542,7 +542,6 @@ export const en = {
       streakClose: "Close",
       longestStreak: "Longest week count",
       freezesRemaining: "Freezes remaining",
-      streakGrid: "Last twelve weeks",
       freezeConsumed: "Last week used a freeze. You have {n} left.",
       freezeReplenished: "A freeze was restored. You have {n}.",
       streakReset:
