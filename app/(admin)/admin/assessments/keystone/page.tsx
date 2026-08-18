@@ -57,7 +57,7 @@ export default async function AdminKeystonePage({
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+      <section id="release" className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="font-heading text-lg font-semibold">Release to organizations</h2>

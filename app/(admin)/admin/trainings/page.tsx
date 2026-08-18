@@ -1,16 +1,16 @@
 import Link from "next/link";
 
+import { AdminDeskList, AdminDeskRow } from "@/components/admin/desk-list";
 import { DevelopmentStatusBadge } from "@/components/admin/development-status";
+import { AdminFilmFlags } from "@/components/admin/film-flags";
 import { ReleaseStatusBadge } from "@/components/admin/release-status";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { asDevelopmentStatus, formatEditedAt, isArchivedTraining } from "@/lib/admin/development";
 import { loadAdminTrainings } from "@/lib/admin/data";
+import { asDevelopmentStatus, formatEditedAt, isArchivedTraining } from "@/lib/admin/development";
 import { trainingReleaseState } from "@/lib/admin/release";
 import { requireRole } from "@/lib/auth/session";
-import { AdminFilmFlags } from "@/components/admin/film-flags";
-import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export default async function AdminTrainingsPage({
@@ -70,91 +70,58 @@ export default async function AdminTrainingsPage({
         </Link>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
-        {visible.length === 0 ? (
-          <EmptyState
-            framed={false}
-            title={archivedView ? "No archived trainings" : "No trainings yet"}
-            actionHref={archivedView ? "/admin/trainings" : "/admin/trainings/new"}
-            actionLabel={archivedView ? "Back to active" : "New training"}
+      <AdminDeskList
+        countHeader="Sessions"
+        actionHeader="Stage"
+        empty={
+          visible.length === 0 ? (
+            <EmptyState
+              framed={false}
+              title={archivedView ? "No archived trainings" : "No trainings yet"}
+              actionHref={archivedView ? "/admin/trainings" : "/admin/trainings/new"}
+              actionLabel={archivedView ? "Back to active" : "New training"}
+            >
+              {archivedView
+                ? "Archive an unfinished idea from its development desk. Recover it anytime."
+                : "Create a draft, add sessions, Stage the Father path, then release when ready."}
+            </EmptyState>
+          ) : undefined
+        }
+      >
+        {visible.map((training) => (
+          <AdminDeskRow
+            key={training.id}
+            href={`/admin/trainings/${training.id}`}
+            title={training.title}
+            count={training.sessions.length}
+            countLabel="Sessions"
+            development={
+              <DevelopmentStatusBadge status={asDevelopmentStatus(training.development_status)} />
+            }
+            release={<ReleaseStatusBadge state={trainingReleaseState(training)} />}
+            actionHref={`/admin/trainings/${training.id}/stage`}
+            actionLabel="Stage"
           >
-            {archivedView
-              ? "Archive an unfinished idea from its development desk. Recover it anytime."
-              : "Create a draft, add sessions, Stage the Father path, then release when ready."}
-          </EmptyState>
-        ) : (
-          <ul>
-            <li className="hidden border-b border-border text-xs tracking-wide text-muted-foreground uppercase md:grid md:grid-cols-[minmax(0,1fr)_5.5rem]">
-              <div className="grid grid-cols-[minmax(0,1.4fr)_5.5rem_minmax(10rem,1fr)] gap-4 px-6 py-3">
-                <span>Title</span>
-                <span>Sessions</span>
-                <span>Development</span>
-              </div>
-              <span className="flex items-center justify-end px-4">Stage</span>
-            </li>
-            {visible.map((training) => (
-              <li
-                key={training.id}
-                className="grid items-stretch border-b border-border last:border-0 md:grid-cols-[minmax(0,1fr)_5.5rem]"
-              >
-                <Link
-                  href={`/admin/trainings/${training.id}`}
-                  className={cn(
-                    "grid gap-2 px-4 py-4 sm:px-6 md:grid-cols-[minmax(0,1.4fr)_5.5rem_minmax(10rem,1fr)] md:items-center",
-                    interactiveSurfaceClassName
-                  )}
-                >
-                  <span className="min-w-0">
-                    <span className="block truncate font-medium">{training.title}</span>
-                    {training.working_title ? (
-                      <span className="block truncate text-sm text-muted-foreground">
-                        Working title: {training.working_title}
-                      </span>
-                    ) : null}
-                    {training.attribution ? (
-                      <span className="block truncate text-sm text-muted-foreground">
-                        From {training.attribution}
-                      </span>
-                    ) : null}
-                    <span className="block truncate text-sm text-muted-foreground">
-                      {`${training.sessions.length} session${
-                        training.sessions.length === 1 ? "" : "s"
-                      }`}
-                    </span>
-                    <span className="block truncate text-xs text-muted-foreground">
-                      Edited {formatEditedAt(training.last_edited_at)}
-                    </span>
-                    <AdminFilmFlags sessions={training.sessions} />
-                  </span>
-                  <span className="flex items-baseline justify-between gap-3 text-sm md:block">
-                    <span className="text-muted-foreground md:hidden">Sessions</span>
-                    <span className="tabular-nums">{training.sessions.length}</span>
-                  </span>
-                  <span className="space-y-1 text-sm">
-                    <span className="flex items-baseline justify-between gap-3 md:block">
-                      <span className="text-muted-foreground md:hidden">Development</span>
-                      <DevelopmentStatusBadge
-                        status={asDevelopmentStatus(training.development_status)}
-                      />
-                    </span>
-                    <span className="block">
-                      <ReleaseStatusBadge state={trainingReleaseState(training)} />
-                    </span>
-                  </span>
-                </Link>
-                <div className="flex items-center px-4 pb-4 sm:px-6 md:justify-end md:px-4 md:py-0">
-                  <Link
-                    href={`/admin/trainings/${training.id}/stage`}
-                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full md:w-auto")}
-                  >
-                    Stage
-                  </Link>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+            {training.working_title ? (
+              <span className="block truncate text-sm text-muted-foreground">
+                Working title: {training.working_title}
+              </span>
+            ) : null}
+            {training.attribution ? (
+              <span className="block truncate text-sm text-muted-foreground">
+                From {training.attribution}
+              </span>
+            ) : null}
+            <span className="block truncate text-sm text-muted-foreground">
+              {`${training.sessions.length} session${training.sessions.length === 1 ? "" : "s"}`}
+            </span>
+            <span className="block truncate text-xs text-muted-foreground">
+              Edited {formatEditedAt(training.last_edited_at)}
+            </span>
+            <AdminFilmFlags sessions={training.sessions} />
+          </AdminDeskRow>
+        ))}
+      </AdminDeskList>
     </div>
   );
 }
