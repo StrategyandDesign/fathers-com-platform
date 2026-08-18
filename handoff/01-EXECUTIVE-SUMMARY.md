@@ -1,6 +1,6 @@
 # Executive summary
 
-**Line under review:** isolated repo `fathers-com-clean-pilot` (snapshot of `clean-pilot` `b950131` plus cleanup from `cursor/clean-pilot-handoff-audit-7c78`)  
+**Line under review:** isolated repo `fathers-com-clean-pilot` (`review`) — `clean-pilot` `b950131`, handoff cleanup, then the seven UX refinements below  
 **Date:** 18 August 2026  
 **Verdict:** The Next.js clean-pilot app is a coherent signed-in product. It is **not** production-ready. Do not treat `fathers-com-platform` or its `main` branch as this review.
 
@@ -24,6 +24,18 @@ Data is Pilot Supabase `koeplcybddrvbliuepsy`. The project named `fathers-com-pl
 - PILOT.md now records the live-host facts above.
 - `.env.example` cron comment matches `vercel.json` (daily, not every 15 minutes).
 - Local `veterans*.html` / `employers.html` / `gatherings.html` stubs gitignored.
+
+## UX refinements now on this line
+
+Ported from later `main`-based work so the review copy matches the product polish:
+
+- Training overview film (YouTube/Vimeo) as the training front door
+- Green week square removed from the streak dialog
+- Certificate of Completion under the participant list
+- Home update preview blank until the Leader types
+- Super-admin Assessments uses the same desk list as Trainings
+- Completed Keystone results on the Assessments tab
+- Check-in no longer freezes on Saving after a radio choice
 
 ## Remaining risks
 

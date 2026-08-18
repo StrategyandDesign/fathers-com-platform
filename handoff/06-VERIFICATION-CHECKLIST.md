@@ -1,17 +1,18 @@
 # Verification checklist
 
-Run these on a clone of `fathers-com-clean-pilot` (`main`). Do not use `fathers-com-platform.vercel.app` or the stale `fathers-com-pilot.vercel.app` to confirm this tree.
+Run these on a clone of `fathers-com-clean-pilot` (`review`). Do not use `fathers-com-platform.vercel.app` or the stale `fathers-com-pilot.vercel.app` to confirm this tree.
 
 ## A. Identity
 
 - [ ] `git remote -v` points at `StrategyandDesign/fathers-com-clean-pilot`, not `fathers-com-platform`.
-- [ ] `git rev-parse --abbrev-ref HEAD` is `main`.
+- [ ] `git rev-parse --abbrev-ref HEAD` is `review` (or the SHA you were sent).
 - [ ] There is no `main` from the old platform in this clone.
 
 ## B. Cleanup
 
-- [ ] These paths are gone: `components/assessments/assigned-list.tsx`, `components/father/group-membership.tsx`, `components/father/session-steps.tsx`, `components/father/session-complete-mark.tsx`, `lib/father/evaluate.ts`.
-- [ ] `rg AssignedAssessmentList\|FatherGroupMembership\|SessionSteps\|SessionCompleteMark\|evaluatePlaceholder` in `*.ts,*.tsx` is empty.
+- [ ] These paths are gone: `components/father/group-membership.tsx`, `components/father/session-steps.tsx`, `components/father/session-complete-mark.tsx`, `lib/father/evaluate.ts`.
+- [ ] `components/assessments/assigned-list.tsx` is present (used by `/father/assessments` after Keystone is complete).
+- [ ] `rg FatherGroupMembership\|SessionSteps\|SessionCompleteMark\|evaluatePlaceholder` in `*.ts,*.tsx` is empty.
 - [ ] `README.md` starts with “clean-pilot (Next.js)”.
 - [ ] `PILOT.md` has the 18 Aug 2026 host table.
 
@@ -43,12 +44,18 @@ Father:
 - [ ] Sidebar: Home, Trainings, Assessments, Certificates
 - [ ] Open a training session → film → check-in → action
 - [ ] Assessments lists Keystone and/or assigned custom assessments
+- [ ] A finished Keystone shows its results on `/father/assessments`
+- [ ] A training with an overview URL opens the film before sessions
+- [ ] Check-in radios save without sticking on Saving
+- [ ] Streak dialog has no green week square
 - [ ] `/father/account` from the avatar
 
 Leader:
 
 - [ ] `/login` → `/manager`
 - [ ] Participants, Trainings, Assessments, Impact load
+- [ ] Certificate of Completion is under the participant list
+- [ ] Home update preview is blank until you type
 - [ ] `/manager/reviews` → `/manager/trainings`
 - [ ] `/manager/compare` → `/manager/impact?tab=compare`
 
@@ -56,7 +63,9 @@ Admin:
 
 - [ ] `/login` → `/admin`
 - [ ] Organizations, Users, Trainings, Assessments, Support load
+- [ ] Assessments uses the same desk list as Trainings
 - [ ] Opening a training does not 500
+- [ ] Training stage has an Overview film field (YouTube/Vimeo)
 
 Wrong door:
 

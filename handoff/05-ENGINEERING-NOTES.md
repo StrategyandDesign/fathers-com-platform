@@ -4,7 +4,9 @@
 
 ```bash
 git fetch origin
-git checkout cursor/clean-pilot-handoff-audit-7c78
+git clone https://github.com/StrategyandDesign/fathers-com-clean-pilot.git
+cd fathers-com-clean-pilot
+# default branch is review
 npm install
 cp .env.example .env.local
 # Optional: fill Pilot URL/keys. If left blank, lib/supabase/env.ts uses Pilot.
@@ -58,4 +60,4 @@ Signed-out HTTP after cleanup (`npm run dev`, 18 Aug 2026):
 | `/privacy` | 200 |
 | `/this-page-does-not-exist` | 404 |
 
-Public hosts probed the same day (see `PILOT.md`). Father/manager/admin **authenticated** click-throughs were not run here. `npx tsx --test tests/*.test.ts`: 154 passed. `npx tsc --noEmit` and `npm run lint` were clean.
+Public hosts probed the same day (see `PILOT.md`). Father/manager/admin **authenticated** click-throughs were not run here. Unit tests, `tsc`, and lint were re-run after the UX port.

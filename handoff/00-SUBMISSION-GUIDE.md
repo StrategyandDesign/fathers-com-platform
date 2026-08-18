@@ -17,7 +17,7 @@ GitHub collaborator access is **per repository**, not per branch. Anyone invited
 | Point them here | Do not point them here |
 |---|---|
 | Isolated repo: https://github.com/StrategyandDesign/fathers-com-clean-pilot | https://github.com/StrategyandDesign/fathers-com-platform |
-| That repo’s `main` (clean-pilot Next.js app only) | `main` on `fathers-com-platform` |
+| That repo’s `review` branch (clean-pilot Next.js app + UX refinements) | `main` on `fathers-com-platform` |
 | `handoff/` in the isolated repo | Pull request **#109** on the old repo (internal only) |
 | | Any `cursor/*-7c78` PR whose **base is `main`** (PRs 103–108) |
 | | Draft PR **#92** (532 files, dirty) |
@@ -38,9 +38,11 @@ You need their GitHub usernames to send the invite. Access is repo-wide on the i
 
 **Cleaned on the submitted line**
 
-- Deleted: `components/assessments/assigned-list.tsx`, `components/father/group-membership.tsx`, `components/father/session-steps.tsx`, `components/father/session-complete-mark.tsx`, `lib/father/evaluate.ts`
+- Deleted: `components/father/group-membership.tsx`, `components/father/session-steps.tsx`, `components/father/session-complete-mark.tsx`, `lib/father/evaluate.ts`
+- Restored: `components/assessments/assigned-list.tsx` (needed again for completed Keystone on Assessments)
 - Updated: `README.md`, `PILOT.md`, `.env.example`, `.gitignore`
 - Added: `handoff/*`
+- Ported UX: overview film, streak dialog, certificate placement, quiet Home update, Super-admin Assessments desk, Assessments-tab Keystone results, check-in save freeze fix
 
 **Omitted from the isolated repo on purpose**
 

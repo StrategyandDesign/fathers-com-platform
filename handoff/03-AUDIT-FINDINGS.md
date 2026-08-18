@@ -41,7 +41,7 @@ https://fathers-com-pilot.vercel.app login sentence is still “Official Fathers
 - `components/father/session-complete-mark.tsx`
 - `lib/father/evaluate.ts`
 
-**Resolution:** Deleted.
+**Resolution:** Deleted the unused father/session helpers and `evaluate.ts`. `assigned-list.tsx` was restored when completed Keystone results moved onto the Assessments tab.
 
 ### H3 — `.env.example` cron comment was wrong
 

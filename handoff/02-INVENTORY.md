@@ -1,6 +1,6 @@
 # Inventory and architecture
 
-Branch inventoried: `origin/clean-pilot` @ `b950131`, then this cleanup branch.  
+Branch inventoried: `origin/clean-pilot` @ `b950131`, handoff cleanup, then the UX refinement port.  
 Auth model: middleware `roleForPath` + layout `requireRole` + RLS `profiles.role` / `current_user_role()`. JWT `app_metadata.role` is for routing; `profiles.role` is preferred on the server (`resolveProfileRole`).
 
 ---
@@ -27,6 +27,7 @@ Status key: **Working** = page exists, gated, linked or is an intentional deep l
 |---|---|---|
 | `/father` | Working | Home |
 | `/father/trainings` | Working | Sidebar |
+| `/father/trainings/[trainingId]` | Deep | Overview film door, then sessions |
 | `/father/assessments` | Working | Sidebar |
 | `/father/certificates` | Working | Sidebar |
 | `/father/account` | Deep | Avatar |
@@ -79,7 +80,7 @@ Status key: **Working** = page exists, gated, linked or is an intentional deep l
 | `/admin` | Working |
 | `/admin/gathering` | Working |
 | `/admin/organizations`, `/new`, `/[id]` | Working / Deep |
-| `/admin/trainings`, `/new`, `/[id]`, `/[id]/stage`, stage session steps | Working / Deep |
+| `/admin/trainings`, `/new`, `/[id]`, `/[id]/stage`, `/[id]/stage/overview`, stage session steps | Working / Deep |
 | `/admin/trainings/sources`, `/new`, `/[id]` | Deep from trainings |
 | `/admin/trainings/intakes/[id]` | Deep |
 | `/admin/assessments`, `/assessments/keystone` | Working / Deep |
@@ -124,7 +125,7 @@ Status key: **Working** = page exists, gated, linked or is an intentional deep l
 
 See `handoff/00-SUBMISSION-GUIDE.md` §2 for the table list. 38 public tables queried. 22 RPCs from the app. 4 storage buckets. No views. No Next.js `functions.invoke`.
 
-Pilot applied migrations through `20260818154055_platform_assessment_sandbox`. This branch’s last committed migration file is `20260818220000_training_sources.sql`. Filenames and applied versions differ (dashboard timestamps vs repo timestamps); tables match except the unused `platform_assessments*` sandbox set.
+Pilot applied migrations through `training_overview_video` (`trainings.overview_video_url`). This branch’s last committed migration file is `20260818230000_training_overview_video.sql`. Filenames and applied versions differ (dashboard timestamps vs repo timestamps). Unused `platform_assessments*` sandbox tables remain on Pilot and are not queried.
 
 ---
 
