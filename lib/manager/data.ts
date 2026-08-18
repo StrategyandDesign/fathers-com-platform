@@ -5,7 +5,6 @@ import {
   type SessionProgress,
   type Training,
 } from "@/lib/father/types";
-import { isSeriesPartGated } from "@/lib/trainings/series";
 import { loadOrganizationReviews } from "@/lib/manager/reviews";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrls } from "@/lib/storage";
@@ -142,12 +141,9 @@ export async function loadManagerWorkspace(managerId: string) {
       const completed = trainingSessions.filter((session) =>
         isSessionComplete(fatherProgress.get(session.id) ?? null)
       ).length;
-      const gated = isSeriesPartGated(training, trainings, sessions, fatherProgress);
-      const currentSession = gated
-        ? undefined
-        : trainingSessions.find(
-            (session) => !isSessionComplete(fatherProgress.get(session.id) ?? null)
-          );
+      const currentSession = trainingSessions.find(
+        (session) => !isSessionComplete(fatherProgress.get(session.id) ?? null)
+      );
 
       return {
         training,
@@ -155,7 +151,7 @@ export async function loadManagerWorkspace(managerId: string) {
         completed,
         total: trainingSessions.length,
         assigned: assignedIds.has(training.id),
-        gated,
+        gated: false,
         certificate:
           certificates.find(
             (row) => row.father_id === fatherId && row.training_id === training.id
@@ -322,6 +318,6 @@ export async function loadCertificatePreview(
     training: card.training,
     certificate: card.certificate,
     complete: card.total > 0 && card.completed === card.total,
-    managerName: profileName(manager, "Manager"),
+    managerName: profileName(manager, "Leader"),
   };
 }

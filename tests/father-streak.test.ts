@@ -180,7 +180,7 @@ describe("assigned open sessions", () => {
     assert.equal(
       hadAssignedOpenSession({
         weekEnd: new Date("2026-08-17T00:00:00Z"),
-        trainings: [{ id: "t1", seriesId: null, partNumber: null }],
+        trainings: [{ id: "t1" }],
         assignments: [],
         sessions: [
           {
@@ -200,7 +200,7 @@ describe("assigned open sessions", () => {
     assert.equal(
       hadAssignedOpenSession({
         weekEnd: new Date("2026-08-17T00:00:00Z"),
-        trainings: [{ id: "t1", seriesId: null, partNumber: null }],
+        trainings: [{ id: "t1" }],
         assignments: [{ trainingId: "t1", assignedAt: new Date("2026-08-01T00:00:00Z") }],
         sessions: [
           {
@@ -220,7 +220,7 @@ describe("assigned open sessions", () => {
     assert.equal(
       hadAssignedOpenSession({
         weekEnd: new Date("2026-08-17T00:00:00Z"),
-        trainings: [{ id: "t1", seriesId: null, partNumber: null }],
+        trainings: [{ id: "t1" }],
         assignments: [{ trainingId: "t1", assignedAt: new Date("2026-08-01T00:00:00Z") }],
         sessions: [
           {
@@ -236,33 +236,23 @@ describe("assigned open sessions", () => {
     );
   });
 
-  it("ignores a later series part that was still gated", () => {
+  it("counts an assigned training with an unfinished session", () => {
     assert.equal(
       hadAssignedOpenSession({
         weekEnd: new Date("2026-08-17T00:00:00Z"),
-        trainings: [
-          { id: "p1", seriesId: "series", partNumber: 1 },
-          { id: "p2", seriesId: "series", partNumber: 2 },
-        ],
-        assignments: [{ trainingId: "p2", assignedAt: new Date("2026-08-01T00:00:00Z") }],
+        trainings: [{ id: "t1" }],
+        assignments: [{ trainingId: "t1", assignedAt: new Date("2026-08-01T00:00:00Z") }],
         sessions: [
           {
             sessionId: "s1",
-            trainingId: "p1",
-            catalogIndex: 0,
-            completedAt: null,
-            flagsComplete: false,
-          },
-          {
-            sessionId: "s2",
-            trainingId: "p2",
+            trainingId: "t1",
             catalogIndex: 0,
             completedAt: null,
             flagsComplete: false,
           },
         ],
       }),
-      false
+      true
     );
   });
 });

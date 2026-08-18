@@ -22,6 +22,7 @@ export function HomeUpNextCard({
   total,
   justFinished,
   coverSrc,
+  className,
   t,
 }: {
   href: string;
@@ -34,6 +35,7 @@ export function HomeUpNextCard({
   total: number;
   justFinished?: boolean;
   coverSrc?: string | null;
+  className?: string;
   t: Translate;
 }) {
   const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -43,13 +45,13 @@ export function HomeUpNextCard({
       : undefined;
 
   return (
-    <div className="min-w-0 space-y-3">
+    <div className={cn("flex h-full min-w-0 flex-col gap-3", className)}>
       <p className={eyebrowClassName}>{t("father.home.upNext")}</p>
-      <section className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="h-20 overflow-hidden bg-[#101510]">
+      <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card">
+        <div className="h-36 shrink-0 overflow-hidden bg-[#101510] sm:h-44 lg:h-48">
           <CoverPhoto src={coverSrc} />
         </div>
-        <div className="space-y-3 px-3.5 py-3.5 sm:px-5 sm:py-5">
+        <div className="flex flex-1 flex-col gap-3 px-3.5 py-3.5 sm:px-5 sm:py-5">
           <p className="text-sm text-muted-foreground">{trainingTitle}</p>
           <h1 className="font-heading text-xl font-semibold leading-snug tracking-tight sm:text-2xl">
             {sessionTitle}
@@ -60,24 +62,28 @@ export function HomeUpNextCard({
           <FilmRuntimeChip seconds={durationSeconds} t={t} />
           <Link
             href={href}
-            className={cn(buttonVariants({ variant: "default", size: "lg" }), homePrimaryCtaClassName)}
+            className={cn(
+              buttonVariants({ variant: "default", size: "lg" }),
+              homePrimaryCtaClassName,
+              "mt-auto"
+            )}
           >
             {continueSession ? t("father.home.continueSession") : t("father.home.start")}
           </Link>
         </div>
+        {total > 0 ? (
+          <div className="space-y-1.5 px-3.5 pb-3.5 sm:px-5 sm:pb-5">
+            <HomeQuietProgress
+              value={percent}
+              from={from}
+              label={t("father.home.sessionsComplete", { completed, total })}
+            />
+            <p className="text-sm text-muted-foreground">
+              {t("father.home.sessionsComplete", { completed, total })}
+            </p>
+          </div>
+        ) : null}
       </section>
-      {total > 0 ? (
-        <div className="space-y-1.5">
-          <HomeQuietProgress
-            value={percent}
-            from={from}
-            label={t("father.home.sessionsComplete", { completed, total })}
-          />
-          <p className="text-sm text-muted-foreground">
-            {t("father.home.sessionsComplete", { completed, total })}
-          </p>
-        </div>
-      ) : null}
     </div>
   );
 }

@@ -380,7 +380,7 @@ async function loadCatalogFacts(admin: AdminClient, fatherId: string): Promise<C
     memberRes,
     profileRes,
   ] = await Promise.all([
-    admin.from("trainings").select("id, series_id, part_number, order_index"),
+    admin.from("trainings").select("id, order_index"),
     admin.from("sessions").select("id, training_id, session_number, order_index"),
     admin.from("session_progress").select("*").eq("father_id", fatherId),
     admin.from("training_assignments").select("training_id, assigned_at").eq("father_id", fatherId),
@@ -403,7 +403,7 @@ async function loadCatalogFacts(admin: AdminClient, fatherId: string): Promise<C
   if (certificatesRes.error) throw certificatesRes.error;
 
   const trainings = (trainingsRes.data ?? []) as Array<
-    Pick<Training, "id"> & { series_id?: string | null; part_number?: number | null; order_index?: number }
+    Pick<Training, "id"> & { order_index?: number }
   >;
   const sessions = (sessionsRes.data ?? []) as Session[];
   const progress = (progressRes.data ?? []) as SessionProgress[];
@@ -442,8 +442,6 @@ async function loadCatalogFacts(admin: AdminClient, fatherId: string): Promise<C
   return {
     trainings: trainings.map((row) => ({
       id: row.id,
-      seriesId: row.series_id ?? null,
-      partNumber: row.part_number ?? null,
     })),
     assignments: ((assignmentsRes.data ?? []) as Array<{ training_id: string; assigned_at: string | null }>)
       .map((row) => {

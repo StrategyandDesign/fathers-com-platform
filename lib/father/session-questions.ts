@@ -25,7 +25,10 @@ type SessionSkillPack = {
   action: string;
 };
 
-type SessionLookup = Pick<Session, "session_number" | "title">;
+type SessionLookup = Pick<Session, "session_number" | "title"> & {
+  checkin_prompt?: string | null;
+  action_prompt?: string | null;
+};
 type TrainingLookup = Pick<Training, "slug"> | null | undefined;
 
 const ACTION_NOTE_HINT =
@@ -210,15 +213,29 @@ function resolveFundamentalsNumber(
   return null;
 }
 
+export function hasHardcodedSkillPack(
+  session: SessionLookup,
+  training?: TrainingLookup
+) {
+  const number = resolveFundamentalsNumber(session, training);
+  return Boolean(number && FUNDAMENTALS_BY_NUMBER[number]);
+}
+
 function skillPack(
   session: SessionLookup,
   training?: TrainingLookup
 ): SessionSkillPack {
   const number = resolveFundamentalsNumber(session, training);
-  if (number && FUNDAMENTALS_BY_NUMBER[number]) {
-    return FUNDAMENTALS_BY_NUMBER[number];
-  }
-  return FALLBACK;
+  const fallback =
+    number && FUNDAMENTALS_BY_NUMBER[number]
+      ? FUNDAMENTALS_BY_NUMBER[number]
+      : FALLBACK;
+  const checkin = session.checkin_prompt?.trim();
+  const action = session.action_prompt?.trim();
+  return {
+    checkin: checkin || fallback.checkin,
+    action: action || fallback.action,
+  };
 }
 
 export function checkinQuestionsFor(

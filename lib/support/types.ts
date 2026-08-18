@@ -27,7 +27,7 @@ export const SUPPORT_STATUS_LABEL: Record<SupportStatus, string> = {
 
 export const SUPPORT_ROLE_LABEL: Record<SupportSubmitterRole, string> = {
   father: "Father",
-  manager: "Manager",
+  manager: "Leader",
   reviewer: "Reviewer",
 };
 
@@ -42,7 +42,7 @@ export const PAGE_MAX_LENGTH = 200;
 export const PREVIEW_MAX_LENGTH = 80;
 
 export const SEND_FAILED_MESSAGE = "Unable to send right now. Please try again.";
-export const RECEIVED_NOTICE = "Thanks. We’ve received your report";
+export const RECEIVED_NOTICE = "Report received.";
 
 export type SupportReportRow = {
   id: string;

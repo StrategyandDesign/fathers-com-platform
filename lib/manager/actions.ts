@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { seedGroupAssessmentReviews } from "@/lib/admin/assessment-release";
 import { seedGroupTrainingReviews } from "@/lib/admin/release";
 import { requireRole } from "@/lib/auth/session";
 import {
@@ -54,6 +55,7 @@ export async function createGroup(formData: FormData) {
   }
   if (data?.id) {
     await seedGroupTrainingReviews(supabase, data.id);
+    await seedGroupAssessmentReviews(supabase, data.id);
   }
 
   revalidateManager();

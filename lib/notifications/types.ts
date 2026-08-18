@@ -49,6 +49,7 @@ export type NotificationPayload = {
   sessionId?: string;
   trainingId?: string;
   certificateId?: string;
+  cohortNote?: boolean;
 };
 
 export type ReminderCandidate = {

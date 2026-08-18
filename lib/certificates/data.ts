@@ -55,7 +55,7 @@ export async function loadFatherCertificates(fatherId: string): Promise<IssuedCe
   if (issuersRes.error) throw issuersRes.error;
 
   const issuers = new Map(
-    (issuersRes.data ?? []).map((row) => [row.id, profileName(row, "Fathers.com Manager")])
+    (issuersRes.data ?? []).map((row) => [row.id, profileName(row, "Fathers.com Leader")])
   );
 
   return rows.map((row) => ({
@@ -103,7 +103,7 @@ export async function loadCertificatePayload(certificateId: string): Promise<{
       trainingName: trainingRes.data?.title ?? "Training",
       completedOn: formatCertificateDate(cert.issued_at),
       serialNumber: cert.serial_number,
-      managerName: profileName(issuerRes.data, "Fathers.com Manager"),
+      managerName: profileName(issuerRes.data, "Fathers.com Leader"),
     },
   };
 }

@@ -1,11 +1,13 @@
 import Link from "next/link";
 
+import { CertificateDesk } from "@/components/manager/certificate-desk";
 import { CompanionNudgeSuggest } from "@/components/manager/companion-nudge-suggest";
 import { Flash } from "@/components/manager/flash";
 import { ParticipantBulkList } from "@/components/manager/participant-bulk-list";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
+import { buildCertificateDesk } from "@/lib/manager/certificates-desk";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
 import { buildQuietSuggestion } from "@/lib/manager/companion";
@@ -25,6 +27,10 @@ export default async function ManagerParticipantsPage({
   const { t } = await getI18n();
   const { participants, trainings, sessions, groups, reviews, trainingProgressFor } =
     await loadManagerWorkspace(user.id);
+  const certificateDesk = buildCertificateDesk({
+    participants,
+    trainingProgressFor,
+  });
   const quiet = participants.filter((participant) =>
     needsNudge(participant.lastActivity, trainingProgressFor(participant.fatherId))
   );
@@ -104,6 +110,12 @@ export default async function ManagerParticipantsPage({
         </section>
       ) : null}
 
+      <CertificateDesk
+        ready={certificateDesk.ready}
+        issued={certificateDesk.issued}
+        t={t}
+      />
+
       {participants.length === 0 ? (
         <EmptyState
           title={t("manager.participants.emptyTitle")}
@@ -113,7 +125,7 @@ export default async function ManagerParticipantsPage({
           {t("manager.participants.emptyBody")}
         </EmptyState>
       ) : (
-        <div id="assign">
+        <div id="assign" className="space-y-6">
           <ParticipantBulkList
             initialTrainingId={params.training}
             participants={participants.map((participant) => ({

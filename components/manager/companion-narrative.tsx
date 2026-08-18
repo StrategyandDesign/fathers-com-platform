@@ -1,8 +1,8 @@
 import { CopyButton } from "@/components/manager/copy-button";
 import type { Translate } from "@/lib/i18n/translate";
 import {
-  funderNarrativeVars,
-  funderTrendCopy,
+  snapshotNarrativeVars,
+  snapshotTrendCopy,
 } from "@/lib/manager/companion";
 import type { ImpactSnapshot } from "@/lib/manager/impact";
 
@@ -15,14 +15,14 @@ export function CompanionNarrative({
   organization: string;
   t: Translate;
 }) {
-  const trend = funderTrendCopy(snapshot);
+  const trend = snapshotTrendCopy(snapshot);
   const narrative =
     snapshot.enrolled === 0
       ? t("manager.companion.narrativeEmpty", {
           org: organization,
           days: snapshot.periodDays,
         })
-      : `${t("manager.companion.narrative", funderNarrativeVars(snapshot, organization))} ${t(trend.key, trend.vars)}`;
+      : `${t("manager.companion.narrative", snapshotNarrativeVars(snapshot, organization))} ${t(trend.key, trend.vars)}`;
 
   return (
     <section className="rounded-xl border border-primary/35 bg-card p-4 sm:p-6">

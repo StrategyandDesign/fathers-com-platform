@@ -379,13 +379,6 @@ export default async function ManagerParticipantDetailPage({
                 <span className="shrink-0 text-sm tabular-nums text-muted-foreground">{percent}%</span>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                {card.training.part_number && card.training.part_total
-                  ? `${t("manager.participants.partSubtitle", {
-                      n: card.training.part_number,
-                      total: card.training.part_total,
-                      sessions: card.total,
-                    })} · `
-                  : ""}
                 {t("manager.participants.sessionsOf", {
                   completed: card.completed,
                   total: card.total,
@@ -393,13 +386,6 @@ export default async function ManagerParticipantDetailPage({
                 {card.assigned ? ` · ${t("manager.participants.assigned")}` : ""}
                 {card.certificate ? ` · ${t("manager.participants.certified")}` : ""}
               </p>
-              {card.gated ? (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {t("manager.participants.gatedPart", {
-                    n: (card.training.part_number ?? 1) - 1,
-                  })}
-                </p>
-              ) : null}
               <ProgressBar value={percent} className="mt-4" />
               {card.certificate ? (
                 <div className="mt-4 space-y-3">
@@ -484,7 +470,55 @@ export default async function ManagerParticipantDetailPage({
         )}
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section
+        id="certificates"
+        className="rounded-xl border border-border bg-card p-4 sm:p-6"
+      >
+        <p className="text-xs tracking-[0.16em] text-muted-foreground uppercase">
+          {t("manager.certificates.eyebrow")}
+        </p>
+        <h2 className="font-heading mt-2 text-lg font-semibold">
+          {t("manager.certificates.title")}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t("manager.participants.sendCertificateLead")}
+        </p>
+        <form action={previewCertificate} className="mt-5 space-y-4">
+          <input type="hidden" name="father_id" value={participant.fatherId} />
+          {progress.length === 0 ? (
+            <p className="rounded-lg border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
+              {t("manager.participants.noCatalogYet")}
+            </p>
+          ) : withoutCert.length === 0 ? (
+            <p className="rounded-lg border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
+              {t("manager.participants.certOnlyComplete")}{" "}
+              {progress.some((card) => !card.certificate)
+                ? t("manager.participants.finishSessions")
+                : t("manager.participants.certOnFile")}
+            </p>
+          ) : (
+            <select
+              className={fieldClassName}
+              name="training_id"
+              required
+              aria-invalid={Boolean(flash.error) || undefined}
+            >
+              {withoutCert.map((card) => (
+                <option key={card.training.id} value={card.training.id}>
+                  {card.training.title}
+                </option>
+              ))}
+            </select>
+          )}
+          {withoutCert.length > 0 ? (
+            <Button type="submit" className="w-full sm:w-auto">
+              {t("manager.participants.previewCertificate")}
+            </Button>
+          ) : null}
+        </form>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2">
         <form action={assignTraining} className="rounded-xl border border-border bg-card p-4 sm:p-5">
           <h2 className="font-heading font-semibold">{t("manager.participants.assignTraining")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{t("manager.participants.assignLead")}</p>
@@ -552,46 +586,6 @@ export default async function ManagerParticipantDetailPage({
           {progress.length > 0 ? (
             <Button type="submit" className="mt-4 w-full">
               {t("manager.participants.markComplete")}
-            </Button>
-          ) : null}
-        </form>
-
-        <form action={previewCertificate} className="rounded-xl border border-border bg-card p-4 sm:p-5">
-          <h2 className="font-heading font-semibold">{t("manager.participants.sendCertificate")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.participants.sendCertificateLead")}
-          </p>
-          <input type="hidden" name="father_id" value={participant.fatherId} />
-          <div className="mt-4">
-            {progress.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                {t("manager.participants.noCatalogYet")}
-              </p>
-            ) : withoutCert.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                {t("manager.participants.certOnlyComplete")}{" "}
-                {progress.some((card) => !card.certificate)
-                  ? t("manager.participants.finishSessions")
-                  : t("manager.participants.certOnFile")}
-              </p>
-            ) : (
-              <select
-                className={fieldClassName}
-                name="training_id"
-                required
-                aria-invalid={Boolean(flash.error) || undefined}
-              >
-                {withoutCert.map((card) => (
-                  <option key={card.training.id} value={card.training.id}>
-                    {card.training.title}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-          {withoutCert.length > 0 ? (
-            <Button type="submit" className="mt-4 w-full">
-              {t("manager.participants.previewCertificate")}
             </Button>
           ) : null}
         </form>

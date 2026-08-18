@@ -22,10 +22,14 @@ export type SetupChildren = (typeof SETUP_CHILDREN)[number];
 export type SetupSkill = (typeof SETUP_SKILLS)[number];
 export type SetupWhen = (typeof SETUP_WHEN)[number];
 
+export const SETUP_REMINDER_CHOICES = ["set", "skipped"] as const;
+export type SetupReminderChoice = (typeof SETUP_REMINDER_CHOICES)[number];
+
 export type SetupAnswers = {
   children?: SetupChildren;
   skill?: SetupSkill;
   when?: SetupWhen;
+  reminder?: SetupReminderChoice;
   first_session_id?: string;
 };
 
@@ -45,6 +49,11 @@ const STEP_SET = new Set<string>(ONBOARDING_STEPS);
 const CHILDREN_SET = new Set<string>(SETUP_CHILDREN);
 const SKILL_SET = new Set<string>(SETUP_SKILLS);
 const WHEN_SET = new Set<string>(SETUP_WHEN);
+const REMINDER_CHOICE_SET = new Set<string>(SETUP_REMINDER_CHOICES);
+
+export function isSetupReminderChoice(value: unknown): value is SetupReminderChoice {
+  return typeof value === "string" && REMINDER_CHOICE_SET.has(value);
+}
 
 export function isOnboardingStep(value: unknown): value is OnboardingStep {
   return typeof value === "string" && STEP_SET.has(value);
@@ -70,6 +79,7 @@ export function parseSetupAnswers(raw: unknown): SetupAnswers {
   if (isSetupChildren(source.children)) answers.children = source.children;
   if (isSetupSkill(source.skill)) answers.skill = source.skill;
   if (isSetupWhen(source.when)) answers.when = source.when;
+  if (isSetupReminderChoice(source.reminder)) answers.reminder = source.reminder;
   if (typeof source.first_session_id === "string" && source.first_session_id.trim()) {
     answers.first_session_id = source.first_session_id.trim();
   }
@@ -95,13 +105,21 @@ export function parseRemindAt(value: unknown) {
   return `${String(hours).padStart(2, "0")}:${match[2]}`;
 }
 
+export function hasReminderDecision(input: {
+  hasReminder?: boolean;
+  reminderSkipped?: boolean;
+}) {
+  return Boolean(input.hasReminder || input.reminderSkipped);
+}
+
 export function resolveOnboardingMode(input: {
   completedAt?: string | null;
   hasCompletedSession: boolean;
   hasReminder?: boolean;
+  reminderSkipped?: boolean;
 }): OnboardingMode {
   if (input.completedAt) return "done";
-  if (input.hasCompletedSession && input.hasReminder) return "done";
+  if (input.hasCompletedSession && hasReminderDecision(input)) return "done";
   if (input.hasCompletedSession) return "reminder-only";
   return "full";
 }
@@ -110,6 +128,7 @@ export function currentOnboardingStep(input: {
   mode: OnboardingMode;
   storedStep?: OnboardingStep | null;
   hasReminder: boolean;
+  reminderSkipped?: boolean;
   hasAssignedSession: boolean;
   firstSessionComplete?: boolean;
   completedAt?: string | null;
@@ -125,7 +144,7 @@ export function currentOnboardingStep(input: {
   }
   if (input.mode === "done") return "done";
   if (input.mode === "reminder-only") {
-    return input.hasReminder ? "done" : "reminder";
+    return hasReminderDecision(input) ? "done" : "reminder";
   }
 
   const stored = input.storedStep && input.storedStep !== "done" ? input.storedStep : "welcome";

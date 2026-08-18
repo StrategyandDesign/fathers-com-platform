@@ -5,15 +5,18 @@ export type Training = {
   description: string | null;
   session_count: number;
   order_index: number;
-  series_id?: string | null;
-  series_title?: string | null;
-  part_number?: number | null;
-  part_total?: number | null;
   published?: boolean | null;
   released_at?: string | null;
   released_by?: string | null;
   first_published_at?: string | null;
   first_released_at?: string | null;
+  development_status?: string | null;
+  working_title?: string | null;
+  development_notes?: string | null;
+  last_edited_at?: string | null;
+  last_edited_by?: string | null;
+  previewed_at?: string | null;
+  attribution?: string | null;
 };
 
 export function isTrainingPublished(training: { published?: boolean | null }) {
@@ -83,6 +86,8 @@ export type Session = {
   video_url: string | null;
   order_index: number;
   duration_seconds?: number | null;
+  checkin_prompt?: string | null;
+  action_prompt?: string | null;
 };
 
 export type SessionProgress = {
@@ -153,16 +158,18 @@ export function continueHref(
   progress: Pick<
     SessionProgress,
     "film_completed" | "checkin_completed" | "action_completed"
-  > | null
+  > | null,
+  options?: { root?: string }
 ) {
-  if (!progress?.film_completed) return `/father/sessions/${sessionId}`;
+  const root = options?.root ?? "/father";
+  if (!progress?.film_completed) return `${root}/sessions/${sessionId}`;
   if (!progress.checkin_completed) {
-    return `/father/sessions/${sessionId}/checkin`;
+    return `${root}/sessions/${sessionId}/checkin`;
   }
   if (!progress.action_completed) {
-    return `/father/sessions/${sessionId}/action`;
+    return `${root}/sessions/${sessionId}/action`;
   }
-  return `/father/sessions/${sessionId}`;
+  return `${root}/sessions/${sessionId}`;
 }
 
 const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;

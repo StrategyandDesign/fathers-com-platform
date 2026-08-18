@@ -1,33 +1,62 @@
 import Link from "next/link";
 
+import { AssessmentPhotoPlate } from "@/components/assessments/photo-plate";
+import { buttonVariants } from "@/components/ui/button";
+import { platformTakeHref } from "@/lib/admin/platform-assessments";
 import { takeHref, type FatherAssignmentCard } from "@/lib/assessments/types";
 import { firstUnanswered } from "@/lib/father/questions";
 import type { HomeAssessment } from "@/lib/father/home";
 import type { Translate } from "@/lib/i18n/translate";
-import { interactiveUnderlineClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+
+const eyebrowClassName =
+  "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
 
 export function HomeAssessmentCard({
   assessment,
+  coverSrc,
   t,
+  className,
 }: {
   assessment: HomeAssessment;
+  coverSrc: string;
   t: Translate;
+  className?: string;
 }) {
   const { href, title, detail, action } = copyFor(assessment, t);
 
   return (
-    <section className="rounded-xl border border-border bg-card px-4 py-4">
-      <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
-        {t("father.home.assessment")}
-      </p>
-      <p className="font-heading mt-2 text-lg font-semibold leading-snug">{title}</p>
-      {detail ? <p className="mt-1 text-sm text-muted-foreground">{detail}</p> : null}
-      <p className="mt-3">
-        <Link href={href} className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}>
-          {action}
-        </Link>
-      </p>
+    <section className={cn("flex h-full min-w-0 flex-col gap-3", className)}>
+      <p className={eyebrowClassName}>{t("father.home.assessment")}</p>
+      <AssessmentPhotoPlate
+        src={coverSrc}
+        completed={
+          assessment.kind === "keystone-result" ||
+          assessment.kind === "custom" ||
+          (assessment.kind === "platform" && assessment.card.attempt?.status === "completed")
+        }
+        className="flex min-h-56 flex-1 flex-col sm:min-h-64"
+      >
+        <div className="flex h-full flex-1 flex-col p-4 sm:p-5">
+          <p className="text-[11px] font-medium tracking-[0.12em] text-white/65 uppercase">
+            {assessment.kind === "keystone-draft" || assessment.kind === "keystone-result"
+              ? t("father.profile.keystone")
+              : title}
+          </p>
+          {detail ? <p className="mt-3 text-sm text-white/80">{detail}</p> : null}
+          {assessment.kind === "custom" || assessment.kind === "platform" ? (
+            <p className="mt-2 text-sm text-white/65">{title}</p>
+          ) : null}
+          <div className="mt-auto pt-5">
+            <Link
+              href={href}
+              className={cn(buttonVariants({ variant: "outline" }), "w-full min-h-11")}
+            >
+              {action}
+            </Link>
+          </div>
+        </div>
+      </AssessmentPhotoPlate>
     </section>
   );
 }
@@ -35,6 +64,25 @@ export function HomeAssessmentCard({
 function copyFor(assessment: HomeAssessment, t: Translate) {
   if (assessment.kind === "custom") {
     return customCopy(assessment.card, t);
+  }
+  if (assessment.kind === "platform") {
+    const status = assessment.card.attempt?.status ?? "not_started";
+    return {
+      href: platformTakeHref(assessment.card.assessmentKey),
+      title: assessment.card.title,
+      detail:
+        status === "completed"
+          ? t("father.assessments.completed")
+          : status === "in_progress"
+            ? t("father.assessments.inProgress")
+            : t("father.assessments.notStarted"),
+      action:
+        status === "completed"
+          ? t("father.assessments.view")
+          : status === "in_progress"
+            ? t("father.assessments.continue")
+            : t("father.assessments.take"),
+    };
   }
   if (assessment.kind === "keystone-draft") {
     return {

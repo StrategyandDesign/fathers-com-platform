@@ -10,6 +10,7 @@ import {
   ClipboardList,
   FileSpreadsheet,
   Home,
+  Image,
   Inbox,
   LayoutDashboard,
   Settings,
@@ -95,13 +96,21 @@ export const NAV: Record<AppRole, NavItem[]> = {
       href: "/manager/assessments",
       labelKey: "nav.assessments",
       icon: ClipboardList,
-      match: (path) => path.startsWith("/manager/assessments"),
+      match: (path) =>
+        path.startsWith("/manager/assessments") ||
+        path.startsWith("/manager/assessment-reviews"),
     },
     {
       href: "/manager/reports",
       labelKey: "nav.reports",
       icon: FileSpreadsheet,
       match: (path) => path.startsWith("/manager/reports"),
+    },
+    {
+      href: "/manager/account/photos",
+      labelKey: "nav.photos",
+      icon: Image,
+      match: (path) => path.startsWith("/manager/account/photos"),
     },
   ],
   reviewer: [
@@ -148,6 +157,12 @@ export const NAV: Record<AppRole, NavItem[]> = {
       labelKey: "nav.trainings",
       icon: BrandLogoArrow,
       match: (path) => path.startsWith("/admin/trainings"),
+    },
+    {
+      href: "/admin/assessments",
+      labelKey: "nav.assessments",
+      icon: ClipboardList,
+      match: (path) => path.startsWith("/admin/assessments"),
     },
     {
       href: "/admin/users",

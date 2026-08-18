@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand/logo";
-import { FatherGroupMembership } from "@/components/father/group-membership";
+import { OrganizationMark } from "@/components/brand/organization-mark";
 import { AppNav } from "@/components/layout/app-nav";
 import { ManagerHeaderMenu } from "@/components/layout/manager-header-menu";
 import { StaffMenu } from "@/components/layout/staff-menu";
@@ -48,7 +48,15 @@ export async function RoleShell({
       <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-border bg-background/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden lg:px-5">
         <div className="flex min-w-0 shrink-0 items-center gap-1.5 lg:gap-3">
           {role !== "father" && role !== "manager" ? <StaffMenu role={role} /> : null}
+          {groupName || groupLogo ? (
+            <OrganizationMark name={groupName} logoUrl={groupLogo} size="icon" />
+          ) : null}
           <BrandLogo href={funnel ? "/father/start" : ROLE_HOME[role]} />
+          {groupName ? (
+            <p className="hidden min-w-0 max-w-[12rem] truncate text-sm text-muted-foreground sm:block">
+              {groupName}
+            </p>
+          ) : null}
           {chromeLabel ? (
             <Badge variant="secondary" className="hidden max-w-[14rem] truncate lg:inline-flex">
               {chromeLabel}
@@ -98,6 +106,11 @@ export async function RoleShell({
 
       {funnel ? null : (
         <aside className="fixed bottom-0 start-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col overflow-y-auto border-e border-border bg-sidebar print:hidden lg:flex">
+          {role === "father" && (groupName || groupLogo) ? (
+            <div className="flex justify-center px-2 pt-4">
+              <OrganizationMark name={groupName} logoUrl={groupLogo} size="icon" />
+            </div>
+          ) : null}
           <AppNav role={role} layout="side" />
         </aside>
       )}
@@ -120,13 +133,7 @@ export async function RoleShell({
             : "max-lg:pb-6"
         )}
       >
-        <div
-          className={cn(
-            "mx-auto w-full min-w-0 max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-6 lg:px-8 lg:py-8",
-            (groupName || groupLogo) && "space-y-5 md:space-y-6"
-          )}
-        >
-          <FatherGroupMembership role={role} name={groupName} logoUrl={groupLogo} />
+        <div className="mx-auto w-full min-w-0 max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-6 lg:px-8 lg:py-8">
           {children}
         </div>
       </main>

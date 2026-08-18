@@ -42,8 +42,6 @@ export type EvaluateClosedWeekResult =
 
 export type StreakTrainingFact = {
   id: string;
-  seriesId: string | null;
-  partNumber: number | null;
 };
 
 export type StreakAssignmentFact = {
@@ -292,32 +290,6 @@ export function completedBeforeWeekEnd(session: StreakSessionFact, weekEnd: Date
   return session.completedAt.getTime() < weekEnd.getTime();
 }
 
-function partCompleteByWeekEnd(
-  trainingId: string,
-  sessions: StreakSessionFact[],
-  weekEnd: Date
-) {
-  const partSessions = sessions.filter((session) => session.trainingId === trainingId);
-  if (partSessions.length === 0) return false;
-  return partSessions.every((session) => completedBeforeWeekEnd(session, weekEnd));
-}
-
-export function trainingWasGatedAtWeekEnd(
-  training: StreakTrainingFact,
-  catalog: StreakTrainingFact[],
-  sessions: StreakSessionFact[],
-  weekEnd: Date
-) {
-  if (!training.seriesId || !training.partNumber || training.partNumber <= 1) return false;
-  return catalog.some(
-    (part) =>
-      part.seriesId === training.seriesId &&
-      (part.partNumber ?? 0) > 0 &&
-      (part.partNumber ?? 0) < training.partNumber! &&
-      !partCompleteByWeekEnd(part.id, sessions, weekEnd)
-  );
-}
-
 export function hadAssignedOpenSession(input: {
   weekEnd: Date;
   trainings: StreakTrainingFact[];
@@ -328,9 +300,6 @@ export function hadAssignedOpenSession(input: {
     if (assignment.assignedAt.getTime() >= input.weekEnd.getTime()) continue;
     const training = input.trainings.find((row) => row.id === assignment.trainingId);
     if (!training) continue;
-    if (trainingWasGatedAtWeekEnd(training, input.trainings, input.sessions, input.weekEnd)) {
-      continue;
-    }
     const catalog = input.sessions
       .filter((session) => session.trainingId === training.id)
       .sort((left, right) => left.catalogIndex - right.catalogIndex);

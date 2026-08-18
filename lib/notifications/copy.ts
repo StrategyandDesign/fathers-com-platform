@@ -118,7 +118,9 @@ export function notificationCopy(
     if (type === "weekly_session") {
       return {
         title: "המפגש הבא מוכן",
-        body: minutes ? `${training}. ${minutes} דק׳.` : `${training}.`,
+        body: minutes
+          ? `${training}. ${minutes} דק׳. זו התזכורת השבועית שלך.`
+          : `${training}. זו התזכורת השבועית שלך.`,
       };
     }
     if (type === "action") {
@@ -139,6 +141,12 @@ export function notificationCopy(
         body: "התעודה מוכנה.",
       };
     }
+    if (type === "leader_encouragement" && payload.cohortNote) {
+      return {
+        title: `הערה מאת ${encouragementLeader(payload.leaderName, locale)}`,
+        body: "היא בדף הבית. אפשר לסגור אותה.",
+      };
+    }
     if (type === "leader_encouragement" && payload.nudgeTier) {
       return encouragementCopy(payload, locale);
     }
@@ -151,7 +159,9 @@ export function notificationCopy(
   if (type === "weekly_session") {
     return {
       title: "Your next session is ready",
-      body: minutes ? `${training}. ${minutes} min.` : `${training}.`,
+      body: minutes
+        ? `${training}. ${minutes} min. This is your weekly reminder.`
+        : `${training}. This is your weekly reminder.`,
     };
   }
   if (type === "action") {
@@ -170,6 +180,12 @@ export function notificationCopy(
     return {
       title: `You finished ${training}`,
       body: "Your certificate is ready.",
+    };
+  }
+  if (type === "leader_encouragement" && payload.cohortNote) {
+    return {
+      title: `A note from ${encouragementLeader(payload.leaderName, locale)}`,
+      body: "It is on Home. You can dismiss it.",
     };
   }
   if (type === "leader_encouragement" && payload.nudgeTier) {
@@ -205,6 +221,9 @@ export function safePayload(raw: unknown): NotificationPayload {
   }
   if (source.nudgeTier === "A" || source.nudgeTier === "B" || source.nudgeTier === "C") {
     payload.nudgeTier = source.nudgeTier;
+  }
+  if (source.cohortNote === true) {
+    payload.cohortNote = true;
   }
   for (const key of ["sessionId", "trainingId", "certificateId"] as const) {
     if (typeof source[key] === "string" && source[key].trim()) {

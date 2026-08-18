@@ -14,7 +14,9 @@ const EXACT: Record<string, string> = {
   "Email or password doesn’t match. Try again, or create an account if you don’t have one.":
     "flash.badCredentials",
   "Ask your manager for an invite code, then try again.": "flash.inviteRequired",
+  "Ask your leader for an invite code, then try again.": "flash.inviteRequired",
   "That invite code didn’t work. Check it with your manager and try again.": "flash.inviteFailed",
+  "That invite code didn’t work. Check it with your leader and try again.": "flash.inviteFailed",
   "An account with that email already exists. Sign in instead.": "flash.accountExists",
   "Use a password with at least 6 characters.": "flash.weakPassword",
   "Enter a valid email address.": "flash.invalidEmail",
@@ -46,6 +48,8 @@ const EXACT: Record<string, string> = {
   "That assessment couldn’t load. Try again from Home.": "flash.assessmentLoadFailed",
   "That assessment is not assigned to you.": "flash.assessmentNotAssigned",
   "This assessment has no questions yet. Check back after your manager adds some.":
+    "flash.assessmentNoQuestions",
+  "This assessment has no questions yet. Check back after your leader adds some.":
     "flash.assessmentNoQuestions",
   "Use a YouTube video link. Playlists and other sites will not play.":
     "flash.youtubeUrlInvalid",
@@ -89,6 +93,7 @@ const EXACT: Record<string, string> = {
   "That participant is not in your group.": "flash.participantNotInGroup",
   "Too many note saves just now. Try again in a minute.": "flash.noteTooMany",
   "Choose a participant to nudge.": "flash.chooseNudgeParticipant",
+  "Choose a participant to send a note.": "flash.chooseNudgeParticipant",
   "Choose a reminder to send.": "flash.chooseReminder",
   "Too many reminders just now. Try again in a few minutes.": "flash.tooManyReminders",
   "Couldn’t check recent reminders. Try again.": "flash.reminderCheckFailed",
@@ -167,6 +172,7 @@ const EXACT: Record<string, string> = {
   "Unable to send request. Please try again.": "manager.request.sendFailed",
   "Thanks — your request has been received": "manager.request.received",
   "Thanks. Your request has been received": "manager.request.received",
+  "Request received.": "manager.request.received",
   "Start date must be a valid date.": "manager.reports.startDateInvalid",
   "End date must be a valid date.": "manager.reports.endDateInvalid",
   "Completion status must be not started, in progress, or completed.":
@@ -179,6 +185,7 @@ const EXACT: Record<string, string> = {
   "Unable to send right now. Please try again.": "help.sendFailed",
   "Thanks — we’ve received your report": "help.received",
   "Thanks. We’ve received your report": "help.received",
+  "Report received.": "help.received",
 };
 
 const BULK_REASON: Record<string, string> = {

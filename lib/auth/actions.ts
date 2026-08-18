@@ -28,7 +28,7 @@ function signUpFlash(message: string) {
     return "Too many attempts. Wait a few minutes and try again.";
   }
   if (text.includes("invite") || text.includes("not signed in")) {
-    return "That invite code didn’t work. Check it with your manager and try again.";
+    return "That invite code didn’t work. Check it with your leader and try again.";
   }
   if (text.includes("already") || text.includes("registered") || text.includes("exists")) {
     return "An account with that email already exists. Sign in instead.";
@@ -99,7 +99,7 @@ export async function signUp(formData: FormData) {
 
   if (!inviteCode) {
     redirect(
-      `/signup?error=${encodeURIComponent("Ask your manager for an invite code, then try again.")}`
+      `/signup?error=${encodeURIComponent("Ask your leader for an invite code, then try again.")}`
     );
   }
 

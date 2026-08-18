@@ -1,3 +1,4 @@
+import type { FatherPlatformCard } from "@/lib/admin/platform-assessment-data";
 import type { FatherAssignmentCard } from "@/lib/assessments/types";
 import type { ProfileDraft } from "@/lib/father/profile";
 import type { FatherProfileSummary } from "@/lib/father/types";
@@ -9,8 +10,55 @@ export type HomePathCard = {
   gated: boolean;
 };
 
+export type HomeShelfCard = HomePathCard & {
+  next?: { id: string } | null;
+  nextProgress?: {
+    film_completed?: boolean;
+    checkin_completed?: boolean;
+    action_completed?: boolean;
+    status?: string | null;
+  } | null;
+};
+
+export function homeTrainingLabel(training: {
+  title: string;
+}) {
+  return training.title;
+}
+
+export function isHomeTrainingStarted(card: HomeShelfCard) {
+  if (card.gated) return false;
+  if (card.completed > 0) return true;
+  const progress = card.nextProgress;
+  if (!card.next || !progress) return false;
+  return Boolean(
+    progress.film_completed ||
+      progress.checkin_completed ||
+      progress.action_completed ||
+      progress.status === "in_progress"
+  );
+}
+
+export function splitHomeRows<T extends HomeShelfCard>(
+  cards: T[],
+  currentTrainingId?: string | null
+) {
+  const open = cards.filter((card) => !card.gated);
+  const started = open.filter((card) => isHomeTrainingStarted(card));
+  const path =
+    started.length > 0
+      ? sortHomePath(started, currentTrainingId)
+      : open.filter((card) => currentTrainingId && card.training.id === currentTrainingId);
+  const pathIds = new Set(path.map((card) => card.training.id));
+  const trainings = open.filter(
+    (card) => !pathIds.has(card.training.id) && card.completed < card.total
+  );
+  return { path, trainings };
+}
+
 export type HomeAssessment =
   | { kind: "custom"; card: FatherAssignmentCard }
+  | { kind: "platform"; card: FatherPlatformCard }
   | { kind: "keystone-draft"; draft: ProfileDraft }
   | { kind: "keystone-result"; profile: FatherProfileSummary };
 
@@ -33,6 +81,7 @@ export function sortHomePath<T extends HomePathCard>(
 
 export function pickHomeAssessment(input: {
   assignments: FatherAssignmentCard[];
+  platform?: FatherPlatformCard[];
   profile: FatherProfileSummary | null;
   draft: ProfileDraft | null;
 }): HomeAssessment | null {
@@ -40,11 +89,20 @@ export function pickHomeAssessment(input: {
     (card) => card.questionCount > 0 && card.assignment.status !== "completed"
   );
   const inProgress = due.find((card) => card.assignment.status === "in_progress");
+  const platform = input.platform ?? [];
+  const platformInProgress = platform.find((card) => card.attempt?.status === "in_progress");
+  const platformDue = platform.find(
+    (card) => card.canStart && card.attempt?.status !== "completed"
+  );
   if (inProgress) return { kind: "custom", card: inProgress };
+  if (platformInProgress) return { kind: "platform", card: platformInProgress };
   if (due[0]) return { kind: "custom", card: due[0] };
+  if (platformDue) return { kind: "platform", card: platformDue };
   if (input.draft) return { kind: "keystone-draft", draft: input.draft };
   if (input.profile) return { kind: "keystone-result", profile: input.profile };
   const completed = input.assignments.find((card) => card.assignment.status === "completed");
   if (completed) return { kind: "custom", card: completed };
+  const platformDone = platform.find((card) => card.attempt?.status === "completed");
+  if (platformDone) return { kind: "platform", card: platformDone };
   return null;
 }

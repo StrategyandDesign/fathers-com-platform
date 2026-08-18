@@ -48,3 +48,22 @@ export async function requireRole(allowed: AppRole) {
 
   return { user, role };
 }
+
+/** Father walk, or Leader practice of the same Film → Check-in → Action path. */
+export async function requireWalkUser() {
+  const { user, role, deactivated } = await getAuthContext();
+
+  if (deactivated) {
+    redirect("/login?error=This account has been deactivated.");
+  }
+
+  if (!user || !role) {
+    redirect("/login");
+  }
+
+  if (role !== "father" && role !== "manager") {
+    redirect(ROLE_HOME[role]);
+  }
+
+  return { user, role };
+}

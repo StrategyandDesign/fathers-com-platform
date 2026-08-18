@@ -141,17 +141,46 @@ export async function saveOnboardingReminder(formData: FormData) {
 
   await supabase.from("notification_preferences").upsert({
     user_id: user.id,
+    session_reminders: true,
     reminder_day: weekday,
     reminder_time: `${remindAt}:00`,
     timezone: timezone ?? "UTC",
     updated_at: new Date().toISOString(),
   });
 
+  await finishReminderStep(user.id, state, { reminder: "set" });
+}
+
+export async function skipOnboardingReminder() {
+  const { user } = await requireRole("father");
+  const state = await loadOnboardingState(user.id);
+  if (state.mode === "done") redirect("/father");
+  if (state.step !== "reminder") redirect(onboardingHref(state.step));
+
+  const supabase = await createClient();
+  await supabase.from("notification_preferences").upsert({
+    user_id: user.id,
+    session_reminders: false,
+    reminder_day: null,
+    reminder_time: null,
+    updated_at: new Date().toISOString(),
+  });
+
+  await finishReminderStep(user.id, state, { reminder: "skipped" });
+}
+
+async function finishReminderStep(
+  fatherId: string,
+  state: Awaited<ReturnType<typeof loadOnboardingState>>,
+  answers: Pick<SetupAnswers, "reminder">
+): Promise<never> {
+  const nextAnswers = { ...state.answers, ...answers };
+
   if (state.mode === "reminder-only") {
     try {
-      await writeOnboarding(user.id, {
+      await writeOnboarding(fatherId, {
         step: "done",
-        answers: state.answers,
+        answers: nextAnswers,
         completedAt: new Date().toISOString(),
       });
     } catch {
@@ -160,13 +189,13 @@ export async function saveOnboardingReminder(formData: FormData) {
     redirect("/father");
   }
 
-  const first = await loadFirstAssignedSession(user.id);
+  const first = await loadFirstAssignedSession(fatherId);
   const next: OnboardingStep = first ? "session" : "hold";
   try {
-    await writeOnboarding(user.id, {
+    await writeOnboarding(fatherId, {
       step: next,
       answers: {
-        ...state.answers,
+        ...nextAnswers,
         first_session_id: first?.session.id,
       },
     });

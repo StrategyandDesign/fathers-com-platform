@@ -130,7 +130,7 @@ export async function renderCertificatePdf(input: CertificatePayload): Promise<U
     color: INK,
   });
   drawCenteredIn(page, input.serialNumber, left + col, col, y, mono, 11, INK);
-  const issuer = field(input.managerName, serif, "Manager");
+  const issuer = field(input.managerName, serif, "Leader");
   drawRight(page, issuer.text, left + col * 2, col, y, issuer.font, 12, INK);
 
   page.drawText("Fathers.com  ·  Presence is a skill.", {

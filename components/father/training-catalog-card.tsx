@@ -142,9 +142,7 @@ export function FatherTrainingCatalogCard({
             <p className="text-sm text-muted-foreground">{subtitle}</p>
           ) : null}
           {gated ? (
-            <p className="text-sm text-muted-foreground">
-              {gatedLabel ?? t("father.trainings.gatedPart", { n: 1 })}
-            </p>
+            <p className="text-sm text-muted-foreground">{gatedLabel}</p>
           ) : description ? (
             <p
               className={cn(

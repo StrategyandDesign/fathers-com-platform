@@ -19,8 +19,11 @@ import {
   organizationLabel,
 } from "@/lib/manager/companion";
 import { loadManagerAssessments } from "@/lib/assessments/data";
+import { CohortNoteDesk } from "@/components/manager/cohort-note-desk";
+import { loadManagerCohortNotes } from "@/lib/cohort-note/data";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadManagerOrganizationMarks } from "@/lib/org-photos/data";
+import { buildManagerCatalog } from "@/lib/manager/catalog";
 import { loadNudgePanel } from "@/lib/manager/nudge-panel-data";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
 import { needsNudge } from "@/lib/manager/nudges";
@@ -36,11 +39,12 @@ export default async function ManagerHomePage({
   const { user, role } = await requireRole("manager");
   const { t } = await getI18n();
   scheduleDueReminderFlush();
-  const [workspace, reviews, assessments, marks] = await Promise.all([
+  const [workspace, reviews, assessments, marks, cohortNotes] = await Promise.all([
     loadManagerWorkspace(user.id),
     loadReviewQueue(user.id),
     loadManagerAssessments(user.id),
     loadManagerOrganizationMarks(user.id),
+    loadManagerCohortNotes(user.id),
   ]);
   const nudgePanel = await loadNudgePanel({
     role,
@@ -50,6 +54,24 @@ export default async function ManagerHomePage({
   });
   const { groups, summary, needsAttention, participants, trainingProgressFor, certificates } =
     workspace;
+  const catalog = buildManagerCatalog({
+    trainings: workspace.trainings,
+    pending: reviews.pending.map((item) => ({
+      training: item.training,
+      sessionCount: item.sessionCount,
+      groupId: item.review.group_id,
+      groupName: item.groupName,
+    })),
+    accepted: reviews.history
+      .filter((item) => item.review.status === "accepted")
+      .map((item) => ({
+        training: item.training,
+        sessionCount: item.sessionCount,
+        groupId: item.review.group_id,
+        groupName: item.groupName,
+      })),
+    showGroupName: groups.length > 1,
+  });
   const quietIds = participants
     .filter((participant) =>
       needsNudge(participant.lastActivity, trainingProgressFor(participant.fatherId))
@@ -89,12 +111,17 @@ export default async function ManagerHomePage({
           {marks.length > 0 ? (
             <div className="mb-3 space-y-2">
               {marks.map((mark) => (
-                <OrganizationMark
+                <Link
                   key={mark.groupId}
-                  name={mark.name}
-                  logoUrl={mark.logoUrl}
-                  size="large"
-                />
+                  href="/manager/account/photos"
+                  className={cn("inline-flex", interactiveSurfaceClassName)}
+                >
+                  <OrganizationMark
+                    name={mark.name}
+                    logoUrl={mark.logoUrl}
+                    size="large"
+                  />
+                </Link>
               ))}
             </div>
           ) : null}
@@ -105,6 +132,29 @@ export default async function ManagerHomePage({
         </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
+      <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
+        <h2 className="font-heading text-lg font-semibold">
+          {t("manager.dashboard.practiceTitle")}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t("manager.dashboard.practiceLead")}
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t("manager.dashboard.practiceNoCertificate")}
+        </p>
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Link href="/manager/practice" className={cn(buttonVariants(), "w-full sm:w-auto")}>
+            {t("manager.dashboard.practiceTraining")}
+          </Link>
+          <Link
+            href="/manager/practice#assessments"
+            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+          >
+            {t("manager.dashboard.practiceAssessment")}
+          </Link>
+        </div>
+      </section>
+      <CohortNoteDesk groups={cohortNotes} />
       <NudgePanel panel={nudgePanel} />
       <CompanionPanel briefing={companion} t={t} />
 
@@ -271,6 +321,36 @@ export default async function ManagerHomePage({
         </div>
       </section>
 
+      <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="font-heading text-lg font-semibold">
+              {t("manager.dashboard.photosTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t("manager.dashboard.photosLead")}
+            </p>
+            {marks.length > 0 ? (
+              <div className="mt-4 space-y-2">
+                {marks.map((mark) => (
+                  <OrganizationMark
+                    key={mark.groupId}
+                    name={mark.name}
+                    logoUrl={mark.logoUrl}
+                  />
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <Link
+            href="/manager/account/photos"
+            className={cn(buttonVariants(), "w-full shrink-0 sm:w-auto")}
+          >
+            {t("manager.dashboard.photosOpen")}
+          </Link>
+        </div>
+      </section>
+
       <section className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.impact")}</h2>
@@ -298,17 +378,22 @@ export default async function ManagerHomePage({
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
+      <section className="grid gap-4 lg:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">{t("nav.trainings")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {t("manager.dashboard.trainingsLead")}
           </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {catalog.length === 1
+              ? t("manager.dashboard.catalogCountOne")
+              : t("manager.dashboard.catalogCountMany", { count: catalog.length })}
+          </p>
           <Link
-            href="/manager/trainings"
+            href="/manager/trainings#catalog"
             className={cn(buttonVariants(), "mt-5 w-full sm:w-auto")}
           >
-            {t("manager.dashboard.openQueue")}
+            {t("manager.dashboard.openCatalog")}
           </Link>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
@@ -321,6 +406,20 @@ export default async function ManagerHomePage({
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
             {t("manager.dashboard.viewAssessments")}
+          </Link>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">
+            {t("manager.dashboard.certificates")}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("manager.dashboard.certificatesLead")}
+          </p>
+          <Link
+            href="/manager/participants#certificates"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
+            {t("manager.dashboard.viewCertificates")}
           </Link>
         </div>
       </section>

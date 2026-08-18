@@ -1,6 +1,22 @@
 import { displayName, type ManagedProfile } from "@/lib/manager/types";
 import { createClient } from "@/lib/supabase/server";
 import {
+  KEYSTONE_ASSESSMENT_KEY,
+  asAvailabilityRow,
+  fatherCanStartAssessment,
+  leaderCanStartAssessment,
+  primaryFatherGroupId,
+  type AssessmentAvailabilityRow,
+} from "@/lib/assessments/availability";
+import { isLeaderSelfRow } from "@/lib/practice/paths";
+import { loadManagerGroups } from "@/lib/manager/data";
+import {
+  isAssessmentReviewStatus,
+  reviewForGroup,
+  type OrganizationAssessmentReview,
+  type PlatformAssessmentRelease,
+} from "@/lib/assessments/reviews";
+import {
   asStringOptions,
   isAssignmentStatus,
   isQuestionType,
@@ -62,12 +78,18 @@ export async function loadManagerRoster(managerId: string): Promise<RosterFather
   if (groupsError) throw groupsError;
   const groupIds = (groups ?? []).map((group) => group.id);
 
-  const membersRes = await emptyIn<{ father_id: string }>(groupIds, () =>
-    supabase.from("group_members").select("father_id").in("group_id", groupIds)
+  const membersRes = await emptyIn<{ father_id: string; group_id: string }>(groupIds, () =>
+    supabase.from("group_members").select("father_id, group_id").in("group_id", groupIds)
   );
   if (membersRes.error) throw membersRes.error;
 
-  const fatherIds = [...new Set((membersRes.data ?? []).map((row) => row.father_id))];
+  const groupByFather = new Map<string, string>();
+  for (const row of membersRes.data ?? []) {
+    if (!groupByFather.has(row.father_id)) {
+      groupByFather.set(row.father_id, row.group_id);
+    }
+  }
+  const fatherIds = [...groupByFather.keys()];
   const profilesRes = await emptyIn<ManagedProfile>(fatherIds, () =>
     supabase.from("profiles").select("id, full_name").in("id", fatherIds)
   );
@@ -78,8 +100,174 @@ export async function loadManagerRoster(managerId: string): Promise<RosterFather
     .map((fatherId) => ({
       fatherId,
       name: displayName(profiles.get(fatherId) ?? null, fatherId),
+      groupId: groupByFather.get(fatherId) ?? "",
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function missingAssessmentReviewRelation(error: { code?: string; message: string }) {
+  return (
+    error.code === "42P01" ||
+    error.code === "PGRST205" ||
+    /organization_assessment_reviews|platform_assessment_releases/i.test(error.message)
+  );
+}
+
+export async function loadPlatformAssessmentRelease(assessmentKey: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("platform_assessment_releases")
+    .select("assessment_key, released_at, first_released_at, released_by")
+    .eq("assessment_key", assessmentKey)
+    .maybeSingle();
+
+  if (error) {
+    if (missingAssessmentReviewRelation(error)) return null;
+    throw error;
+  }
+  return (data as PlatformAssessmentRelease | null) ?? null;
+}
+
+export async function loadOrganizationAssessmentReviews(groupIds: string[]) {
+  if (groupIds.length === 0) return [] as OrganizationAssessmentReview[];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("organization_assessment_reviews")
+    .select(
+      "group_id, assessment_key, status, decline_reason, decided_by, decided_at, created_at"
+    )
+    .in("group_id", groupIds)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    if (missingAssessmentReviewRelation(error)) return [];
+    throw error;
+  }
+
+  const rows: OrganizationAssessmentReview[] = [];
+  for (const row of (data ?? []) as Array<
+    Omit<OrganizationAssessmentReview, "status"> & { status: string }
+  >) {
+    if (!isAssessmentReviewStatus(row.status)) continue;
+    rows.push({ ...row, status: row.status });
+  }
+  return rows;
+}
+
+export async function markAssessmentNotificationsRead(
+  managerId: string,
+  assessmentKey: string
+) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("manager_notifications")
+    .update({ read_at: new Date().toISOString() })
+    .eq("manager_id", managerId)
+    .eq("kind", "assessment_release")
+    .eq("assessment_key", assessmentKey)
+    .is("read_at", null);
+
+  if (error) {
+    const missingColumn =
+      error.code === "42703" || /assessment_key/i.test(error.message);
+    if (missingColumn) return;
+    console.error("[assessment-reviews] mark read failed", error.message);
+  }
+}
+
+export async function loadAssessmentAvailability(
+  groupIds: string[]
+): Promise<AssessmentAvailabilityRow[]> {
+  const supabase = await createClient();
+  const result = await emptyIn<{
+    group_id: string;
+    assessment_key: string;
+    status: string;
+    decided_at: string | null;
+    decided_by: string | null;
+  }>(groupIds, () =>
+    supabase
+      .from("organization_assessment_availability")
+      .select("group_id, assessment_key, status, decided_at, decided_by")
+      .in("group_id", groupIds)
+  );
+  if (result.error) throw result.error;
+  return (result.data ?? [])
+    .map(asAvailabilityRow)
+    .filter((row): row is AssessmentAvailabilityRow => row !== null);
+}
+
+export async function loadFatherAssessmentAccess(fatherId: string) {
+  const supabase = await createClient();
+  const [membershipsRes, profileRes] = await Promise.all([
+    supabase
+      .from("group_members")
+      .select("group_id")
+      .eq("father_id", fatherId)
+      .order("joined_at", { ascending: true }),
+    supabase.from("profiles").select("home_group_id").eq("id", fatherId).maybeSingle(),
+  ]);
+  if (membershipsRes.error) throw membershipsRes.error;
+  if (profileRes.error) throw profileRes.error;
+
+  const groupIds = [...new Set((membershipsRes.data ?? []).map((row) => String(row.group_id)))];
+  const homeGroupId =
+    typeof profileRes.data?.home_group_id === "string" ? profileRes.data.home_group_id : null;
+  const [availability, reviews, keystoneRelease] = await Promise.all([
+    loadAssessmentAvailability(groupIds),
+    loadOrganizationAssessmentReviews(groupIds),
+    loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
+  ]);
+  const groupId = primaryFatherGroupId(groupIds, homeGroupId);
+  const review = groupId
+    ? reviewForGroup(reviews, groupId, KEYSTONE_ASSESSMENT_KEY)
+    : null;
+
+  return {
+    groupIds,
+    homeGroupId,
+    availability,
+    reviews,
+    keystoneRelease,
+    canStartKeystone: fatherCanStartAssessment({
+      rows: availability,
+      groupIds,
+      homeGroupId,
+      assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+      release: keystoneRelease,
+      reviewStatus: review?.status ?? null,
+    }),
+  };
+}
+
+export async function loadLeaderAssessmentAccess(
+  managerId: string,
+  hasKeystoneProgress = false
+) {
+  const groups = await loadManagerGroups(managerId);
+  const groupIds = groups.map((group) => group.id);
+  const [availability, reviews, keystoneRelease] = await Promise.all([
+    loadAssessmentAvailability(groupIds),
+    loadOrganizationAssessmentReviews(groupIds),
+    loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
+  ]);
+
+  return {
+    groupIds,
+    availability,
+    reviews,
+    keystoneRelease,
+    canStartKeystone: leaderCanStartAssessment({
+      rows: availability,
+      groupIds,
+      assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+      hasProgress: hasKeystoneProgress,
+      release: keystoneRelease,
+      reviewStatusForGroup: (groupId) =>
+        reviewForGroup(reviews, groupId, KEYSTONE_ASSESSMENT_KEY)?.status ?? null,
+    }),
+  };
 }
 
 export async function loadManagerAssessments(managerId: string): Promise<AssessmentListItem[]> {
@@ -98,10 +286,10 @@ export async function loadManagerAssessments(managerId: string): Promise<Assessm
     emptyIn<{ assessment_id: string }>(ids, () =>
       supabase.from("custom_assessment_questions").select("assessment_id").in("assessment_id", ids)
     ),
-    emptyIn<{ assessment_id: string; status: string }>(ids, () =>
+    emptyIn<{ assessment_id: string; status: string; father_id: string }>(ids, () =>
       supabase
         .from("custom_assessment_assignments")
-        .select("assessment_id, status")
+        .select("assessment_id, status, father_id")
         .in("assessment_id", ids)
     ),
   ]);
@@ -112,7 +300,9 @@ export async function loadManagerAssessments(managerId: string): Promise<Assessm
     const questionCount = (questionsRes.data ?? []).filter(
       (row) => row.assessment_id === assessment.id
     ).length;
-    const assigned = (assignmentsRes.data ?? []).filter((row) => row.assessment_id === assessment.id);
+    const assigned = (assignmentsRes.data ?? []).filter(
+      (row) => row.assessment_id === assessment.id && !isLeaderSelfRow(row.father_id, managerId)
+    );
     return {
       ...asAssessment(assessment),
       questionCount,
@@ -159,7 +349,9 @@ export async function loadManagerAssessmentDetail(managerId: string, assessmentI
     .filter((row): row is CustomAssessmentAssignment => row !== null);
 
   const names = new Map(roster.map((row) => [row.fatherId, row.name]));
-  const assignmentRows: AssignmentRow[] = assignments.map((row) => ({
+  const assignmentRows: AssignmentRow[] = assignments
+    .filter((row) => !isLeaderSelfRow(row.father_id, managerId))
+    .map((row) => ({
     ...row,
     fatherName: names.get(row.father_id) ?? displayName(null, row.father_id),
   }));

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Flash } from "@/components/manager/flash";
+import { TrainingCatalog } from "@/components/manager/training-catalog";
 import {
   ReviewDecisionForms,
   ReviewStatusBadge,
@@ -10,10 +11,10 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { isLegacyCatalogTraining, isTrainingPublished } from "@/lib/father/types";
 import { requireRole } from "@/lib/auth/session";
 import { formatShortDate, getI18n } from "@/lib/i18n/server";
+import { buildManagerCatalog } from "@/lib/manager/catalog";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadReviewQueue } from "@/lib/manager/reviews";
 import { assignTrainingToUnassigned } from "@/lib/manager/training-actions";
-import { trainingPartCopyVars } from "@/lib/trainings/series";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -26,19 +27,6 @@ function sessionLabel(
     : t("manager.dashboard.sessionMany", { count });
 }
 
-function partLabel(
-  training: { part_number?: number | null; part_total?: number | null },
-  sessionCount: number,
-  t: (key: string, vars?: Record<string, string | number>) => string
-) {
-  const vars = trainingPartCopyVars(training, sessionCount);
-  if (!vars) return null;
-  const { one, ...copy } = vars;
-  return one
-    ? t("manager.trainings.partSubtitleOne", copy)
-    : t("manager.trainings.partSubtitle", copy);
-}
-
 export default async function ManagerTrainingsPage({
   searchParams,
 }: {
@@ -47,10 +35,11 @@ export default async function ManagerTrainingsPage({
   const params = await searchParams;
   const { user } = await requireRole("manager");
   const { t, locale } = await getI18n();
-  const [{ pending, history, unread, groups }, workspace] = await Promise.all([
+  const [{ pending, history, unread: unreadAll, groups }, workspace] = await Promise.all([
     loadReviewQueue(user.id),
     loadManagerWorkspace(user.id),
   ]);
+  const unread = unreadAll.filter((row) => row.kind === "training_release");
   const orgName = groups[0]?.name ?? t("account.orgPhotosFallback");
   const accepted = history.filter((item) => item.review.status === "accepted");
   const declined = history.filter((item) => item.review.status === "declined");
@@ -61,6 +50,22 @@ export default async function ManagerTrainingsPage({
       isLegacyCatalogTraining(training) &&
       !acceptedIds.has(training.id)
   );
+  const catalog = buildManagerCatalog({
+    trainings: workspace.trainings,
+    pending: pending.map((item) => ({
+      training: item.training,
+      sessionCount: item.sessionCount,
+      groupId: item.review.group_id,
+      groupName: item.groupName,
+    })),
+    accepted: accepted.map((item) => ({
+      training: item.training,
+      sessionCount: item.sessionCount,
+      groupId: item.review.group_id,
+      groupName: item.groupName,
+    })),
+    showGroupName: groups.length > 1,
+  });
 
   function assignedCount(trainingId: string, groupId?: string) {
     return workspace.participants.filter((participant) => {
@@ -96,6 +101,7 @@ export default async function ManagerTrainingsPage({
         </Link>
       </div>
       <Flash error={params.error} notice={params.notice} />
+      <TrainingCatalog items={catalog} t={t} />
 
       {unread.length > 0 ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
@@ -140,8 +146,7 @@ export default async function ManagerTrainingsPage({
                   <div className="min-w-0">
                     <h3 className="font-heading text-lg font-semibold">{item.training.title}</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {partLabel(item.training, item.sessionCount, t) ??
-                        sessionLabel(item.sessionCount, t)}
+                      {sessionLabel(item.sessionCount, t)}
                       {groups.length > 1 ? ` · ${item.groupName}` : ""}
                     </p>
                   </div>
@@ -199,7 +204,7 @@ export default async function ManagerTrainingsPage({
                       </Link>
                       <p className="mt-1 text-sm text-muted-foreground">
                         {[
-                          partLabel(item.training, item.sessionCount, t),
+                          sessionLabel(item.sessionCount, t),
                           t("manager.trainings.assignedOf", { assigned, total }),
                           item.review.decided_at
                             ? t("manager.trainings.acceptedOn", {
@@ -275,7 +280,7 @@ export default async function ManagerTrainingsPage({
                     </Link>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {[
-                        partLabel(training, training.session_count, t),
+                        sessionLabel(training.session_count, t),
                         t("manager.trainings.assignedOf", { assigned, total }),
                         t("manager.trainings.catalogItem"),
                       ]

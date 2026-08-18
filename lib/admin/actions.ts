@@ -3,6 +3,23 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import {
+  ARCHIVE_CONFIRM,
+  ARCHIVE_RELEASE_ERROR,
+  ARCHIVED_PUBLISH_ERROR,
+  ARCHIVED_STATUS_ERROR,
+  ATTRIBUTION_MAX,
+  DEVELOPMENT_NOTES_MAX,
+  READY_REQUIRED_ERROR,
+  SKILL_PROMPT_MAX,
+  WORKING_TITLE_MAX,
+  archiveHasLiveUsage,
+  asDevelopmentStatus,
+  composeSkillPrompt,
+  firstReadyBlocker,
+  isArchivedTraining,
+  isAuthoringStatus,
+} from "@/lib/admin/development";
 import { slugify } from "@/lib/admin/slug";
 import { loadSessionUsage, loadTrainingUsage } from "@/lib/admin/data";
 import {
@@ -13,6 +30,8 @@ import {
   UNRELEASE_CONFIRM,
   unreleaseTrainingFromManagers,
 } from "@/lib/admin/release";
+import { seedGroupAssessmentReviews } from "@/lib/admin/assessment-release";
+import { hasHardcodedSkillPack } from "@/lib/father/session-questions";
 import { isAppRole, ROLE_HOME } from "@/lib/auth/roles";
 import { getAuthContext, requireRole } from "@/lib/auth/session";
 import { youtubeVideoId } from "@/lib/father/types";
@@ -28,14 +47,8 @@ import {
   isOverLengthFilm,
   parseDurationInput,
 } from "@/lib/trainings/runtime";
-import {
-  MAX_TRAINING_SESSIONS,
-  SESSION_LIMIT_CREATE_ERROR,
-  SESSION_LIMIT_PUBLISH_ERROR,
-  SESSION_LIMIT_RELEASE_ERROR,
-  sessionCountWouldExceedLimit,
-} from "@/lib/trainings/series";
 import { fetchYoutubeDurationSeconds } from "@/lib/trainings/youtube-duration";
+import { sourcedReleaseBlocker } from "@/lib/admin/sourcing";
 
 const YOUTUBE_URL_ERROR =
   "Use a YouTube video link. Playlists and other sites will not play.";
@@ -79,10 +92,12 @@ function revalidateAdmin(extra?: string) {
   revalidatePath("/admin");
   revalidatePath("/admin/organizations");
   revalidatePath("/admin/trainings");
+  revalidatePath("/admin/assessments");
   revalidatePath("/admin/users");
   revalidatePath("/manager");
   revalidatePath("/manager/reviews");
   revalidatePath("/manager/trainings");
+  revalidatePath("/manager/assessments");
   revalidatePath("/manager/participants");
   revalidatePath("/father");
   revalidatePath("/father/trainings");
@@ -94,6 +109,69 @@ function readInt(formData: FormData, key: string, fallback: number) {
   if (!raw) return fallback;
   const value = Number.parseInt(raw, 10);
   return Number.isFinite(value) ? value : fallback;
+}
+
+function readCappedText(
+  formData: FormData,
+  key: string,
+  max: number,
+  path: string,
+  label: string
+) {
+  const value = String(formData.get(key) ?? "").trim();
+  if (value.length > max) {
+    fail(path, `${label} must be ${max} characters or fewer.`);
+  }
+  return value;
+}
+
+function readSkillPrompt(formData: FormData, prefix: string, path: string, label: string) {
+  const composed = composeSkillPrompt({
+    stem: String(formData.get(`${prefix}_stem`) ?? ""),
+    a: String(formData.get(`${prefix}_a`) ?? ""),
+    b: String(formData.get(`${prefix}_b`) ?? ""),
+    c: String(formData.get(`${prefix}_c`) ?? ""),
+  });
+  if (composed && composed.length > SKILL_PROMPT_MAX) {
+    fail(path, `${label} must be ${SKILL_PROMPT_MAX} characters or fewer.`);
+  }
+  return composed;
+}
+
+async function loadTrainingChecklistRow(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  trainingId: string,
+  path: string
+) {
+  const [trainingRes, sessionsRes] = await Promise.all([
+    supabase.from("trainings").select("*").eq("id", trainingId).maybeSingle(),
+    supabase.from("sessions").select("*").eq("training_id", trainingId).order("order_index"),
+  ]);
+  if (trainingRes.error) fail(path, trainingRes.error.message);
+  if (sessionsRes.error) fail(path, sessionsRes.error.message);
+  if (!trainingRes.data) fail("/admin/trainings", "Training not found.");
+  return {
+    ...trainingRes.data,
+    sessions: sessionsRes.data ?? [],
+  };
+}
+
+function readyBlockerFor(training: Awaited<ReturnType<typeof loadTrainingChecklistRow>>) {
+  return firstReadyBlocker(training, {
+    sessionHasHardcoded: (session) => hasHardcodedSkillPack(session, training),
+  });
+}
+
+async function bumpDraftToInDevelopment(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  trainingId: string
+) {
+  const { error } = await supabase
+    .from("trainings")
+    .update({ development_status: "in_development" })
+    .eq("id", trainingId)
+    .eq("development_status", "draft");
+  if (error) throw error;
 }
 
 async function uniqueSlug(supabase: Awaited<ReturnType<typeof createClient>>, title: string, currentId?: string) {
@@ -213,6 +291,7 @@ export async function createOrganization(formData: FormData) {
   if (error) fail("/admin/organizations/new", error.message);
   if (data?.id) {
     await seedGroupTrainingReviews(supabase, data.id);
+    await seedGroupAssessmentReviews(supabase, data.id);
   }
 
   revalidateAdmin();
@@ -280,20 +359,36 @@ export async function deleteOrganization(formData: FormData) {
 
 export async function createTraining(formData: FormData) {
   await requireRole("admin");
+  const path = "/admin/trainings/new";
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const published = String(formData.get("published") ?? "") === "true";
   const orderIndex = readInt(formData, "order_index", 0);
   const requestedSlug = slugify(String(formData.get("slug") ?? "").trim() || title);
+  const workingTitle = readCappedText(
+    formData,
+    "working_title",
+    WORKING_TITLE_MAX,
+    path,
+    "Working title"
+  );
+  const developmentNotes = readCappedText(
+    formData,
+    "development_notes",
+    DEVELOPMENT_NOTES_MAX,
+    path,
+    "Development notes"
+  );
+  const attribution = readCappedText(formData, "attribution", ATTRIBUTION_MAX, path, "Credit");
 
-  if (!title) fail("/admin/trainings/new", "Title is required.");
+  if (!title) fail(path, "Title is required.");
 
   const supabase = await createClient();
   let slug = requestedSlug;
   try {
     slug = await uniqueSlug(supabase, requestedSlug);
   } catch (error) {
-    fail("/admin/trainings/new", error instanceof Error ? error.message : "Could not create a slug.");
+    fail(path, error instanceof Error ? error.message : "Could not create a slug.");
   }
 
   const { data, error } = await supabase
@@ -305,15 +400,19 @@ export async function createTraining(formData: FormData) {
       published,
       order_index: orderIndex,
       session_count: 0,
+      development_status: "draft",
+      working_title: workingTitle || null,
+      development_notes: developmentNotes || null,
+      attribution: attribution || null,
     })
     .select("id")
     .single();
 
-  if (error) fail("/admin/trainings/new", error.message);
-  if (!data) fail("/admin/trainings/new", "Could not create the training.");
+  if (error) fail(path, error.message);
+  if (!data) fail(path, "Could not create the training.");
 
   revalidateAdmin(`/admin/trainings/${data.id}`);
-  ok(`/admin/trainings/${data.id}`, "Training created.");
+  ok(`/admin/trainings/${data.id}`, "Draft created. Add sessions and Stage it before release.");
 }
 
 export async function updateTraining(formData: FormData) {
@@ -325,6 +424,21 @@ export async function updateTraining(formData: FormData) {
   const published = String(formData.get("published") ?? "") === "true";
   const orderIndex = readInt(formData, "order_index", 0);
   const requestedSlug = String(formData.get("slug") ?? "").trim();
+  const workingTitle = readCappedText(
+    formData,
+    "working_title",
+    WORKING_TITLE_MAX,
+    path,
+    "Working title"
+  );
+  const developmentNotes = readCappedText(
+    formData,
+    "development_notes",
+    DEVELOPMENT_NOTES_MAX,
+    path,
+    "Development notes"
+  );
+  const attribution = readCappedText(formData, "attribution", ATTRIBUTION_MAX, path, "Credit");
 
   if (!trainingId) fail("/admin/trainings", "Choose a training.");
   if (!title) fail(path, "Title is required.");
@@ -332,7 +446,7 @@ export async function updateTraining(formData: FormData) {
   const supabase = await createClient();
   const { data: current, error: currentError } = await supabase
     .from("trainings")
-    .select("id, slug, published")
+    .select("id, slug, published, development_status")
     .eq("id", trainingId)
     .maybeSingle();
 
@@ -340,14 +454,7 @@ export async function updateTraining(formData: FormData) {
   if (!current) fail("/admin/trainings", "Training not found.");
 
   if (published) {
-    const { count, error: countError } = await supabase
-      .from("sessions")
-      .select("id", { count: "exact", head: true })
-      .eq("training_id", trainingId);
-    if (countError) fail(path, countError.message);
-    if ((count ?? 0) > MAX_TRAINING_SESSIONS) {
-      fail(path, SESSION_LIMIT_PUBLISH_ERROR);
-    }
+    if (isArchivedTraining(current)) fail(path, ARCHIVED_PUBLISH_ERROR);
     if (current.published !== true) {
       await assertTrainingFilmsPublishable(supabase, trainingId, path);
     }
@@ -371,6 +478,9 @@ export async function updateTraining(formData: FormData) {
       description: description || null,
       published,
       order_index: orderIndex,
+      working_title: workingTitle || null,
+      development_notes: developmentNotes || null,
+      attribution: attribution || null,
     })
     .eq("id", trainingId);
 
@@ -389,15 +499,15 @@ export async function setTrainingPublished(formData: FormData) {
   if (!trainingId) fail("/admin/trainings", "Choose a training.");
 
   const supabase = await createClient();
+  const { data: current, error: currentError } = await supabase
+    .from("trainings")
+    .select("development_status")
+    .eq("id", trainingId)
+    .maybeSingle();
+  if (currentError) fail(path, currentError.message);
+  if (!current) fail("/admin/trainings", "Training not found.");
   if (published) {
-    const { count, error: countError } = await supabase
-      .from("sessions")
-      .select("id", { count: "exact", head: true })
-      .eq("training_id", trainingId);
-    if (countError) fail(path, countError.message);
-    if ((count ?? 0) > MAX_TRAINING_SESSIONS) {
-      fail(path, SESSION_LIMIT_PUBLISH_ERROR);
-    }
+    if (isArchivedTraining(current)) fail(path, ARCHIVED_PUBLISH_ERROR);
     await assertTrainingFilmsPublishable(supabase, trainingId, path);
   }
   const { error } = await supabase.from("trainings").update({ published }).eq("id", trainingId);
@@ -421,14 +531,30 @@ export async function releaseTraining(formData: FormData) {
   const supabase = await createClient();
   const { data: current, error: currentError } = await supabase
     .from("trainings")
-    .select("id, title, published, released_at, first_published_at, first_released_at, session_count")
+    .select("id, title, published, released_at, first_published_at, first_released_at, session_count, development_status")
     .eq("id", trainingId)
     .maybeSingle();
 
   if (currentError) fail(path, RELEASE_WRITE_ERROR);
   if (!current) fail("/admin/trainings", "That training was not found.");
+  if (isArchivedTraining(current)) fail(path, ARCHIVE_RELEASE_ERROR);
   if (current.published !== true) {
     fail(path, "Publish the training first, then release it to organizations.");
+  }
+  if (!current.released_at) {
+    const checklist = await loadTrainingChecklistRow(supabase, trainingId, path);
+    const blocker = readyBlockerFor(checklist);
+    if (blocker) fail(path, blocker);
+    if (asDevelopmentStatus(current.development_status) !== "ready_for_review") {
+      fail(path, READY_REQUIRED_ERROR);
+    }
+    const { data: intake } = await supabase
+      .from("training_intakes")
+      .select("rights_status")
+      .eq("training_id", trainingId)
+      .maybeSingle();
+    const rightsBlocker = sourcedReleaseBlocker(intake);
+    if (rightsBlocker) fail(path, rightsBlocker);
   }
 
   const { count, error: countError } = await supabase
@@ -438,9 +564,6 @@ export async function releaseTraining(formData: FormData) {
   if (countError) fail(path, RELEASE_WRITE_ERROR);
   if ((count ?? current.session_count ?? 0) < 1) {
     fail(path, "Add at least one session before releasing to organizations.");
-  }
-  if ((count ?? current.session_count ?? 0) > MAX_TRAINING_SESSIONS) {
-    fail(path, SESSION_LIMIT_RELEASE_ERROR);
   }
   if (!current.released_at) {
     await assertTrainingFilmsPublishable(supabase, trainingId, path);
@@ -486,6 +609,23 @@ export async function releaseTraining(formData: FormData) {
             ? "Released to all organizations. Eligible managers were notified."
             : "Released to all organizations.";
 
+  const { error: statusError } = await supabase
+    .from("trainings")
+    .update({ development_status: "released" })
+    .eq("id", trainingId);
+  if (statusError) {
+    console.error("[release] development status update failed", statusError.message);
+  }
+
+  const { error: intakeError } = await supabase
+    .from("training_intakes")
+    .update({ status: "released" })
+    .eq("training_id", trainingId)
+    .neq("status", "archived");
+  if (intakeError) {
+    console.error("[release] intake status update failed", intakeError.message);
+  }
+
   revalidateAdmin(path);
   finish(path, {
     notice,
@@ -510,7 +650,7 @@ export async function unreleaseTraining(formData: FormData) {
   const supabase = await createClient();
   const { data: current, error: currentError } = await supabase
     .from("trainings")
-    .select("id, released_at")
+    .select("id, released_at, published, development_status")
     .eq("id", trainingId)
     .maybeSingle();
 
@@ -523,6 +663,27 @@ export async function unreleaseTraining(formData: FormData) {
   const result = await unreleaseTrainingFromManagers(supabase, trainingId);
   if (!result.ok) {
     fail(path, RELEASE_WRITE_ERROR);
+  }
+
+  if (!isArchivedTraining(current)) {
+    const { error: statusError } = await supabase
+      .from("trainings")
+      .update({
+        development_status: current.published ? "ready_for_review" : "in_development",
+      })
+      .eq("id", trainingId);
+    if (statusError) {
+      console.error("[unrelease] development status update failed", statusError.message);
+    }
+  }
+
+  const { error: intakeError } = await supabase
+    .from("training_intakes")
+    .update({ status: "drafting" })
+    .eq("training_id", trainingId)
+    .eq("status", "released");
+  if (intakeError) {
+    console.error("[unrelease] intake status update failed", intakeError.message);
   }
 
   revalidateAdmin(path);
@@ -578,6 +739,8 @@ export async function createSession(formData: FormData) {
     videoUrl,
     String(formData.get("duration_seconds") ?? "")
   );
+  const checkinPrompt = readSkillPrompt(formData, "checkin", path, "Check-in");
+  const actionPrompt = readSkillPrompt(formData, "action", path, "Action");
 
   if (!trainingId) fail("/admin/trainings", "Choose a training.");
   if (!title) fail(path, "Session title is required.");
@@ -586,14 +749,6 @@ export async function createSession(formData: FormData) {
   if (duration === "invalid") fail(path, FILM_DURATION_FORMAT_ERROR);
 
   const supabase = await createClient();
-  const { count, error: countError } = await supabase
-    .from("sessions")
-    .select("id", { count: "exact", head: true })
-    .eq("training_id", trainingId);
-  if (countError) fail(path, countError.message);
-  if (sessionCountWouldExceedLimit(count ?? 0)) {
-    fail(path, SESSION_LIMIT_CREATE_ERROR);
-  }
   if (await trainingIsLive(supabase, trainingId, path)) {
     assertLiveSessionDuration(path, duration, null);
   }
@@ -606,18 +761,21 @@ export async function createSession(formData: FormData) {
     session_number: sessionNumber,
     order_index: orderIndex,
     duration_seconds: duration,
+    checkin_prompt: checkinPrompt,
+    action_prompt: actionPrompt,
   });
 
   if (error) failDb(path, error, error.message);
 
   try {
     await syncSessionCount(supabase, trainingId);
+    await bumpDraftToInDevelopment(supabase, trainingId);
   } catch (syncError) {
     fail(path, syncError instanceof Error ? syncError.message : "Session saved, but the count could not update.");
   }
 
   revalidateAdmin(path);
-  ok(path, "Session added.");
+  ok(path, "Session added. Incomplete sessions can stay in Draft until you are ready.");
 }
 
 export async function updateSession(formData: FormData) {
@@ -634,6 +792,8 @@ export async function updateSession(formData: FormData) {
     videoUrl,
     String(formData.get("duration_seconds") ?? "")
   );
+  const checkinPrompt = readSkillPrompt(formData, "checkin", path, "Check-in");
+  const actionPrompt = readSkillPrompt(formData, "action", path, "Action");
 
   if (!trainingId || !sessionId) fail(path || "/admin/trainings", "Choose a session.");
   if (!title) fail(path, "Session title is required.");
@@ -662,6 +822,8 @@ export async function updateSession(formData: FormData) {
       session_number: sessionNumber,
       order_index: orderIndex,
       duration_seconds: duration,
+      checkin_prompt: checkinPrompt,
+      action_prompt: actionPrompt,
     })
     .eq("id", sessionId)
     .eq("training_id", trainingId);
@@ -706,6 +868,266 @@ export async function deleteSession(formData: FormData) {
 
   revalidateAdmin(path);
   ok(path, "Session deleted.");
+}
+
+export async function duplicateSession(formData: FormData) {
+  await requireRole("admin");
+  const trainingId = String(formData.get("training_id") ?? "");
+  const sessionId = String(formData.get("session_id") ?? "");
+  const path = `/admin/trainings/${trainingId}`;
+
+  if (!trainingId || !sessionId) fail(path || "/admin/trainings", "Choose a session.");
+
+  const supabase = await createClient();
+  const { data: sessions, error: listError } = await supabase
+    .from("sessions")
+    .select("*")
+    .eq("training_id", trainingId)
+    .order("order_index");
+  if (listError) fail(path, listError.message);
+
+  const source = (sessions ?? []).find((row) => row.id === sessionId);
+  if (!source) fail(path, "Session not found.");
+
+  const nextNumber =
+    (sessions ?? []).reduce((max, row) => Math.max(max, row.session_number), 0) + 1;
+  const nextOrder =
+    (sessions ?? []).reduce((max, row) => Math.max(max, row.order_index), 0) + 1;
+
+  const { error } = await supabase.from("sessions").insert({
+    training_id: trainingId,
+    title: source.title.endsWith("(copy)") ? source.title : `${source.title} (copy)`,
+    keyline: source.keyline,
+    video_url: source.video_url,
+    session_number: nextNumber,
+    order_index: nextOrder,
+    duration_seconds: source.duration_seconds,
+    checkin_prompt: source.checkin_prompt,
+    action_prompt: source.action_prompt,
+  });
+  if (error) failDb(path, error, error.message);
+
+  try {
+    await syncSessionCount(supabase, trainingId);
+    await bumpDraftToInDevelopment(supabase, trainingId);
+  } catch (syncError) {
+    fail(path, syncError instanceof Error ? syncError.message : "Session copied, but the count could not update.");
+  }
+
+  revalidateAdmin(path);
+  ok(path, "Session duplicated. Review the copy before marking Ready.");
+}
+
+export async function moveSession(formData: FormData) {
+  await requireRole("admin");
+  const trainingId = String(formData.get("training_id") ?? "");
+  const sessionId = String(formData.get("session_id") ?? "");
+  const direction = String(formData.get("direction") ?? "");
+  const path = `/admin/trainings/${trainingId}`;
+
+  if (!trainingId || !sessionId) fail(path || "/admin/trainings", "Choose a session.");
+  if (direction !== "up" && direction !== "down") {
+    fail(path, "Choose whether to move the session up or down.");
+  }
+
+  const supabase = await createClient();
+  const { data: sessions, error: listError } = await supabase
+    .from("sessions")
+    .select("id, session_number, order_index")
+    .eq("training_id", trainingId)
+    .order("order_index")
+    .order("session_number");
+  if (listError) fail(path, listError.message);
+
+  const ordered = [...(sessions ?? [])].sort(
+    (a, b) => a.order_index - b.order_index || a.session_number - b.session_number
+  );
+  const index = ordered.findIndex((row) => row.id === sessionId);
+  if (index < 0) fail(path, "Session not found.");
+  const neighborIndex = direction === "up" ? index - 1 : index + 1;
+  const current = ordered[index];
+  const neighbor = ordered[neighborIndex];
+  if (!neighbor) {
+    ok(path, "Session is already at the end of the list.");
+  }
+
+  const tempNumber = 10_000 + current.session_number;
+  const first = await supabase
+    .from("sessions")
+    .update({ session_number: tempNumber })
+    .eq("id", current.id)
+    .eq("training_id", trainingId);
+  if (first.error) failDb(path, first.error, first.error.message);
+
+  const second = await supabase
+    .from("sessions")
+    .update({
+      session_number: current.session_number,
+      order_index: current.order_index,
+    })
+    .eq("id", neighbor.id)
+    .eq("training_id", trainingId);
+  if (second.error) failDb(path, second.error, second.error.message);
+
+  const third = await supabase
+    .from("sessions")
+    .update({
+      session_number: neighbor.session_number,
+      order_index: neighbor.order_index,
+    })
+    .eq("id", current.id)
+    .eq("training_id", trainingId);
+  if (third.error) failDb(path, third.error, third.error.message);
+
+  revalidateAdmin(path);
+  ok(path, "Session order updated.");
+}
+
+export async function setDevelopmentStatus(formData: FormData) {
+  await requireRole("admin");
+  const trainingId = String(formData.get("training_id") ?? "");
+  const status = String(formData.get("development_status") ?? "").trim();
+  const path = `/admin/trainings/${trainingId}`;
+
+  if (!trainingId) fail("/admin/trainings", "Choose a training.");
+  if (!isAuthoringStatus(status)) {
+    fail(path, "Choose Draft, In Development, or Ready for Review.");
+  }
+
+  const supabase = await createClient();
+  const current = await loadTrainingChecklistRow(supabase, trainingId, path);
+  if (isArchivedTraining(current)) fail(path, ARCHIVED_STATUS_ERROR);
+
+  if (status === "ready_for_review") {
+    const blocker = readyBlockerFor(current);
+    if (blocker) fail(path, blocker);
+  }
+
+  const { error } = await supabase
+    .from("trainings")
+    .update({ development_status: status })
+    .eq("id", trainingId);
+  if (error) fail(path, error.message);
+
+  revalidateAdmin(path);
+  ok(
+    path,
+    status === "ready_for_review"
+      ? "Marked Ready for Review. Publish, then release to Leaders when you want them to see it."
+      : `Saved as ${status === "draft" ? "Draft" : "In Development"}.`
+  );
+}
+
+export async function archiveTraining(formData: FormData) {
+  await requireRole("admin");
+  const trainingId = String(formData.get("training_id") ?? "");
+  const confirm = String(formData.get("confirm") ?? "").trim();
+  const path = `/admin/trainings/${trainingId}`;
+
+  if (!trainingId) fail("/admin/trainings", "Choose a training.");
+  if (confirm !== ARCHIVE_CONFIRM) {
+    fail(path, `Type ${ARCHIVE_CONFIRM} to archive this training.`);
+  }
+
+  const supabase = await createClient();
+  const { data: current, error: currentError } = await supabase
+    .from("trainings")
+    .select("id, released_at, development_status")
+    .eq("id", trainingId)
+    .maybeSingle();
+  if (currentError) fail(path, currentError.message);
+  if (!current) fail("/admin/trainings", "Training not found.");
+
+  let usage;
+  try {
+    usage = await loadTrainingUsage(trainingId);
+  } catch (error) {
+    fail(path, error instanceof Error ? error.message : "Could not check training usage.");
+  }
+
+  const live = archiveHasLiveUsage(usage);
+  if (!live && current.released_at) {
+    const result = await unreleaseTrainingFromManagers(supabase, trainingId);
+    if (!result.ok) fail(path, RELEASE_WRITE_ERROR);
+  }
+
+  const { error } = await supabase
+    .from("trainings")
+    .update(
+      live
+        ? { development_status: "archived" }
+        : { development_status: "archived", published: false }
+    )
+    .eq("id", trainingId);
+  if (error) fail(path, error.message);
+
+  revalidateAdmin();
+  ok(
+    `/admin/trainings/${trainingId}`,
+    live
+      ? "Archived. Existing assignments and progress stay. Hidden from the active catalog."
+      : "Archived. Recover it anytime. It is hidden from release flows."
+  );
+}
+
+export async function recoverTraining(formData: FormData) {
+  await requireRole("admin");
+  const trainingId = String(formData.get("training_id") ?? "");
+  const path = `/admin/trainings/${trainingId}`;
+
+  if (!trainingId) fail("/admin/trainings", "Choose a training.");
+
+  const supabase = await createClient();
+  const { data: current, error: currentError } = await supabase
+    .from("trainings")
+    .select("id, development_status")
+    .eq("id", trainingId)
+    .maybeSingle();
+  if (currentError) fail(path, currentError.message);
+  if (!current) fail("/admin/trainings", "Training not found.");
+  if (!isArchivedTraining(current)) {
+    ok(path, "This training is already in the active catalog.");
+  }
+
+  const { error } = await supabase
+    .from("trainings")
+    .update({ development_status: "in_development" })
+    .eq("id", trainingId);
+  if (error) fail(path, error.message);
+
+  revalidateAdmin(path);
+  ok(path, "Recovered to In Development. It is not released again until you choose to.");
+}
+
+export async function markTrainingPreviewed(formData: FormData) {
+  await requireRole("admin");
+  const trainingId = String(formData.get("training_id") ?? "");
+  const sessionId = String(formData.get("session_id") ?? "");
+  const path = trainingId ? `/admin/trainings/${trainingId}` : "/admin/trainings";
+  const hub = `${path}/stage`;
+
+  if (!trainingId) fail("/admin/trainings", "Choose a training.");
+
+  const supabase = await createClient();
+  const { data: current, error: currentError } = await supabase
+    .from("trainings")
+    .select("id")
+    .eq("id", trainingId)
+    .maybeSingle();
+  if (currentError) fail(path, currentError.message);
+  if (!current) fail("/admin/trainings", "Training not found.");
+
+  const { error } = await supabase
+    .from("trainings")
+    .update({ previewed_at: new Date().toISOString() })
+    .eq("id", trainingId);
+  if (error) fail(path, error.message);
+
+  revalidateAdmin(path);
+  const walked = sessionId ? `&walked=${encodeURIComponent(sessionId)}` : "";
+  redirect(
+    `${hub}?notice=${encodeURIComponent("Stage walk recorded. Nothing was saved to Father progress.")}${walked}`
+  );
 }
 
 export async function changeUserRole(formData: FormData) {

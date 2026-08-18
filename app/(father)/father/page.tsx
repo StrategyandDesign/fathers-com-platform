@@ -1,12 +1,18 @@
+import { AssessmentHomeCard } from "@/components/assessments/home-card";
+import { CohortNoteCard } from "@/components/father/cohort-note-card";
 import { HomeAssessmentCard } from "@/components/father/home-assessment-card";
 import { HomeEarnedRow } from "@/components/father/home-earned";
 import { HomePathRow } from "@/components/father/home-path";
 import { HomeStreakRow } from "@/components/father/home-streak";
 import { HomeUpNextCard } from "@/components/father/home-up-next";
+import { LeaderMeta } from "@/components/father/leader-meta";
 import { StreakNotices } from "@/components/father/streak-notices";
+import { Flash } from "@/components/manager/flash";
+import { loadFatherPlatformCards } from "@/lib/admin/platform-assessment-data";
 import { loadFatherAssignments } from "@/lib/assessments/data";
+import { loadFatherLeader, loadVisibleCohortNote } from "@/lib/cohort-note/data";
 import { requireRole } from "@/lib/auth/session";
-import { pickHomeAssessment, sortHomePath } from "@/lib/father/home";
+import { pickHomeAssessment, splitHomeRows } from "@/lib/father/home";
 import { loadFatherHome } from "@/lib/father/data";
 import { loadFatherStreakHome } from "@/lib/father/streak-store";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
@@ -15,9 +21,11 @@ import { scheduleDueReminderFlush } from "@/lib/jobs/flush-due-work";
 import {
   loadFatherOrgPhotoCovers,
   resolveHomeHeroCover,
+  resolveHomeProfileCover,
   resolveTrainingCardCover,
 } from "@/lib/org-photos/data";
 import { trainingCoverSlug } from "@/lib/trainings/series";
+import { cn } from "@/lib/utils";
 
 const eyebrowClassName =
   "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
@@ -35,19 +43,29 @@ function sessionInProgress(progress: SessionProgress | null) {
 export default async function FatherHomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ done?: string }>;
+  searchParams: Promise<{ done?: string; error?: string; notice?: string }>;
 }) {
-  const { done } = await searchParams;
+  const { done, error, notice } = await searchParams;
   const { user } = await requireRole("father");
-  const { t } = await getI18n();
+  const { t, locale } = await getI18n();
   scheduleDueReminderFlush();
-  const [{ pathCards, trainingCards, next, profile, draft, certificates }, customAssignments, orgPhotos, streak] =
-    await Promise.all([
-      loadFatherHome(user.id),
-      loadFatherAssignments(user.id),
-      loadFatherOrgPhotoCovers(user.id),
-      loadFatherStreakHome(user.id),
-    ]);
+  const [
+    { pathCards, trainingCards, next, profile, draft, certificates },
+    customAssignments,
+    platformCards,
+    orgPhotos,
+    streak,
+    leader,
+    cohortNote,
+  ] = await Promise.all([
+    loadFatherHome(user.id),
+    loadFatherAssignments(user.id),
+    loadFatherPlatformCards(user.id),
+    loadFatherOrgPhotoCovers(user.id),
+    loadFatherStreakHome(user.id),
+    loadFatherLeader(user.id),
+    loadVisibleCohortNote(user.id),
+  ]);
 
   const nextCard = next
     ? pathCards.find((card) => card.training.id === next.training.id)
@@ -60,17 +78,22 @@ export default async function FatherHomePage({
   const nextInProgress = sessionInProgress(next?.progress ?? null);
   const assessment = pickHomeAssessment({
     assignments: customAssignments,
+    platform: platformCards,
     profile,
     draft,
   });
-  const path = sortHomePath(pathCards, next?.training.id).map((card) => ({
-    ...card,
-    coverSrc: resolveTrainingCardCover(
-      trainingCoverSlug(card.training),
-      orgPhotos.trainingUrls[trainingCoverSlug(card.training)],
-      orgPhotos.photoPack
-    ),
-  }));
+  const shelves = splitHomeRows(trainingCards, next?.training.id);
+  const withCover = <T extends (typeof trainingCards)[number]>(cards: T[]) =>
+    cards.map((card) => ({
+      ...card,
+      coverSrc: resolveTrainingCardCover(
+        trainingCoverSlug(card.training),
+        orgPhotos.trainingUrls[trainingCoverSlug(card.training)],
+        orgPhotos.photoPack
+      ),
+    }));
+  const path = withCover(shelves.path);
+  const available = withCover(shelves.trainings);
   const earned = certificates.map((row) => ({
     id: row.id,
     title:
@@ -80,9 +103,72 @@ export default async function FatherHomePage({
   const heroCover = next
     ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl, orgPhotos.photoPack)
     : null;
+  const profileCover = resolveHomeProfileCover(orgPhotos.profileUrl, orgPhotos.photoPack);
+  const pair = Boolean(next && assessment);
+
+  const upNext = next ? (
+    <HomeUpNextCard
+      href={continueHref(next.session.id, next.progress)}
+      trainingTitle={next.training.title}
+      sessionTitle={next.session.title}
+      subtitle={next.session.keyline}
+      durationSeconds={next.session.duration_seconds}
+      continueSession={nextInProgress}
+      completed={nextCompleted}
+      total={nextTotal}
+      justFinished={justFinished}
+      coverSrc={heroCover}
+      t={t}
+    />
+  ) : pathCards.length === 0 ? (
+    <section className="min-w-0 space-y-2">
+      <p className={eyebrowClassName}>{t("father.home.upNext")}</p>
+      <h1 className="font-heading text-xl font-semibold leading-snug tracking-tight sm:text-2xl">
+        {t("father.home.nothingAssigned")}
+      </h1>
+      <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+        {t("father.home.nothingAssignedBody")}
+      </p>
+    </section>
+  ) : null;
+
+  const assessmentCard = assessment ? (
+    assessment.kind === "custom" ? (
+      <HomeAssessmentCard assessment={assessment} coverSrc={profileCover} t={t} />
+    ) : (
+      <div className="flex h-full min-w-0 flex-col gap-3">
+        <p className={eyebrowClassName}>{t("father.profile.keystone")}</p>
+        <AssessmentHomeCard
+          className="min-h-0 flex-1"
+          coverSrc={profileCover}
+          profile={assessment.kind === "keystone-result" ? assessment.profile : null}
+          draft={assessment.kind === "keystone-draft" ? assessment.draft : null}
+          hideEyebrow
+        />
+      </div>
+    )
+  ) : null;
 
   return (
-    <div className="mx-auto w-full max-w-xl space-y-4 sm:space-y-5">
+    <div
+      className={cn(
+        "mx-auto w-full space-y-4 sm:space-y-5",
+        pair || (path.length > 0 && available.length > 0) ? "max-w-4xl" : "max-w-xl"
+      )}
+    >
+      {leader ? (
+        <LeaderMeta name={leader.name} avatarUrl={leader.avatarUrl} t={t} />
+      ) : null}
+      {cohortNote ? (
+        <CohortNoteCard
+          groupId={cohortNote.groupId}
+          body={cohortNote.body}
+          updatedAt={cohortNote.updatedAt}
+          locale={locale}
+          t={t}
+        />
+      ) : null}
+      <Flash error={error} notice={notice} />
       <StreakNotices notices={streak.notices} />
       <HomeStreakRow
         weeks={streak.currentWeeks}
@@ -92,34 +178,18 @@ export default async function FatherHomePage({
         justFinished={justFinished}
       />
 
-      {next ? (
-        <HomeUpNextCard
-          href={continueHref(next.session.id, next.progress)}
-          trainingTitle={next.training.title}
-          sessionTitle={next.session.title}
-          subtitle={next.session.keyline}
-          durationSeconds={next.session.duration_seconds}
-          continueSession={nextInProgress}
-          completed={nextCompleted}
-          total={nextTotal}
-          justFinished={justFinished}
-          coverSrc={heroCover}
-          t={t}
-        />
-      ) : pathCards.length === 0 ? (
-        <section className="min-w-0 space-y-2">
-          <p className={eyebrowClassName}>{t("father.home.upNext")}</p>
-          <h1 className="font-heading text-xl font-semibold leading-snug tracking-tight sm:text-2xl">
-            {t("father.home.nothingAssigned")}
-          </h1>
-          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-            {t("father.home.nothingAssignedBody")}
-          </p>
-        </section>
-      ) : null}
-
-      {assessment ? <HomeAssessmentCard assessment={assessment} t={t} /> : null}
-      <HomePathRow cards={path} t={t} />
+      {pair ? (
+        <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(14rem,1fr)]">
+          {upNext}
+          {assessmentCard}
+        </div>
+      ) : (
+        <>
+          {upNext}
+          {assessmentCard}
+        </>
+      )}
+      <HomePathRow path={path} trainings={available} t={t} />
       <HomeEarnedRow marks={earned} t={t} />
     </div>
   );

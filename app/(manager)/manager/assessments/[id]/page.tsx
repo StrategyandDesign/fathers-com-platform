@@ -4,8 +4,11 @@ import { notFound } from "next/navigation";
 import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { AssessmentVisibilityForms } from "@/components/manager/assessment-visibility-forms";
 import { assignAssessment, updateAssessment } from "@/lib/assessments/actions";
-import { loadManagerAssessmentDetail } from "@/lib/assessments/data";
+import { customAssessmentKey, isAssessmentAvailable } from "@/lib/assessments/availability";
+import { loadAssessmentAvailability, loadManagerAssessmentDetail } from "@/lib/assessments/data";
+import { loadManagerGroups } from "@/lib/manager/data";
 import { requireRole } from "@/lib/auth/session";
 import { translateAssignmentStatus } from "@/lib/i18n/flash";
 import { getI18n } from "@/lib/i18n/server";
@@ -29,8 +32,19 @@ export default async function ManagerAssessmentDetailPage({
     notFound();
   }
 
+  const groups = await loadManagerGroups(user.id);
+  const availability = await loadAssessmentAvailability(groups.map((group) => group.id));
+  const assessmentKey = customAssessmentKey(detail.assessment.id);
+  const primaryGroup = groups[0] ?? null;
+  const hiddenEverywhere =
+    groups.length > 0 &&
+    groups.every((group) => !isAssessmentAvailable(availability, group.id, assessmentKey));
   const assignedIds = new Set(detail.assignments.map((row) => row.father_id));
-  const unassigned = detail.roster.filter((row) => !assignedIds.has(row.fatherId));
+  const unassigned = detail.roster.filter((row) => {
+    if (assignedIds.has(row.fatherId)) return false;
+    if (!row.groupId) return false;
+    return isAssessmentAvailable(availability, row.groupId, assessmentKey);
+  });
 
   return (
     <div className="space-y-6">
@@ -50,6 +64,40 @@ export default async function ManagerAssessmentDetailPage({
         </p>
       </div>
       <Flash error={flash.error} notice={flash.notice} />
+
+      {primaryGroup ? (
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">
+            {t("manager.assessments.shareTitle")}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {hiddenEverywhere
+              ? t("manager.assessments.hidden")
+              : t("manager.assessments.available")}
+            {groups.length > 1 ? ` · ${primaryGroup.name}` : ""}
+          </p>
+          <div className="mt-5 space-y-6">
+            {groups.map((group) => (
+              <div key={group.id} className={groups.length > 1 ? "border-t border-border pt-5 first:border-t-0 first:pt-0" : undefined}>
+                {groups.length > 1 ? (
+                  <p className="mb-3 text-sm font-medium">{group.name}</p>
+                ) : null}
+                <AssessmentVisibilityForms
+                  assessmentKey={assessmentKey}
+                  groupId={group.id}
+                  status={
+                    isAssessmentAvailable(availability, group.id, assessmentKey)
+                      ? "available"
+                      : "hidden"
+                  }
+                  kind="custom"
+                  returnTo="detail"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <form
         action={updateAssessment}
@@ -125,6 +173,10 @@ export default async function ManagerAssessmentDetailPage({
         {detail.questions.length === 0 ? (
           <p className="mt-4 text-sm text-muted-foreground">
             {t("manager.assessments.noQuestionsBody")}
+          </p>
+        ) : hiddenEverywhere ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            {t("manager.assessments.assignHidden")}
           </p>
         ) : detail.roster.length === 0 ? (
           <EmptyState

@@ -37,7 +37,7 @@ export async function sendNudge(formData: FormData) {
         : `/manager/participants/${fatherId}`;
 
   if (!fatherId) {
-    fail("/manager/participants", "Choose a participant to nudge.");
+    fail("/manager/participants", "Choose a participant to send a note.");
   }
   if (!isNudgeTemplate(templateKey)) {
     fail(path, "Choose a reminder to send.");

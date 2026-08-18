@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 
 function whoLabel(managerName: string | undefined, organizationName: string | null) {
   if (managerName && organizationName) return `${managerName} · ${organizationName}`;
-  return managerName || organizationName || "Manager";
+  return managerName || organizationName || "Leader";
 }
 
 export default async function AdminTrainingRequestsPage({

@@ -6,6 +6,8 @@ import { peekLocaleCookie } from "@/lib/i18n/cookie";
 import { createTranslator, type Translate } from "@/lib/i18n/translate";
 import { DEFAULT_LOCALE, dateLocale, localeDir, type Locale } from "@/lib/i18n/config";
 
+export { formatLongDate, formatShortDate, formatShortDateTime } from "@/lib/i18n/dates";
+
 export type I18n = {
   locale: Locale;
   t: Translate;
@@ -42,37 +44,3 @@ export const getI18n = cache(async (): Promise<I18n> => {
 
   return makeI18n(DEFAULT_LOCALE);
 });
-
-export function formatLongDate(value: string | Date, locale: Locale) {
-  const date = typeof value === "string" ? new Date(value) : value;
-  if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString(dateLocale(locale), {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-export function formatShortDate(value: string | Date | null | undefined, locale: Locale) {
-  if (!value) return "—";
-  const date = typeof value === "string" ? new Date(value) : value;
-  if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString(dateLocale(locale), {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-export function formatShortDateTime(value: string | Date | null | undefined, locale: Locale) {
-  if (!value) return "—";
-  const date = typeof value === "string" ? new Date(value) : value;
-  if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleString(dateLocale(locale), {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}

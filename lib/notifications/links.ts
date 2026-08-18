@@ -22,8 +22,18 @@ export function trainingsHref() {
   return "/father/trainings";
 }
 
+export function fatherHomeHref() {
+  return "/father";
+}
+
 export function isFatherDeepLink(pathname: string) {
-  if (pathname === "/father/certificates" || pathname === "/father/trainings") return true;
+  if (
+    pathname === "/father" ||
+    pathname === "/father/certificates" ||
+    pathname === "/father/trainings"
+  ) {
+    return true;
+  }
   const session = pathname.match(/^\/father\/sessions\/([^/]+)(?:\/(checkin|action))?$/);
   return Boolean(session && SESSION_ID.test(session[1]));
 }
@@ -32,6 +42,6 @@ export function normalizeDeepLink(href: string | null | undefined, fallback = tr
   const raw = String(href ?? "").trim();
   if (!raw.startsWith("/") || raw.startsWith("//") || raw.includes("\\")) return fallback;
   const path = raw.split("?")[0] ?? raw;
-  if (path === "/father" || path === "/father/") return fallback;
+  if (path === "/father/") return fatherHomeHref();
   return isFatherDeepLink(path) ? path : fallback;
 }

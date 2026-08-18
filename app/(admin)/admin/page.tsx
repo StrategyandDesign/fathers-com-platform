@@ -71,15 +71,35 @@ export default async function AdminHomePage({
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Catalog</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Add a training. Publish when sessions are ready, then release it to
-            selected organizations or all.
+            Create trainings and assessments here, then share them with
+            organization Leaders. Leaders decide what reaches their fathers.
           </p>
-          <Link
-            href="/admin/trainings/new"
-            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
-          >
-            New training
-          </Link>
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+            <Link
+              href="/admin/trainings/new"
+              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            >
+              New training
+            </Link>
+            <Link
+              href="/admin/trainings/sources"
+              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            >
+              Bring in a training
+            </Link>
+            <Link
+              href="/admin/assessments/new"
+              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            >
+              New assessment
+            </Link>
+            <Link
+              href="/admin/assessments"
+              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            >
+              Assessments
+            </Link>
+          </div>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Gathering</h2>

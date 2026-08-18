@@ -28,14 +28,14 @@ export function TrainingStageBanner({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
-            Staging
+            Sandbox preview
           </p>
           <p className="mt-1 font-medium">
-            Nothing is saved. This is the participant path.
+            Nothing is saved. No session progress, no Action commitment, no assignment.
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Walk Film → Check-in → Action as he will see it. Answers stay on
-            this screen only.
+            Walk Home → Film → Check-in → Action as a Father will see it after
+            a Leader assigns this training. Return to editing with no side effects.
           </p>
           {current && sessionTitle ? (
             <p className="mt-2 text-sm text-foreground">
