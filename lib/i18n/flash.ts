@@ -93,6 +93,7 @@ const EXACT: Record<string, string> = {
   "That participant is not in your group.": "flash.participantNotInGroup",
   "Too many note saves just now. Try again in a minute.": "flash.noteTooMany",
   "Choose a participant to nudge.": "flash.chooseNudgeParticipant",
+  "Choose a participant to send a note.": "flash.chooseNudgeParticipant",
   "Choose a reminder to send.": "flash.chooseReminder",
   "Too many reminders just now. Try again in a few minutes.": "flash.tooManyReminders",
   "Couldn’t check recent reminders. Try again.": "flash.reminderCheckFailed",
