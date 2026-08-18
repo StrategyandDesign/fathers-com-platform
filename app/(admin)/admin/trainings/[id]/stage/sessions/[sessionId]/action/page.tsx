@@ -4,7 +4,8 @@ import {
   stageHeaderPaths,
   TrainingStageSessionShell,
 } from "@/components/admin/training-stage-session-shell";
-import { ActionIntentionChipPreview, ActionSkillCard } from "@/components/father/action-skill-card";
+import { ActionDisplay } from "@/components/father/action-display";
+import { ActionIntentionChipPreview } from "@/components/father/action-skill-card";
 import { SessionHeader } from "@/components/father/session-header";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { markTrainingPreviewed } from "@/lib/admin/actions";
@@ -13,7 +14,7 @@ import {
   requireAdminStageSession,
   stagePaths,
 } from "@/lib/admin/stage";
-import { actionSkillText } from "@/lib/father/action-commitment";
+import { actionSessionEyebrow, actionSkillText } from "@/lib/father/action-commitment";
 import { parseSkillPrompt, sessionAction } from "@/lib/father/session-questions";
 import { getI18n } from "@/lib/i18n/server";
 import { homePrimaryCtaClassName, interactiveUnderlineClassName } from "@/lib/ui";
@@ -36,7 +37,7 @@ export default async function AdminTrainingStageActionPage({
 
   return (
     <TrainingStageSessionShell training={training} session={session} current="action">
-      <div className="mx-auto max-w-xl space-y-5 lg:space-y-8">
+      <div className="mx-auto max-w-lg space-y-8 lg:space-y-10">
         <SessionHeader
           training={training}
           session={session}
@@ -44,10 +45,20 @@ export default async function AdminTrainingStageActionPage({
           backHref={paths.checkin(session.id)}
           {...header}
         />
-        <div className="space-y-5">
-          <ActionSkillCard skill={skill} />
-          <div className="space-y-3">
-            <p className="text-sm font-medium">{t("father.session.whenWillYou")}</p>
+        <ActionDisplay
+          eyebrow={actionSessionEyebrow(session, skill)}
+          skill={skill}
+          footer={
+            <Link
+              href={paths.hub}
+              className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
+            >
+              {t("father.session.skipForNow")}
+            </Link>
+          }
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">{t("father.session.whenWillYou")}</p>
             <ActionIntentionChipPreview t={t} />
           </div>
           {hasNext ? (
@@ -70,15 +81,7 @@ export default async function AdminTrainingStageActionPage({
               </Button>
             </form>
           )}
-        </div>
-        <p className="text-center">
-          <Link
-            href={paths.hub}
-            className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
-          >
-            {t("father.session.skipForNow")}
-          </Link>
-        </p>
+        </ActionDisplay>
       </div>
     </TrainingStageSessionShell>
   );

@@ -2,12 +2,13 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
 import { FilmRuntime } from "@/components/father/film-runtime";
+import { sessionChrome, type SessionStep } from "@/lib/father/action-commitment";
 import type { Session, Training } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-type StepKey = "film" | "checkin" | "action";
+type StepKey = SessionStep;
 
 export async function SessionHeader({
   training,
@@ -39,10 +40,13 @@ export async function SessionHeader({
   unlockAll?: boolean;
 }) {
   const { t } = await getI18n();
+  const chrome = sessionChrome(current);
   const catalogHref = trainingHref === undefined ? "/father/trainings" : trainingHref;
   const total = sessionTotal ?? training.session_count;
   const subtitle =
-    session.keyline && session.keyline !== session.title ? session.keyline : null;
+    chrome.showKeyline && session.keyline && session.keyline !== session.title
+      ? session.keyline
+      : null;
   const steps: Array<{ key: StepKey; href: string; unlocked: boolean }> = [
     {
       key: "film",
@@ -83,16 +87,21 @@ export async function SessionHeader({
           ) : (
             <span>{training.title}</span>
           )}
+          {chrome.showSessionHeading ? (
+            <>
+              {" · "}
+              {total === 1
+                ? t("father.home.sessionOne")
+                : t("father.home.sessionMany", { n: total })}
+            </>
+          ) : null}
         </p>
-        <p className="text-xs text-muted-foreground">
-          {total === 1
-            ? t("father.home.sessionOne")
-            : t("father.home.sessionMany", { n: total })}
-        </p>
-        <h1 className="text-xl font-medium leading-snug tracking-tight sm:text-2xl">
-          {session.title}
-        </h1>
-        <FilmRuntime seconds={session.duration_seconds} t={t} />
+        {chrome.showSessionHeading ? (
+          <h1 className="text-xl font-medium leading-snug tracking-tight sm:text-2xl">
+            {session.title}
+          </h1>
+        ) : null}
+        {chrome.showRuntime ? <FilmRuntime seconds={session.duration_seconds} t={t} /> : null}
         {subtitle ? (
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         ) : null}

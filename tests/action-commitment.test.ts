@@ -3,11 +3,13 @@ import { describe, it } from "node:test";
 
 import {
   actionLoopState,
+  actionSessionEyebrow,
   actionSkillText,
   formatNamedMoment,
   isOpenActionCommitment,
   parseOutcomeNote,
   resolveIntentionAt,
+  sessionChrome,
   shouldQueueActionReminder,
 } from "../lib/father/action-commitment";
 import { localParts } from "../lib/notifications/schedule";
@@ -202,5 +204,29 @@ describe("skill copy", () => {
       actionSkillText({ keyline: "Practice one calm check-in tonight", title: "Session 1" }),
       "Practice one calm check-in tonight"
     );
+  });
+
+  it("shows the session title only when it is not the skill", () => {
+    assert.equal(
+      actionSessionEyebrow({ title: "Fourth Secret: Protecting and Providing" }, "Physical, emotional, and spiritual safety and provision."),
+      "Fourth Secret: Protecting and Providing"
+    );
+    assert.equal(
+      actionSessionEyebrow({ title: "Practice one calm check-in tonight" }, "Practice one calm check-in tonight"),
+      null
+    );
+  });
+
+  it("keeps Action chrome to wayfinding so the skill can be the page", () => {
+    assert.deepEqual(sessionChrome("film"), {
+      showRuntime: true,
+      showKeyline: true,
+      showSessionHeading: true,
+    });
+    assert.deepEqual(sessionChrome("action"), {
+      showRuntime: false,
+      showKeyline: false,
+      showSessionHeading: false,
+    });
   });
 });

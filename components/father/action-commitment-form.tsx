@@ -3,16 +3,14 @@
 import { useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 
+import { ActionIntentionList } from "@/components/father/action-skill-card";
 import { useT } from "@/components/i18n/locale-provider";
 import { Button } from "@/components/ui/button";
 import {
-  INTENTION_LABEL_KEYS,
-  INTENTION_OPTIONS,
   OUTCOME_NOTE_MAX,
   type IntentionOption,
 } from "@/lib/father/action-commitment";
-import { fieldClassName, homePrimaryCtaClassName, interactiveControlClassName } from "@/lib/ui";
-import { cn } from "@/lib/utils";
+import { fieldClassName, homePrimaryCtaClassName } from "@/lib/ui";
 
 export function ActionCommitmentForm({
   sessionId,
@@ -39,34 +37,12 @@ export function ActionCommitmentForm({
   }, []);
 
   return (
-    <form action={action} className="space-y-5">
+    <form action={action} className="space-y-8">
       <input type="hidden" name="session_id" value={sessionId} />
       <input type="hidden" name="timezone" value={zone} />
-      <fieldset className="space-y-3">
-        <legend className="text-sm font-medium">{t("father.session.whenWillYou")}</legend>
-        <div className="grid grid-cols-2 gap-2">
-          {INTENTION_OPTIONS.map((value) => (
-            <label
-              key={value}
-              className={cn(
-                "flex min-h-12 cursor-pointer items-center justify-center rounded-xl border border-border bg-card px-3 text-center text-sm",
-                interactiveControlClassName,
-                "has-[:checked]:border-primary"
-              )}
-            >
-              <input
-                type="radio"
-                name="intention"
-                value={value}
-                checked={option === value}
-                onChange={() => setOption(value)}
-                required
-                className="sr-only"
-              />
-              <span className="min-w-0 leading-snug">{t(INTENTION_LABEL_KEYS[value])}</span>
-            </label>
-          ))}
-        </div>
+      <fieldset className="space-y-4">
+        <legend className="text-sm text-muted-foreground">{t("father.session.whenWillYou")}</legend>
+        <ActionIntentionList t={t} value={option} onChange={setOption} />
       </fieldset>
       {option === "custom" ? (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -124,10 +100,10 @@ export function ActionFinishForm({
 }) {
   const t = useT();
   return (
-    <form action={action} className="space-y-5">
+    <form action={action} className="space-y-8">
       <input type="hidden" name="session_id" value={sessionId} />
       <label className="block space-y-2">
-        <span className="text-sm font-medium">{t("father.session.whatHappened")}</span>
+        <span className="text-sm text-muted-foreground">{t("father.session.whatHappened")}</span>
         <input
           className={fieldClassName}
           type="text"

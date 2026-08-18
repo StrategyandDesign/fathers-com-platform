@@ -241,6 +241,25 @@ export function actionSkillText(
   return title || fallback;
 }
 
+export function actionSessionEyebrow(
+  session: { title?: string | null },
+  skill: string
+) {
+  const title = typeof session.title === "string" ? session.title.replace(/\s+/g, " ").trim() : "";
+  if (!title || title === skill) return null;
+  return title;
+}
+
+export type SessionStep = "film" | "checkin" | "action";
+
+export function sessionChrome(current: SessionStep) {
+  return {
+    showRuntime: current === "film",
+    showKeyline: current !== "action",
+    showSessionHeading: current !== "action",
+  };
+}
+
 export function asActionCommitment(row: unknown): ActionCommitment | null {
   const source = row && typeof row === "object" ? (row as Record<string, unknown>) : {};
   if (!isIntentionOption(source.intention_label)) return null;
