@@ -111,12 +111,17 @@ export default async function ManagerHomePage({
           {marks.length > 0 ? (
             <div className="mb-3 space-y-2">
               {marks.map((mark) => (
-                <OrganizationMark
+                <Link
                   key={mark.groupId}
-                  name={mark.name}
-                  logoUrl={mark.logoUrl}
-                  size="large"
-                />
+                  href="/manager/account/photos"
+                  className={cn("inline-flex", interactiveSurfaceClassName)}
+                >
+                  <OrganizationMark
+                    name={mark.name}
+                    logoUrl={mark.logoUrl}
+                    size="large"
+                  />
+                </Link>
               ))}
             </div>
           ) : null}
@@ -312,6 +317,36 @@ export default async function ManagerHomePage({
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
             {t("manager.dashboard.viewParticipants")}
+          </Link>
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="font-heading text-lg font-semibold">
+              {t("manager.dashboard.photosTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t("manager.dashboard.photosLead")}
+            </p>
+            {marks.length > 0 ? (
+              <div className="mt-4 space-y-2">
+                {marks.map((mark) => (
+                  <OrganizationMark
+                    key={mark.groupId}
+                    name={mark.name}
+                    logoUrl={mark.logoUrl}
+                  />
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <Link
+            href="/manager/account/photos"
+            className={cn(buttonVariants(), "w-full shrink-0 sm:w-auto")}
+          >
+            {t("manager.dashboard.photosOpen")}
           </Link>
         </div>
       </section>

@@ -10,6 +10,7 @@ import {
   ClipboardList,
   FileSpreadsheet,
   Home,
+  Image,
   Inbox,
   LayoutDashboard,
   Settings,
@@ -104,6 +105,12 @@ export const NAV: Record<AppRole, NavItem[]> = {
       labelKey: "nav.reports",
       icon: FileSpreadsheet,
       match: (path) => path.startsWith("/manager/reports"),
+    },
+    {
+      href: "/manager/account/photos",
+      labelKey: "nav.photos",
+      icon: Image,
+      match: (path) => path.startsWith("/manager/account/photos"),
     },
   ],
   reviewer: [

@@ -364,7 +364,7 @@ export const en = {
     displayTitleSave: "Save designation",
     logoTitle: "Organization mark",
     logoLead:
-      "Fathers in {name} see this at the top of every page, next to the organization name.",
+      "Fathers in {name} see this as the left mark on Home. It identifies this group — the same group as the invite code.",
     logoPreview: "What he sees",
     logoEmpty: "No logo yet. The name still appears.",
     logoUpload: "Upload logo",
@@ -859,6 +859,10 @@ export const en = {
       practiceOpen: "Open your path",
       practiceTraining: "Take a training",
       practiceAssessment: "Take an assessment",
+      photosTitle: "Organization photos",
+      photosLead:
+        "Fathers in this group see these on Home. Swap any photo, and the logo that marks the group tied to the invite code.",
+      photosOpen: "Manage photos",
       noteEyebrow: "Update",
       noteTitle: "One update",
       noteLead:
@@ -1582,6 +1586,10 @@ export const en = {
     },
     photos: {
       title: "Organization Photos",
+      backDashboard: "Back to Dashboard",
+      logoAndCode:
+        "The logo is the group mark fathers see on the left of Home. It belongs to this invite-code group — a rehab, a unit, or any other organization.",
+      inviteCode: "Invite code {code}",
       leadOne:
         "Replace the photos {name} participants see on Home, Assessment, and Trainings. Any photo works. We fit it to the card.",
       leadPlaceholder:

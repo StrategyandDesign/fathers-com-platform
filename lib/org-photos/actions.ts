@@ -22,6 +22,7 @@ export type OrganizationPhotoResult = {
 
 function revalidateOrgPhotos() {
   revalidatePath("/manager/account");
+  revalidatePath("/manager/account/photos");
   revalidatePath("/manager");
   revalidatePath("/father", "layout");
   revalidatePath("/father/trainings");
