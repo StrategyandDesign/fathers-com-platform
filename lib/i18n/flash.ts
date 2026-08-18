@@ -22,6 +22,7 @@ const EXACT: Record<string, string> = {
   "Check your email to confirm your account, then sign in with your email and password.":
     "flash.confirmThenSignIn",
   "Preferences saved.": "flash.prefsSaved",
+  "That preference didn’t save. Try again.": "flash.shareFailed",
   "Language saved.": "flash.localeSaved",
   "Couldn’t save the language. Try again.": "flash.localeFailed",
   "Photo saved.": "manager.photos.photoSaved",

@@ -39,6 +39,30 @@ export async function saveDisplayTitle(formData: FormData) {
   redirect(`${path}?notice=${encodeURIComponent("flash.displayTitleSaved")}`);
 }
 
+export async function saveAnonymousShare(enabled: boolean) {
+  const { user, role } = await getAuthContext();
+  if (!user || !role || role === "admin") {
+    return { error: "Sign in again to save preferences." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      share_anonymous_admin: enabled,
+      share_anonymous_admin_at: enabled ? new Date().toISOString() : null,
+    })
+    .eq("id", user.id);
+
+  if (error) {
+    return { error: "That preference didn’t save. Try again." };
+  }
+
+  revalidatePath(ROLE_ACCOUNT[role]);
+  revalidatePath("/admin/gathering");
+  return { ok: true as const };
+}
+
 export async function saveNotificationPreferences(input: NotificationPreferences) {
   const { user, role } = await getAuthContext();
   if (!user || !role) {

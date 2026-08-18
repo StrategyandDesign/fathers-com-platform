@@ -119,6 +119,12 @@ export const NAV: Record<AppRole, NavItem[]> = {
       match: (path) => path === "/admin",
     },
     {
+      href: "/admin/gathering",
+      labelKey: "nav.gathering",
+      icon: BarChart3,
+      match: (path) => path.startsWith("/admin/gathering"),
+    },
+    {
       href: "/admin/organizations",
       labelKey: "nav.organizations",
       icon: Building2,

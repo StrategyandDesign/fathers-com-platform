@@ -79,7 +79,7 @@ export async function loadAccountState(userId: string) {
   const [profileRes, prefsRes] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, full_name, avatar_url, locale, display_title")
+      .select("id, full_name, avatar_url, locale, display_title, share_anonymous_admin")
       .eq("id", userId)
       .maybeSingle(),
     supabase.from("notification_preferences").select("*").eq("user_id", userId).maybeSingle(),
@@ -105,5 +105,6 @@ export async function loadAccountState(userId: string) {
     preferences: parseNotificationPreferences(prefsRow),
     locale: typeof profileRes.data?.locale === "string" ? profileRes.data.locale : null,
     displayTitle: parseManagerDisplayTitle(profileRes.data?.display_title),
+    shareAnonymousAdmin: profileRes.data?.share_anonymous_admin === true,
   };
 }

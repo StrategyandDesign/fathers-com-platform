@@ -17,6 +17,7 @@ export const en = {
     organizations: "Organizations",
     users: "Users",
     inbox: "Inbox",
+    gathering: "Gathering",
     openMenu: "Open menu",
     closeMenu: "Close menu",
   },
@@ -109,12 +110,12 @@ export const en = {
       sharingProviders:
         "We share data with service providers who help us run the platform (for example, hosting, file storage, email delivery, and error monitoring), under agreements that require them to protect it.",
       sharingOrg:
-        "If you join through an invite code, your organization administrator (manager) can see your name, training progress, assessment responses, and certificates. Reviewers see cohort totals only, not your name or individual answers. Super-admins operate the platform catalog and organizations; they are not a substitute for your organization administrator.",
+        "If you join through an invite code, your organization administrator (manager) can see your name, training progress, assessment responses, and certificates. Reviewers see cohort totals only, not your name or individual answers. Super-admins operate the platform catalog and organizations; they are not a substitute for your organization administrator. If you turn on anonymous sharing in Account, super-admins can see counts of progress and activity without your name, email, notes, or answers.",
       sharingLegal:
         "If we receive a subpoena or court order, we are required to respond. We will tell you before we do unless the law forbids it. If you would rather not write something down, do not write it down; completion never depends on what you disclose in a free-text note.",
       choices: "Your choices",
       choicesBody:
-        "You can update your notification preferences in Account. For access, correction, or deletion of your account and results, contact your organization administrator. They can reach Fathers.com on your behalf.",
+        "You can update your notification preferences and anonymous sharing in Account. For access, correction, or deletion of your account and results, contact your organization administrator. They can reach Fathers.com on your behalf.",
       children: "Children’s privacy",
       childrenBody:
         "This service is built for adult fathers, future fathers, and mentors. You must be at least 18 years old to create an account. We do not knowingly collect personal information from children.",
@@ -217,6 +218,8 @@ export const en = {
     localeFailed: "Couldn’t save the language. Try again.",
     displayTitleSaved: "How you are named was saved.",
     displayTitleFailed: "That designation didn’t save. Try again.",
+    shareSaved: "Anonymous sharing was saved.",
+    shareFailed: "That preference didn’t save. Try again.",
     progressSaveFailed: "Your progress didn’t save. Try again.",
     chooseAnswer: "Choose an answer to continue.",
     checkinSaveFailed: "Your check-in didn’t save. Try again.",
@@ -310,9 +313,10 @@ export const en = {
   },
   account: {
     title: "Account",
-    fatherLead: "Your certificates, language, and notifications.",
+    fatherLead: "Your certificates, language, notifications, and anonymous sharing.",
     managerLead:
-      "Your designation, language, organization mark, notifications, and training requests.",
+      "Your designation, language, organization mark, notifications, anonymous sharing, and training requests.",
+    reviewerLead: "Your language, notifications, and anonymous sharing.",
     displayTitleTitle: "How you are named",
     displayTitleLead:
       "This is how this space refers to you. It does not change what you can do.",
@@ -331,6 +335,17 @@ export const en = {
       "PNG, JPEG, or WebP. A square or wide mark works. We keep the whole logo; we do not crop it.",
     logoSaved: "Logo saved. Fathers will see it next to the organization name.",
     logoRemoved: "Logo removed. Fathers will see the organization name only.",
+    shareTitle: "Anonymous sharing",
+    shareLeadFather:
+      "Release anonymous training progress to Fathers.com. Super-admins see counts only — not your name, email, written answers, or notes. Off until you turn it on.",
+    shareLeadManager:
+      "Release anonymous counts of assignments, reviews, and certificates you issue. Super-admins do not see names or which organization.",
+    shareLeadReviewer:
+      "Release anonymous activity that you use Insights. Super-admins do not see your name or which organizations you watch.",
+    shareToggle: "Share anonymous data with super-admin",
+    shareOn: "Sharing",
+    shareOff: "Not sharing",
+    shareHint: "You can turn this off anytime. Turning it off stops new counts from including you.",
     staffLead: "Your language and notifications.",
     languageTitle: "Language",
     languageLead:

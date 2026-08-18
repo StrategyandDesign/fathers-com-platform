@@ -82,6 +82,19 @@ export default async function AdminHomePage({
           </Link>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">Gathering</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Anonymous participation from people who turned sharing on in
+            Account. Counts only.
+          </p>
+          <Link
+            href="/admin/gathering"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
+            Open Gathering
+          </Link>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Users</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Change roles and deactivate accounts.

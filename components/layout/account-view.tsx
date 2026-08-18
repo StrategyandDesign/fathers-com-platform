@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AnonymousShareToggle } from "@/components/account/anonymous-share-toggle";
 import { DisplayTitleForm } from "@/components/account/display-title-form";
 import { NotificationPrefs } from "@/components/account/notification-prefs";
 import { LanguageForm } from "@/components/i18n/language-form";
@@ -49,7 +50,9 @@ export async function AccountView({
             ? t("account.managerLead")
             : role === "father"
               ? t("account.fatherLead")
-              : t("account.staffLead")}
+              : role === "reviewer"
+                ? t("account.reviewerLead")
+                : t("account.staffLead")}
         </p>
       </header>
       <Flash error={error} notice={notice} />
@@ -74,6 +77,10 @@ export async function AccountView({
       {role === "manager" ? <DisplayTitleForm savedTitle={account.displayTitle} /> : null}
 
       <LanguageForm savedLocale={account.locale} />
+
+      {role !== "admin" ? (
+        <AnonymousShareToggle role={role} initial={account.shareAnonymousAdmin} />
+      ) : null}
 
       {children}
 
