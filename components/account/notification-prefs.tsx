@@ -177,13 +177,15 @@ function ReminderScheduleForm({
       }}
     >
       <p className="text-sm font-medium">{t("notify.weeklyWhen")}</p>
+      <p className="text-sm text-muted-foreground">{t("notify.weeklyWhenHint")}</p>
       <label className="block min-w-0 space-y-2">
         <span className="text-sm text-muted-foreground">{t("notify.day")}</span>
         <select
           name="weekday"
-          defaultValue={initial.reminderDay ?? 2}
+          defaultValue={initial.reminderDay ?? ""}
           className={fieldClassName}
         >
+          <option value="">{t("notify.weeklyNone")}</option>
           {[
             t("father.start.daySun"),
             t("father.start.dayMon"),
@@ -206,7 +208,6 @@ function ReminderScheduleForm({
           type="time"
           name="remind_at"
           defaultValue={initial.reminderTime ?? "19:00"}
-          required
         />
       </label>
       <div className="grid grid-cols-2 gap-3">

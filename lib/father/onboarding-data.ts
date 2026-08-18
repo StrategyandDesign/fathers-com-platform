@@ -64,11 +64,13 @@ export const loadOnboardingState = cache(async (fatherId: string): Promise<Onboa
   );
   const reminder =
     weekday != null && remindAt ? { weekday, remindAt } : null;
+  const reminderSkipped = answers.reminder === "skipped";
   const completedAt = profile.onboarding_completed_at ?? null;
   const mode = resolveOnboardingMode({
     completedAt,
     hasCompletedSession: completed,
     hasReminder: Boolean(reminder),
+    reminderSkipped,
   });
   const hasAssignedSession = Boolean(first);
   const storedStep = isOnboardingStep(profile.onboarding_step) ? profile.onboarding_step : null;
@@ -76,6 +78,7 @@ export const loadOnboardingState = cache(async (fatherId: string): Promise<Onboa
     mode,
     storedStep,
     hasReminder: Boolean(reminder),
+    reminderSkipped,
     hasAssignedSession,
     firstSessionComplete: isSessionComplete(first?.progress ?? null),
     completedAt,

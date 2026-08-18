@@ -177,7 +177,10 @@ describe("channel and copy", () => {
       minutes: 5,
     });
     assert.equal(weekly.title, "Your next session is ready");
-    assert.equal(weekly.body, "Fathering Fundamentals: Part 1. 5 min.");
+    assert.equal(
+      weekly.body,
+      "Fathering Fundamentals: Part 1. 5 min. This is your weekly reminder."
+    );
     assert.equal(weekly.body.includes("!"), false);
     assert.equal(weekly.body.includes("—"), false);
 

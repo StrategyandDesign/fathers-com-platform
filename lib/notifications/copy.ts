@@ -118,7 +118,9 @@ export function notificationCopy(
     if (type === "weekly_session") {
       return {
         title: "המפגש הבא מוכן",
-        body: minutes ? `${training}. ${minutes} דק׳.` : `${training}.`,
+        body: minutes
+          ? `${training}. ${minutes} דק׳. זו התזכורת השבועית שלך.`
+          : `${training}. זו התזכורת השבועית שלך.`,
       };
     }
     if (type === "action") {
@@ -157,7 +159,9 @@ export function notificationCopy(
   if (type === "weekly_session") {
     return {
       title: "Your next session is ready",
-      body: minutes ? `${training}. ${minutes} min.` : `${training}.`,
+      body: minutes
+        ? `${training}. ${minutes} min. This is your weekly reminder.`
+        : `${training}. This is your weekly reminder.`,
     };
   }
   if (type === "action") {

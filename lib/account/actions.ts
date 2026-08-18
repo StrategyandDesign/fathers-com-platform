@@ -104,6 +104,9 @@ export async function saveNotificationSchedule(input: {
 
   const weekday = parseWeekday(input.reminderDay);
   const remindAt = parseClock(input.reminderTime);
+  if (weekday != null && !remindAt) {
+    return { error: "Pick a day and a time." };
+  }
   const timezone = parseTimeZone(input.timezone) ?? "UTC";
   const quietStart = parseClock(input.quietHoursStart) ?? DEFAULT_QUIET_START;
   const quietEnd = parseClock(input.quietHoursEnd) ?? DEFAULT_QUIET_END;
@@ -111,8 +114,9 @@ export async function saveNotificationSchedule(input: {
   const supabase = await createClient();
   const { error } = await supabase.from("notification_preferences").upsert({
     user_id: user.id,
+    ...(weekday == null ? { session_reminders: false } : {}),
     reminder_day: weekday,
-    reminder_time: remindAt ? `${remindAt}:00` : null,
+    reminder_time: weekday != null && remindAt ? `${remindAt}:00` : null,
     timezone,
     quiet_hours_start: `${quietStart}:00`,
     quiet_hours_end: `${quietEnd}:00`,

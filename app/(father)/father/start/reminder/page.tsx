@@ -35,6 +35,7 @@ export default async function FatherStartReminderPage({
         ]}
         timeLabel={t("father.start.reminderTime")}
         submitLabel={t("father.start.setReminder")}
+        skipLabel={t("father.start.skipReminder")}
       />
     </StartScreen>
   );

@@ -33,6 +33,27 @@ describe("first-run skip logic", () => {
     );
   });
 
+  it("lets an existing father skip the weekly reminder and stay done", () => {
+    assert.equal(
+      resolveOnboardingMode({
+        completedAt: null,
+        hasCompletedSession: true,
+        reminderSkipped: true,
+      }),
+      "done"
+    );
+    assert.equal(
+      currentOnboardingStep({
+        mode: "reminder-only",
+        storedStep: "reminder",
+        hasReminder: false,
+        reminderSkipped: true,
+        hasAssignedSession: true,
+      }),
+      "done"
+    );
+  });
+
   it("sends an existing father with completed sessions to the reminder once", () => {
     assert.equal(
       resolveOnboardingMode({ completedAt: null, hasCompletedSession: true }),
@@ -164,8 +185,9 @@ describe("start routes", () => {
       children: "1",
       skill: "mood",
       when: "evening",
+      reminder: "skipped",
       notes: "skip me",
     });
-    assert.deepEqual(parsed, { children: "1", when: "evening" });
+    assert.deepEqual(parsed, { children: "1", when: "evening", reminder: "skipped" });
   });
 });
