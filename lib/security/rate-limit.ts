@@ -11,6 +11,7 @@ export const RATE_LIMITS = {
   "manager.bulk": { limit: 8, windowMs: 15 * 60 * 1000 },
   "manager.note": { limit: 20, windowMs: 15 * 60 * 1000 },
   "manager.review": { limit: 20, windowMs: 15 * 60 * 1000 },
+  "manager.assessment": { limit: 20, windowMs: 15 * 60 * 1000 },
   "admin.release": { limit: 20, windowMs: 15 * 60 * 1000 },
   "admin.support": { limit: 30, windowMs: 15 * 60 * 1000 },
   "admin.training_request": { limit: 30, windowMs: 15 * 60 * 1000 },

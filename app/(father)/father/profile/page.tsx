@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Flash } from "@/components/manager/flash";
 import { DimensionScores } from "@/components/profile/dimension-scores";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { loadFatherAssessmentAccess } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
 import { translateThemeLabel } from "@/lib/i18n/flash";
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
@@ -38,7 +39,10 @@ export default async function FatherProfilePage({
   const flash = await searchParams;
   const { user } = await requireRole("father");
   const { t, locale } = await getI18n();
-  const { profile, draft } = await loadProfileState(user.id);
+  const [{ profile, draft }, access] = await Promise.all([
+    loadProfileState(user.id),
+    loadFatherAssessmentAccess(user.id),
+  ]);
   const banner = <Flash error={flash.error} notice={flash.notice} />;
   const header = (
     <ProfilePageHeader
@@ -94,12 +98,14 @@ export default async function FatherProfilePage({
             >
               {t("father.profile.continueRetake")}
             </Link>
-          ) : (
+          ) : access.canStartKeystone ? (
             <form action={retakeProfile} className="mt-8">
               <Button type="submit" variant="outline" className="w-full min-h-11 lg:w-auto">
                 {t("father.profile.retake")}
               </Button>
             </form>
+          ) : (
+            <p className="mt-8 text-sm text-muted-foreground">{t("father.assessments.unavailable")}</p>
           )}
         </section>
         </div>
@@ -134,12 +140,14 @@ export default async function FatherProfilePage({
           >
             {t("common.continue")}
           </Link>
-        ) : (
+        ) : access.canStartKeystone ? (
           <form action={startProfile} className="mt-8">
             <Button type="submit" size="lg" className="w-full min-h-12 lg:w-auto">
               {t("father.profile.takeCta")}
             </Button>
           </form>
+        ) : (
+          <p className="mt-8 text-sm text-muted-foreground">{t("father.assessments.unavailable")}</p>
         )}
         <p className="mt-6 text-sm text-muted-foreground">
           {t("father.profile.takeHint")}

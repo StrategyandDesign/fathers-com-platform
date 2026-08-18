@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { loadFatherAssessmentAccess } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
 import {
   deleteProfileDraft,
@@ -30,12 +31,16 @@ function readAnswer(formData: FormData) {
 
 export async function startProfile() {
   const { user } = await requireRole("father");
-  const [profile, draft] = await Promise.all([
+  const [profile, draft, access] = await Promise.all([
     loadLatestProfile(user.id),
     loadProfileDraft(user.id),
+    loadFatherAssessmentAccess(user.id),
   ]);
   if (profile && !draft) {
     redirect("/father/profile/results");
+  }
+  if (!draft && !access.canStartKeystone) {
+    redirect("/father/assessments?error=flash.keystoneUnavailable");
   }
 
   await ensureProfileDraft(user.id);
@@ -46,6 +51,10 @@ export async function startProfile() {
 
 export async function retakeProfile() {
   const { user } = await requireRole("father");
+  const access = await loadFatherAssessmentAccess(user.id);
+  if (!access.canStartKeystone) {
+    redirect("/father/profile?error=flash.keystoneUnavailable");
+  }
   await deleteProfileDraft(user.id);
   await ensureProfileDraft(user.id);
   revalidatePath("/father");

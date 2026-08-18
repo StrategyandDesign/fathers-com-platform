@@ -5,6 +5,7 @@ import { ProfileAnswerOptions } from "@/components/profile/answer-options";
 import { ProfileSaveExitButton } from "@/components/profile/save-exit-button";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
+import { loadFatherAssessmentAccess } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
 import { saveAndExitProfile, saveProfileProgress } from "@/lib/father/profile-actions";
 import { ensureProfileDraft, loadLatestProfile, loadProfileDraft } from "@/lib/father/profile";
@@ -34,13 +35,17 @@ export default async function FatherProfileTakePage({
   const params = await searchParams;
   const { user } = await requireRole("father");
   const { t } = await getI18n();
-  const [completed, existingDraft] = await Promise.all([
+  const [completed, existingDraft, access] = await Promise.all([
     loadLatestProfile(user.id),
     loadProfileDraft(user.id),
+    loadFatherAssessmentAccess(user.id),
   ]);
 
   if (completed && !existingDraft) {
     redirect("/father/profile/results");
+  }
+  if (!existingDraft && !access.canStartKeystone) {
+    redirect("/father/assessments?error=flash.keystoneUnavailable");
   }
 
   const draft = existingDraft ?? (await ensureProfileDraft(user.id));

@@ -56,6 +56,7 @@ export type QuestionDraftInput = {
 export type RosterFather = {
   fatherId: string;
   name: string;
+  groupId: string;
 };
 
 export type AssessmentListItem = CustomAssessment & {

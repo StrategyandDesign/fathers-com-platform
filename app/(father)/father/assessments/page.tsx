@@ -1,7 +1,8 @@
 import Link from "next/link";
 
+import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
-import { loadFatherAssignments } from "@/lib/assessments/data";
+import { loadFatherAssessmentAccess, loadFatherAssignments } from "@/lib/assessments/data";
 import { takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
 import { loadProfileState } from "@/lib/father/profile";
@@ -10,13 +11,20 @@ import { formatLongDate, getI18n } from "@/lib/i18n/server";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
-export default async function FatherAssessmentsPage() {
+export default async function FatherAssessmentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; notice?: string }>;
+}) {
+  const flash = await searchParams;
   const { user } = await requireRole("father");
   const { t, locale } = await getI18n();
-  const [assignments, { profile, draft }] = await Promise.all([
+  const [assignments, { profile, draft }, access] = await Promise.all([
     loadFatherAssignments(user.id),
     loadProfileState(user.id),
+    loadFatherAssessmentAccess(user.id),
   ]);
+  const showKeystone = Boolean(profile || draft || access.canStartKeystone);
   const resumeAt = draft ? firstUnanswered(draft.answers) : 1;
   const answered = draft ? answeredCount(draft.answers) : 0;
   const keystoneHref = profile
@@ -47,9 +55,11 @@ export default async function FatherAssessmentsPage() {
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("father.assessments.lead")}</p>
       </div>
+      <Flash error={flash.error} notice={flash.notice} />
 
       <section className="overflow-hidden rounded-xl border border-border bg-card">
         <ul className="divide-y divide-border">
+          {showKeystone ? (
           <li>
             <Link
               href={keystoneHref}
@@ -72,6 +82,12 @@ export default async function FatherAssessmentsPage() {
               </span>
             </Link>
           </li>
+          ) : null}
+          {!showKeystone && assignments.length === 0 ? (
+            <li className="px-4 py-4 text-sm text-muted-foreground">
+              {t("father.assessments.emptyBody")}
+            </li>
+          ) : null}
           {assignments.map(({ assignment, assessment, questionCount, answeredCount }) => (
             <li key={assignment.id}>
               <Link

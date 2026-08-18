@@ -1,6 +1,12 @@
 import { displayName, type ManagedProfile } from "@/lib/manager/types";
 import { createClient } from "@/lib/supabase/server";
 import {
+  KEYSTONE_ASSESSMENT_KEY,
+  asAvailabilityRow,
+  fatherCanStartAssessment,
+  type AssessmentAvailabilityRow,
+} from "@/lib/assessments/availability";
+import {
   asStringOptions,
   isAssignmentStatus,
   isQuestionType,
@@ -62,12 +68,18 @@ export async function loadManagerRoster(managerId: string): Promise<RosterFather
   if (groupsError) throw groupsError;
   const groupIds = (groups ?? []).map((group) => group.id);
 
-  const membersRes = await emptyIn<{ father_id: string }>(groupIds, () =>
-    supabase.from("group_members").select("father_id").in("group_id", groupIds)
+  const membersRes = await emptyIn<{ father_id: string; group_id: string }>(groupIds, () =>
+    supabase.from("group_members").select("father_id, group_id").in("group_id", groupIds)
   );
   if (membersRes.error) throw membersRes.error;
 
-  const fatherIds = [...new Set((membersRes.data ?? []).map((row) => row.father_id))];
+  const groupByFather = new Map<string, string>();
+  for (const row of membersRes.data ?? []) {
+    if (!groupByFather.has(row.father_id)) {
+      groupByFather.set(row.father_id, row.group_id);
+    }
+  }
+  const fatherIds = [...groupByFather.keys()];
   const profilesRes = await emptyIn<ManagedProfile>(fatherIds, () =>
     supabase.from("profiles").select("id, full_name").in("id", fatherIds)
   );
@@ -78,8 +90,62 @@ export async function loadManagerRoster(managerId: string): Promise<RosterFather
     .map((fatherId) => ({
       fatherId,
       name: displayName(profiles.get(fatherId) ?? null, fatherId),
+      groupId: groupByFather.get(fatherId) ?? "",
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export async function loadAssessmentAvailability(
+  groupIds: string[]
+): Promise<AssessmentAvailabilityRow[]> {
+  const supabase = await createClient();
+  const result = await emptyIn<{
+    group_id: string;
+    assessment_key: string;
+    status: string;
+    decided_at: string | null;
+    decided_by: string | null;
+  }>(groupIds, () =>
+    supabase
+      .from("organization_assessment_availability")
+      .select("group_id, assessment_key, status, decided_at, decided_by")
+      .in("group_id", groupIds)
+  );
+  if (result.error) throw result.error;
+  return (result.data ?? [])
+    .map(asAvailabilityRow)
+    .filter((row): row is AssessmentAvailabilityRow => row !== null);
+}
+
+export async function loadFatherAssessmentAccess(fatherId: string) {
+  const supabase = await createClient();
+  const [membershipsRes, profileRes] = await Promise.all([
+    supabase
+      .from("group_members")
+      .select("group_id")
+      .eq("father_id", fatherId)
+      .order("joined_at", { ascending: true }),
+    supabase.from("profiles").select("home_group_id").eq("id", fatherId).maybeSingle(),
+  ]);
+  if (membershipsRes.error) throw membershipsRes.error;
+  if (profileRes.error) throw profileRes.error;
+
+  const groupIds = [...new Set((membershipsRes.data ?? []).map((row) => String(row.group_id)))];
+  const homeGroupId =
+    typeof profileRes.data?.home_group_id === "string" ? profileRes.data.home_group_id : null;
+  const availability = await loadAssessmentAvailability(groupIds);
+
+  return {
+    groupIds,
+    homeGroupId,
+    availability,
+    canStartKeystone: fatherCanStartAssessment({
+      rows: availability,
+      groupIds,
+      homeGroupId,
+      assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+    }),
+  };
 }
 
 export async function loadManagerAssessments(managerId: string): Promise<AssessmentListItem[]> {

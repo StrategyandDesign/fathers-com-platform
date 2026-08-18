@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
+import { customAssessmentKey, isAssessmentAvailable } from "@/lib/assessments/availability";
 import {
+  loadAssessmentAvailability,
   loadAssignmentTake,
   loadManagerAssessmentDetail,
   loadManagerRoster,
@@ -246,9 +248,21 @@ export async function assignAssessment(formData: FormData) {
   }
 
   const already = new Set(detail.assignments.map((row) => row.father_id));
-  const toInsert = fatherIds.filter((fatherId) => !already.has(fatherId));
-  if (toInsert.length === 0) {
+  const selected = fatherIds.filter((fatherId) => !already.has(fatherId));
+  if (selected.length === 0) {
     fail(path, "Those participants are already assigned.");
+  }
+  const rosterById = new Map(roster.map((row) => [row.fatherId, row]));
+  const groupIds = [...new Set(roster.map((row) => row.groupId).filter(Boolean))];
+  const availability = await loadAssessmentAvailability(groupIds);
+  const assessmentKey = customAssessmentKey(assessmentId);
+  const toInsert = selected.filter((fatherId) => {
+    const groupId = rosterById.get(fatherId)?.groupId;
+    if (!groupId) return false;
+    return isAssessmentAvailable(availability, groupId, assessmentKey);
+  });
+  if (toInsert.length === 0) {
+    fail(path, "flash.assessmentAssignHidden");
   }
 
   const supabase = await createClient();
@@ -273,6 +287,60 @@ export async function assignAssessment(formData: FormData) {
     toInsert.length === 1
       ? "Assessment assigned."
       : `Assessment assigned to ${toInsert.length} participants.`
+  );
+}
+
+export async function assignAssessmentToUnassigned(formData: FormData) {
+  const { user } = await requireRole("manager");
+  const assessmentId = String(formData.get("assessment_id") ?? "").trim();
+  const groupId = String(formData.get("group_id") ?? "").trim();
+  const path = "/manager/assessments";
+  if (!assessmentId) {
+    fail(path, "Choose an assessment to assign.");
+  }
+
+  const [detail, roster] = await Promise.all([
+    loadManagerAssessmentDetail(user.id, assessmentId),
+    loadManagerRoster(user.id),
+  ]);
+  if (!detail) {
+    fail(path, "That assessment was not found.");
+  }
+  if (detail.questions.length === 0) {
+    fail(`/manager/assessments/${assessmentId}`, "Add at least one question.");
+  }
+
+  const already = new Set(detail.assignments.map((row) => row.father_id));
+  const groupIds = [...new Set(roster.map((row) => row.groupId).filter(Boolean))];
+  const availability = await loadAssessmentAvailability(groupIds);
+  const assessmentKey = customAssessmentKey(assessmentId);
+  const remaining = roster.filter((row) => {
+    if (already.has(row.fatherId) || !row.groupId) return false;
+    if (groupId && row.groupId !== groupId) return false;
+    return isAssessmentAvailable(availability, row.groupId, assessmentKey);
+  });
+  if (remaining.length === 0) {
+    fail(path, "flash.alreadyHasTraining");
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("custom_assessment_assignments").insert(
+    remaining.map((row) => ({
+      assessment_id: assessmentId,
+      father_id: row.fatherId,
+      assigned_by: user.id,
+    }))
+  );
+  if (error) {
+    fail(path, "The assignment didn’t save. Try again.");
+  }
+
+  revalidateAssessments(assessmentId);
+  ok(
+    path,
+    remaining.length === 1
+      ? "Assessment assigned."
+      : `Assessment assigned to ${remaining.length} participants.`
   );
 }
 

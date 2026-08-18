@@ -1,13 +1,108 @@
 import Link from "next/link";
 
+import { AssessmentVisibilityForms } from "@/components/manager/assessment-visibility-forms";
 import { Flash } from "@/components/manager/flash";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { loadManagerAssessments } from "@/lib/assessments/data";
+import { assignAssessmentToUnassigned } from "@/lib/assessments/actions";
+import {
+  buildManagerAssessmentCatalog,
+  partitionAssessmentCatalog,
+  type AssessmentCatalogItem,
+} from "@/lib/assessments/catalog";
+import { loadAssessmentAvailability, loadManagerAssessments } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
-import { formatShortDate, getI18n } from "@/lib/i18n/server";
-import { interactiveSurfaceClassName } from "@/lib/ui";
+import { getI18n } from "@/lib/i18n/server";
+import { loadManagerWorkspace } from "@/lib/manager/data";
+import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+
+function questionLabel(
+  count: number,
+  t: (key: string, vars?: Record<string, string | number>) => string
+) {
+  return count === 1
+    ? t("manager.assessments.questionOne")
+    : t("manager.assessments.questionMany", { count });
+}
+
+function AssessmentCard({
+  item,
+  title,
+  remaining,
+  t,
+}: {
+  item: AssessmentCatalogItem;
+  title: string;
+  remaining: number;
+  t: (key: string, vars?: Record<string, string | number>) => string;
+}) {
+  return (
+    <article className="rounded-xl border border-border bg-card p-4 sm:p-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <Link href={item.href} className={cn("block font-heading text-lg font-semibold", interactiveLinkClassName)}>
+            {title}
+          </Link>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {[
+              item.kind === "keystone"
+                ? t("manager.assessments.platform")
+                : null,
+              questionLabel(item.questionCount, t),
+              item.kind === "keystone"
+                ? t("manager.assessments.completedOfRoster", {
+                    completed: item.completedCount,
+                    total: item.assignedCount,
+                  })
+                : t("manager.assessments.completedOf", {
+                    completed: item.completedCount,
+                    assigned: item.assignedCount,
+                  }),
+              item.groupName,
+              item.status === "hidden"
+                ? t("manager.assessments.hidden")
+                : t("manager.assessments.available"),
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+          {item.description ? (
+            <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{item.description}</p>
+          ) : null}
+        </div>
+      </div>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        <Link
+          href={item.href}
+          className={cn(buttonVariants({ variant: "outline" }), "w-full min-h-11 sm:w-auto")}
+        >
+          {t("manager.assessments.view")}
+        </Link>
+        {item.kind === "custom" && item.customId && item.status === "available" && remaining > 0 ? (
+          <form action={assignAssessmentToUnassigned}>
+            <input type="hidden" name="assessment_id" value={item.customId} />
+            <input type="hidden" name="group_id" value={item.groupId} />
+            <Button type="submit" className="w-full min-h-11 sm:w-auto">
+              {t("manager.assessments.assignRemaining", { n: remaining })}
+            </Button>
+          </form>
+        ) : null}
+      </div>
+      {item.groupId ? (
+        <div className="mt-5 border-t border-border pt-5">
+          <AssessmentVisibilityForms
+            assessmentKey={item.assessmentKey}
+            groupId={item.groupId}
+            status={item.status}
+            kind={item.kind}
+            returnTo="list"
+          />
+        </div>
+      ) : null}
+    </article>
+  );
+}
 
 export default async function ManagerAssessmentsPage({
   searchParams,
@@ -16,18 +111,50 @@ export default async function ManagerAssessmentsPage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
-  const { t, locale } = await getI18n();
-  const assessments = await loadManagerAssessments(user.id);
+  const { t } = await getI18n();
+  const [workspace, custom] = await Promise.all([
+    loadManagerWorkspace(user.id),
+    loadManagerAssessments(user.id),
+  ]);
+  const groupIds = workspace.groups.map((group) => group.id);
+  const availability = await loadAssessmentAvailability(groupIds);
+  const keystoneCompletedByGroup: Record<string, number> = {};
+  const groupSize: Record<string, number> = {};
+  for (const participant of workspace.participants) {
+    groupSize[participant.groupId] = (groupSize[participant.groupId] ?? 0) + 1;
+    if (participant.profileStatus === "completed") {
+      keystoneCompletedByGroup[participant.groupId] =
+        (keystoneCompletedByGroup[participant.groupId] ?? 0) + 1;
+    }
+  }
+
+  const catalog = buildManagerAssessmentCatalog({
+    groups: workspace.groups.map((group) => ({ id: group.id, name: group.name })),
+    custom,
+    availability,
+    keystoneCompletedByGroup,
+    groupSize,
+  });
+  const { available, hidden } = partitionAssessmentCatalog(catalog);
+  const orgName = workspace.groups[0]?.name ?? t("account.orgPhotosFallback");
+  const assignedByCustom = new Map(custom.map((row) => [row.id, row.assignedCount]));
+
+  function remainingFor(item: AssessmentCatalogItem) {
+    if (item.kind !== "custom" || !item.customId) return 0;
+    const total = groupSize[item.groupId] ?? workspace.participants.length;
+    const assigned = assignedByCustom.get(item.customId) ?? 0;
+    return Math.max(0, total - assigned);
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight">
             {t("manager.assessments.title")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.assessments.lead")}
+            {t("manager.assessments.lead", { org: orgName })}
           </p>
         </div>
         <Link href="/manager/assessments/new" className={cn(buttonVariants(), "w-full sm:w-auto")}>
@@ -36,53 +163,57 @@ export default async function ManagerAssessmentsPage({
       </div>
       <Flash error={params.error} notice={params.notice} />
 
-      {assessments.length === 0 ? (
-        <EmptyState
-          title={t("manager.assessments.emptyTitle")}
-          actionHref="/manager/assessments/new"
-          actionLabel={t("manager.assessments.new")}
-        >
-          {t("manager.assessments.emptyBody")}
-        </EmptyState>
-      ) : (
-        <ul className="grid gap-4">
-          {assessments.map((assessment) => (
-            <li key={assessment.id}>
-              <Link
-                href={`/manager/assessments/${assessment.id}`}
-                className={cn(
-                  "block rounded-xl border border-border bg-card p-4 sm:p-5",
-                  interactiveSurfaceClassName
-                )}
-              >
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="min-w-0">
-                    <h2 className="font-heading text-lg font-semibold">{assessment.title}</h2>
-                    {assessment.description ? (
-                      <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                        {assessment.description}
-                      </p>
-                    ) : null}
-                  </div>
-                  <p className="shrink-0 text-sm text-muted-foreground">
-                    {formatShortDate(assessment.created_at, locale)}
-                  </p>
-                </div>
-                <p className="mt-4 text-sm text-muted-foreground">
-                  {assessment.questionCount === 1
-                    ? t("manager.assessments.questionOne")
-                    : t("manager.assessments.questionMany", { count: assessment.questionCount })}
-                  {" · "}
-                  {t("manager.assessments.completedOf", {
-                    completed: assessment.completedCount,
-                    assigned: assessment.assignedCount,
-                  })}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <section className="space-y-4">
+        <div>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.availableTitle")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("manager.assessments.availableLead")}</p>
+        </div>
+        {available.length === 0 ? (
+          <EmptyState title={t("manager.assessments.availableEmptyTitle")}>
+            {t("manager.assessments.availableEmptyBody")}
+          </EmptyState>
+        ) : (
+          <div className="grid gap-4">
+            {available.map((item) => (
+              <AssessmentCard
+                key={item.key}
+                item={item}
+                title={
+                  item.kind === "keystone" ? t("father.profile.keystone") : item.title ?? ""
+                }
+                remaining={remainingFor(item)}
+                t={t}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="space-y-4">
+        <div>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.hiddenTitle")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("manager.assessments.hiddenLead")}</p>
+        </div>
+        {hidden.length === 0 ? (
+          <div className="rounded-xl border border-border bg-card px-4 py-5 sm:px-6">
+            <p className="text-sm text-muted-foreground">{t("manager.assessments.hiddenEmpty")}</p>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {hidden.map((item) => (
+              <AssessmentCard
+                key={item.key}
+                item={item}
+                title={
+                  item.kind === "keystone" ? t("father.profile.keystone") : item.title ?? ""
+                }
+                remaining={0}
+                t={t}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
