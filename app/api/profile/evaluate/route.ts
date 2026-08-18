@@ -15,10 +15,10 @@ import {
 import { evaluateProfile, profilePersistFields } from "@/lib/profile/score";
 import { createClient } from "@/lib/supabase/server";
 
-function takeError(message: string, questionId?: number) {
+function takeError(takePath: string, message: string, questionId?: number) {
   const params = new URLSearchParams({ error: message });
   if (questionId) params.set("q", String(questionId));
-  redirect(`/father/profile/take?${params.toString()}`);
+  redirect(`${takePath}?${params.toString()}`);
 }
 
 export async function POST(request: Request) {
@@ -26,15 +26,20 @@ export async function POST(request: Request) {
   if (deactivated) {
     redirect("/login?error=This account has been deactivated.");
   }
-  if (!user || role !== "father") {
+  if (!user || (role !== "father" && role !== "manager")) {
     redirect("/login");
   }
+
+  const takePath =
+    role === "manager" ? "/manager/practice/profile/take" : "/father/profile/take";
+  const resultsPath =
+    role === "manager" ? "/manager/practice/profile/results" : "/father/profile/results";
 
   const supabase = await createClient();
   const existing = await loadLatestProfile(user.id);
   const draft = await loadProfileDraft(user.id);
   if (existing && !draft) {
-    redirect("/father/profile/results");
+    redirect(resultsPath);
   }
 
   const formData = await request.formData();
@@ -48,7 +53,7 @@ export async function POST(request: Request) {
   }
 
   if (!hasAllAnswers(answers)) {
-    takeError("Answer every question before you submit.", firstUnanswered(answers));
+    takeError(takePath, "Answer every question before you submit.", firstUnanswered(answers));
   }
 
   const evaluation = evaluateProfile(answers);
@@ -60,13 +65,14 @@ export async function POST(request: Request) {
 
   if (error) {
     await upsertProfileDraft(user.id, answers, firstUnanswered(answers));
-    takeError("Your Assessment didn’t save. Try again.", questionId || firstUnanswered(answers));
+    takeError(takePath, "Your Assessment didn’t save. Try again.", questionId || firstUnanswered(answers));
   }
 
   await deleteProfileDraft(user.id);
-  redirect("/father/profile/results");
+  redirect(resultsPath);
 }
 
 export async function GET() {
-  redirect("/father/profile");
+  const { role } = await getAuthContext();
+  redirect(role === "manager" ? "/manager/practice" : "/father/profile");
 }

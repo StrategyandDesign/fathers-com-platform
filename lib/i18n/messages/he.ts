@@ -810,6 +810,13 @@ export const he = {
       certificates: "תעודת סיום",
       certificatesLead: "אתה שולח אותן אחרי שאב מסיים את כל המפגשים בהכשרה. תצוגה מקדימה, ואז הנפקת ה־PDF.",
       viewCertificates: "פתיחת תעודות",
+      practiceTitle: "ההכשרה וההערכות שלך",
+      practiceLead:
+        "אפשר לעבור את אותן הכשרות והערכות שהאבות בארגון עוברים. ההתקדמות נשמרת בחשבון שלך.",
+      practiceNoCertificate: "תעודת סיום לא מונפקת על העבודה הזו.",
+      practiceOpen: "פתיחת המסלול שלך",
+      practiceTraining: "מעבר הכשרה",
+      practiceAssessment: "מעבר הערכה",
       noteEyebrow: "עדכון",
       noteTitle: "עדכון אחד",
       noteLead:
@@ -835,6 +842,21 @@ export const he = {
       noteNotYours: "הקבוצה הזו אינה שלך.",
       noteSaveFailed: "העדכון לא פורסם. נסה שוב.",
       noteClearFailed: "העדכון לא נמחק. נסה שוב.",
+    },
+    practice: {
+      title: "ההכשרה וההערכות שלך",
+      lead:
+        "אפשר לעבור את אותן הכשרות והערכות שהאבות בארגון עוברים. סרט, צ׳ק־אין ופעולה נשארים באותו סדר. ההתקדמות נשמרת בחשבון שלך.",
+      noCertificate: "תעודת סיום לא מונפקת על העבודה הזו.",
+      backDashboard: "חזרה ללוח הבקרה",
+      backToPath: "חזרה למסלול שלך",
+      trainingsTitle: "הכשרות",
+      trainingsLead: "אפשר להתחיל כל הכשרה שזמינה לארגון.",
+      trainingsEmptyTitle: "אין עדיין הכשרה זמינה",
+      trainingsEmptyBody: "כשהכשרה תהיה זמינה לארגון, אפשר לעבור אותה כאן.",
+      assessmentsTitle: "הערכות",
+      assessmentsLead: "Keystone וכל הערכה שיצרת. התוצאות נשארות בחשבון שלך.",
+      assessmentsEmpty: "אין עדיין הערכה שאפשר לעבור.",
     },
     nudgePanel: {
       title: "משתתפים שקטים",

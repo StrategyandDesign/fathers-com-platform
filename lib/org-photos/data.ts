@@ -205,46 +205,34 @@ export async function loadManagerOrganizationPhotos(
   });
 }
 
-export async function loadFatherOrgPhotoCovers(
-  fatherId: string
-): Promise<FatherOrgPhotoCovers> {
-  const empty: FatherOrgPhotoCovers = {
-    organizationName: null,
-    heroUrl: null,
-    profileUrl: null,
-    logoUrl: null,
-    trainingUrls: {},
-    photoPack: "default",
-  };
+const emptyOrgPhotoCovers: FatherOrgPhotoCovers = {
+  organizationName: null,
+  heroUrl: null,
+  profileUrl: null,
+  logoUrl: null,
+  trainingUrls: {},
+  photoPack: "default",
+};
 
+async function coversForGroupId(groupId: string): Promise<FatherOrgPhotoCovers> {
   let supabase;
   try {
     supabase = await createClient();
   } catch {
-    return empty;
+    return emptyOrgPhotoCovers;
   }
-
-  const { data: membership, error: memberError } = await supabase
-    .from("group_members")
-    .select("group_id, joined_at")
-    .eq("father_id", fatherId)
-    .order("joined_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
-
-  if (memberError || !membership?.group_id) return empty;
 
   let groupRes;
   let rows: OrganizationPhotoRow[] = [];
   try {
     [groupRes, rows] = await Promise.all([
-      supabase.from("groups").select("id, name, code").eq("id", membership.group_id).maybeSingle(),
-      loadPhotoRows([membership.group_id]),
+      supabase.from("groups").select("id, name, code").eq("id", groupId).maybeSingle(),
+      loadPhotoRows([groupId]),
     ]);
   } catch {
-    return empty;
+    return emptyOrgPhotoCovers;
   }
-  if (groupRes.error) return empty;
+  if (groupRes.error) return emptyOrgPhotoCovers;
 
   const signed = await signStorageUrls(
     supabase,
@@ -285,6 +273,37 @@ export async function loadFatherOrgPhotoCovers(
       (groupRes.data as { code?: string | null } | null)?.code
     ),
   };
+}
+
+export async function loadFatherOrgPhotoCovers(
+  fatherId: string
+): Promise<FatherOrgPhotoCovers> {
+  let supabase;
+  try {
+    supabase = await createClient();
+  } catch {
+    return emptyOrgPhotoCovers;
+  }
+
+  const { data: membership, error: memberError } = await supabase
+    .from("group_members")
+    .select("group_id, joined_at")
+    .eq("father_id", fatherId)
+    .order("joined_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (memberError || !membership?.group_id) return emptyOrgPhotoCovers;
+  return coversForGroupId(membership.group_id);
+}
+
+export async function loadManagerOrgPhotoCovers(
+  managerId: string
+): Promise<FatherOrgPhotoCovers> {
+  const groups = await loadManagerGroups(managerId);
+  const groupId = groups[0]?.id;
+  if (!groupId) return emptyOrgPhotoCovers;
+  return coversForGroupId(groupId);
 }
 
 export async function loadFatherOrganizationMark(fatherId: string): Promise<OrganizationMark | null> {

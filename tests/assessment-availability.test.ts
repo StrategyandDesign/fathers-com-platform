@@ -5,6 +5,7 @@ import {
   KEYSTONE_ASSESSMENT_KEY,
   fatherCanStartAssessment,
   isAssessmentAvailable,
+  leaderCanStartAssessment,
   primaryFatherGroupId,
 } from "../lib/assessments/availability";
 import {
@@ -255,5 +256,39 @@ describe("assessment catalog", () => {
     const { available, hidden } = partitionAssessmentCatalog(items);
     assert.equal(available.length, 0);
     assert.equal(hidden.length, 1);
+  });
+});
+
+describe("leader assessment access", () => {
+  it("lets a Leader start Keystone when any managed group can offer it", () => {
+    assert.equal(
+      leaderCanStartAssessment({
+        rows: [
+          { group_id: "g1", assessment_key: KEYSTONE_ASSESSMENT_KEY, status: "hidden" },
+          { group_id: "g2", assessment_key: KEYSTONE_ASSESSMENT_KEY, status: "available" },
+        ],
+        groupIds: ["g1", "g2"],
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: released,
+        reviewStatusForGroup: (groupId) => (groupId === "g2" ? "accepted" : "declined"),
+      }),
+      true
+    );
+  });
+
+  it("keeps Keystone available to the Leader when they already have progress", () => {
+    assert.equal(
+      leaderCanStartAssessment({
+        rows: [
+          { group_id: "g1", assessment_key: KEYSTONE_ASSESSMENT_KEY, status: "hidden" },
+        ],
+        groupIds: ["g1"],
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        hasProgress: true,
+        release: released,
+        reviewStatusForGroup: () => "declined",
+      }),
+      true
+    );
   });
 });

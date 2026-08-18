@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { requireRole } from "@/lib/auth/session";
+import { requireRole, requireWalkUser } from "@/lib/auth/session";
+import { walkPathsFor } from "@/lib/practice/paths";
 import { customAssessmentKey, isAssessmentAvailable } from "@/lib/assessments/availability";
 import {
   loadAssessmentAvailability,
@@ -13,7 +14,6 @@ import {
 } from "@/lib/assessments/data";
 import {
   isQuestionType,
-  takeHref,
   type CustomAssessmentQuestion,
   type QuestionDraftInput,
 } from "@/lib/assessments/types";
@@ -43,6 +43,8 @@ function revalidateAssessments(assessmentId?: string, fatherId?: string, assignm
   }
   if (assignmentId) {
     revalidatePath(`/father/assessments/${assignmentId}`);
+    revalidatePath(`/manager/practice/assessments/${assignmentId}`);
+    revalidatePath("/manager/practice");
   }
 }
 
@@ -344,19 +346,74 @@ export async function assignAssessmentToUnassigned(formData: FormData) {
   );
 }
 
+export async function startLeaderAssessment(formData: FormData) {
+  const { user } = await requireRole("manager");
+  const assessmentId = String(formData.get("assessment_id") ?? "");
+  const home = "/manager/practice";
+
+  if (!assessmentId) {
+    redirect(home);
+  }
+
+  const supabase = await createClient();
+  const { data: assessment, error: assessmentError } = await supabase
+    .from("custom_assessments")
+    .select("id")
+    .eq("id", assessmentId)
+    .eq("manager_id", user.id)
+    .maybeSingle();
+
+  if (assessmentError || !assessment) {
+    fail(home, "That assessment is not available.");
+  }
+
+  const { data: existing, error: existingError } = await supabase
+    .from("custom_assessment_assignments")
+    .select("id")
+    .eq("assessment_id", assessmentId)
+    .eq("father_id", user.id)
+    .maybeSingle();
+
+  if (existingError) {
+    fail(home, "That assessment couldn’t load. Try again.");
+  }
+
+  if (existing?.id) {
+    redirect(`/manager/practice/assessments/${existing.id}`);
+  }
+
+  const { data: created, error } = await supabase
+    .from("custom_assessment_assignments")
+    .insert({
+      assessment_id: assessmentId,
+      father_id: user.id,
+      assigned_by: user.id,
+    })
+    .select("id")
+    .single();
+
+  if (error || !created?.id) {
+    fail(home, "The assessment didn’t start. Try again.");
+  }
+
+  revalidatePath("/manager/practice");
+  redirect(`/manager/practice/assessments/${created.id}`);
+}
+
 export async function saveCustomAnswer(formData: FormData) {
-  const { user } = await requireRole("father");
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
   const assignmentId = String(formData.get("assignment_id") ?? "");
   const questionId = String(formData.get("question_id") ?? "");
   const intent = String(formData.get("intent") ?? "next");
   const value = String(formData.get("value") ?? "").trim();
-  const home = "/father";
+  const home = paths.home;
 
   if (!assignmentId) {
     redirect(home);
   }
 
-  const path = `/father/assessments/${assignmentId}`;
+  const path = paths.assessment(assignmentId);
   let ctx;
   try {
     ctx = await loadAssignmentTake(user.id, assignmentId);
@@ -438,7 +495,7 @@ export async function saveCustomAnswer(formData: FormData) {
     if (missing) {
       const missingIndex = ctx.questions.findIndex((item) => item.id === missing.id);
       fail(
-        takeHref(assignmentId, missingIndex + 1),
+        paths.assessment(assignmentId, missingIndex + 1),
         "Answer every question to finish."
       );
     }
@@ -467,8 +524,8 @@ export async function saveCustomAnswer(formData: FormData) {
     redirect(home);
   }
   if (intent === "back") {
-    redirect(takeHref(assignmentId, Math.max(1, questionNumber - 1)));
+    redirect(paths.assessment(assignmentId, Math.max(1, questionNumber - 1)));
   }
 
-  redirect(takeHref(assignmentId, Math.min(ctx.questions.length, questionNumber + 1)));
+  redirect(paths.assessment(assignmentId, Math.min(ctx.questions.length, questionNumber + 1)));
 }

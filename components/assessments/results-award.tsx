@@ -18,6 +18,8 @@ export async function AssessmentResultsAward({
   answers,
   coverSrc,
   fatherName,
+  homeHref = "/father",
+  listHref = "/father/assessments",
 }: {
   assessment: CustomAssessment;
   assignment: CustomAssessmentAssignment;
@@ -25,6 +27,8 @@ export async function AssessmentResultsAward({
   answers: Map<string, string>;
   coverSrc: string;
   fatherName?: string | null;
+  homeHref?: string;
+  listHref?: string;
 }) {
   const { t, locale } = await getI18n();
   const completedOn = formatLongDate(
@@ -82,13 +86,13 @@ export async function AssessmentResultsAward({
 
       <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <Link
-          href="/father"
+          href={homeHref}
           className={cn(buttonVariants({ size: "lg" }), "w-full min-h-12 sm:w-auto")}
         >
           {t("father.assessments.backHome")}
         </Link>
         <Link
-          href="/father/assessments"
+          href={listHref}
           className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
         >
           {t("father.assessments.backToAssessments")}

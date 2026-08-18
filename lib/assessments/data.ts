@@ -4,9 +4,12 @@ import {
   KEYSTONE_ASSESSMENT_KEY,
   asAvailabilityRow,
   fatherCanStartAssessment,
+  leaderCanStartAssessment,
   primaryFatherGroupId,
   type AssessmentAvailabilityRow,
 } from "@/lib/assessments/availability";
+import { isLeaderSelfRow } from "@/lib/practice/paths";
+import { loadManagerGroups } from "@/lib/manager/data";
 import {
   isAssessmentReviewStatus,
   reviewForGroup,
@@ -238,6 +241,35 @@ export async function loadFatherAssessmentAccess(fatherId: string) {
   };
 }
 
+export async function loadLeaderAssessmentAccess(
+  managerId: string,
+  hasKeystoneProgress = false
+) {
+  const groups = await loadManagerGroups(managerId);
+  const groupIds = groups.map((group) => group.id);
+  const [availability, reviews, keystoneRelease] = await Promise.all([
+    loadAssessmentAvailability(groupIds),
+    loadOrganizationAssessmentReviews(groupIds),
+    loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
+  ]);
+
+  return {
+    groupIds,
+    availability,
+    reviews,
+    keystoneRelease,
+    canStartKeystone: leaderCanStartAssessment({
+      rows: availability,
+      groupIds,
+      assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+      hasProgress: hasKeystoneProgress,
+      release: keystoneRelease,
+      reviewStatusForGroup: (groupId) =>
+        reviewForGroup(reviews, groupId, KEYSTONE_ASSESSMENT_KEY)?.status ?? null,
+    }),
+  };
+}
+
 export async function loadManagerAssessments(managerId: string): Promise<AssessmentListItem[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -254,10 +286,10 @@ export async function loadManagerAssessments(managerId: string): Promise<Assessm
     emptyIn<{ assessment_id: string }>(ids, () =>
       supabase.from("custom_assessment_questions").select("assessment_id").in("assessment_id", ids)
     ),
-    emptyIn<{ assessment_id: string; status: string }>(ids, () =>
+    emptyIn<{ assessment_id: string; status: string; father_id: string }>(ids, () =>
       supabase
         .from("custom_assessment_assignments")
-        .select("assessment_id, status")
+        .select("assessment_id, status, father_id")
         .in("assessment_id", ids)
     ),
   ]);
@@ -268,7 +300,9 @@ export async function loadManagerAssessments(managerId: string): Promise<Assessm
     const questionCount = (questionsRes.data ?? []).filter(
       (row) => row.assessment_id === assessment.id
     ).length;
-    const assigned = (assignmentsRes.data ?? []).filter((row) => row.assessment_id === assessment.id);
+    const assigned = (assignmentsRes.data ?? []).filter(
+      (row) => row.assessment_id === assessment.id && !isLeaderSelfRow(row.father_id, managerId)
+    );
     return {
       ...asAssessment(assessment),
       questionCount,
@@ -315,7 +349,9 @@ export async function loadManagerAssessmentDetail(managerId: string, assessmentI
     .filter((row): row is CustomAssessmentAssignment => row !== null);
 
   const names = new Map(roster.map((row) => [row.fatherId, row.name]));
-  const assignmentRows: AssignmentRow[] = assignments.map((row) => ({
+  const assignmentRows: AssignmentRow[] = assignments
+    .filter((row) => !isLeaderSelfRow(row.father_id, managerId))
+    .map((row) => ({
     ...row,
     fatherName: names.get(row.father_id) ?? displayName(null, row.father_id),
   }));

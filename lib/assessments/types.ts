@@ -105,9 +105,14 @@ export function pickFeaturedAssignment(cards: FatherAssignmentCard[]) {
   );
 }
 
-export function takeHref(assignmentId: string, questionNumber?: number) {
-  if (!questionNumber) return `/father/assessments/${assignmentId}`;
-  return `/father/assessments/${assignmentId}?q=${questionNumber}`;
+export function takeHref(
+  assignmentId: string,
+  questionNumber?: number,
+  options?: { root?: string }
+) {
+  const root = options?.root ?? "/father";
+  if (!questionNumber) return `${root}/assessments/${assignmentId}`;
+  return `${root}/assessments/${assignmentId}?q=${questionNumber}`;
 }
 
 export function assignmentActionLabel(status: AssignmentStatus) {

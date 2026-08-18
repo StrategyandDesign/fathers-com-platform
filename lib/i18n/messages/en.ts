@@ -851,6 +851,14 @@ export const en = {
       certificatesLead:
         "You send these after a father finishes every session in a training. Preview, then issue the PDF.",
       viewCertificates: "Open certificates",
+      practiceTitle: "Your training and assessments",
+      practiceLead:
+        "You can take the same trainings and assessments the fathers in your organization take. Progress is saved to your account.",
+      practiceNoCertificate:
+        "A certificate of completion is not issued for this work.",
+      practiceOpen: "Open your path",
+      practiceTraining: "Take a training",
+      practiceAssessment: "Take an assessment",
       noteEyebrow: "Update",
       noteTitle: "One update",
       noteLead:
@@ -877,6 +885,22 @@ export const en = {
       noteNotYours: "That group is not yours.",
       noteSaveFailed: "The update didn’t post. Try again.",
       noteClearFailed: "The update didn’t clear. Try again.",
+    },
+    practice: {
+      title: "Your training and assessments",
+      lead:
+        "You can take the same trainings and assessments the fathers in your organization take. Film, check-in, and action stay in the same order. Progress is saved to your account.",
+      noCertificate: "A certificate of completion is not issued for this work.",
+      backDashboard: "Back to Dashboard",
+      backToPath: "Back to your path",
+      trainingsTitle: "Trainings",
+      trainingsLead: "Start any training that is available to your organization.",
+      trainingsEmptyTitle: "No training available yet",
+      trainingsEmptyBody:
+        "When a training is available to your organization, you can take it here.",
+      assessmentsTitle: "Assessments",
+      assessmentsLead: "Keystone and any assessments you have created. Results stay on your account.",
+      assessmentsEmpty: "No assessment is available to take yet.",
     },
     nudgePanel: {
       title: "Quiet participants",

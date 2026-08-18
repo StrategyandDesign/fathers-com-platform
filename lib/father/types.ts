@@ -157,16 +157,18 @@ export function continueHref(
   progress: Pick<
     SessionProgress,
     "film_completed" | "checkin_completed" | "action_completed"
-  > | null
+  > | null,
+  options?: { root?: string }
 ) {
-  if (!progress?.film_completed) return `/father/sessions/${sessionId}`;
+  const root = options?.root ?? "/father";
+  if (!progress?.film_completed) return `${root}/sessions/${sessionId}`;
   if (!progress.checkin_completed) {
-    return `/father/sessions/${sessionId}/checkin`;
+    return `${root}/sessions/${sessionId}/checkin`;
   }
   if (!progress.action_completed) {
-    return `/father/sessions/${sessionId}/action`;
+    return `${root}/sessions/${sessionId}/action`;
   }
-  return `/father/sessions/${sessionId}`;
+  return `${root}/sessions/${sessionId}`;
 }
 
 const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;

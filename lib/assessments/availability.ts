@@ -93,3 +93,36 @@ export function fatherCanStartAssessment(input: {
 
   return isAssessmentAvailable(input.rows, groupId, input.assessmentKey);
 }
+
+export function leaderCanStartAssessment(input: {
+  rows: AssessmentAvailabilityRow[];
+  groupIds: string[];
+  assessmentKey: string;
+  hasProgress?: boolean;
+  release?: {
+    released_at?: string | null;
+    first_released_at?: string | null;
+  } | null;
+  reviewStatusForGroup: (groupId: string) => "pending" | "accepted" | "declined" | null;
+}) {
+  if (input.hasProgress) return true;
+  if (input.groupIds.length === 0) {
+    return fatherCanStartAssessment({
+      rows: input.rows,
+      groupIds: [],
+      assessmentKey: input.assessmentKey,
+      release: input.release,
+      reviewStatus: null,
+    });
+  }
+  return input.groupIds.some((groupId) =>
+    fatherCanStartAssessment({
+      rows: input.rows,
+      groupIds: [groupId],
+      homeGroupId: groupId,
+      assessmentKey: input.assessmentKey,
+      release: input.release,
+      reviewStatus: input.reviewStatusForGroup(groupId),
+    })
+  );
+}

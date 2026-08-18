@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { loadFatherAssessmentAccess } from "@/lib/assessments/data";
-import { requireRole } from "@/lib/auth/session";
+import { loadFatherAssessmentAccess, loadLeaderAssessmentAccess } from "@/lib/assessments/data";
+import { requireWalkUser } from "@/lib/auth/session";
 import {
   deleteProfileDraft,
   ensureProfileDraft,
@@ -16,6 +16,7 @@ import {
   PROFILE_QUESTION_COUNT,
   parseAnswers,
 } from "@/lib/father/questions";
+import { walkPathsFor } from "@/lib/practice/paths";
 
 function clampQuestion(value: number) {
   return Math.min(PROFILE_QUESTION_COUNT, Math.max(1, value));
@@ -29,38 +30,52 @@ function readAnswer(formData: FormData) {
   return value;
 }
 
+async function canStartKeystone(userId: string, role: "father" | "manager") {
+  if (role === "manager") {
+    const access = await loadLeaderAssessmentAccess(userId);
+    return access.canStartKeystone;
+  }
+  const access = await loadFatherAssessmentAccess(userId);
+  return access.canStartKeystone;
+}
+
 export async function startProfile() {
-  const { user } = await requireRole("father");
-  const [profile, draft, access] = await Promise.all([
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
+  const [profile, draft, allowed] = await Promise.all([
     loadLatestProfile(user.id),
     loadProfileDraft(user.id),
-    loadFatherAssessmentAccess(user.id),
+    canStartKeystone(user.id, role),
   ]);
   if (profile && !draft) {
-    redirect("/father/profile/results");
+    redirect(paths.profileResults);
   }
-  if (!draft && !access.canStartKeystone) {
-    redirect("/father/assessments?error=flash.keystoneUnavailable");
+  if (!draft && !allowed) {
+    redirect(`${paths.assessments.replace(/#.*$/, "")}?error=flash.keystoneUnavailable`);
   }
 
   await ensureProfileDraft(user.id);
   revalidatePath("/father");
   revalidatePath("/father/profile");
-  redirect("/father/profile/take");
+  revalidatePath("/manager/practice");
+  redirect(paths.profileTake);
 }
 
 export async function retakeProfile() {
-  const { user } = await requireRole("father");
-  const access = await loadFatherAssessmentAccess(user.id);
-  if (!access.canStartKeystone) {
-    redirect("/father/profile?error=flash.keystoneUnavailable");
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
+  const allowed = await canStartKeystone(user.id, role);
+  if (!allowed) {
+    redirect(`${paths.home}?error=flash.keystoneUnavailable`);
   }
   await deleteProfileDraft(user.id);
   await ensureProfileDraft(user.id);
   revalidatePath("/father");
   revalidatePath("/father/profile");
   revalidatePath("/father/profile/take");
-  redirect("/father/profile/take?q=1");
+  revalidatePath("/manager/practice");
+  revalidatePath(paths.profileTake);
+  redirect(`${paths.profileTake}?q=1`);
 }
 
 type ProfileIntent = "next" | "back" | "exit";
@@ -80,7 +95,8 @@ export async function saveAndExitProfile(formData: FormData) {
 }
 
 async function persistProfileProgress(formData: FormData, intent: ProfileIntent) {
-  const { user } = await requireRole("father");
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
   const questionId = clampQuestion(Number(formData.get("question_id") ?? 1));
   const draft = await ensureProfileDraft(user.id);
   const answers = parseAnswers(draft.answers);
@@ -88,7 +104,7 @@ async function persistProfileProgress(formData: FormData, intent: ProfileIntent)
 
   if (intent === "next" && value == null) {
     redirect(
-      `/father/profile/take?q=${questionId}&error=${encodeURIComponent("Choose an answer to continue.")}`
+      `${paths.profileTake}?q=${questionId}&error=${encodeURIComponent("Choose an answer to continue.")}`
     );
   }
 
@@ -107,14 +123,16 @@ async function persistProfileProgress(formData: FormData, intent: ProfileIntent)
   revalidatePath("/father");
   revalidatePath("/father/profile");
   revalidatePath("/father/profile/take");
+  revalidatePath("/manager/practice");
+  revalidatePath(paths.profileTake);
 
   if (intent === "exit") {
     redirect(
-      `/father/profile?notice=${encodeURIComponent(
-        "Your Assessment progress is saved. You can continue from Assessments."
+      `${paths.home}?notice=${encodeURIComponent(
+        "Your Assessment progress is saved. You can continue from this page."
       )}`
     );
   }
 
-  redirect(`/father/profile/take?q=${nextIndex}`);
+  redirect(`${paths.profileTake}?q=${nextIndex}`);
 }

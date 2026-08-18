@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { getAuthContext, requireRole } from "@/lib/auth/session";
+import { getAuthContext, requireWalkUser } from "@/lib/auth/session";
 import { loadSessionContext } from "@/lib/father/data";
 import { writeFilmSeconds } from "@/lib/father/film-position";
 import {
@@ -21,15 +21,20 @@ import {
   CHECKIN_NOTE_KEY,
   CHECKIN_NOTE_MAX_LENGTH,
 } from "@/lib/father/session-questions";
+import { walkPathsFor, type WalkPaths } from "@/lib/practice/paths";
 import { createClient } from "@/lib/supabase/server";
 
-async function requireReachableSession(fatherId: string, sessionId: string) {
+async function requireReachableSession(
+  fatherId: string,
+  sessionId: string,
+  paths: WalkPaths
+) {
   const context = await loadSessionContext(fatherId, sessionId);
   if (!context) {
-    redirect("/father");
+    redirect(paths.home);
   }
   if (!context.unlocked) {
-    redirect(context.gateRedirect ?? `/father/sessions/${context.redirectSessionId}`);
+    redirect(context.gateRedirect ?? paths.session(context.redirectSessionId));
   }
   return context;
 }
@@ -104,43 +109,50 @@ async function saveProgress(
   revalidatePath(`/father/sessions/${sessionId}`);
   revalidatePath(`/father/sessions/${sessionId}/checkin`);
   revalidatePath(`/father/sessions/${sessionId}/action`);
+  revalidatePath("/manager");
+  revalidatePath("/manager/practice");
+  revalidatePath(`/manager/practice/sessions/${sessionId}`);
+  revalidatePath(`/manager/practice/sessions/${sessionId}/checkin`);
+  revalidatePath(`/manager/practice/sessions/${sessionId}/action`);
 }
 
 export async function markFilmWatched(formData: FormData) {
-  const { user } = await requireRole("father");
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
   const sessionId = String(formData.get("session_id") ?? "");
 
   if (!sessionId) {
-    redirect("/father");
+    redirect(paths.home);
   }
 
-  await requireReachableSession(user.id, sessionId);
+  await requireReachableSession(user.id, sessionId, paths);
 
   try {
     await saveProgress(user.id, sessionId, { film_completed: true });
   } catch {
     redirect(
-      `/father/sessions/${sessionId}?error=${encodeURIComponent("Your progress didn’t save. Try again.")}`
+      `${paths.session(sessionId)}?error=${encodeURIComponent("Your progress didn’t save. Try again.")}`
     );
   }
 
-  redirect(`/father/sessions/${sessionId}/checkin`);
+  redirect(paths.checkin(sessionId));
 }
 
 export async function submitCheckin(formData: FormData) {
-  const { user } = await requireRole("father");
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
   const sessionId = String(formData.get("session_id") ?? "");
 
   if (!sessionId) {
-    redirect("/father");
+    redirect(paths.home);
   }
 
-  const context = await requireReachableSession(user.id, sessionId);
+  const context = await requireReachableSession(user.id, sessionId, paths);
 
   const choice = String(formData.get(CHECKIN_CHOICE_KEY) ?? "").trim();
   if (!choice) {
     redirect(
-      `/father/sessions/${sessionId}/checkin?error=${encodeURIComponent("Choose an answer to continue.")}`
+      `${paths.checkin(sessionId)}?error=${encodeURIComponent("Choose an answer to continue.")}`
     );
   }
 
@@ -165,31 +177,32 @@ export async function submitCheckin(formData: FormData) {
     await saveProgress(user.id, sessionId, progressPatch);
   } catch {
     redirect(
-      `/father/sessions/${sessionId}/checkin?error=${encodeURIComponent("Your check-in didn’t save. Try again.")}`
+      `${paths.checkin(sessionId)}?error=${encodeURIComponent("Your check-in didn’t save. Try again.")}`
     );
   }
 
-  redirect(`/father/sessions/${sessionId}/action`);
+  redirect(paths.action(sessionId));
 }
 
-function actionPath(sessionId: string, error?: string) {
-  if (!error) return `/father/sessions/${sessionId}/action`;
-  return `/father/sessions/${sessionId}/action?error=${encodeURIComponent(error)}`;
+function actionPath(sessionId: string, paths: WalkPaths, error?: string) {
+  if (!error) return paths.action(sessionId);
+  return `${paths.action(sessionId)}?error=${encodeURIComponent(error)}`;
 }
 
 export async function commitActionMoment(formData: FormData) {
-  const { user } = await requireRole("father");
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
   const sessionId = String(formData.get("session_id") ?? "");
-  if (!sessionId) redirect("/father");
+  if (!sessionId) redirect(paths.home);
 
-  const context = await requireReachableSession(user.id, sessionId);
+  const context = await requireReachableSession(user.id, sessionId, paths);
   if (context.progress?.action_completed) {
-    redirect(actionPath(sessionId));
+    redirect(actionPath(sessionId, paths));
   }
 
   const option = formData.get("intention");
   if (!isIntentionOption(option)) {
-    redirect(actionPath(sessionId, "Pick when you will use it."));
+    redirect(actionPath(sessionId, paths, "Pick when you will use it."));
   }
 
   const timezone = parseTimeZone(formData.get("timezone")) ?? (await loadFatherTimeZone(user.id));
@@ -200,7 +213,7 @@ export async function commitActionMoment(formData: FormData) {
     customTime: String(formData.get("custom_time") ?? ""),
   });
   if (!intentionAt) {
-    redirect(actionPath(sessionId, "Pick a time that is still ahead."));
+    redirect(actionPath(sessionId, paths, "Pick a time that is still ahead."));
   }
 
   const existing = await loadActionCommitment(user.id, sessionId);
@@ -219,18 +232,20 @@ export async function commitActionMoment(formData: FormData) {
     { onConflict: "session_id,user_id" }
   );
   if (error) {
-    redirect(actionPath(sessionId, "That moment didn’t save. Try again."));
+    redirect(actionPath(sessionId, paths, "That moment didn’t save. Try again."));
   }
 
-  try {
-    await queueActionReminder({
-      fatherId: user.id,
-      session: context.session,
-      trainingTitle: context.training.title,
-      availableAt: intentionAt,
-    });
-  } catch (queueError) {
-    console.error("[notifications] action reminder enqueue failed", queueError);
+  if (role === "father") {
+    try {
+      await queueActionReminder({
+        fatherId: user.id,
+        session: context.session,
+        trainingTitle: context.training.title,
+        availableAt: intentionAt,
+      });
+    } catch (queueError) {
+      console.error("[notifications] action reminder enqueue failed", queueError);
+    }
   }
 
   const { error: zoneError } = await supabase.from("notification_preferences").upsert({
@@ -242,18 +257,19 @@ export async function commitActionMoment(formData: FormData) {
     console.error("[notifications] timezone save failed", zoneError);
   }
 
-  redirect(actionPath(sessionId));
+  redirect(actionPath(sessionId, paths));
 }
 
 export async function markActionDone(formData: FormData) {
-  const { user } = await requireRole("father");
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
   const sessionId = String(formData.get("session_id") ?? "");
-  if (!sessionId) redirect("/father");
+  if (!sessionId) redirect(paths.home);
 
-  const context = await requireReachableSession(user.id, sessionId);
+  const context = await requireReachableSession(user.id, sessionId, paths);
   const commitment = await loadActionCommitment(user.id, sessionId);
   if (!commitment && !context.progress?.action_completed) {
-    redirect(actionPath(sessionId, "Lock in a moment first."));
+    redirect(actionPath(sessionId, paths, "Lock in a moment first."));
   }
 
   const newlyComplete =
@@ -264,11 +280,11 @@ export async function markActionDone(formData: FormData) {
     try {
       await saveProgress(user.id, sessionId, { action_completed: true });
     } catch {
-      redirect(actionPath(sessionId, "Your action didn’t save. Try again."));
+      redirect(actionPath(sessionId, paths, "Your action didn’t save. Try again."));
     }
   }
 
-  if (newlyComplete) {
+  if (newlyComplete && role === "father") {
     try {
       await recordSessionCompletionForStreak(user.id);
     } catch (error) {
@@ -287,27 +303,30 @@ export async function markActionDone(formData: FormData) {
       .eq("user_id", user.id)
       .eq("session_id", sessionId);
     if (error) {
-      redirect(actionPath(sessionId, "Your action didn’t save. Try again."));
+      redirect(actionPath(sessionId, paths, "Your action didn’t save. Try again."));
     }
   }
 
-  try {
-    await cancelActionReminder(user.id, sessionId);
-  } catch (error) {
-    console.error("[notifications] action reminder cancel failed", error);
+  if (role === "father") {
+    try {
+      await cancelActionReminder(user.id, sessionId);
+    } catch (error) {
+      console.error("[notifications] action reminder cancel failed", error);
+    }
   }
 
-  redirect(actionPath(sessionId));
+  redirect(actionPath(sessionId, paths));
 }
 
 export async function finishActionSession(formData: FormData) {
-  const { user } = await requireRole("father");
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
   const sessionId = String(formData.get("session_id") ?? "");
-  if (!sessionId) redirect("/father");
+  if (!sessionId) redirect(paths.home);
 
-  const context = await requireReachableSession(user.id, sessionId);
+  const context = await requireReachableSession(user.id, sessionId, paths);
   if (!context.progress?.action_completed) {
-    redirect(actionPath(sessionId));
+    redirect(actionPath(sessionId, paths));
   }
 
   const note = parseOutcomeNote(formData.get("outcome_note"));
@@ -325,6 +344,13 @@ export async function finishActionSession(formData: FormData) {
   revalidatePath("/father");
   revalidatePath(`/father/sessions/${sessionId}`);
   revalidatePath(`/father/sessions/${sessionId}/action`);
+  revalidatePath("/manager/practice");
+  revalidatePath(`/manager/practice/sessions/${sessionId}`);
+  revalidatePath(`/manager/practice/sessions/${sessionId}/action`);
+
+  if (role === "manager") {
+    redirect(`${paths.home}?done=${encodeURIComponent(sessionId)}`);
+  }
 
   const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
   redirect(startHref ?? `/father?done=${encodeURIComponent(sessionId)}`);
@@ -332,6 +358,6 @@ export async function finishActionSession(formData: FormData) {
 
 export async function saveFilmPosition(sessionId: string, seconds: number) {
   const { user, role } = await getAuthContext();
-  if (!user || role !== "father") return { ok: false as const };
+  if (!user || (role !== "father" && role !== "manager")) return { ok: false as const };
   return writeFilmSeconds(user.id, sessionId, seconds);
 }
