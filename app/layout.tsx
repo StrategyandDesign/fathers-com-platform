@@ -29,8 +29,11 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: "Fathers.com",
-  description: "Fathers.com pilot",
+  title: {
+    default: "Fathers.com Pilot",
+    template: "%s · Fathers.com Pilot",
+  },
+  description: "Official Fathers.com training pilot",
 };
 
 export const viewport: Viewport = {

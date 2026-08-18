@@ -199,6 +199,7 @@ export const he = {
     inviteCode: "קוד הזמנה",
     inviteHint: "הזן את הקוד שקיבלת מהמנהל.",
     languageHint: "שפה בדפדפן זה",
+    pilotNotice: "פיילוט הכשרה רשמי של Fathers.com.",
   },
   flash: {
     deactivated: "החשבון הזה הושבת.",
