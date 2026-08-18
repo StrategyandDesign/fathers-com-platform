@@ -5,13 +5,16 @@ import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { CoverPhoto } from "@/components/brand/cover";
 import { FirstVisitIntro } from "@/components/father/first-visit-intro";
 import { SessionCompleteMark } from "@/components/father/session-complete-mark";
-import { buttonVariants } from "@/components/ui/button";
+import { ProfileHomeCard } from "@/components/profile/home-card";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { loadProfileFullName } from "@/lib/account/data";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { pickFeaturedAssignment, takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
+import { startProfile } from "@/lib/father/profile-actions";
 import { loadFatherHome } from "@/lib/father/data";
+import { firstUnanswered } from "@/lib/father/questions";
 import {
   loadFatherOrgPhotoCovers,
   resolveHomeHeroCover,
@@ -44,17 +47,22 @@ export default async function FatherHomePage({
   const { done } = await searchParams;
   const { user } = await requireRole("father");
   const { t } = await getI18n();
-  const [{ trainingCards, next }, customAssignments, orgPhotos, fatherName] = await Promise.all([
-    loadFatherHome(user.id),
-    loadFatherAssignments(user.id),
-    loadFatherOrgPhotoCovers(user.id),
-    loadProfileFullName(user.id),
-  ]);
+  const [{ trainingCards, next, profile, draft }, customAssignments, orgPhotos, fatherName] =
+    await Promise.all([
+      loadFatherHome(user.id),
+      loadFatherAssignments(user.id),
+      loadFatherOrgPhotoCovers(user.id),
+      loadProfileFullName(user.id),
+    ]);
   const heroCover = next
     ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl, orgPhotos.photoPack)
     : null;
   const assessmentCoverSrc = resolveHomeProfileCover(orgPhotos.profileUrl, orgPhotos.photoPack);
   const featuredAssessment = pickFeaturedAssignment(customAssignments);
+  const profileCoverSrc = assessmentCoverSrc;
+  const profileNeedsAction = !profile;
+  const profileIsPrimary = !next && profileNeedsAction;
+  const profileContinueHref = `/father/profile/take?q=${draft ? firstUnanswered(draft.answers) : 1}`;
 
   const nextCard = next
     ? trainingCards.find((card) => card.training.id === next.training.id)
@@ -74,7 +82,7 @@ export default async function FatherHomePage({
   const pendingAssessment = customAssignments.find(
     (item) => item.assignment.status !== "completed" && item.questionCount > 0
   );
-  const assessmentIsPrimary = !next && Boolean(pendingAssessment);
+  const assessmentIsPrimary = !next && !profileNeedsAction && Boolean(pendingAssessment);
   const nextInProgress = sessionInProgress(next?.progress ?? null);
   const neverStarted = Boolean(next) && nextCompleted === 0 && !nextInProgress;
   const firstSession =
@@ -98,20 +106,30 @@ export default async function FatherHomePage({
     ? t("father.home.doneForNow")
     : hasTraining
       ? t("father.home.caughtUp")
-      : assessmentIsPrimary
-        ? (pendingAssessment?.assessment.title ?? t("father.home.takeAssessment"))
-        : t("father.home.waitingManager");
+      : profileIsPrimary
+        ? draft
+          ? t("father.home.continueProfile")
+          : t("father.home.takeProfile")
+        : assessmentIsPrimary
+          ? (pendingAssessment?.assessment.title ?? t("father.home.takeAssessment"))
+          : t("father.home.waitingManager");
   const emptyBody = justFinished
-    ? assessmentIsPrimary
-      ? t("father.home.everyCompleteAssessment")
-      : t("father.home.doneForNowBody")
-    : hasTraining
-      ? assessmentIsPrimary
-        ? t("father.home.everyCompleteAssessment")
-        : t("father.home.everyComplete")
+    ? profileIsPrimary
+      ? t("father.home.everyCompleteProfile")
       : assessmentIsPrimary
-        ? t("father.home.waitAssessment")
-        : t("father.home.waitEmpty");
+        ? t("father.home.everyCompleteAssessment")
+        : t("father.home.doneForNowBody")
+    : hasTraining
+      ? profileIsPrimary
+        ? t("father.home.everyCompleteProfile")
+        : assessmentIsPrimary
+          ? t("father.home.everyCompleteAssessment")
+          : t("father.home.everyComplete")
+      : profileIsPrimary
+        ? t("father.home.waitProfile")
+        : assessmentIsPrimary
+          ? t("father.home.waitAssessment")
+          : t("father.home.waitEmpty");
   const finishedTotal = finishedCard?.total ?? 0;
   const finishedCompleted = finishedCard?.completed ?? 0;
   const finishedPercent =
@@ -142,6 +160,7 @@ export default async function FatherHomePage({
               percent={nextPercent}
               coverSrc={heroCover}
               assessmentLater={Boolean(pendingAssessment)}
+              profileLater={!profile}
             />
           ) : (
             <div className="min-w-0 space-y-2">
@@ -220,6 +239,21 @@ export default async function FatherHomePage({
             </div>
           ) : null}
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">{emptyBody}</p>
+          {profileIsPrimary ? (
+            <div className="mt-6">
+              {draft ? (
+                <Link href={profileContinueHref} className={primaryCtaClassName}>
+                  {t("father.home.continueProfile")}
+                </Link>
+              ) : (
+                <form action={startProfile}>
+                  <Button type="submit" variant="default" size="lg" className={homePrimaryCtaClassName}>
+                    {t("father.home.takeProfile")}
+                  </Button>
+                </form>
+              )}
+            </div>
+          ) : null}
           {assessmentIsPrimary && pendingAssessment ? (
             <div className="mt-6">
               <Link href={takeHref(pendingAssessment.assignment.id)} className={primaryCtaClassName}>
@@ -229,15 +263,30 @@ export default async function FatherHomePage({
               </Link>
             </div>
           ) : null}
+          {!justFinished && !profileIsPrimary && !assessmentIsPrimary && profile ? (
+            <div className="mt-6">
+              <Link href="/father/profile/results" className={primaryCtaClassName}>
+                {t("father.home.viewProfile")}
+              </Link>
+            </div>
+          ) : null}
         </section>
       )}
 
-      <AssessmentHomeCard
-        card={featuredAssessment}
-        coverSrc={assessmentCoverSrc}
-        fatherName={fatherName}
-        className="order-2 lg:col-start-2 lg:row-start-1"
-      />
+      <div className="order-2 space-y-6 lg:col-start-2 lg:row-start-1">
+        <AssessmentHomeCard
+          card={featuredAssessment}
+          coverSrc={assessmentCoverSrc}
+          fatherName={fatherName}
+        />
+        <ProfileHomeCard
+          profile={profile}
+          draft={draft}
+          coverSrc={profileCoverSrc}
+          neverStarted={neverStarted}
+          hideActions={profileIsPrimary}
+        />
+      </div>
 
       {trainingCards.length > 0 || customAssignments.length > 0 ? (
         <div className="order-4 space-y-8 lg:col-span-2">

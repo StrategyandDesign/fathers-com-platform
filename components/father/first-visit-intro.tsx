@@ -20,6 +20,7 @@ export async function FirstVisitIntro({
   percent,
   coverSrc,
   assessmentLater = false,
+  profileLater = false,
 }: {
   href: string;
   trainingTitle: string;
@@ -30,6 +31,7 @@ export async function FirstVisitIntro({
   percent: number;
   coverSrc?: string | null;
   assessmentLater?: boolean;
+  profileLater?: boolean;
 }) {
   const { t } = await getI18n();
 
@@ -61,6 +63,11 @@ export async function FirstVisitIntro({
             {assessmentLater ? (
               <p className="mt-3 text-sm text-muted-foreground sm:text-base">
                 {t("father.home.assessmentLater")}
+              </p>
+            ) : null}
+            {profileLater ? (
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                {t("father.home.profileLater")}
               </p>
             ) : null}
           </div>

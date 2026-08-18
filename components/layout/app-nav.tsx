@@ -14,6 +14,7 @@ import {
   Inbox,
   LayoutDashboard,
   Settings,
+  User,
   Users,
 } from "lucide-react";
 
@@ -48,6 +49,12 @@ export const NAV: Record<AppRole, NavItem[]> = {
       labelKey: "nav.trainings",
       icon: BrandLogoArrow,
       match: (path) => path === "/father/trainings" || path.startsWith("/father/sessions"),
+    },
+    {
+      href: "/father/profile",
+      labelKey: "nav.profile",
+      icon: User,
+      match: (path) => path.startsWith("/father/profile"),
     },
     {
       href: "/father/assessments",
