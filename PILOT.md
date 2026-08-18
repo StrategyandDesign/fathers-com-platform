@@ -1,6 +1,20 @@
 # Clean Pilot — runbook
 
-This Next.js app lives on the `clean-pilot` branch and talks to the **Pilot** Supabase project. It is not the old static HTML site.
+This Next.js app talks to the **Pilot** Supabase project. The review copy is the isolated repo `fathers-com-clean-pilot`. It is not the old static HTML site.
+
+## Current hosts (probed 18 August 2026)
+
+Use this table. Do not guess from project names.
+
+| Host | What it actually serves today | Use for clean-pilot review? |
+|---|---|---|
+| Isolated repo `fathers-com-clean-pilot` (`main`) | Source of the Next.js pilot app | Yes — this is the review copy |
+| https://fathers-com-pilot.vercel.app | Next.js, **stale** build. Login still says “Official Fathers.com training pilot.” | No — not current `clean-pilot` HEAD |
+| https://fathers-com-platform.vercel.app | Next.js from **`main`**. Login says “The Fathers Performance Platform”. Paths like `/admin.html` return 404. | **No** — that is `main`, not this review |
+| Supabase `koeplcybddrvbliuepsy` (name: **Pilot**) | Auth + Postgres + Storage for the Next.js app | Yes |
+| Supabase `kemqpiboqeqhbuuldmls` (name: fathers-com-platform) | **INACTIVE** | No |
+
+Reviewers should clone `fathers-com-clean-pilot` and run it locally, or use a Vercel preview of **that** repo. Do not treat either of the two public Vercel URLs above as “the review build.”
 
 ## 1. Create a Manager
 
