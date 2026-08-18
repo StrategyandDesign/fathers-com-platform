@@ -402,8 +402,8 @@ as $$
   select internal.admin_anonymous_gathering();
 $$;
 
-revoke all on function internal.admin_anonymous_gathering() from public, anon, authenticated;
-grant execute on function internal.admin_anonymous_gathering() to service_role;
+revoke all on function internal.admin_anonymous_gathering() from public, anon;
+grant execute on function internal.admin_anonymous_gathering() to authenticated, service_role;
 
 revoke all on function public.admin_anonymous_gathering() from public, anon;
 grant execute on function public.admin_anonymous_gathering() to authenticated, service_role;
