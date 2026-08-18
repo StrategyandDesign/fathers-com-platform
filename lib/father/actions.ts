@@ -19,7 +19,7 @@ async function requireReachableSession(fatherId: string, sessionId: string) {
     redirect("/father");
   }
   if (!context.unlocked) {
-    redirect(`/father/sessions/${context.redirectSessionId}`);
+    redirect(context.gateRedirect ?? `/father/sessions/${context.redirectSessionId}`);
   }
   return context;
 }

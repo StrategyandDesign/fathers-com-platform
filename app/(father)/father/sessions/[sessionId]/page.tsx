@@ -33,7 +33,7 @@ export default async function SessionViewerPage({
   }
 
   if (!context.unlocked) {
-    redirect(`/father/sessions/${context.redirectSessionId}`);
+    redirect(context.gateRedirect ?? `/father/sessions/${context.redirectSessionId}`);
   }
 
   const { t } = await getI18n();

@@ -6,6 +6,7 @@ import {
   type PhotoPack,
 } from "@/lib/brand/photos";
 import { isTrainingPublished, type Training } from "@/lib/father/types";
+import { isLaterSeriesPart, trainingCoverSlug } from "@/lib/trainings/series";
 import { loadManagerGroups } from "@/lib/manager/data";
 import type { Group } from "@/lib/manager/types";
 import {
@@ -54,7 +55,8 @@ export type OrganizationMark = {
 
 /**
  * Trainings already have distinct covers via trainingCover(slug).
- * Only fundamentals ships a platform photo; anger/reentry fall back to SceneArt.
+ * Only Fathering Fundamentals ships a platform photo. Other catalog covers
+ * fall back to SceneArt. Internal slugs are never shown to fathers.
  * Store one override per training slug so each card can be customized.
  * Home hero is a single org slot (the Up Next card), not per-session.
  * Fathers in more than one group use the earliest membership for overrides.
@@ -109,7 +111,9 @@ export async function loadCatalogTrainings() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("trainings")
-    .select("id, slug, title, description, session_count, order_index, published")
+    .select(
+      "id, slug, title, description, session_count, order_index, published, series_id, series_title, part_number, part_total"
+    )
     .order("order_index");
   if (error) throw error;
   return ((data ?? []) as Training[]).filter((training) => isTrainingPublished(training));
@@ -180,8 +184,10 @@ export async function loadManagerOrganizationPhotos(
     });
 
     for (const training of trainings) {
-      const guidance = trainingCardGuidance(training.slug, training.title);
-      const row = custom.get(trainingPhotoSlot(training.slug));
+      if (isLaterSeriesPart(training)) continue;
+      const coverSlug = trainingCoverSlug(training);
+      const guidance = trainingCardGuidance(coverSlug, training.title);
+      const row = custom.get(trainingPhotoSlot(coverSlug));
       const customUrl = row ? signed.get(row.storage_path) ?? null : null;
       const copy = slotCopy(orgName, "training");
       slots.push({
@@ -190,7 +196,7 @@ export async function loadManagerOrganizationPhotos(
         where: copy.where,
         applies: copy.applies,
         previewUrl: customUrl,
-        defaultUrl: trainingCover(training.slug, pack),
+        defaultUrl: trainingCover(coverSlug, pack),
         isCustom: Boolean(customUrl),
         previewLabel: customUrl ? `Custom for ${orgName}` : "Platform default",
       });

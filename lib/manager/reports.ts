@@ -209,7 +209,7 @@ function trainingStatus(card: TrainingProgress | undefined): CompletionStatus {
 }
 
 function overallStatus(cards: TrainingProgress[]): CompletionStatus {
-  const assigned = cards.filter((card) => card.assigned);
+  const assigned = cards.filter((card) => card.assigned && !card.gated);
   if (assigned.length === 0) return "not_started";
 
   const completable = assigned.filter((card) => card.total > 0);

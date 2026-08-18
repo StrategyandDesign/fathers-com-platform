@@ -27,7 +27,7 @@ export default async function SessionCheckinPage({
   }
 
   if (!context.unlocked) {
-    redirect(`/father/sessions/${context.redirectSessionId}`);
+    redirect(context.gateRedirect ?? `/father/sessions/${context.redirectSessionId}`);
   }
 
   if (!context.progress?.film_completed) {
@@ -39,7 +39,7 @@ export default async function SessionCheckinPage({
   }
 
   const { t } = await getI18n();
-  const { session, training, progress } = context;
+  const { session, training, progress, completedCount, sessionTotal } = context;
   const questions = checkinQuestionsFor(session, training);
   const canAutoAdvance =
     questions.length === 1 && Boolean(parseSkillPrompt(questions[0].label).choices);
@@ -50,6 +50,8 @@ export default async function SessionCheckinPage({
         training={training}
         session={session}
         current="checkin"
+        completedCount={completedCount}
+        sessionTotal={sessionTotal}
         backHref={`/father/sessions/${sessionId}`}
         filmCompleted
         checkinCompleted={Boolean(progress?.checkin_completed)}

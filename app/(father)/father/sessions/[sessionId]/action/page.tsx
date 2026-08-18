@@ -30,7 +30,7 @@ export default async function SessionActionPage({
   }
 
   if (!context.unlocked) {
-    redirect(`/father/sessions/${context.redirectSessionId}`);
+    redirect(context.gateRedirect ?? `/father/sessions/${context.redirectSessionId}`);
   }
 
   if (!context.progress?.film_completed) {
@@ -46,7 +46,7 @@ export default async function SessionActionPage({
   }
 
   const { t } = await getI18n();
-  const { session, training, progress } = context;
+  const { session, training, progress, completedCount, sessionTotal } = context;
   const prompt = sessionAction(session, training);
   const hasChoices = Boolean(parseSkillPrompt(prompt).choices?.length);
 
@@ -56,6 +56,8 @@ export default async function SessionActionPage({
         training={training}
         session={session}
         current="action"
+        completedCount={completedCount}
+        sessionTotal={sessionTotal}
         backHref={`/father/sessions/${sessionId}/checkin`}
         filmCompleted
         checkinCompleted

@@ -19,6 +19,7 @@ import {
   resolveHomeProfileCover,
   resolveTrainingCardCover,
 } from "@/lib/org-photos/data";
+import { gatedPartLabel, trainingCoverSlug } from "@/lib/trainings/series";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { homePrimaryCtaClassName, interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
@@ -290,8 +291,69 @@ export default async function FatherHomePage({
                 </Link>
               </div>
               <div className="grid gap-3 lg:grid-cols-3">
-                {trainingCards.map(({ training, completed, total, next: trainingNext, nextProgress }) => {
+                {trainingCards.map(({ training, completed, total, next: trainingNext, nextProgress, gated }) => {
                   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+                  const coverSlug = trainingCoverSlug(training);
+                  const cardInner = (
+                    <>
+                      <div className="h-28 overflow-hidden rounded-t-xl bg-[#101510] sm:h-32">
+                        <CoverPhoto
+                          src={resolveTrainingCardCover(
+                            coverSlug,
+                            orgPhotos.trainingUrls[coverSlug],
+                            orgPhotos.photoPack
+                          )}
+                        />
+                      </div>
+                      <div className="p-4 sm:p-5">
+                        <p className="font-heading text-sm font-semibold sm:text-base">
+                          {training.title}
+                        </p>
+                        {training.part_number && training.part_total ? (
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {total === 1
+                              ? t("father.trainings.partSubtitleOne", {
+                                  n: training.part_number,
+                                  total: training.part_total,
+                                })
+                              : t("father.trainings.partSubtitle", {
+                                  n: training.part_number,
+                                  total: training.part_total,
+                                  sessions: total,
+                                })}
+                          </p>
+                        ) : null}
+                        <div className="mt-4 space-y-2">
+                          {gated ? (
+                            <p className="text-sm text-muted-foreground">
+                              {t("father.trainings.gatedPart", { n: gatedPartLabel(training) })}
+                            </p>
+                          ) : (
+                            <>
+                              <ProgressBar value={percent} />
+                              <p className="text-sm text-muted-foreground">
+                                {total === 0
+                                  ? t("father.home.sessionsReady")
+                                  : t("father.home.sessionsCount", { completed, total })}
+                              </p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  );
+
+                  if (gated) {
+                    return (
+                      <div
+                        key={training.id}
+                        className="overflow-hidden rounded-xl border border-border bg-card"
+                      >
+                        {cardInner}
+                      </div>
+                    );
+                  }
+
                   return (
                     <Link
                       key={training.id}
@@ -305,28 +367,7 @@ export default async function FatherHomePage({
                         interactiveSurfaceClassName
                       )}
                     >
-                      <div className="h-28 overflow-hidden rounded-t-xl bg-[#101510] sm:h-32">
-                        <CoverPhoto
-                          src={resolveTrainingCardCover(
-                            training.slug,
-                            orgPhotos.trainingUrls[training.slug],
-                            orgPhotos.photoPack
-                          )}
-                        />
-                      </div>
-                      <div className="p-4 sm:p-5">
-                        <p className="font-heading text-sm font-semibold sm:text-base">
-                          {training.title}
-                        </p>
-                        <div className="mt-4 space-y-2">
-                          <ProgressBar value={percent} />
-                          <p className="text-sm text-muted-foreground">
-                            {total === 0
-                              ? t("father.home.sessionsReady")
-                              : t("father.home.sessionsCount", { completed, total })}
-                          </p>
-                        </div>
-                      </div>
+                      {cardInner}
                     </Link>
                   );
                 })}

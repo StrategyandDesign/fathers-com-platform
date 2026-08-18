@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { loadAdminTrainings } from "@/lib/admin/data";
 import { trainingReleaseState } from "@/lib/admin/release";
 import { requireRole } from "@/lib/auth/session";
+import { trainingPartSubtitle } from "@/lib/trainings/series";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -71,7 +72,12 @@ export default async function AdminTrainingsPage({
                   <span className="min-w-0">
                     <span className="block truncate font-medium">{training.title}</span>
                     <span className="block truncate text-sm text-muted-foreground">
-                      {training.slug}
+                      {trainingPartSubtitle(training, training.sessions.length) ??
+                        (training.series_title
+                          ? training.series_title
+                          : `${training.sessions.length} session${
+                              training.sessions.length === 1 ? "" : "s"
+                            }`)}
                     </span>
                   </span>
                   <span className="flex items-baseline justify-between gap-3 text-sm md:block">

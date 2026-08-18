@@ -81,7 +81,7 @@ export function isQuiet(lastActivity: string | null | undefined) {
 }
 
 export function hasUnfinishedTraining(cards: TrainingProgress[]) {
-  const assigned = cards.filter((card) => card.assigned);
+  const assigned = cards.filter((card) => card.assigned && !card.gated);
   if (assigned.length === 0) return true;
   return assigned.some((card) => card.total === 0 || card.completed < card.total);
 }

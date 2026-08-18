@@ -27,6 +27,7 @@ import { requireRole } from "@/lib/auth/session";
 import { formatShortDate } from "@/lib/manager/types";
 import { checkboxOptionClassName, fieldClassName, interactiveLinkClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+import { MAX_TRAINING_SESSIONS, trainingPartSubtitle } from "@/lib/trainings/series";
 
 export default async function AdminTrainingDetailPage({
   params,
@@ -75,9 +76,16 @@ export default async function AdminTrainingDetailPage({
       <form action={updateTraining} className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
         <input type="hidden" name="training_id" value={training.id} />
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">
-            {training.title}
-          </h1>
+          <div className="min-w-0 space-y-1">
+            <h1 className="font-heading text-2xl font-semibold tracking-tight">
+              {training.title}
+            </h1>
+            {trainingPartSubtitle(training, training.sessions.length) ? (
+              <p className="text-sm text-muted-foreground">
+                {trainingPartSubtitle(training, training.sessions.length)}
+              </p>
+            ) : null}
+          </div>
           <div className="flex flex-col items-start gap-1 sm:items-end">
             <ReleaseStatusBadge state={releaseState} />
             <span className="text-sm text-muted-foreground">
@@ -357,6 +365,14 @@ export default async function AdminTrainingDetailPage({
           </form>
         ))}
 
+        {training.sessions.length >= MAX_TRAINING_SESSIONS ? (
+          <div className="space-y-2 rounded-xl border border-border bg-card p-4 sm:p-6">
+            <h3 className="font-heading text-lg font-semibold">Add session</h3>
+            <p className="text-sm text-muted-foreground">
+              A training cannot have more than 6 sessions.
+            </p>
+          </div>
+        ) : (
         <form action={createSession} className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
           <input type="hidden" name="training_id" value={training.id} />
           <h3 className="font-heading text-lg font-semibold">Add session</h3>
@@ -406,6 +422,7 @@ export default async function AdminTrainingDetailPage({
             Add session
           </Button>
         </form>
+        )}
       </section>
 
       <form action={deleteTraining} className="rounded-xl border border-border bg-card p-4 sm:p-6">

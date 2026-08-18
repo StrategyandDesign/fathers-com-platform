@@ -27,7 +27,9 @@ export async function assignTrainingToFather(
 ): Promise<MutationResult> {
   const { data: catalog, error: catalogError } = await supabase
     .from("trainings")
-    .select("id, title, published, released_at, first_published_at, first_released_at")
+    .select(
+      "id, title, published, released_at, first_published_at, first_released_at, series_id, part_number"
+    )
     .eq("id", trainingId)
     .maybeSingle();
 
@@ -64,17 +66,52 @@ export async function assignTrainingToFather(
     };
   }
 
-  const { error } = await supabase.from("training_assignments").insert({
-    father_id: fatherId,
-    training_id: trainingId,
-    assigned_by: user.id,
-  });
+  const targets: string[] = [trainingId];
+  if (catalog.series_id) {
+    const { data: parts, error: partsError } = await supabase
+      .from("trainings")
+      .select(
+        "id, published, released_at, first_published_at, first_released_at, part_number"
+      )
+      .eq("series_id", catalog.series_id)
+      .order("part_number");
+    if (partsError) return { status: "failed", reason: "Couldn’t load that training." };
+    for (const part of parts ?? []) {
+      if (part.id === trainingId) continue;
+      if (!isTrainingPublished(part)) continue;
+      const { data: partReview, error: partReviewError } = await supabase
+        .from("organization_training_reviews")
+        .select("status")
+        .eq("group_id", membership.group_id)
+        .eq("training_id", part.id)
+        .maybeSingle();
+      if (partReviewError) continue;
+      if (!isTrainingAssignable(part, partReview?.status)) continue;
+      targets.push(part.id);
+    }
+  }
 
-  if (error) {
+  let assignedRequested = false;
+  let alreadyAssigned = false;
+  for (const targetId of targets) {
+    const { error } = await supabase.from("training_assignments").insert({
+      father_id: fatherId,
+      training_id: targetId,
+      assigned_by: user.id,
+    });
+    if (!error) {
+      if (targetId === trainingId) assignedRequested = true;
+      continue;
+    }
     if (error.code === "23505") {
-      return { status: "skipped", reason: "Already assigned." };
+      if (targetId === trainingId) alreadyAssigned = true;
+      continue;
     }
     return { status: "failed", reason: "The assignment didn’t save." };
+  }
+
+  if (alreadyAssigned && !assignedRequested) {
+    return { status: "skipped", reason: "Already assigned." };
   }
 
   await notifyTrainingAssigned({

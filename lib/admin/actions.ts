@@ -18,6 +18,13 @@ import { getAuthContext, requireRole } from "@/lib/auth/session";
 import { youtubeVideoId } from "@/lib/father/types";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
+import {
+  MAX_TRAINING_SESSIONS,
+  SESSION_LIMIT_CREATE_ERROR,
+  SESSION_LIMIT_PUBLISH_ERROR,
+  SESSION_LIMIT_RELEASE_ERROR,
+  sessionCountWouldExceedLimit,
+} from "@/lib/trainings/series";
 
 const YOUTUBE_URL_ERROR =
   "Use a YouTube video link. Playlists and other sites will not play.";
@@ -267,6 +274,17 @@ export async function updateTraining(formData: FormData) {
   if (currentError) fail(path, currentError.message);
   if (!current) fail("/admin/trainings", "Training not found.");
 
+  if (published) {
+    const { count, error: countError } = await supabase
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("training_id", trainingId);
+    if (countError) fail(path, countError.message);
+    if ((count ?? 0) > MAX_TRAINING_SESSIONS) {
+      fail(path, SESSION_LIMIT_PUBLISH_ERROR);
+    }
+  }
+
   const lockedSlug = current.slug === "fundamentals";
   let slug = current.slug;
   if (!lockedSlug && requestedSlug) {
@@ -303,6 +321,16 @@ export async function setTrainingPublished(formData: FormData) {
   if (!trainingId) fail("/admin/trainings", "Choose a training.");
 
   const supabase = await createClient();
+  if (published) {
+    const { count, error: countError } = await supabase
+      .from("sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("training_id", trainingId);
+    if (countError) fail(path, countError.message);
+    if ((count ?? 0) > MAX_TRAINING_SESSIONS) {
+      fail(path, SESSION_LIMIT_PUBLISH_ERROR);
+    }
+  }
   const { error } = await supabase.from("trainings").update({ published }).eq("id", trainingId);
   if (error) fail(path, error.message);
 
@@ -341,6 +369,9 @@ export async function releaseTraining(formData: FormData) {
   if (countError) fail(path, RELEASE_WRITE_ERROR);
   if ((count ?? current.session_count ?? 0) < 1) {
     fail(path, "Add at least one session before releasing to organizations.");
+  }
+  if ((count ?? current.session_count ?? 0) > MAX_TRAINING_SESSIONS) {
+    fail(path, SESSION_LIMIT_RELEASE_ERROR);
   }
 
   if (!current.released_at && isLegacyCatalogTraining(current) && confirm !== RELEASE_CONFIRM) {
@@ -478,6 +509,15 @@ export async function createSession(formData: FormData) {
   if (videoUrl && !youtubeVideoId(videoUrl)) fail(path, YOUTUBE_URL_ERROR);
 
   const supabase = await createClient();
+  const { count, error: countError } = await supabase
+    .from("sessions")
+    .select("id", { count: "exact", head: true })
+    .eq("training_id", trainingId);
+  if (countError) fail(path, countError.message);
+  if (sessionCountWouldExceedLimit(count ?? 0)) {
+    fail(path, SESSION_LIMIT_CREATE_ERROR);
+  }
+
   const { error } = await supabase.from("sessions").insert({
     training_id: trainingId,
     title,
