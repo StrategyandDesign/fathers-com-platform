@@ -157,6 +157,26 @@ export function applyClock(at: Date, timeZone: string, clock: string) {
   return new Date(at.getTime() + delta);
 }
 
+export function localDateTime(
+  timeZone: string,
+  year: number,
+  month: number,
+  day: number,
+  hour: number,
+  minute: number
+) {
+  let date = new Date(Date.UTC(year, month - 1, day, hour, minute, 0));
+  for (let i = 0; i < 4; i += 1) {
+    const parts = localParts(date, timeZone);
+    const target = Date.UTC(year, month - 1, day, hour, minute);
+    const actual = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
+    const delta = target - actual;
+    if (delta === 0) break;
+    date = new Date(date.getTime() + delta);
+  }
+  return date;
+}
+
 export function addLocalDays(at: Date, days: number) {
   return new Date(at.getTime() + days * 86_400_000);
 }

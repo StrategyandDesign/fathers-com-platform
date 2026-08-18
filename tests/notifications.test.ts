@@ -179,9 +179,11 @@ describe("channel and copy", () => {
       trainingTitle: "Fathering Fundamentals: Part 1",
       actionSummary: "I yelled at my kid",
       notes: "skip me",
+      outcome_note: "Named the bedtime check-in",
     });
     assert.equal(leaked.actionSummary, "this week's practice");
     assert.equal("notes" in leaked, false);
+    assert.equal("outcome_note" in leaked, false);
   });
 });
 

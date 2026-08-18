@@ -178,9 +178,12 @@ export async function saveOnboardingReminder(formData: FormData) {
 
 export async function advanceOnboardingAfterSession(fatherId: string, sessionId: string) {
   const state = await loadOnboardingState(fatherId);
-  if (state.mode !== "full" || state.completedAt) return null;
+  if (state.completedAt || state.step === "done") return null;
   const first = await loadFirstAssignedSession(fatherId);
   if (!first || first.session.id !== sessionId) return null;
+  if (state.step !== "complete" && state.step !== "session" && state.step !== "hold") {
+    return null;
+  }
   await writeOnboarding(fatherId, { step: "complete", answers: state.answers });
   return "/father/start/complete";
 }

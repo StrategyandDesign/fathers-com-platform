@@ -78,6 +78,7 @@ export const loadOnboardingState = cache(async (fatherId: string): Promise<Onboa
     hasReminder: Boolean(reminder),
     hasAssignedSession,
     firstSessionComplete: isSessionComplete(first?.progress ?? null),
+    completedAt,
   });
 
   return {

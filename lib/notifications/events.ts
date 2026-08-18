@@ -3,14 +3,9 @@ import "server-only";
 import type { Session, SessionProgress, Training } from "@/lib/father/types";
 import { actionSummaryFromCatalog } from "@/lib/notifications/copy";
 import { dispatchDueReminders } from "@/lib/notifications/dispatch";
-import {
-  actionAvailableAt,
-  cancelOutbox,
-  enqueueNotification,
-} from "@/lib/notifications/enqueue";
+import { cancelOutbox, enqueueNotification } from "@/lib/notifications/enqueue";
 import { certificatesHref, sessionActionHref, sessionFilmHref, trainingsHref } from "@/lib/notifications/links";
 import { nextAssignedSession } from "@/lib/notifications/next-session";
-import { parseClock, parseTimeZone } from "@/lib/notifications/schedule";
 import {
   actionDedupeKey,
   assignmentDedupeKey,
@@ -28,32 +23,6 @@ export async function flushDueReminders() {
   } catch (error) {
     console.error("[notifications] flush failed", error);
   }
-}
-
-async function reminderClock(supabase: Awaited<ReturnType<typeof createClient>>, userId: string) {
-  const [reminderRes, prefsRes] = await Promise.all([
-    supabase
-      .from("reminder_preferences")
-      .select("weekday, remind_at")
-      .eq("father_id", userId)
-      .maybeSingle(),
-    supabase
-      .from("notification_preferences")
-      .select("timezone, reminder_time")
-      .eq("user_id", userId)
-      .maybeSingle(),
-  ]);
-  return {
-    timezone: parseTimeZone(prefsRes.data?.timezone) ?? "UTC",
-    clock:
-      parseClock(prefsRes.data?.reminder_time) ??
-      parseClock(
-        typeof reminderRes.data?.remind_at === "string"
-          ? reminderRes.data.remind_at.slice(0, 5)
-          : reminderRes.data?.remind_at
-      ) ??
-      "19:00",
-  };
 }
 
 export async function queueNewAssignment(input: {
@@ -105,10 +74,9 @@ export async function queueActionReminder(input: {
   fatherId: string;
   session: Session;
   trainingTitle: string;
-  clock?: string | null;
+  availableAt: Date;
 }) {
   const supabase = await createClient();
-  const schedule = await reminderClock(supabase, input.fatherId);
   await enqueueNotification(supabase, {
     userId: input.fatherId,
     type: "action",
@@ -123,11 +91,8 @@ export async function queueActionReminder(input: {
       minutes: filmRuntimeMinutes(input.session.duration_seconds),
       sessionId: input.session.id,
     },
-    availableAt: actionAvailableAt({
-      from: new Date(),
-      timeZone: schedule.timezone,
-      clock: parseClock(input.clock) ?? schedule.clock,
-    }),
+    availableAt: input.availableAt,
+    reschedule: true,
   });
 }
 

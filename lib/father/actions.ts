@@ -6,11 +6,16 @@ import { redirect } from "next/navigation";
 import { getAuthContext, requireRole } from "@/lib/auth/session";
 import { loadSessionContext } from "@/lib/father/data";
 import { writeFilmSeconds } from "@/lib/father/film-position";
+import {
+  isIntentionOption,
+  parseOutcomeNote,
+  resolveIntentionAt,
+} from "@/lib/father/action-commitment";
+import { loadActionCommitment, loadFatherTimeZone } from "@/lib/father/action-commitment-data";
 import { advanceOnboardingAfterSession } from "@/lib/father/start-actions";
 import { cancelActionReminder, queueActionReminder } from "@/lib/notifications/events";
-import { parseClock } from "@/lib/notifications/schedule";
+import { parseTimeZone } from "@/lib/notifications/schedule";
 import {
-  ACTION_ANSWER_KEY,
   CHECKIN_CHOICE_KEY,
   CHECKIN_NOTE_KEY,
   CHECKIN_NOTE_MAX_LENGTH,
@@ -163,52 +168,114 @@ export async function submitCheckin(formData: FormData) {
     );
   }
 
+  redirect(`/father/sessions/${sessionId}/action`);
+}
+
+function actionPath(sessionId: string, error?: string) {
+  if (!error) return `/father/sessions/${sessionId}/action`;
+  return `/father/sessions/${sessionId}/action?error=${encodeURIComponent(error)}`;
+}
+
+export async function commitActionMoment(formData: FormData) {
+  const { user } = await requireRole("father");
+  const sessionId = String(formData.get("session_id") ?? "");
+  if (!sessionId) redirect("/father");
+
+  const context = await requireReachableSession(user.id, sessionId);
+  if (context.progress?.action_completed) {
+    redirect(actionPath(sessionId));
+  }
+
+  const option = formData.get("intention");
+  if (!isIntentionOption(option)) {
+    redirect(actionPath(sessionId, "Pick when you will use it."));
+  }
+
+  const timezone = parseTimeZone(formData.get("timezone")) ?? (await loadFatherTimeZone(user.id));
+  const intentionAt = resolveIntentionAt({
+    option,
+    timeZone: timezone,
+    customDate: String(formData.get("custom_date") ?? ""),
+    customTime: String(formData.get("custom_time") ?? ""),
+  });
+  if (!intentionAt) {
+    redirect(actionPath(sessionId, "Pick a time that is still ahead."));
+  }
+
+  const existing = await loadActionCommitment(user.id, sessionId);
+  const supabase = await createClient();
+  const { error } = await supabase.from("action_commitments").upsert(
+    {
+      session_id: sessionId,
+      user_id: user.id,
+      intention_label: option,
+      intention_at: intentionAt.toISOString(),
+      committed_at: existing?.committedAt ?? new Date().toISOString(),
+      completed_at: existing?.completedAt ?? null,
+      closed_at: null,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "session_id,user_id" }
+  );
+  if (error) {
+    redirect(actionPath(sessionId, "That moment didn’t save. Try again."));
+  }
+
   try {
     await queueActionReminder({
       fatherId: user.id,
       session: context.session,
       trainingTitle: context.training.title,
+      availableAt: intentionAt,
     });
-  } catch (error) {
-    console.error("[notifications] action reminder enqueue failed", error);
+  } catch (queueError) {
+    console.error("[notifications] action reminder enqueue failed", queueError);
   }
 
-  redirect(`/father/sessions/${sessionId}/action`);
+  const { error: zoneError } = await supabase.from("notification_preferences").upsert({
+    user_id: user.id,
+    timezone,
+    updated_at: new Date().toISOString(),
+  });
+  if (zoneError) {
+    console.error("[notifications] timezone save failed", zoneError);
+  }
+
+  redirect(actionPath(sessionId));
 }
 
-export async function completeAction(formData: FormData) {
+export async function markActionDone(formData: FormData) {
   const { user } = await requireRole("father");
   const sessionId = String(formData.get("session_id") ?? "");
-
-  if (!sessionId) {
-    redirect("/father");
-  }
+  if (!sessionId) redirect("/father");
 
   const context = await requireReachableSession(user.id, sessionId);
-  if (context.progress?.action_completed) {
-    const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
-    redirect(startHref ?? `/father?done=${encodeURIComponent(sessionId)}`);
+  const commitment = await loadActionCommitment(user.id, sessionId);
+  if (!commitment && !context.progress?.action_completed) {
+    redirect(actionPath(sessionId, "Lock in a moment first."));
   }
 
-  const answer = String(formData.get(ACTION_ANSWER_KEY) ?? "").trim();
-  const note = String(formData.get("action_note") ?? "").trim();
-  const tryAt = parseClock(formData.get("action_try_at"));
-  if (!answer && !note) {
-    redirect(
-      `/father/sessions/${sessionId}/action?error=${encodeURIComponent("Choose the teaching point to continue.")}`
-    );
+  if (!context.progress?.action_completed) {
+    try {
+      await saveProgress(user.id, sessionId, { action_completed: true });
+    } catch {
+      redirect(actionPath(sessionId, "Your action didn’t save. Try again."));
+    }
   }
 
-  try {
-    await saveProgress(user.id, sessionId, {
-      action_completed: true,
-      action_note: [answer, note].filter(Boolean).join("\n\n") || null,
-      action_try_at: tryAt,
-    });
-  } catch {
-    redirect(
-      `/father/sessions/${sessionId}/action?error=${encodeURIComponent("Your action didn’t save. Try again.")}`
-    );
+  if (commitment && !commitment.completedAt) {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("action_commitments")
+      .update({
+        completed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", user.id)
+      .eq("session_id", sessionId);
+    if (error) {
+      redirect(actionPath(sessionId, "Your action didn’t save. Try again."));
+    }
   }
 
   try {
@@ -217,27 +284,37 @@ export async function completeAction(formData: FormData) {
     console.error("[notifications] action reminder cancel failed", error);
   }
 
-  const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
-  redirect(startHref ?? `/father?done=${encodeURIComponent(sessionId)}`);
+  redirect(actionPath(sessionId));
 }
 
-export async function saveActionTryAt(sessionId: string, clock: string) {
+export async function finishActionSession(formData: FormData) {
   const { user } = await requireRole("father");
-  const parsed = parseClock(clock);
-  if (!parsed) return { ok: false as const };
-  try {
-    const context = await requireReachableSession(user.id, sessionId);
-    await saveProgress(user.id, sessionId, { action_try_at: parsed });
-    await queueActionReminder({
-      fatherId: user.id,
-      session: context.session,
-      trainingTitle: context.training.title,
-      clock: parsed,
-    });
-  } catch {
-    return { ok: false as const };
+  const sessionId = String(formData.get("session_id") ?? "");
+  if (!sessionId) redirect("/father");
+
+  const context = await requireReachableSession(user.id, sessionId);
+  if (!context.progress?.action_completed) {
+    redirect(actionPath(sessionId));
   }
-  return { ok: true as const };
+
+  const note = parseOutcomeNote(formData.get("outcome_note"));
+  const supabase = await createClient();
+  await supabase
+    .from("action_commitments")
+    .update({
+      outcome_note: note,
+      closed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", user.id)
+    .eq("session_id", sessionId);
+
+  revalidatePath("/father");
+  revalidatePath(`/father/sessions/${sessionId}`);
+  revalidatePath(`/father/sessions/${sessionId}/action`);
+
+  const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
+  redirect(startHref ?? `/father?done=${encodeURIComponent(sessionId)}`);
 }
 
 export async function saveFilmPosition(sessionId: string, seconds: number) {

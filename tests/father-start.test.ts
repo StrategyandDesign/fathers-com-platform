@@ -81,6 +81,17 @@ describe("first-run skip logic", () => {
       }),
       "complete"
     );
+    assert.equal(
+      currentOnboardingStep({
+        mode: "done",
+        storedStep: "session",
+        hasReminder: true,
+        hasAssignedSession: true,
+        firstSessionComplete: true,
+        completedAt: null,
+      }),
+      "complete"
+    );
   });
 
   it("holds when nothing is assigned and opens session 1 when it is", () => {

@@ -112,7 +112,17 @@ export function currentOnboardingStep(input: {
   hasReminder: boolean;
   hasAssignedSession: boolean;
   firstSessionComplete?: boolean;
+  completedAt?: string | null;
 }): OnboardingStep {
+  if (input.completedAt) return "done";
+  if (
+    input.firstSessionComplete &&
+    (input.storedStep === "session" ||
+      input.storedStep === "hold" ||
+      input.storedStep === "complete")
+  ) {
+    return "complete";
+  }
   if (input.mode === "done") return "done";
   if (input.mode === "reminder-only") {
     return input.hasReminder ? "done" : "reminder";

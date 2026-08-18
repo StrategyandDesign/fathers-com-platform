@@ -64,7 +64,7 @@ export async function dispatchDueReminders(now = new Date()) {
     return { ok: false as const, reason: "missing_service_role" };
   }
 
-  const [prefsRes, reminderRes, assignmentRes, trainingsRes, sessionsRes, progressRes, outboxRes, deliveryRes, pushRes, profileRes] =
+  const [prefsRes, reminderRes, assignmentRes, trainingsRes, sessionsRes, progressRes, outboxRes, deliveryRes, pushRes, profileRes, commitmentRes] =
     await Promise.all([
       admin.from("notification_preferences").select("*"),
       admin.from("reminder_preferences").select("father_id, weekday, remind_at"),
@@ -87,9 +87,10 @@ export async function dispatchDueReminders(now = new Date()) {
         ),
       admin.from("push_subscriptions").select("user_id, endpoint, p256dh, auth"),
       admin.from("profiles").select("id, locale").eq("role", "father"),
+      admin.from("action_commitments").select("user_id, session_id, completed_at, closed_at"),
     ]);
 
-  for (const result of [prefsRes, reminderRes, assignmentRes, trainingsRes, sessionsRes, progressRes, outboxRes, deliveryRes, pushRes, profileRes]) {
+  for (const result of [prefsRes, reminderRes, assignmentRes, trainingsRes, sessionsRes, progressRes, outboxRes, deliveryRes, pushRes, profileRes, commitmentRes]) {
     if (result.error) throw result.error;
   }
 
@@ -156,8 +157,20 @@ export async function dispatchDueReminders(now = new Date()) {
     handledKeys,
   });
 
+  const openActionKeys = new Set(
+    ((commitmentRes.data ?? []) as Array<{
+      user_id: string;
+      session_id: string;
+      completed_at: string | null;
+      closed_at: string | null;
+    }>)
+      .filter((row) => !row.completed_at && !row.closed_at)
+      .map((row) => `action:${row.user_id}:${row.session_id}`)
+  );
+
   const outbox = ((outboxRes.data ?? []) as OutboxRow[])
     .filter((row) => !handledKeys.has(row.dedupe_key))
+    .filter((row) => row.type !== "action" || openActionKeys.has(row.dedupe_key))
     .map((row) => ({
       userId: row.user_id,
       type: row.type,

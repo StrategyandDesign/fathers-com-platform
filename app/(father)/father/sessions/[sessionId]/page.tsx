@@ -8,6 +8,7 @@ import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
 import { sessionCover } from "@/lib/brand/photos";
+import { loadActionCommitment } from "@/lib/father/action-commitment-data";
 import { markFilmWatched } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
 import { loadFatherOrgPhotoCovers } from "@/lib/org-photos/data";
@@ -42,6 +43,8 @@ export default async function SessionViewerPage({
   const filmDone = progress?.film_completed ?? false;
   const checkinDone = progress?.checkin_completed ?? false;
   const actionDone = progress?.action_completed ?? false;
+  const outcome =
+    actionDone ? (await loadActionCommitment(user.id, session.id))?.outcomeNote : null;
   const orgPhotos = embed ? null : await loadFatherOrgPhotoCovers(user.id);
   const nextHref = !checkinDone
     ? `/father/sessions/${session.id}/checkin`
@@ -77,6 +80,12 @@ export default async function SessionViewerPage({
       <Flash error={error} />
 
       <div className="mx-auto max-w-lg space-y-3 text-center">
+        {outcome ? (
+          <div className="rounded-xl border border-border bg-card px-4 py-4 text-start">
+            <p className="text-sm font-medium">{t("father.session.whatHappened")}</p>
+            <p className="mt-1 text-sm leading-relaxed">{outcome}</p>
+          </div>
+        ) : null}
         {!checkinDone ? (
           <p className="text-sm leading-relaxed text-muted-foreground">
             {t("father.session.filmNextHint")}

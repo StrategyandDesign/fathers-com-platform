@@ -4,17 +4,18 @@ import {
   stageHeaderPaths,
   TrainingStageSessionShell,
 } from "@/components/admin/training-stage-session-shell";
-import { SessionActionFields } from "@/components/father/session-action-fields";
-import { SessionContinueLink } from "@/components/father/session-continue-link";
+import { ActionIntentionChipPreview, ActionSkillCard } from "@/components/father/action-skill-card";
 import { SessionHeader } from "@/components/father/session-header";
+import { buttonVariants } from "@/components/ui/button";
 import {
   nextStageHrefAfterAction,
   requireAdminStageSession,
   stagePaths,
 } from "@/lib/admin/stage";
-import { sessionAction } from "@/lib/father/session-questions";
+import { actionSkillText } from "@/lib/father/action-commitment";
+import { parseSkillPrompt, sessionAction } from "@/lib/father/session-questions";
 import { getI18n } from "@/lib/i18n/server";
-import { interactiveUnderlineClassName } from "@/lib/ui";
+import { homePrimaryCtaClassName, interactiveUnderlineClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export default async function AdminTrainingStageActionPage({
@@ -27,7 +28,7 @@ export default async function AdminTrainingStageActionPage({
   const { t } = await getI18n();
   const paths = stagePaths(training.id);
   const header = stageHeaderPaths(training.id, session.id);
-  const prompt = sessionAction(session, training);
+  const skill = actionSkillText(session, parseSkillPrompt(sessionAction(session, training)).stem);
   const nextHref = nextStageHrefAfterAction(training, session);
   const following = training.sessions.findIndex((row) => row.id === session.id);
   const hasNext = following >= 0 && Boolean(training.sessions[following + 1]);
@@ -43,18 +44,24 @@ export default async function AdminTrainingStageActionPage({
           {...header}
         />
         <div className="space-y-5">
-          <SessionActionFields prompt={prompt} t={t} />
-          <SessionContinueLink
+          <ActionSkillCard skill={skill} />
+          <div className="space-y-3">
+            <p className="text-sm font-medium">{t("father.session.whenWillYou")}</p>
+            <ActionIntentionChipPreview t={t} />
+          </div>
+          <Link
             href={nextHref}
-            label={hasNext ? t("common.continue") : t("father.session.completeAction")}
-          />
+            className={cn(buttonVariants({ variant: "default", size: "lg" }), homePrimaryCtaClassName)}
+          >
+            {hasNext ? t("common.continue") : t("father.session.finishSession")}
+          </Link>
         </div>
         <p className="text-center">
           <Link
             href={paths.hub}
             className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
           >
-            {t("father.session.doLater")}
+            {t("father.session.skipForNow")}
           </Link>
         </p>
       </div>

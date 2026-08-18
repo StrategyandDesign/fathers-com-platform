@@ -1,12 +1,28 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { SessionActionFields } from "@/components/father/session-action-fields";
-import { SessionAdvanceButton } from "@/components/father/session-advance-button";
+import {
+  ActionCommitmentForm,
+  ActionDoneForm,
+  ActionFinishForm,
+} from "@/components/father/action-commitment-form";
+import { ActionSkillCard } from "@/components/father/action-skill-card";
 import { SessionHeader } from "@/components/father/session-header";
 import { Flash } from "@/components/manager/flash";
 import { requireRole } from "@/lib/auth/session";
-import { completeAction } from "@/lib/father/actions";
+import {
+  actionLoopState,
+  actionSkillText,
+  customMomentParts,
+  formatNamedMoment,
+  INTENTION_LABEL_KEYS,
+} from "@/lib/father/action-commitment";
+import { loadActionCommitment, loadFatherTimeZone } from "@/lib/father/action-commitment-data";
+import {
+  commitActionMoment,
+  finishActionSession,
+  markActionDone,
+} from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
 import { parseSkillPrompt, sessionAction } from "@/lib/father/session-questions";
 import { getI18n } from "@/lib/i18n/server";
@@ -18,10 +34,10 @@ export default async function SessionActionPage({
   searchParams,
 }: {
   params: Promise<{ sessionId: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; change?: string }>;
 }) {
   const { sessionId } = await params;
-  const { error } = await searchParams;
+  const { error, change } = await searchParams;
   const { user } = await requireRole("father");
   const context = await loadSessionContext(user.id, sessionId);
 
@@ -41,14 +57,35 @@ export default async function SessionActionPage({
     redirect(`/father/sessions/${sessionId}/checkin`);
   }
 
-  if (context.progress.action_completed) {
+  const commitment = await loadActionCommitment(user.id, sessionId);
+  const state = actionLoopState({
+    actionCompleted: Boolean(context.progress.action_completed),
+    commitment,
+  });
+
+  if (state === "closed") {
     redirect(`/father?done=${encodeURIComponent(context.session.id)}`);
   }
 
-  const { t } = await getI18n();
-  const { session, training, progress, completedCount, sessionTotal } = context;
-  const prompt = sessionAction(session, training);
-  const hasChoices = Boolean(parseSkillPrompt(prompt).choices?.length);
+  const { t, dateLocale } = await getI18n();
+  const { session, training, completedCount, sessionTotal } = context;
+  const skill = actionSkillText(session, parseSkillPrompt(sessionAction(session, training)).stem);
+  const timezone = await loadFatherTimeZone(user.id);
+  const changing = change === "1" && state === "do";
+  const showCommit = state === "commit" || changing;
+  const customParts =
+    commitment?.intentionLabel === "custom" && commitment.intentionAt
+      ? customMomentParts(commitment.intentionAt, timezone)
+      : null;
+  const namedMoment = commitment
+    ? formatNamedMoment({
+        label: commitment.intentionLabel,
+        intentionAt: commitment.intentionAt,
+        timeZone: timezone,
+        locale: dateLocale,
+        optionLabel: t(INTENTION_LABEL_KEYS[commitment.intentionLabel]),
+      })
+    : "";
 
   return (
     <div className="mx-auto max-w-xl space-y-5 lg:space-y-8">
@@ -65,35 +102,53 @@ export default async function SessionActionPage({
 
       <Flash error={error} />
 
-      <form action={completeAction} className="space-y-5">
-        <input type="hidden" name="session_id" value={session.id} />
-        <SessionActionFields
-          prompt={prompt}
-          defaultValue={progress?.action_note ?? undefined}
-          invalid={Boolean(error)}
-          autoAdvance={hasChoices}
-          t={t}
-          sessionId={session.id}
-          defaultTryAt={
-            typeof progress?.action_try_at === "string"
-              ? progress.action_try_at.slice(0, 5)
-              : null
-          }
-        />
-        <SessionAdvanceButton
-          label={t("father.session.completeAction")}
-          visuallyHidden={hasChoices}
-        />
-      </form>
+      <ActionSkillCard skill={skill} />
 
-      <p className="text-center">
-        <Link
-          href="/father"
-          className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
-        >
-          {t("father.session.doLater")}
-        </Link>
-      </p>
+      {showCommit ? (
+        <>
+          <ActionCommitmentForm
+            sessionId={session.id}
+            defaultOption={changing ? commitment?.intentionLabel : null}
+            defaultDate={customParts?.date}
+            defaultTime={customParts?.time}
+            timezone={timezone}
+            action={commitActionMoment}
+          />
+          {state === "commit" ? (
+            <p className="text-center">
+              <Link
+                href="/father"
+                className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
+              >
+                {t("father.session.skipForNow")}
+              </Link>
+            </p>
+          ) : null}
+        </>
+      ) : null}
+
+      {state === "do" && !changing ? (
+        <>
+          <p className="text-center text-sm text-muted-foreground">{namedMoment}</p>
+          <ActionDoneForm sessionId={session.id} action={markActionDone} />
+          <p className="text-center">
+            <Link
+              href={`/father/sessions/${session.id}/action?change=1`}
+              className={cn("text-sm text-muted-foreground", interactiveUnderlineClassName)}
+            >
+              {t("father.session.changeMoment")}
+            </Link>
+          </p>
+        </>
+      ) : null}
+
+      {state === "finish" ? (
+        <ActionFinishForm
+          sessionId={session.id}
+          defaultNote={commitment?.outcomeNote}
+          action={finishActionSession}
+        />
+      ) : null}
     </div>
   );
 }

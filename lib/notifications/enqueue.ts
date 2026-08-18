@@ -21,6 +21,7 @@ export async function enqueueNotification(
     href: string;
     payload: NotificationPayload;
     availableAt?: Date;
+    reschedule?: boolean;
   }
 ) {
   const row = {
@@ -40,16 +41,24 @@ export async function enqueueNotification(
     return { ok: false as const };
   }
 
-  const { error: updateError } = await supabase
-    .from("notification_outbox")
-    .update({
-      href: row.href,
-      payload: row.payload,
-      available_at: row.available_at,
-      canceled_at: null,
-    })
-    .eq("dedupe_key", input.dedupeKey)
-    .is("processed_at", null);
+  const patch = input.reschedule
+    ? {
+        href: row.href,
+        payload: row.payload,
+        available_at: row.available_at,
+        canceled_at: null,
+        processed_at: null,
+      }
+    : {
+        href: row.href,
+        payload: row.payload,
+        available_at: row.available_at,
+        canceled_at: null,
+      };
+  const update = supabase.from("notification_outbox").update(patch).eq("dedupe_key", input.dedupeKey);
+  const { error: updateError } = input.reschedule
+    ? await update
+    : await update.is("processed_at", null);
   if (updateError) {
     console.error("[notifications] enqueue update failed", input.type, updateError.message);
     return { ok: false as const };
