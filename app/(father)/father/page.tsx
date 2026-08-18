@@ -3,11 +3,12 @@ import { HomeEarnedRow } from "@/components/father/home-earned";
 import { HomePathRow } from "@/components/father/home-path";
 import { HomeStreakRow } from "@/components/father/home-streak";
 import { HomeUpNextCard } from "@/components/father/home-up-next";
+import { StreakNotices } from "@/components/father/streak-notices";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
 import { pickHomeAssessment, sortHomePath } from "@/lib/father/home";
 import { loadFatherHome } from "@/lib/father/data";
-import { fatherWeekStreak } from "@/lib/father/streak";
+import { loadFatherStreakHome } from "@/lib/father/streak-store";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import {
@@ -38,11 +39,12 @@ export default async function FatherHomePage({
   const { done } = await searchParams;
   const { user } = await requireRole("father");
   const { t } = await getI18n();
-  const [{ pathCards, trainingCards, next, profile, draft, certificates, completedAts, timezone }, customAssignments, orgPhotos] =
+  const [{ pathCards, trainingCards, next, profile, draft, certificates }, customAssignments, orgPhotos, streak] =
     await Promise.all([
       loadFatherHome(user.id),
       loadFatherAssignments(user.id),
       loadFatherOrgPhotoCovers(user.id),
+      loadFatherStreakHome(user.id),
     ]);
 
   const nextCard = next
@@ -54,7 +56,6 @@ export default async function FatherHomePage({
   const nextCompleted = nextCard?.completed ?? 0;
   const nextTotal = nextCard?.total ?? next?.training.session_count ?? 0;
   const nextInProgress = sessionInProgress(next?.progress ?? null);
-  const streak = fatherWeekStreak({ completedAt: completedAts, timeZone: timezone });
   const assessment = pickHomeAssessment({
     assignments: customAssignments,
     profile,
@@ -80,7 +81,14 @@ export default async function FatherHomePage({
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-4 sm:space-y-5">
-      <HomeStreakRow weeks={streak.weeks} justFinished={justFinished} />
+      <StreakNotices notices={streak.notices} />
+      <HomeStreakRow
+        weeks={streak.currentWeeks}
+        longestWeeks={streak.longestWeeks}
+        freezesRemaining={streak.freezesRemaining}
+        grid={streak.grid}
+        justFinished={justFinished}
+      />
 
       {next ? (
         <HomeUpNextCard

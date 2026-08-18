@@ -13,6 +13,7 @@ import {
 } from "@/lib/father/action-commitment";
 import { loadActionCommitment, loadFatherTimeZone } from "@/lib/father/action-commitment-data";
 import { advanceOnboardingAfterSession } from "@/lib/father/start-actions";
+import { recordSessionCompletionForStreak } from "@/lib/father/streak-admin";
 import { cancelActionReminder, queueActionReminder } from "@/lib/notifications/events";
 import { parseTimeZone } from "@/lib/notifications/schedule";
 import {
@@ -255,11 +256,23 @@ export async function markActionDone(formData: FormData) {
     redirect(actionPath(sessionId, "Lock in a moment first."));
   }
 
+  const newlyComplete =
+    !context.progress?.action_completed &&
+    Boolean(context.progress?.film_completed && context.progress?.checkin_completed);
+
   if (!context.progress?.action_completed) {
     try {
       await saveProgress(user.id, sessionId, { action_completed: true });
     } catch {
       redirect(actionPath(sessionId, "Your action didn’t save. Try again."));
+    }
+  }
+
+  if (newlyComplete) {
+    try {
+      await recordSessionCompletionForStreak(user.id);
+    } catch (error) {
+      console.error("[streak] completion record failed", error);
     }
   }
 

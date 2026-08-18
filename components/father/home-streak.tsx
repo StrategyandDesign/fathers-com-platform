@@ -3,14 +3,41 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useT } from "@/components/i18n/locale-provider";
+import type { LedgerOutcome } from "@/lib/father/streak";
 import { interactiveControlClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
+function weekLabel(t: ReturnType<typeof useT>, weeks: number) {
+  if (weeks === 0) return t("father.home.startFirstWeek");
+  return weeks === 1 ? t("father.home.streakWeek", { n: weeks }) : t("father.home.streakWeeks", { n: weeks });
+}
+
+function WeekCell({ outcome }: { outcome: LedgerOutcome | null }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "aspect-square w-full rounded-sm",
+        outcome === "counted" && "bg-primary",
+        outcome === "frozen" && "border border-border bg-transparent",
+        outcome === "neutral" && "bg-muted",
+        (outcome === "missed" || outcome == null) && "border border-transparent bg-transparent"
+      )}
+    />
+  );
+}
+
 export function HomeStreakRow({
   weeks,
+  longestWeeks,
+  freezesRemaining,
+  grid,
   justFinished = false,
 }: {
   weeks: number;
+  longestWeeks: number;
+  freezesRemaining: number;
+  grid: Array<{ weekStart: string; outcome: LedgerOutcome | null }>;
   justFinished?: boolean;
 }) {
   const t = useT();
@@ -23,13 +50,6 @@ export function HomeStreakRow({
     return () => cancelAnimationFrame(frame);
   }, [justFinished, weeks]);
 
-  const label =
-    weeks === 0
-      ? t("father.home.startFirstWeek")
-      : weeks === 1
-        ? t("father.home.streakWeek", { n: weeks })
-        : t("father.home.streakWeeks", { n: weeks });
-
   return (
     <>
       <button
@@ -40,7 +60,13 @@ export function HomeStreakRow({
           interactiveControlClassName
         )}
       >
-        <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-foreground" />
+        <span
+          aria-hidden
+          className={cn(
+            "size-1.5 shrink-0 rounded-full",
+            weeks > 0 ? "bg-primary" : "bg-muted-foreground"
+          )}
+        />
         <span className="min-w-0">
           <span
             className={cn(
@@ -48,7 +74,7 @@ export function HomeStreakRow({
               lit ? "opacity-100" : "opacity-50"
             )}
           >
-            {label}
+            {weekLabel(t, weeks)}
           </span>
           {weeks > 0 ? (
             <span className="block text-sm text-muted-foreground">{t("father.home.inARow")}</span>
@@ -59,17 +85,35 @@ export function HomeStreakRow({
         ref={dialogRef}
         className="fixed inset-x-4 bottom-4 top-auto mb-0 w-[calc(100%-2rem)] max-w-xl rounded-xl border border-border bg-card p-5 text-foreground shadow-none backdrop:bg-black/50"
       >
-        <p className="text-base font-medium">
-          {weeks === 0
-            ? t("father.home.startFirstWeek")
-            : weeks === 1
-              ? t("father.home.streakWeek", { n: weeks })
-              : t("father.home.streakWeeks", { n: weeks })}
-        </p>
+        <p className="text-base font-medium">{weekLabel(t, weeks)}</p>
         {weeks > 0 ? (
           <p className="mt-1 text-sm text-muted-foreground">{t("father.home.inARow")}</p>
         ) : null}
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+        <div className="mt-4 space-y-3">
+          <div>
+            <p className="text-sm text-muted-foreground">{t("father.home.longestStreak")}</p>
+            <p className="text-base font-medium">
+              {longestWeeks === 1
+                ? t("father.home.streakWeek", { n: longestWeeks })
+                : t("father.home.streakWeeks", { n: longestWeeks })}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">{t("father.home.freezesRemaining")}</p>
+            <p className="text-base font-medium">{freezesRemaining}</p>
+          </div>
+        </div>
+        <div
+          dir="ltr"
+          className="mt-4 grid grid-cols-12 gap-1"
+          role="img"
+          aria-label={t("father.home.streakGrid")}
+        >
+          {grid.map((cell) => (
+            <WeekCell key={cell.weekStart} outcome={cell.outcome} />
+          ))}
+        </div>
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
           {t("father.home.streakRule")}
         </p>
         <form method="dialog" className="mt-5">

@@ -79,7 +79,7 @@ describe("father week streak", () => {
   });
 
   it("assigns the week in the father's timezone", () => {
-    const at = new Date("2026-08-16T04:00:00Z");
+    const at = new Date("2026-08-17T04:00:00Z");
     const chicago = fatherWeekStreak({
       completedAt: [at],
       timeZone: "America/Chicago",

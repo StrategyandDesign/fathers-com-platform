@@ -492,8 +492,20 @@ export const en = {
       streakWeek: "{n} week",
       streakWeeks: "{n} weeks",
       inARow: "in a row",
-      streakRule: "A week counts when you finish a session.",
+      streakRule:
+        "Finish one session in a week and the week counts. Miss a week and a freeze covers it. You have two.",
       streakClose: "Close",
+      longestStreak: "Longest streak",
+      freezesRemaining: "Freezes remaining",
+      streakGrid: "Last twelve weeks",
+      freezeConsumed: "You missed last week. A freeze covered it. You have {n} left.",
+      freezeReplenished: "You got a freeze back. You have {n}.",
+      streakReset:
+        "Your streak reset. Your skills did not. You have finished {sessions} and earned {certificates}.",
+      sessionOne: "1 session",
+      sessionMany: "{n} sessions",
+      certificateOne: "1 certificate",
+      certificateMany: "{n} certificates",
       nothingAssigned: "Nothing assigned yet.",
       nothingAssignedBody:
         "Your leader will open your first training. We will let you know.",
