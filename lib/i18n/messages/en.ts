@@ -589,7 +589,7 @@ export const en = {
       title: "Assessments",
       quietTitle: "Assessments",
       quietLead: "From your manager.",
-      lead: "The Keystone Assessment, plus any assessments your manager assigns.",
+      lead: "Your assessments.",
       emptyTitle: "No assigned assessments yet",
       emptyBody: "When your manager assigns another assessment, it will appear here.",
       answered: "{answered}/{total} answered",

@@ -561,7 +561,7 @@ export const he = {
       title: "הערכות",
       quietTitle: "הערכות",
       quietLead: "מהמנהל.",
-      lead: "הערכת Keystone, ועוד הערכות שהמנהל מקצה.",
+      lead: "ההערכות שלך.",
       emptyTitle: "עדיין אין הערכות שהוקצו",
       emptyBody: "כשהמנהל יקצה הערכה נוספת, היא תופיע כאן.",
       answered: "{answered}/{total} נענו",
