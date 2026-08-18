@@ -12,6 +12,7 @@ import {
   certificateDedupeKey,
   encouragementDedupeKey,
 } from "@/lib/notifications/schedule";
+import type { NotificationPayload } from "@/lib/notifications/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { filmRuntimeMinutes } from "@/lib/trainings/runtime";
@@ -134,6 +135,8 @@ export async function queueLeaderEncouragement(input: {
   fatherId: string;
   nudgeId: string;
   href: string;
+  payload?: NotificationPayload;
+  availableAt?: Date;
 }) {
   const supabase = await createClient();
   await enqueueNotification(supabase, {
@@ -141,7 +144,8 @@ export async function queueLeaderEncouragement(input: {
     type: "leader_encouragement",
     dedupeKey: encouragementDedupeKey(input.fatherId, input.nudgeId),
     href: input.href,
-    payload: {},
+    payload: input.payload ?? {},
+    availableAt: input.availableAt,
   });
   await flushDueReminders();
 }

@@ -31,6 +31,72 @@ export function leaderLabel(name: string | null | undefined) {
   return text && !FORBIDDEN.test(text) ? text : "your leader";
 }
 
+function encouragementLeader(name: string | null | undefined, locale: NotificationLocale) {
+  const text = clean(name ?? "");
+  if (text && !FORBIDDEN.test(text)) return text;
+  return locale === "he" ? "המנהיג" : "your leader";
+}
+
+function encouragementCopy(payload: NotificationPayload, locale: NotificationLocale): NotificationCopy {
+  const leader = encouragementLeader(payload.leaderName, locale);
+  const training = catalogText(payload.trainingTitle, locale === "he" ? "ההכשרה" : "Your training");
+  const minutes =
+    typeof payload.minutes === "number" && Number.isFinite(payload.minutes) && payload.minutes > 0
+      ? Math.ceil(payload.minutes)
+      : null;
+  const completed =
+    typeof payload.completedCount === "number" && Number.isFinite(payload.completedCount)
+      ? Math.max(0, Math.floor(payload.completedCount))
+      : 0;
+  const total =
+    typeof payload.sessionCount === "number" && Number.isFinite(payload.sessionCount)
+      ? Math.max(1, Math.floor(payload.sessionCount))
+      : 1;
+  const tier = payload.nudgeTier;
+
+  if (locale === "he") {
+    const title = `הערה מאת ${leader}`;
+    if (tier === "A") {
+      return {
+        title,
+        body: minutes
+          ? `המפגש הראשון פתוח כשתהיה מוכן. הוא ${minutes} דקות.`
+          : "המפגש הראשון פתוח כשתהיה מוכן.",
+      };
+    }
+    if (tier === "B") {
+      return {
+        title,
+        body: `אתה ב-${completed} מתוך ${total} ב־${training}. אפשר לחזור אליו כשיתאים.`,
+      };
+    }
+    return {
+      title,
+      body: "עבר זמן. ההכשרה עדיין כאן כשתרצה.",
+    };
+  }
+
+  const title = `A note from ${leader}`;
+  if (tier === "A") {
+    return {
+      title,
+      body: minutes
+        ? `Your first session is open when you are ready. It is ${minutes} minutes.`
+        : "Your first session is open when you are ready.",
+    };
+  }
+  if (tier === "B") {
+    return {
+      title,
+      body: `You are ${completed} of ${total} through ${training}. Pick it back up when you can.`,
+    };
+  }
+  return {
+    title,
+    body: "It has been a while. Your training is still here whenever you want it.",
+  };
+}
+
 export function notificationCopy(
   type: NotificationType,
   payload: NotificationPayload,
@@ -73,6 +139,9 @@ export function notificationCopy(
         body: "התעודה מוכנה.",
       };
     }
+    if (type === "leader_encouragement" && payload.nudgeTier) {
+      return encouragementCopy(payload, locale);
+    }
     return {
       title: "הערה מהמנהיג",
       body: "יש מפגש שמחכה כשיהיו לך כמה דקות.",
@@ -103,6 +172,9 @@ export function notificationCopy(
       body: "Your certificate is ready.",
     };
   }
+  if (type === "leader_encouragement" && payload.nudgeTier) {
+    return encouragementCopy(payload, locale);
+  }
   return {
     title: "A note from your leader",
     body: "There is a session waiting when you have a few minutes.",
@@ -127,6 +199,12 @@ export function safePayload(raw: unknown): NotificationPayload {
   }
   if (typeof source.sessionCount === "number" && Number.isFinite(source.sessionCount)) {
     payload.sessionCount = Math.max(1, Math.floor(source.sessionCount));
+  }
+  if (typeof source.completedCount === "number" && Number.isFinite(source.completedCount)) {
+    payload.completedCount = Math.max(0, Math.floor(source.completedCount));
+  }
+  if (source.nudgeTier === "A" || source.nudgeTier === "B" || source.nudgeTier === "C") {
+    payload.nudgeTier = source.nudgeTier;
   }
   for (const key of ["sessionId", "trainingId", "certificateId"] as const) {
     if (typeof source[key] === "string" && source[key].trim()) {

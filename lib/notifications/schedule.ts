@@ -181,18 +181,38 @@ export function addLocalDays(at: Date, days: number) {
   return new Date(at.getTime() + days * 86_400_000);
 }
 
+export function nextQuietEnd(at: Date, timeZone: string, quietEnd = DEFAULT_QUIET_END) {
+  const parsed = parseClock(quietEnd) ?? DEFAULT_QUIET_END;
+  const [hour, minute] = parsed.split(":").map((part) => Number.parseInt(part, 10));
+  const local = localParts(at, timeZone);
+  let candidate = localDateTime(timeZone, local.year, local.month, local.day, hour, minute);
+  if (candidate.getTime() > at.getTime()) return candidate;
+  const next = new Date(Date.UTC(local.year, local.month - 1, local.day + 1));
+  return localDateTime(
+    timeZone,
+    next.getUTCFullYear(),
+    next.getUTCMonth() + 1,
+    next.getUTCDate(),
+    hour,
+    minute
+  );
+}
+
 export function pickWithinCeiling<T extends { type: NotificationType }>(
   events: T[],
   sentInWindow: number,
   limit = FREQUENCY_CEILING
 ) {
   const remaining = Math.max(0, limit - sentInWindow);
-  if (remaining === 0) return [];
   const ranked = [...events].sort((left, right) => {
     const leftBoost = left.type === "leader_encouragement" ? 0 : 1;
     const rightBoost = right.type === "leader_encouragement" ? 0 : 1;
     return leftBoost - rightBoost;
   });
+  if (remaining === 0) {
+    const encouragement = ranked.find((event) => event.type === "leader_encouragement");
+    return encouragement ? [encouragement] : [];
+  }
   return ranked.slice(0, remaining);
 }
 

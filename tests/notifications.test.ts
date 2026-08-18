@@ -10,6 +10,7 @@ import {
   isWeeklyDue,
   isoWeekKey,
   lastWeeklyOccurrence,
+  nextQuietEnd,
   pickWithinCeiling,
   weeklyDedupeKey,
   weeklySlotKey,
@@ -88,6 +89,15 @@ describe("frequency ceiling", () => {
     assert.equal(picked.length, 1);
     assert.equal(picked[0]?.type, "leader_encouragement");
   });
+
+  it("lets a leader note through when the window is already full", () => {
+    const picked = pickWithinCeiling(
+      [{ type: "weekly_session" as const }, { type: "leader_encouragement" as const }],
+      3
+    );
+    assert.equal(picked.length, 1);
+    assert.equal(picked[0]?.type, "leader_encouragement");
+  });
 });
 
 describe("quiet hours", () => {
@@ -101,6 +111,11 @@ describe("quiet hours", () => {
   it("uses the father's own quiet hours when he changes them", () => {
     const at = new Date("2026-08-18T16:00:00Z");
     assert.equal(isInQuietHours(at, "Asia/Jerusalem", "18:00", "08:00"), true);
+  });
+
+  it("moves a 22:30 local send to 07:00 local", () => {
+    const next = nextQuietEnd(new Date("2026-08-18T19:30:00Z"), "Asia/Jerusalem");
+    assert.equal(next.toISOString(), "2026-08-19T04:00:00.000Z");
   });
 });
 

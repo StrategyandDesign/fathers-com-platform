@@ -14,6 +14,7 @@ import {
   FREQUENCY_WINDOW_DAYS,
   isInQuietHours,
   isWeeklyDue,
+  nextQuietEnd,
   pickWithinCeiling,
   weeklyDedupeKey,
   weeklySlotKey,
@@ -205,6 +206,14 @@ export async function dispatchDueReminders(now = new Date()) {
         continue;
       }
       if (isInQuietHours(now, prefs.timezone, prefs.quietHoursStart, prefs.quietHoursEnd)) {
+        const outboxId = outboxIdOf(candidate);
+        if (outboxId) {
+          const next = nextQuietEnd(now, prefs.timezone, prefs.quietHoursEnd);
+          await admin
+            .from("notification_outbox")
+            .update({ available_at: next.toISOString() })
+            .eq("id", outboxId);
+        }
         skipped += 1;
         continue;
       }
@@ -228,6 +237,7 @@ export async function dispatchDueReminders(now = new Date()) {
         body: copy.body,
         href,
         appUrl,
+        locale: prefs.locale,
       });
 
       await writeDelivery(admin, {
@@ -325,6 +335,7 @@ async function deliverOne(input: {
   body: string;
   href: string;
   appUrl: string;
+  locale: NotificationPrefsRow["locale"];
 }): Promise<{
   status: "sent" | "failed" | "skipped_channel";
   channel: NotificationChannel | null;
@@ -349,7 +360,13 @@ async function deliverOne(input: {
       if (result.reason === "gone") gone.push(subscription.endpoint);
     }
     if (input.prefs.emailEnabled && input.email && isEmailConfigured()) {
-      const emailed = await sendNotificationEmail(input.email, input.title, input.body, url);
+      const emailed = await sendNotificationEmail(
+        input.email,
+        input.title,
+        input.body,
+        url,
+        input.locale
+      );
       if (emailed) return { status: "sent", channel: "email", goneEndpoints: gone };
     }
     if (!input.prefs.emailEnabled || !input.email || !isEmailConfigured()) {
@@ -360,16 +377,29 @@ async function deliverOne(input: {
 
   if (!input.email) return { status: "failed", channel: "email" };
   if (!isEmailConfigured()) return { status: "skipped_channel", channel: "email" };
-  const emailed = await sendNotificationEmail(input.email, input.title, input.body, url);
+  const emailed = await sendNotificationEmail(
+    input.email,
+    input.title,
+    input.body,
+    url,
+    input.locale
+  );
   return { status: emailed ? "sent" : "failed", channel: "email" };
 }
 
-async function sendNotificationEmail(to: string, title: string, body: string, href: string) {
+async function sendNotificationEmail(
+  to: string,
+  title: string,
+  body: string,
+  href: string,
+  locale: NotificationPrefsRow["locale"]
+) {
   const rendered = renderTransactionalEmail({
     title,
     body,
-    ctaLabel: "Open",
+    ctaLabel: locale === "he" ? "פתיחה" : "Open",
     ctaHref: href,
+    locale,
   });
   const result = await sendEmail({
     to,

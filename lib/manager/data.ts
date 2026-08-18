@@ -270,6 +270,7 @@ export async function loadManagerWorkspace(managerId: string) {
     participants,
     progress,
     certificates,
+    assignments,
     trainingProgressFor,
     summary: {
       activeParticipants: fatherIds.length,

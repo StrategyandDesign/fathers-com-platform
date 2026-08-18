@@ -36,10 +36,14 @@ export type NotificationCopy = {
   body: string;
 };
 
+export type NudgeTier = "A" | "B" | "C";
+
 export type NotificationPayload = {
   trainingTitle?: string;
   minutes?: number | null;
   sessionCount?: number | null;
+  completedCount?: number | null;
+  nudgeTier?: NudgeTier;
   leaderName?: string;
   actionSummary?: string;
   sessionId?: string;
