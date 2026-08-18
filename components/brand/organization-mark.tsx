@@ -1,5 +1,8 @@
-import { initials } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+
+export function hasOrganizationLogo(logoUrl?: string | null) {
+  return Boolean(logoUrl?.trim());
+}
 
 export function OrganizationMark({
   name,
@@ -11,30 +14,30 @@ export function OrganizationMark({
   size?: "default" | "large" | "icon";
 }) {
   const label = name?.trim() || null;
-  if (!label && !logoUrl) return null;
+  const logo = logoUrl?.trim() || null;
+  if (!label && !logo) return null;
 
+  // Icon chrome is reserved for an uploaded mark. Initials placeholders
+  // steal header and sidebar space from the Fathers lockup and Home icon.
   if (size === "icon") {
+    if (!logo) return null;
     return (
       <span
         className="inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/10"
         title={label ?? undefined}
       >
-        {logoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={logoUrl} alt="" className="h-10 max-w-10 object-contain" />
-        ) : (
-          <span className="text-xs font-medium">{initials(label)}</span>
-        )}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logo} alt="" className="h-10 max-w-10 object-contain" />
       </span>
     );
   }
 
   return (
     <div className="flex min-w-0 items-center gap-2.5">
-      {logoUrl ? (
+      {logo ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={logoUrl}
+          src={logo}
           alt=""
           className={cn(
             "shrink-0 object-contain",

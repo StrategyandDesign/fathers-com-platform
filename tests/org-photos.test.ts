@@ -9,7 +9,7 @@ import {
   orgPhotoObjectPath,
   trainingPhotoSlot,
 } from "../lib/org-photos/slots";
-import { initials } from "../lib/ui";
+import { hasOrganizationLogo } from "../components/brand/organization-mark";
 
 describe("organization photo slots", () => {
   it("accepts the group logo, Home cards, and catalog training covers", () => {
@@ -26,8 +26,9 @@ describe("organization photo slots", () => {
     assert.equal(orgPhotoObjectPath("group-1", HOME_HERO_SLOT), "group-1/home_hero");
   });
 
-  it("falls back to group initials for the father left icon when no logo is set", () => {
-    assert.equal(initials("Unit 8200"), "U8");
-    assert.equal(initials("Returning Home NWA"), "RH");
+  it("hides the father chrome mark until a group logo is uploaded", () => {
+    assert.equal(hasOrganizationLogo(null), false);
+    assert.equal(hasOrganizationLogo("   "), false);
+    assert.equal(hasOrganizationLogo("/brand/group.png"), true);
   });
 });
