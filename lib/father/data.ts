@@ -12,6 +12,7 @@ import {
 } from "@/lib/father/types";
 import { loadAcceptedTrainingIds } from "@/lib/manager/reviews";
 import type { Certificate } from "@/lib/manager/types";
+import { parseTimeZone } from "@/lib/notifications/schedule";
 import { isLaterSeriesPart, isSeriesPartGated } from "@/lib/trainings/series";
 
 function asProgress(row: SessionProgress): SessionProgress {
@@ -75,7 +76,7 @@ function pickNextSession(
 export async function loadFatherHome(fatherId: string) {
   const supabase = await createClient();
 
-  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes, certificatesRes, assignmentsRes, accepted] =
+  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes, certificatesRes, assignmentsRes, accepted, zoneRes] =
     await Promise.all([
       supabase.from("trainings").select("*").order("order_index"),
       supabase.from("sessions").select("*").order("order_index"),
@@ -94,6 +95,11 @@ export async function loadFatherHome(fatherId: string) {
         .select("training_id, assigned_at")
         .eq("father_id", fatherId),
       loadAcceptedTrainingIds(),
+      supabase
+        .from("notification_preferences")
+        .select("timezone")
+        .eq("user_id", fatherId)
+        .maybeSingle(),
     ]);
 
   if (trainingsRes.error) throw trainingsRes.error;
@@ -171,7 +177,8 @@ export async function loadFatherHome(fatherId: string) {
     };
   });
 
-  const activeCard = [...trainingCards]
+  const pathCards = trainingCards.filter((card) => assignedIds.has(card.training.id));
+  const activeCard = [...pathCards]
     .sort((left, right) => {
       const leftAssigned = assignedAt.get(left.training.id) ?? 0;
       const rightAssigned = assignedAt.get(right.training.id) ?? 0;
@@ -180,8 +187,13 @@ export async function loadFatherHome(fatherId: string) {
     })
     .find((card) => card.next && !card.gated);
 
+  const completedAts = ((progressRes.data ?? []) as SessionProgress[])
+    .filter((row) => isSessionComplete(asProgress(row)) && row.completed_at)
+    .map((row) => row.completed_at as string);
+
   return {
     trainingCards,
+    pathCards,
     next: activeCard?.next
       ? {
           session: activeCard.next,
@@ -191,6 +203,9 @@ export async function loadFatherHome(fatherId: string) {
       : null,
     profile: (profileRes.data as FatherProfileSummary | null) ?? null,
     draft,
+    certificates,
+    completedAts,
+    timezone: parseTimeZone(zoneRes.data?.timezone) ?? "UTC",
   };
 }
 
