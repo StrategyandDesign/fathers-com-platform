@@ -231,7 +231,8 @@ export async function loadTrainingUsage(trainingId: string) {
       .eq("training_id", trainingId),
     supabase
       .from("organization_training_reviews")
-      .select("id", { count: "exact", head: true })
+      // Composite PK is (group_id, training_id). There is no id column.
+      .select("group_id", { count: "exact", head: true })
       .eq("training_id", trainingId),
   ]);
 

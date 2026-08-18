@@ -191,7 +191,7 @@ export function trainingDevelopmentChecklist(
     {
       key: "identity",
       label: "Title and slug are set",
-      done: Boolean(training.title.trim() && training.slug.trim()),
+      done: Boolean(training.title?.trim() && training.slug?.trim()),
     },
     {
       key: "sessions",

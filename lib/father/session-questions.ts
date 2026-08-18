@@ -168,7 +168,8 @@ function slugifyTitle(title: string) {
     .replace(/^-|-$/g, "");
 }
 
-function numberFromTitle(title: string): number | null {
+function numberFromTitle(title: string | null | undefined): number | null {
+  if (!title) return null;
   const slug = slugifyTitle(title);
   if (FUNDAMENTALS_BY_SLUG[slug]) {
     return FUNDAMENTALS_BY_SLUG[slug];
