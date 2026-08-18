@@ -51,6 +51,8 @@ export function FatherTrainingCatalogCard({
   certificateId,
   featured,
   quiet,
+  hrefOverride,
+  sessionHref,
   t,
 }: {
   title: string;
@@ -64,9 +66,11 @@ export function FatherTrainingCatalogCard({
   certificateId?: string | null;
   featured?: boolean;
   quiet?: boolean;
+  hrefOverride?: string | null;
+  sessionHref?: (sessionId: string) => string;
   t: Translate;
 }) {
-  const href = next ? continueHref(next.id, nextProgress) : null;
+  const href = hrefOverride ?? (next ? continueHref(next.id, nextProgress) : null);
   const started = completed > 0 || sessionInProgress(nextProgress);
   const complete = !next && total > 0 && completed >= total;
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
@@ -193,7 +197,7 @@ export function FatherTrainingCatalogCard({
             </a>
           ) : null}
           {sessionDots.length > 0 ? (
-            <SessionList dots={sessionDots} nextId={next?.id} t={t} />
+            <SessionList dots={sessionDots} nextId={next?.id} sessionHref={sessionHref} t={t} />
           ) : null}
         </div>
       </div>
@@ -204,10 +208,12 @@ export function FatherTrainingCatalogCard({
 function SessionList({
   dots,
   nextId,
+  sessionHref,
   t,
 }: {
   dots: TrainingCatalogDot[];
   nextId?: string;
+  sessionHref?: (sessionId: string) => string;
   t: Translate;
 }) {
   return (
@@ -245,7 +251,7 @@ function SessionList({
           return (
             <li key={dot.id}>
               <Link
-                href={`/father/sessions/${dot.id}`}
+                href={sessionHref?.(dot.id) ?? `/father/sessions/${dot.id}`}
                 className={cn(rowClass, interactiveSurfaceClassName)}
                 aria-label={label}
               >

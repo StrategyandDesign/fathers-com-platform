@@ -17,6 +17,11 @@ export async function SessionHeader({
   backHref,
   filmCompleted = false,
   checkinCompleted = false,
+  filmHref,
+  checkinHref,
+  actionHref,
+  trainingHref = "/father/trainings",
+  unlockAll = false,
 }: {
   training: Training;
   session: Session;
@@ -26,6 +31,11 @@ export async function SessionHeader({
   backHref: string;
   filmCompleted?: boolean;
   checkinCompleted?: boolean;
+  filmHref?: string;
+  checkinHref?: string;
+  actionHref?: string;
+  trainingHref?: string;
+  unlockAll?: boolean;
 }) {
   const { t } = await getI18n();
   const total = sessionTotal ?? training.session_count;
@@ -34,18 +44,18 @@ export async function SessionHeader({
   const steps: Array<{ key: StepKey; href: string; unlocked: boolean }> = [
     {
       key: "film",
-      href: `/father/sessions/${session.id}`,
+      href: filmHref ?? `/father/sessions/${session.id}`,
       unlocked: true,
     },
     {
       key: "checkin",
-      href: `/father/sessions/${session.id}/checkin`,
-      unlocked: filmCompleted,
+      href: checkinHref ?? `/father/sessions/${session.id}/checkin`,
+      unlocked: unlockAll || filmCompleted,
     },
     {
       key: "action",
-      href: `/father/sessions/${session.id}/action`,
-      unlocked: checkinCompleted,
+      href: actionHref ?? `/father/sessions/${session.id}/action`,
+      unlocked: unlockAll || checkinCompleted,
     },
   ];
 
@@ -64,7 +74,7 @@ export async function SessionHeader({
 
       <div className="space-y-1">
         <p className="text-xs text-muted-foreground">
-          <Link href="/father/trainings" className={interactiveLinkClassName}>
+          <Link href={trainingHref} className={interactiveLinkClassName}>
             {training.title}
           </Link>
         </p>

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { CoverPhoto } from "@/components/brand/cover";
 import { SessionAdvanceButton } from "@/components/father/session-advance-button";
+import { SessionFilmPlayer } from "@/components/father/session-film-player";
 import { SessionHeader } from "@/components/father/session-header";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
@@ -67,23 +67,10 @@ export default async function SessionViewerPage({
         checkinCompleted={checkinDone}
       />
 
-      <div className="overflow-hidden rounded-xl border border-border bg-black">
-        {embed ? (
-          <div className="aspect-video">
-            <iframe
-              className="h-full w-full"
-              src={embed}
-              title={session.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        ) : (
-          <div className="relative aspect-video">
-            <CoverPhoto src={sessionCover(session.session_number, orgPhotos?.photoPack)} />
-          </div>
-        )}
-      </div>
+      <SessionFilmPlayer
+        session={session}
+        coverSrc={sessionCover(session.session_number, orgPhotos?.photoPack)}
+      />
 
       <Flash error={error} />
 

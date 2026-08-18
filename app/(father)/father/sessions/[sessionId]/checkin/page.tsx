@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 
 import { SessionAdvanceButton } from "@/components/father/session-advance-button";
+import { SessionCheckinFields } from "@/components/father/session-checkin-fields";
 import { SessionHeader } from "@/components/father/session-header";
-import { SkillPromptField } from "@/components/father/skill-prompt";
 import { Flash } from "@/components/manager/flash";
 import { requireRole } from "@/lib/auth/session";
 import { submitCheckin } from "@/lib/father/actions";
@@ -59,16 +59,12 @@ export default async function SessionCheckinPage({
 
       <form action={submitCheckin} className="space-y-5 lg:space-y-6">
         <input type="hidden" name="session_id" value={session.id} />
-        {questions.map((question) => (
-          <SkillPromptField
-            key={question.key}
-            name={question.key}
-            prompt={question.label}
-            defaultValue={progress?.checkin_answers?.[question.key]}
-            invalid={Boolean(error)}
-            autoAdvance={canAutoAdvance}
-          />
-        ))}
+        <SessionCheckinFields
+          questions={questions}
+          answers={progress?.checkin_answers}
+          invalid={Boolean(error)}
+          autoAdvance={canAutoAdvance}
+        />
         <SessionAdvanceButton
           label={t("common.next")}
           visuallyHidden={canAutoAdvance}

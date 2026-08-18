@@ -25,8 +25,9 @@ export default async function AdminTrainingsPage({
         <div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight">Trainings</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Platform catalog. Publish when sessions are ready, then release to
-            selected organizations or all.
+            Platform catalog. Stage video trainings to see the participant path,
+            publish when sessions are ready, then release to selected
+            organizations or all.
           </p>
         </div>
         <Link href="/admin/trainings/new" className={cn(buttonVariants(), "w-full sm:w-auto")}>
@@ -47,13 +48,19 @@ export default async function AdminTrainingsPage({
           </EmptyState>
         ) : (
           <ul>
-            <li className="hidden grid-cols-[minmax(0,1.4fr)_5.5rem_minmax(8rem,0.9fr)] gap-4 border-b border-border px-6 py-3 text-xs tracking-wide text-muted-foreground uppercase md:grid">
-              <span>Title</span>
-              <span>Sessions</span>
-              <span>Status</span>
+            <li className="hidden border-b border-border text-xs tracking-wide text-muted-foreground uppercase md:grid md:grid-cols-[minmax(0,1fr)_5.5rem]">
+              <div className="grid grid-cols-[minmax(0,1.4fr)_5.5rem_minmax(8rem,0.9fr)] gap-4 px-6 py-3">
+                <span>Title</span>
+                <span>Sessions</span>
+                <span>Status</span>
+              </div>
+              <span className="flex items-center justify-end px-4">Stage</span>
             </li>
             {trainings.map((training) => (
-              <li key={training.id} className="border-b border-border last:border-0">
+              <li
+                key={training.id}
+                className="grid items-stretch border-b border-border last:border-0 md:grid-cols-[minmax(0,1fr)_5.5rem]"
+              >
                 <Link
                   href={`/admin/trainings/${training.id}`}
                   className={cn(
@@ -76,6 +83,14 @@ export default async function AdminTrainingsPage({
                     <ReleaseStatusBadge state={trainingReleaseState(training)} />
                   </span>
                 </Link>
+                <div className="flex items-center px-4 pb-4 sm:px-6 md:justify-end md:px-4 md:py-0">
+                  <Link
+                    href={`/admin/trainings/${training.id}/stage`}
+                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full md:w-auto")}
+                  >
+                    Stage
+                  </Link>
+                </div>
               </li>
             ))}
           </ul>

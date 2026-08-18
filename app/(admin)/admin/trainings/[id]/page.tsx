@@ -21,11 +21,12 @@ import {
 import { ReleaseStatusBadge } from "@/components/admin/release-status";
 import { ReleaseTargetStatusList, ReleaseTargets } from "@/components/admin/release-targets";
 import { Flash } from "@/components/manager/flash";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { formatShortDate } from "@/lib/manager/types";
 import { checkboxOptionClassName, fieldClassName, interactiveLinkClassName, textareaClassName } from "@/lib/ui";
+import { cn } from "@/lib/utils";
 
 export default async function AdminTrainingDetailPage({
   params,
@@ -54,13 +55,21 @@ export default async function AdminTrainingDetailPage({
 
   return (
     <div className="space-y-6">
-      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
-        <Link href="/admin/trainings" className={interactiveLinkClassName}>
-          Trainings
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+          <Link href="/admin/trainings" className={interactiveLinkClassName}>
+            Trainings
+          </Link>
+          <span className="text-white/20">|</span>
+          <span className="min-w-0">{training.title}</span>
+        </p>
+        <Link
+          href={`/admin/trainings/${training.id}/stage`}
+          className={cn(buttonVariants(), "w-full sm:w-auto")}
+        >
+          Open staging
         </Link>
-        <span className="text-white/20">|</span>
-        <span className="min-w-0">{training.title}</span>
-      </p>
+      </div>
       <Flash error={flash.error} notice={flash.notice} />
 
       <form action={updateTraining} className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
@@ -258,7 +267,9 @@ export default async function AdminTrainingDetailPage({
         <div>
           <h2 className="font-heading text-lg font-semibold">Sessions</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Title, order, YouTube URL, and keyline. Sessions with progress cannot be deleted.
+            Title, order, YouTube URL, and keyline. Open staging to walk Film →
+            Check-in → Action as participants will see it. Sessions with progress
+            cannot be deleted.
           </p>
           {training.sessions.length === 0 ? (
             <EmptyState
@@ -323,6 +334,12 @@ export default async function AdminTrainingDetailPage({
               <Button type="submit" className="w-full sm:w-auto">
                 Save session
               </Button>
+              <Link
+                href={`/admin/trainings/${training.id}/stage/sessions/${session.id}`}
+                className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+              >
+                Stage this session
+              </Link>
               <Button
                 type="submit"
                 formAction={deleteSession}
