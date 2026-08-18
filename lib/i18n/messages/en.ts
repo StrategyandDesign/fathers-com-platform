@@ -516,7 +516,7 @@ export const en = {
     },
     trainings: {
       title: "Trainings",
-      lead: "A short film, a few questions, then one skill.",
+      lead: "Most sessions are a short film, a few questions, then one skill.",
       emptyTitle: "No training assigned",
       emptyBody:
         "Your manager hasn’t assigned a training yet. It will show up here when they do.",
