@@ -25,7 +25,7 @@ export const en = {
   },
   role: {
     father: "Father Participant",
-    manager: "Manager",
+    manager: "Leader",
     leader: "Leader",
     reviewer: "Reviewer",
     admin: "Super-admin",
@@ -91,9 +91,9 @@ export const en = {
       collectInvite:
         "The invite code you enter, which places you in an organization group managed by your administrator.",
       collectProfile:
-        "Session check-in and action notes, and any assessments your manager assigns.",
+        "Session check-in and action notes, and any assessments your leader assigns.",
       collectProgress:
-        "Training progress, certificates your manager issues, and the notification preferences you choose.",
+        "Training progress, certificates your leader issues, and the notification preferences you choose.",
       collectTechnical:
         "Basic technical data needed to run the service, such as sign-in activity and error reports.",
       use: "How we use it",
@@ -107,12 +107,12 @@ export const en = {
         "If error monitoring is enabled, we may use Sentry to record technical details such as the page you were on, browser type, and the error itself. That helps us keep the service reliable. We do not send your session notes or assessment responses to Sentry as a matter of product design.",
       notDo: "What we do not do",
       notDoBody:
-        "We do not sell your personal information. We do not share your individual session notes or assessment responses with employers, courts, or programs unless you ask us to, or the law requires it. We do not use your reflections about your family for any purpose beyond serving you and the organization that invited you.",
+        "We do not sell your personal information. We do not share your individual session notes or assessment responses with employers, courts, or programs unless you ask us to, or the law requires it. We do not use your notes about your family for any purpose beyond serving you and the organization that invited you.",
       sharing: "Sharing",
       sharingProviders:
         "We share data with service providers who help us run the platform (for example, hosting, file storage, email delivery, and error monitoring), under agreements that require them to protect it.",
       sharingOrg:
-        "If you join through an invite code, your organization administrator (manager) can see your name, training progress, assessment responses, and certificates. Reviewers see cohort totals only, not your name or individual answers. Super-admins operate the platform catalog and organizations; they are not a substitute for your organization administrator. If you turn on anonymous sharing in Account, super-admins can see counts of progress and activity without your name, email, notes, or answers.",
+        "If you join through an invite code, your organization administrator (Leader) can see your name, training progress, assessment responses, and certificates. Reviewers see cohort totals only, not your name or individual answers. Super-admins operate the platform catalog and organizations; they are not a substitute for your organization administrator. If you turn on anonymous sharing in Account, super-admins can see counts of progress and activity without your name, email, notes, or answers.",
       sharingLegal:
         "If we receive a subpoena or court order, we are required to respond. We will tell you before we do unless the law forbids it. If you would rather not write something down, do not write it down; completion never depends on what you disclose in a free-text note.",
       choices: "Your choices",
@@ -123,7 +123,7 @@ export const en = {
         "This service is built for adult fathers, future fathers, and mentors. You must be at least 18 years old to create an account. We do not knowingly collect personal information from children.",
       retention: "Data retention",
       retentionBody:
-        "We keep your results, progress, and certificates while your account is active so you and your manager can use them. Photos and certificate files are stored in private buckets and are not public links. If you ask your organization administrator to delete your account, we remove personal data on a reasonable schedule, except where we must keep a record.",
+        "We keep your results, progress, and certificates while your account is active so you and your leader can use them. Photos and certificate files are stored in private buckets and are not public links. If you ask your organization administrator to delete your account, we remove personal data on a reasonable schedule, except where we must keep a record.",
       security: "Security",
       securityBody:
         "We protect your data with access controls, signed file downloads, and encryption in transit. Certificates and photos are not served as public URLs.",
@@ -152,7 +152,7 @@ export const en = {
         "You must be at least 18 years old to create an account. The service is built for fathers, future fathers, and mentors. Content is intended for adults.",
       account: "3. Your account and invite codes",
       accountLead:
-        "You create an account with an invite code from your organization administrator. You are responsible for your account and for keeping your sign-in secure. Do not share your password. Your session notes and assessments are yours; your manager can see the progress and responses described in the ",
+        "You create an account with an invite code from your organization administrator. You are responsible for your account and for keeping your sign-in secure. Do not share your password. Your session notes and assessments are yours; your leader can see the progress and responses described in the ",
       privacyLink: "Privacy Policy",
       accountEnd: ".",
       profile: "4. Assessments",
@@ -160,7 +160,7 @@ export const en = {
         "Assessments are written by your organization. They are not a clinical, diagnostic, legal, or medical instrument, and results should not be used as a substitute for professional advice.",
       trainings: "5. Trainings and certificates",
       trainingsBody:
-        "Trainings include films, check-ins, and weekly actions. Certificates of Completion are issued by your manager after the stated requirements are met. Certificates attest to completion of a Fathers.com training. Acceptance by any court, agency, or program is at that body’s discretion; we do not guarantee acceptance. Do not forge or alter a certificate.",
+        "Trainings include films, check-ins, and weekly actions. Certificates of Completion are issued by your leader after the stated requirements are met. Certificates attest to completion of a Fathers.com training. Acceptance by any court, agency, or program is at that body’s discretion; we do not guarantee acceptance. Do not forge or alter a certificate.",
       fees: "6. Organizations and fees",
       feesBody:
         "Access is through a participating organization. Any fees, if they exist, are between you and that organization. Fathers.com does not collect payment on these pages.",
@@ -172,7 +172,7 @@ export const en = {
         "Do not misuse the service, attempt to forge certificates, share your account, upload unlawful content, or use the service to harm others. We may suspend accounts that violate these terms.",
       ip: "9. Content and intellectual property",
       ipBody:
-        "The trainings, films, assessment, and materials on Fathers.com are owned by the National Center for Fathering or its licensors. You may use them for your own growth, not for redistribution.",
+        "The trainings, films, assessment, and materials on Fathers.com are owned by the National Center for Fathering or its licensors. You may use them for your own training, not for redistribution.",
       liability: "10. Disclaimers and limitation of liability",
       liabilityBody:
         "The service is provided as is. To the fullest extent permitted by law, the National Center for Fathering is not liable for indirect or consequential damages arising from your use of the service.",
@@ -198,7 +198,7 @@ export const en = {
     createAccountCta: "Create Account",
     haveAccount: "Already have an account?",
     inviteCode: "Invite code",
-    inviteHint: "Enter the code provided by your manager.",
+    inviteHint: "Enter the code provided by your leader.",
     languageHint: "Language for this browser",
     pilotNotice: "Official Fathers.com training pilot.",
   },
@@ -208,8 +208,8 @@ export const en = {
     confirmEmail: "Confirm your email first, then sign in.",
     badCredentials:
       "Email or password doesn’t match. Try again, or create an account if you don’t have one.",
-    inviteRequired: "Ask your manager for an invite code, then try again.",
-    inviteFailed: "That invite code didn’t work. Check it with your manager and try again.",
+    inviteRequired: "Ask your leader for an invite code, then try again.",
+    inviteFailed: "That invite code didn’t work. Check it with your leader and try again.",
     accountExists: "An account with that email already exists. Sign in instead.",
     weakPassword: "Use a password with at least 6 characters.",
     invalidEmail: "Enter a valid email address.",
@@ -233,7 +233,7 @@ export const en = {
     assessmentLoadFailed: "That assessment couldn’t load. Try again from Home.",
     assessmentNotAssigned: "That assessment is not assigned to you.",
     assessmentNoQuestions:
-      "This assessment has no questions yet. Check back after your manager adds some.",
+      "This assessment has no questions yet. Check back after your leader adds some.",
     youtubeUrlInvalid:
       "Use a YouTube video link. Playlists and other sites will not play.",
     questionNotFound: "That question was not found.",
@@ -375,9 +375,9 @@ export const en = {
     helpLead: "Something not working, or a question? Send a short note. We read every report.",
     reportProblem: "Report a Problem",
     certificates: "Certificates",
-    certificatesLead: "Issued by your manager. Download the official PDF.",
+    certificatesLead: "Issued by your leader. Download the official PDF.",
     certificatesEmpty:
-      "Certificates appear after your manager issues one for a completed training.",
+      "Certificates appear after your leader issues one for a completed training.",
     certificatesEmptyTitle: "No certificates yet",
     viewTrainings: "View trainings",
     completedOn: "Completed {date}",
@@ -450,25 +450,25 @@ export const en = {
         "Start with the Overview. Each session follows the same rhythm: Film → Check-in → Action.",
       sessionsComplete: "{completed} of {total} complete",
       sessionComplete: "Session complete",
-      doneForNow: "You’re done for now",
-      doneForNowBody: "That’s all the sessions you have right now.",
+      doneForNow: "Assigned sessions are complete",
+      doneForNowBody: "There is no next session assigned.",
       allComplete: "All sessions complete",
       noTraining: "No training assigned yet",
-      caughtUp: "You’re caught up",
+      caughtUp: "Nothing waiting",
       continueProfile: "Continue your Assessment",
       takeProfile: "Start your Assessment",
-      waitingManager: "Waiting on your manager",
-      everyComplete: "Every session you have is complete.",
+      waitingManager: "Waiting on your leader",
+      everyComplete: "Every assigned session is complete.",
       everyCompleteProfile:
-        "Every session you have is complete. The Assessment is optional when you want a reading.",
+        "Every assigned session is complete. The Assessment is optional.",
       everyCompleteAssessment:
-        "Every session you have is complete. Your manager also sent an assessment.",
+        "Every assigned session is complete. Your leader also assigned an assessment.",
       waitProfile:
-        "Your manager hasn’t assigned a training yet. The Assessment is here if you want it.",
+        "Your leader has not assigned a training yet. The Assessment is here if you want it.",
       waitAssessment:
-        "Your manager hasn’t assigned a training yet. They did send an assessment.",
+        "Your leader has not assigned a training yet. An assessment is assigned.",
       waitEmpty:
-        "Your manager hasn’t assigned a training yet. It will show up here when they do.",
+        "Your leader has not assigned a training yet. It will appear here when they do.",
       viewProfile: "View your Assessment",
       continueAssessment: "Continue assessment",
       takeAssessment: "Take assessment",
@@ -478,30 +478,30 @@ export const en = {
       taken: "Completed {date}",
       inProgress: "In progress",
       questionOf: "Question {n} of {total}",
-      profileReminder: "Optional. A reading of how you tend to father, not a test.",
+      profileReminder: "Optional. Four parts. About twenty minutes.",
       takeProfileTitle: "Start your Assessment",
       takeProfileBody: "Optional. Four parts. About twenty minutes, one question at a time.",
       profileLater: "Optional. You can take this after you start.",
       assessment: "Assessment",
       assessmentLater: "An assessment can wait until after you start.",
-      assessmentWaiting: "It will show up here when your manager assigns one.",
+      assessmentWaiting: "It will appear here when your leader assigns one.",
       yourTrainings: "Your trainings",
       yourPath: "Your path",
-      earned: "Earned",
-      startFirstWeek: "Start your first week",
+      earned: "Certificates",
+      startFirstWeek: "0 weeks",
       streakWeek: "{n} week",
       streakWeeks: "{n} weeks",
       inARow: "in a row",
       streakRule:
-        "Finish one session in a week and the week counts. Miss a week and a freeze covers it. You have two.",
+        "Finish one session in a week and the week counts. Two freezes cover a missed week.",
       streakClose: "Close",
       longestStreak: "Longest streak",
       freezesRemaining: "Freezes remaining",
       streakGrid: "Last twelve weeks",
-      freezeConsumed: "You missed last week. A freeze covered it. You have {n} left.",
-      freezeReplenished: "You got a freeze back. You have {n}.",
+      freezeConsumed: "Last week used a freeze. You have {n} left.",
+      freezeReplenished: "A freeze was restored. You have {n}.",
       streakReset:
-        "Your streak reset. Your skills did not. You have finished {sessions} and earned {certificates}.",
+        "The week count reset. Finished: {sessions}. Certificates: {certificates}.",
       sessionOne: "1 session",
       sessionMany: "{n} sessions",
       certificateOne: "1 certificate",
@@ -519,7 +519,7 @@ export const en = {
       lead: "Most sessions are a short film, a few questions, then one skill.",
       emptyTitle: "No training assigned",
       emptyBody:
-        "Your manager hasn’t assigned a training yet. It will show up here when they do.",
+        "Your leader has not assigned a training yet. It will appear here when they do.",
       backHome: "Back to Home",
       startTitle: "Start {title}",
       continueTitle: "Continue {title}",
@@ -547,7 +547,7 @@ export const en = {
     profile: {
       title: "Keystone Assessment",
       lead: "Four parts. When you finish: a stance to keep, and a strength to use.",
-      leadComplete: "Your last reading. Open the full page for what the names mean.",
+      leadComplete: "Your last results. Open the full page for what the names mean.",
       keystone: "Keystone Assessment",
       yourKeystone: "Your Keystone Assessment",
       primaryDetermination: "Primary Determination",
@@ -576,45 +576,45 @@ export const en = {
       section4Lead: "How this holds when life gets loud.",
       noResults: "No results yet",
       noResultsBody: "Finish the Assessment and you will get two names: a stance to keep, and a strength to use.",
-      seeResults: "Finish and see the reading",
-      chooseThenConfirm: "Choose an answer, then confirm. That opens your reading.",
+      seeResults: "Finish and see the results",
+      chooseThenConfirm: "Choose an answer, then confirm. That opens your results.",
       canStop: "You can stop and come back.",
-      markerQuarter: "You’re a quarter of the way through.",
-      markerHalf: "Halfway.",
-      markerThreeQuarters: "Three-quarters of the way through.",
+      markerQuarter: "One quarter complete.",
+      markerHalf: "Halfway complete.",
+      markerThreeQuarters: "Three quarters complete.",
       backToProfile: "Back to Assessment",
       resultsComplete: "Assessment complete",
       resultsLead:
-        "Here is the reading from your 128 answers. This is a pattern, not a verdict.",
+        "These two names come from your 128 answers.",
       resultsDetermination: "Primary Determination: {value}",
       resultsEdge: "Primary Edge: {value}",
       determinationWhat:
-        "Primary Determination is the stance your answers point to. It is the work to keep in front of you.",
+        "Primary Determination is the stance your answers point to. Keep training this skill.",
       edgeWhat:
         "Primary Edge is the strength that came through most clearly. It is how you tend to father.",
       meaningInvolvement:
-        "You stay in your child’s life, not only the big moments. Being away does not have to mean being gone.",
+        "You stay in your child’s life, not only the big moments. Distance does not end involvement.",
       meaningConsistency:
         "You keep your word. A child can learn a pattern from you even when you are not in the same place.",
       meaningAwareness:
         "You pay attention to who your child actually is, not who you assume they are.",
       meaningNurturance:
-        "You let your child know they matter. Warmth can be sent as clearly as it can be spoken in a room.",
+        "You let your child know they matter, in person or from a distance.",
       meaningPresence:
         "When you are with your child, in person or on a line, you bring yourself, not the day you just had.",
       meaningSteadiness:
         "You can feel pressure rise without handing it to your child. Steady is a skill you can practice from anywhere.",
       meaningRepair:
-        "When something breaks, you go first. A short, clean apology still counts from far away.",
+        "When something breaks, you go first. Repair can be done from a distance.",
       meaningReturn:
-        "You keep showing up after you have been away. Return is a season of small deposits, not one grand gesture.",
+        "You keep showing up after time away. Return is repeated contact, not one event.",
       useThisTitle: "How to use this",
       useThis1:
-        "Hold your Determination as the standard when you make contact: a call, a letter, or the next time you are together.",
+        "Use your Determination on the next contact: a call, a letter, or the next time you are together.",
       useThis2:
-        "Lean on your Edge on purpose. It is already in these answers. Use it when you reach out.",
+        "Use your Edge on the next contact. It is already in these answers.",
       scoresLead:
-        "The full reading is below. The two names above are the ones that came through most clearly.",
+        "The full results are below. The two names above are the ones that came through most clearly.",
       resultsCompleted: "Completed {date}",
       resultsRetakeLead: "You can retake this later if you want to see what’s changed.",
       retakeLater: "Retake later",
@@ -638,10 +638,10 @@ export const en = {
     assessments: {
       title: "Assessments",
       quietTitle: "Assessments",
-      quietLead: "From your manager.",
+      quietLead: "From your leader.",
       lead: "Your assessments.",
       emptyTitle: "No assigned assessments yet",
-      emptyBody: "When your manager assigns another assessment, it will appear here.",
+      emptyBody: "When your leader assigns another assessment, it will appear here.",
       answered: "{answered}/{total} answered",
       notStarted: "Not started",
       inProgress: "In progress",
@@ -662,7 +662,7 @@ export const en = {
       recordCount: "{n} answers on record",
       notReadyTitle: "This assessment is not ready",
       notReadyBody:
-        "This assessment has no questions yet. Check back after your manager adds some.",
+        "This assessment has no questions yet. Check back after your leader adds some.",
     },
     session: {
       film: "Film",
@@ -702,11 +702,11 @@ export const en = {
       intentDrive: "On the drive",
       intentNext: "Next time it comes up",
       intentCustom: "Pick a time",
-      lockItIn: "Lock it in",
+      lockItIn: "Save this time",
       skipForNow: "Skip for now",
       iDidIt: "I did it",
       changeMoment: "Change the moment",
-      whatHappened: "What happened?",
+      whatHappened: "Optional note",
       outcomePlaceholder: "Optional. One line.",
       finishSession: "Finish session",
       actionNoteLabel:
@@ -716,12 +716,12 @@ export const en = {
       runtime: "{n} min",
     },
     intro: {
-      welcome: "Welcome",
-      fallbackBody: "This is {title}. Short sessions you can put to work the same night.",
+      welcome: "Start",
+      fallbackBody: "This is {title}. Short sessions. One skill each.",
     },
     start: {
-      welcomeTitle: "Welcome to {group}.",
-      welcomeTitlePlain: "Welcome.",
+      welcomeTitle: "This is {group}.",
+      welcomeTitlePlain: "Start here.",
       welcomeBody:
         "This is a place to pick up skills you can use at home. A short film, three questions, and one thing to try. A few minutes at a time.",
       getStarted: "Get started",
@@ -730,7 +730,7 @@ export const en = {
       children2: "2",
       children3: "3 or more",
       childrenSkip: "Prefer not to say",
-      skill: "What do you most want to get better at?",
+      skill: "Which skill do you want to train first?",
       skillCalm: "Staying calm",
       skillListening: "Listening",
       skillConsistent: "Being consistent",
@@ -787,7 +787,7 @@ export const en = {
       createGroup: "Create group",
       attention: "Needs attention",
       attentionLead: "Unfinished sessions and certificates ready to send.",
-      caughtUp: "You’re caught up",
+      caughtUp: "Nothing waiting",
       caughtUpBody: "No unfinished sessions or certificates waiting to send.",
       viewParticipants: "View all participants",
       impactLead: "One page of enrollment, completion, and certificate numbers for a board or funder.",
@@ -800,9 +800,9 @@ export const en = {
       viewAssessments: "View assessments",
     },
     nudgePanel: {
-      title: "Who needs a nudge",
-      lead: "These men have been quiet. One tap sends a short note.",
-      empty: "Nobody has gone quiet. Everyone is moving.",
+      title: "Quiet participants",
+      lead: "These men have been quiet. Send a short note.",
+      empty: "No one is quiet right now.",
       sendNote: "Send a note",
       sendToAll: "Send to all {count}",
       confirmSend: "Send this note",
@@ -831,15 +831,15 @@ export const en = {
     companion: {
       eyebrow: "Assistant",
       title: "Assistant",
-      lead: "A short read of your group. Nothing sends or assigns until you confirm.",
+      lead: "A short summary of your group. Nothing sends or assigns until you confirm.",
       collapse: "Hide assistant",
       expand: "Show assistant",
       narrateEmpty:
         "No fathers have joined {org} yet. Share the invite code. This assistant will describe progress and draft funder language when someone starts.",
       narrate:
-        "{org} has {fathers} fathers. {startedPct}% have started training. {quiet} need a calm check-in, and {certs} certificates are ready to issue.",
+        "{org} has {fathers} fathers. {startedPct}% have started training. {quiet} are quiet, and {certs} certificates are ready to issue.",
       narrateClear:
-        "{org} has {fathers} fathers. {startedPct}% have started training. Nobody is sitting quiet, and {certs} certificates are ready to issue.",
+        "{org} has {fathers} fathers. {startedPct}% have started training. No one is quiet, and {certs} certificates are ready to issue.",
       questionsTitle: "At a glance",
       fundingTitle: "For a funder or board",
       fundingBody:
@@ -848,9 +848,9 @@ export const en = {
         "When fathers begin, completion and certificates become the proof you take to a funder. Nothing extra to assemble.",
       savingsTitle: "Quiet seats",
       savingsBody:
-        "{quiet} assigned seats have gone quiet. A confirmed note takes a moment and protects program time you already paid for.",
+        "{quiet} assigned seats have no recent activity. A confirmed note takes a moment.",
       savingsClear:
-        "Assigned seats are being used. You are not losing program cost to silent drop-off right now.",
+        "Assigned seats have recent activity.",
       timeTitle: "What to do next",
       timeBody: "Open a name, confirm a note, or issue a certificate. The list is already in front of you.",
       timeClear: "No one is waiting on you. The roster and Impact Snapshot stay one click away.",
@@ -860,7 +860,7 @@ export const en = {
       viewQuiet: "Review quiet participants",
       viewImpact: "Draft funder narrative",
       issueCerts: "Certificates ready",
-      noNext: "You’re caught up. Nothing is waiting on a confirmation.",
+      noNext: "Nothing is waiting on a confirmation.",
       attentionTitle: "Needs attention",
       attentionLead:
         "Quiet or stalled fathers, with a reason and a suggested note. Nothing emails until you confirm.",
@@ -877,9 +877,9 @@ export const en = {
       reasonQuietOne: "No activity in 1 day",
       reasonNoActivity: "No activity yet",
       reasonStalledTitle: "Stalled on Session {n}: {title}",
-      whyContinue: "The next session is still open. A gentle continue respects his pace.",
-      whyEncouragement: "He already started. Encouragement names the progress without pressure.",
-      whyWelcomeBack: "It’s been a longer stretch. Welcome back treats the gap as normal.",
+      whyContinue: "The next session is still open.",
+      whyEncouragement: "He already started. The next session is still open.",
+      whyWelcomeBack: "The training is still here.",
       detailTitle: "Assistant suggestion",
       detailLead: "Shown because this father is quiet, stalled, or ready for a certificate. You confirm any send.",
       detailCert: "A certificate is ready for {title}. Preview it. Nothing issues until you confirm on the next screen.",
@@ -922,7 +922,7 @@ export const en = {
       openDashboard: "Open dashboard",
       joined: "Joined {date}",
       privateNote: "Private notes",
-      privateNoteLead: "Only managers of {name} can see this. He never will.",
+      privateNoteLead: "Only leaders of {name} can see this. He never will.",
       privateNotePlaceholder: "Spoke with him Tuesday.",
       noteComposerLead: "Each save is kept with the time. The box clears for the next note.",
       noteSavedAt: "Saved {date}",
@@ -957,7 +957,7 @@ export const en = {
       partSubtitle: "Part {n} of {total}. {sessions} sessions.",
       gatedPart: "Opens when they finish Part {n}.",
       assigned: "Assigned",
-      certified: "Certified",
+      certified: "Certificate issued",
       currentSession: "Current session",
       sessionN: "Session {n}",
       noContinueTitle: "No trainings to continue",
@@ -986,13 +986,13 @@ export const en = {
       note: "Note",
       sendReminder: "Send reminder",
       sendNudge: "Send nudge",
-      continue: "Gentle continue",
-      continuePreview: "A calm note that the next session is still here. No rush.",
-      encouragement: "Encouragement",
+      continue: "Continue",
+      continuePreview: "The next session is still open.",
+      encouragement: "Progress note",
       encouragementPreview:
-        "Acknowledge the work already started. Invite him back when it fits.",
-      welcomeBack: "Welcome back",
-      welcomeBackPreview: "A light check-in after some time away. Adult and unhurried.",
+        "He started. The next session is still open.",
+      welcomeBack: "Still open",
+      welcomeBackPreview: "The training is still here.",
       sent: "Sent",
       skipped: "Not sent. Reminders off",
       failed: "Didn’t send",
@@ -1059,7 +1059,7 @@ export const en = {
       issuedBy: "Issued by",
       pdfOrg: "National Center for Fathering",
       pdfTagline: "Fathers.com  ·  Presence is a skill.",
-      pdfManager: "Fathers.com Manager",
+      pdfManager: "Fathers.com Leader",
     },
     request: {
       title: "Request a Training",
@@ -1078,12 +1078,12 @@ export const en = {
       topicTooLong: "Keep the topic under {n} characters.",
       descriptionTooLong: "Keep the description under 2000 characters.",
       sendFailed: "Unable to send request. Please try again.",
-      received: "Thanks. Your request has been received",
+      received: "Request received.",
     },
     reports: {
       title: "Reports",
       lead:
-        "Export fathers in your group. Date range filters last activity (join, session, assignment, or certificate). Email is omitted. Managers cannot read auth emails under RLS.",
+        "Export fathers in your group. Date range filters last activity (join, session, assignment, or certificate). Email is omitted. Leaders cannot read auth emails under RLS.",
       impact: "Impact Snapshot",
       training: "Training",
       allTrainings: "All trainings",
@@ -1123,7 +1123,7 @@ export const en = {
       csvCompletion: "Completion status",
       csvProgress: "Session progress",
       csvSerials: "Certificate serials",
-      pdfTitle: "Fathers.com Manager Report",
+      pdfTitle: "Fathers.com Leader Report",
       pdfFilter:
         "Training: {training}  ·  Status: {status}  ·  Last activity: {range}  ·  {count}",
       participantsOne: "1 participant",
@@ -1349,7 +1349,7 @@ export const en = {
       pendingTitle: "Pending review",
       pendingLead:
         "Accepted trainings appear in Assign Training. Nothing is sent to fathers automatically.",
-      emptyTitle: "You’re caught up",
+      emptyTitle: "Nothing waiting",
       emptyBody: "No new trainings are waiting. Decisions you already made stay in the history below.",
       accept: "Accept",
       acceptLead:
@@ -1386,7 +1386,7 @@ export const en = {
       waitingTitle: "Waiting on you",
       waitingLead:
         "Preview, then accept to make it available to assign, or decline to keep it hidden.",
-      waitingEmptyTitle: "You’re caught up",
+      waitingEmptyTitle: "Nothing waiting",
       waitingEmptyBody: "No new trainings are waiting.",
       cohortTitle: "In your cohort",
       cohortLead:
@@ -1626,7 +1626,7 @@ export const en = {
     screenshotTooBig: "Screenshot must be 2 MB or smaller.",
     screenshotType: "Use a JPEG, PNG, or WebP.",
     sendFailed: "Unable to send right now. Please try again.",
-    received: "Thanks. We’ve received your report",
+    received: "Report received.",
     bug: "Bug",
     notWorking: "Something not working",
     question: "Question",

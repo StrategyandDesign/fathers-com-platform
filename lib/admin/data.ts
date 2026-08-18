@@ -86,7 +86,7 @@ export async function loadAdminOrganizations(): Promise<AdminGroupRow[]> {
     const manager = usersById.get(group.manager_id);
     return {
       ...group,
-      managerName: manager?.full_name?.trim() || manager?.email || "Manager",
+      managerName: manager?.full_name?.trim() || manager?.email || "Leader",
       managerEmail: manager?.email ?? null,
       participantCount: counts.get(group.id) ?? 0,
     };

@@ -300,7 +300,7 @@ export async function saveCustomAnswer(formData: FormData) {
     fail(home, "That assessment is not assigned to you.");
   }
   if (ctx.questions.length === 0) {
-    fail(home, "This assessment has no questions yet. Check back after your manager adds some.");
+    fail(home, "This assessment has no questions yet. Check back after your leader adds some.");
   }
   if (ctx.assignment.status === "completed") {
     redirect(path);

@@ -322,6 +322,6 @@ export async function loadCertificatePreview(
     training: card.training,
     certificate: card.certificate,
     complete: card.total > 0 && card.completed === card.total,
-    managerName: profileName(manager, "Manager"),
+    managerName: profileName(manager, "Leader"),
   };
 }

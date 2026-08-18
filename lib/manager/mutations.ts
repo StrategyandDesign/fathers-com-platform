@@ -260,7 +260,7 @@ export async function issueCertificateToFather(
   const issuedAt = new Date();
   const serial = `FC-${issuedAt.getFullYear()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
   const fatherName = displayName(fatherRes.data, fatherId);
-  const managerName = profileName(managerRes.data, user.email?.split("@")[0] ?? "Manager");
+  const managerName = profileName(managerRes.data, user.email?.split("@")[0] ?? "Leader");
   const storagePath = certificateObjectPath(fatherId, serial);
 
   let pdf: Uint8Array;

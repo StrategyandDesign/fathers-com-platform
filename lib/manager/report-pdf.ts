@@ -105,7 +105,7 @@ function drawHeader(
   locale: Locale,
   t: Translate
 ) {
-  const title = locale === "he" ? t("manager.reports.pdfTitle") : "Fathers.com Manager Report";
+  const title = locale === "he" ? t("manager.reports.pdfTitle") : "Fathers.com Leader Report";
   drawText(page, title, MARGIN, y, bold, 16, FOREST, locale);
   const dateWidth = font.widthOfTextAtSize(shapePdfText(generatedOn, locale), 9);
   drawText(page, generatedOn, PAGE_WIDTH - MARGIN - dateWidth, y + 2, font, 9, MUTED, locale);
@@ -213,7 +213,7 @@ async function renderReportPdfWithLocale(
 ) {
   const t = createTranslator(locale);
   const doc = await PDFDocument.create();
-  doc.setTitle(locale === "he" ? t("manager.reports.pdfTitle") : "Fathers.com Manager Report");
+  doc.setTitle(locale === "he" ? t("manager.reports.pdfTitle") : "Fathers.com Leader Report");
   doc.setAuthor("Fathers.com");
   doc.setCreator("Fathers.com");
 
