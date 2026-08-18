@@ -38,7 +38,10 @@ const EXACT: Record<string, string> = {
   "Your action didn’t save. Try again.": "flash.actionSaveFailed",
   "Your Profile progress is saved. You can continue from the Profile tab.":
     "flash.profileProgressSaved",
+  "Your Assessment progress is saved. You can continue from Assessments.":
+    "flash.profileProgressSaved",
   "Your Profile didn’t save. Try again.": "flash.profileSaveFailed",
+  "Your Assessment didn’t save. Try again.": "flash.profileSaveFailed",
   "Answer every question before you submit.": "flash.answerEveryQuestion",
   "That assessment couldn’t load. Try again from Home.": "flash.assessmentLoadFailed",
   "That assessment is not assigned to you.": "flash.assessmentNotAssigned",
@@ -333,7 +336,9 @@ export function translateFlash(message: string | undefined, t: Translate) {
 
 export function translateAttention(reason: string, t: Translate) {
   if (reason === "Has not started the Father Profile") return t("manager.attention.noProfile");
+  if (reason === "Has not started the Keystone Assessment") return t("manager.attention.noProfile");
   if (reason === "Father Profile is in progress") return t("manager.attention.profileProgress");
+  if (reason === "Keystone Assessment is in progress") return t("manager.attention.profileProgress");
   if (reason === "No training assigned") return t("manager.attention.noTraining");
   if (reason.startsWith("Session in progress: ")) {
     return t("manager.attention.sessionInProgress", {

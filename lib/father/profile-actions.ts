@@ -102,7 +102,7 @@ async function persistProfileProgress(formData: FormData, intent: ProfileIntent)
   if (intent === "exit") {
     redirect(
       `/father/profile?notice=${encodeURIComponent(
-        "Your Profile progress is saved. You can continue from the Profile tab."
+        "Your Assessment progress is saved. You can continue from Assessments."
       )}`
     );
   }

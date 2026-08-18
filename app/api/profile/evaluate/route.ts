@@ -60,7 +60,7 @@ export async function POST(request: Request) {
 
   if (error) {
     await upsertProfileDraft(user.id, answers, firstUnanswered(answers));
-    takeError("Your Profile didn’t save. Try again.", questionId || firstUnanswered(answers));
+    takeError("Your Assessment didn’t save. Try again.", questionId || firstUnanswered(answers));
   }
 
   await deleteProfileDraft(user.id);

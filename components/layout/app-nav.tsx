@@ -9,12 +9,10 @@ import {
   Building2,
   ClipboardList,
   FileSpreadsheet,
-  GraduationCap,
   Home,
   Inbox,
   LayoutDashboard,
   Settings,
-  User,
   Users,
 } from "lucide-react";
 
@@ -51,16 +49,11 @@ export const NAV: Record<AppRole, NavItem[]> = {
       match: (path) => path === "/father/trainings" || path.startsWith("/father/sessions"),
     },
     {
-      href: "/father/profile",
-      labelKey: "nav.profile",
-      icon: User,
-      match: (path) => path.startsWith("/father/profile"),
-    },
-    {
       href: "/father/assessments",
       labelKey: "nav.assessments",
       icon: ClipboardList,
-      match: (path) => path.startsWith("/father/assessments"),
+      match: (path) =>
+        path.startsWith("/father/assessments") || path.startsWith("/father/profile"),
     },
     {
       href: "/father/certificates",
@@ -79,7 +72,7 @@ export const NAV: Record<AppRole, NavItem[]> = {
     {
       href: "/manager/trainings",
       labelKey: "nav.trainings",
-      icon: GraduationCap,
+      icon: BrandLogoArrow,
       match: (path) =>
         path.startsWith("/manager/trainings") ||
         path.startsWith("/manager/reviews") ||
@@ -153,7 +146,7 @@ export const NAV: Record<AppRole, NavItem[]> = {
     {
       href: "/admin/trainings",
       labelKey: "nav.trainings",
-      icon: GraduationCap,
+      icon: BrandLogoArrow,
       match: (path) => path.startsWith("/admin/trainings"),
     },
     {
@@ -167,12 +160,6 @@ export const NAV: Record<AppRole, NavItem[]> = {
       labelKey: "nav.inbox",
       icon: Inbox,
       match: (path) => path.startsWith("/admin/support"),
-    },
-    {
-      href: "/admin/account",
-      labelKey: "nav.account",
-      icon: Settings,
-      match: (path) => path.startsWith("/admin/account"),
     },
   ],
 };
