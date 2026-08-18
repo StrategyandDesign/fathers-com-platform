@@ -9,6 +9,54 @@ export type HomePathCard = {
   gated: boolean;
 };
 
+export type HomeShelfCard = HomePathCard & {
+  next?: { id: string } | null;
+  nextProgress?: {
+    film_completed?: boolean;
+    checkin_completed?: boolean;
+    action_completed?: boolean;
+    status?: string | null;
+  } | null;
+};
+
+export function homeTrainingLabel(training: {
+  title: string;
+  series_title?: string | null;
+}) {
+  const series = training.series_title?.trim();
+  return series || training.title;
+}
+
+export function isHomeTrainingStarted(card: HomeShelfCard) {
+  if (card.gated) return false;
+  if (card.completed > 0) return true;
+  const progress = card.nextProgress;
+  if (!card.next || !progress) return false;
+  return Boolean(
+    progress.film_completed ||
+      progress.checkin_completed ||
+      progress.action_completed ||
+      progress.status === "in_progress"
+  );
+}
+
+export function splitHomeRows<T extends HomeShelfCard>(
+  cards: T[],
+  currentTrainingId?: string | null
+) {
+  const open = cards.filter((card) => !card.gated);
+  const started = open.filter((card) => isHomeTrainingStarted(card));
+  const path =
+    started.length > 0
+      ? sortHomePath(started, currentTrainingId)
+      : open.filter((card) => currentTrainingId && card.training.id === currentTrainingId);
+  const pathIds = new Set(path.map((card) => card.training.id));
+  const trainings = open.filter(
+    (card) => !pathIds.has(card.training.id) && card.completed < card.total
+  );
+  return { path, trainings };
+}
+
 export type HomeAssessment =
   | { kind: "custom"; card: FatherAssignmentCard }
   | { kind: "keystone-draft"; draft: ProfileDraft }

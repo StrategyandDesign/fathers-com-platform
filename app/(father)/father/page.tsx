@@ -11,7 +11,7 @@ import { Flash } from "@/components/manager/flash";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { loadFatherLeader, loadVisibleCohortNote } from "@/lib/cohort-note/data";
 import { requireRole } from "@/lib/auth/session";
-import { pickHomeAssessment, sortHomePath } from "@/lib/father/home";
+import { pickHomeAssessment, splitHomeRows } from "@/lib/father/home";
 import { loadFatherHome } from "@/lib/father/data";
 import { loadFatherStreakHome } from "@/lib/father/streak-store";
 import { continueHref, type SessionProgress } from "@/lib/father/types";
@@ -78,14 +78,18 @@ export default async function FatherHomePage({
     profile,
     draft,
   });
-  const path = sortHomePath(pathCards, next?.training.id).map((card) => ({
-    ...card,
-    coverSrc: resolveTrainingCardCover(
-      trainingCoverSlug(card.training),
-      orgPhotos.trainingUrls[trainingCoverSlug(card.training)],
-      orgPhotos.photoPack
-    ),
-  }));
+  const shelves = splitHomeRows(trainingCards, next?.training.id);
+  const withCover = <T extends (typeof trainingCards)[number]>(cards: T[]) =>
+    cards.map((card) => ({
+      ...card,
+      coverSrc: resolveTrainingCardCover(
+        trainingCoverSlug(card.training),
+        orgPhotos.trainingUrls[trainingCoverSlug(card.training)],
+        orgPhotos.photoPack
+      ),
+    }));
+  const path = withCover(shelves.path);
+  const available = withCover(shelves.trainings);
   const earned = certificates.map((row) => ({
     id: row.id,
     title:
@@ -145,7 +149,7 @@ export default async function FatherHomePage({
     <div
       className={cn(
         "mx-auto w-full space-y-4 sm:space-y-5",
-        pair ? "max-w-4xl" : "max-w-xl"
+        pair || (path.length > 0 && available.length > 0) ? "max-w-4xl" : "max-w-xl"
       )}
     >
       {leader ? (
@@ -175,7 +179,7 @@ export default async function FatherHomePage({
           {assessmentCard}
         </>
       )}
-      <HomePathRow cards={path} t={t} />
+      <HomePathRow path={path} trainings={available} t={t} />
       <HomeEarnedRow marks={earned} t={t} />
     </div>
   );

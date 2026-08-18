@@ -492,6 +492,8 @@ export const en = {
       assessmentWaiting: "It will appear here when your leader assigns one.",
       yourTrainings: "Your trainings",
       yourPath: "Your path",
+      partShort: "Part {n} of {total}",
+      trainingNotStarted: "Not started",
       earned: "Certificates",
       leaderLabel: "Leader: {name}",
       noteEyebrow: "From your leader",

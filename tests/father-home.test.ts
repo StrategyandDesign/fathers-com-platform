@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { pickHomeAssessment, sortHomePath } from "../lib/father/home";
+import { pickHomeAssessment, sortHomePath, splitHomeRows } from "../lib/father/home";
 import { fatherWeekStreak } from "../lib/father/streak";
 import type { FatherAssignmentCard } from "../lib/assessments/types";
 
@@ -111,6 +111,58 @@ describe("home path order", () => {
       cards.map((card) => card.training.id),
       ["now", "open", "done", "gated"]
     );
+  });
+});
+
+describe("home shelves", () => {
+  it("keeps the started training on Path and other open trainings beside it", () => {
+    const rows = splitHomeRows(
+      [
+        {
+          training: { id: "fundamentals-1" },
+          completed: 4,
+          total: 5,
+          gated: false,
+          next: { id: "s4" },
+          nextProgress: { status: "in_progress" },
+        },
+        {
+          training: { id: "fundamentals-2" },
+          completed: 0,
+          total: 6,
+          gated: true,
+        },
+        {
+          training: { id: "anger" },
+          completed: 0,
+          total: 6,
+          gated: false,
+          next: { id: "a1" },
+          nextProgress: null,
+        },
+      ],
+      "fundamentals-1"
+    );
+    assert.deepEqual(
+      rows.path.map((card) => card.training.id),
+      ["fundamentals-1"]
+    );
+    assert.deepEqual(
+      rows.trainings.map((card) => card.training.id),
+      ["anger"]
+    );
+  });
+
+  it("does not list a gated later part as a second Path card", () => {
+    const rows = splitHomeRows(
+      [
+        { training: { id: "part-1" }, completed: 2, total: 5, gated: false, next: { id: "s2" } },
+        { training: { id: "part-2" }, completed: 0, total: 5, gated: true },
+      ],
+      "part-1"
+    );
+    assert.equal(rows.path.length, 1);
+    assert.equal(rows.trainings.length, 0);
   });
 });
 
