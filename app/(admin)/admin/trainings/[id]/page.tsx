@@ -37,6 +37,7 @@ import { formatShortDate } from "@/lib/manager/types";
 import { checkboxOptionClassName, fieldClassName, interactiveLinkClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 import { AdminFilmFlags, AdminSessionFilmFlags } from "@/components/admin/film-flags";
+import { hasHostedVideo } from "@/lib/media/hosted-video";
 
 export default async function AdminTrainingDetailPage({
   params,
@@ -152,6 +153,27 @@ export default async function AdminTrainingDetailPage({
             name="description"
             defaultValue={training.description ?? ""}
           />
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">Overview video</span>
+          <input
+            className={fieldClassName}
+            name="overview_video_url"
+            defaultValue={training.overview_video_url ?? ""}
+            placeholder="YouTube or Vimeo link. Fathers see this before Session 1."
+            aria-invalid={Boolean(flash.error) || undefined}
+          />
+          <span className="block text-sm text-muted-foreground">
+            Separate from session films. Leave blank until the overview is posted.
+            {hasHostedVideo(training.overview_video_url) ? (
+              <>
+                {" "}
+                <Link href={`/admin/trainings/${training.id}/stage/overview`} className={interactiveLinkClassName}>
+                  Preview the overview
+                </Link>
+              </>
+            ) : null}
+          </span>
         </label>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Credit (Leaders see this)</span>

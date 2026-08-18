@@ -2,6 +2,7 @@ import { FatherTrainingCatalogCard, isTrainingInProgress } from "@/components/fa
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { loadFatherHome } from "@/lib/father/data";
+import { hasTrainingOverview, trainingDoorHref } from "@/lib/father/training-door";
 import type { Session, SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
@@ -91,6 +92,8 @@ export default async function FatherTrainingsPage() {
                   quiet={inProgressCount > 0 && !inProgress}
                   gated={false}
                   gatedLabel={null}
+                  hrefOverride={trainingDoorHref(card)}
+                  hasOverview={hasTrainingOverview(card.training)}
                   t={t}
                 />
               </div>
