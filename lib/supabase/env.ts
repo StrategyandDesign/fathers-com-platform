@@ -1,19 +1,21 @@
+// Public Pilot project credentials. Safe in the browser (same class as the
+// anon key the old static site shipped in assets/js/config.js). Used when
+// Vercel Production has no NEXT_PUBLIC_SUPABASE_* vars, which 500'd `/`,
+// `/father`, `/manager`, and `/admin` after the clean-pilot ship.
+const PILOT_SUPABASE_URL = "https://koeplcybddrvbliuepsy.supabase.co";
+const PILOT_PUBLISHABLE_KEY = "sb_publishable_-iD7cLP_O0_1PhIvl5xEgw_LUi5f24U";
+const PILOT_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvZXBsY3liZGRydmJsaXVlcHN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5MjYwODgsImV4cCI6MjEwMjUwMjA4OH0.qlHaBR9tYsdSebzjVVql0on9B0vihZjIf36_JA4bLMM";
+
 export function getSupabaseUrl() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!url) {
-    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL");
-  }
-  return url;
+  return process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || PILOT_SUPABASE_URL;
 }
 
 export function getSupabasePublishableKey() {
-  const key =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!key) {
-    throw new Error(
-      "Missing NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY"
-    );
-  }
-  return key;
+  return (
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ||
+    PILOT_PUBLISHABLE_KEY ||
+    PILOT_ANON_KEY
+  );
 }
