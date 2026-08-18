@@ -14,6 +14,12 @@ export type Training = {
   released_by?: string | null;
   first_published_at?: string | null;
   first_released_at?: string | null;
+  development_status?: string | null;
+  working_title?: string | null;
+  development_notes?: string | null;
+  last_edited_at?: string | null;
+  last_edited_by?: string | null;
+  previewed_at?: string | null;
 };
 
 export function isTrainingPublished(training: { published?: boolean | null }) {
@@ -83,6 +89,8 @@ export type Session = {
   video_url: string | null;
   order_index: number;
   duration_seconds?: number | null;
+  checkin_prompt?: string | null;
+  action_prompt?: string | null;
 };
 
 export type SessionProgress = {

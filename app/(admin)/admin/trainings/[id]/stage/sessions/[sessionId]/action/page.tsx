@@ -6,7 +6,8 @@ import {
 } from "@/components/admin/training-stage-session-shell";
 import { ActionIntentionChipPreview, ActionSkillCard } from "@/components/father/action-skill-card";
 import { SessionHeader } from "@/components/father/session-header";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { markTrainingPreviewed } from "@/lib/admin/actions";
 import {
   nextStageHrefAfterAction,
   requireAdminStageSession,
@@ -49,12 +50,26 @@ export default async function AdminTrainingStageActionPage({
             <p className="text-sm font-medium">{t("father.session.whenWillYou")}</p>
             <ActionIntentionChipPreview t={t} />
           </div>
-          <Link
-            href={nextHref}
-            className={cn(buttonVariants({ variant: "default", size: "lg" }), homePrimaryCtaClassName)}
-          >
-            {hasNext ? t("common.continue") : t("father.session.finishSession")}
-          </Link>
+          {hasNext ? (
+            <Link
+              href={nextHref}
+              className={cn(buttonVariants({ variant: "default", size: "lg" }), homePrimaryCtaClassName)}
+            >
+              {t("common.continue")}
+            </Link>
+          ) : (
+            <form action={markTrainingPreviewed}>
+              <input type="hidden" name="training_id" value={training.id} />
+              <input type="hidden" name="session_id" value={session.id} />
+              <Button
+                type="submit"
+                size="lg"
+                className={homePrimaryCtaClassName}
+              >
+                {t("father.session.finishSession")}
+              </Button>
+            </form>
+          )}
         </div>
         <p className="text-center">
           <Link

@@ -36,6 +36,7 @@ export type AdminReleaseTarget = {
 export type AdminTrainingRow = Training & {
   published: boolean;
   releasedByName: string | null;
+  lastEditedByName: string | null;
   sessions: Session[];
   releaseTargets: AdminReleaseTarget[];
 };

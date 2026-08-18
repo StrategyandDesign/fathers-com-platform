@@ -26,9 +26,9 @@ export default async function AdminNewTrainingPage({
       <div>
         <h1 className="font-heading text-2xl font-semibold tracking-tight">New training</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Add sessions on the next page. For video trainings, open Staging to
-          walk the participant path before you publish. Publishing does not
-          notify managers. Release is a separate step.
+          Created as a draft idea. Add sessions next, Stage the Father path,
+          then mark Ready. Publishing does not notify Leaders. Release is a
+          separate step, and only Released trainings enter accept/decline.
         </p>
       </div>
       <Flash error={flash.error} notice={flash.notice} />
@@ -48,8 +48,26 @@ export default async function AdminNewTrainingPage({
           <input className={fieldClassName} name="slug" placeholder="auto-from-title" />
         </label>
         <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">Working title (optional)</span>
+          <input
+            className={fieldClassName}
+            name="working_title"
+            maxLength={120}
+            placeholder="Internal name. Fathers still see Title."
+          />
+        </label>
+        <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Description</span>
           <textarea className={textareaClassName} name="description" />
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">Development notes</span>
+          <textarea
+            className={textareaClassName}
+            name="development_notes"
+            maxLength={4000}
+            placeholder="Super-admin only. Early ideas, gaps, next sitting."
+          />
         </label>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Catalog order</span>
@@ -62,7 +80,7 @@ export default async function AdminNewTrainingPage({
             value="true"
             className="size-4 accent-primary"
           />
-          <span>Published (ready to release later)</span>
+          <span>Published (catalog flag only — still not released to Leaders)</span>
         </label>
         <Button type="submit" className="w-full sm:w-auto">
           Create training

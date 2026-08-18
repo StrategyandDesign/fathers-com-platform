@@ -5,13 +5,19 @@ import {
   createSession,
   deleteSession,
   deleteTraining,
+  duplicateSession,
+  moveSession,
   releaseTraining,
   setTrainingPublished,
   unreleaseTraining,
   updateSession,
   updateTraining,
 } from "@/lib/admin/actions";
+import { DevelopmentDesk } from "@/components/admin/development-desk";
+import { DevelopmentStatusBadge } from "@/components/admin/development-status";
+import { SessionAuthoringFields } from "@/components/admin/session-authoring-fields";
 import { loadAdminTraining, loadTrainingUsage } from "@/lib/admin/data";
+import { asDevelopmentStatus, isArchivedTraining } from "@/lib/admin/development";
 import {
   isLegacyCatalogTraining,
   RELEASE_CONFIRM,
@@ -27,7 +33,7 @@ import { requireRole } from "@/lib/auth/session";
 import { formatShortDate } from "@/lib/manager/types";
 import { checkboxOptionClassName, fieldClassName, interactiveLinkClassName, textareaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
-import { AdminFilmFlags, AdminSessionFilmFlags, adminDurationHint } from "@/components/admin/film-flags";
+import { AdminFilmFlags, AdminSessionFilmFlags } from "@/components/admin/film-flags";
 import { MAX_TRAINING_SESSIONS, trainingPartSubtitle } from "@/lib/trainings/series";
 
 export default async function AdminTrainingDetailPage({
@@ -52,8 +58,10 @@ export default async function AdminTrainingDetailPage({
     training.sessions.reduce((max, session) => Math.max(max, session.session_number), 0) + 1;
   const releaseState = trainingReleaseState(training);
   const legacy = isLegacyCatalogTraining(training);
-  const canRelease = training.published && training.sessions.length > 0;
+  const archived = isArchivedTraining(training);
+  const canRelease = !archived && training.published && training.sessions.length > 0;
   const alreadyReleased = releaseState === "released";
+  const developmentStatus = asDevelopmentStatus(training.development_status);
 
   return (
     <div className="space-y-6">
@@ -88,6 +96,7 @@ export default async function AdminTrainingDetailPage({
             ) : null}
           </div>
           <div className="flex flex-col items-start gap-1 sm:items-end">
+            <DevelopmentStatusBadge status={developmentStatus} />
             <ReleaseStatusBadge state={releaseState} />
             <span className="text-sm text-muted-foreground">
               {training.published ? "Published" : "Unpublished"}
@@ -119,11 +128,31 @@ export default async function AdminTrainingDetailPage({
           ) : null}
         </label>
         <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">Working title</span>
+          <input
+            className={fieldClassName}
+            name="working_title"
+            defaultValue={training.working_title ?? ""}
+            maxLength={120}
+            placeholder="Internal name. Fathers still see Title."
+          />
+        </label>
+        <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Description</span>
           <textarea
             className={textareaClassName}
             name="description"
             defaultValue={training.description ?? ""}
+          />
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">Development notes</span>
+          <textarea
+            className={textareaClassName}
+            name="development_notes"
+            defaultValue={training.development_notes ?? ""}
+            maxLength={4000}
+            placeholder="Super-admin only. Early ideas, gaps, next sitting."
           />
         </label>
         <label className="block space-y-2">
@@ -149,6 +178,8 @@ export default async function AdminTrainingDetailPage({
           Save training
         </Button>
       </form>
+
+      <DevelopmentDesk training={training} usage={usage} />
 
       <form action={setTrainingPublished} className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <input type="hidden" name="training_id" value={training.id} />
@@ -226,10 +257,15 @@ export default async function AdminTrainingDetailPage({
         ) : (
           <form action={releaseTraining} className="mt-5 space-y-4">
             <input type="hidden" name="training_id" value={training.id} />
-            {!training.published ? (
+            {archived ? (
+              <p className="text-sm text-muted-foreground">
+                Recover this training from the archive before releasing it to
+                Leaders.
+              </p>
+            ) : !training.published ? (
               <p className="text-sm text-muted-foreground">
                 Publish this training first. Release is a separate, deliberate
-                step.
+                step. Mark Ready for Review on the development desk first.
               </p>
             ) : training.sessions.length === 0 ? (
               <p className="text-sm text-muted-foreground">
@@ -276,9 +312,10 @@ export default async function AdminTrainingDetailPage({
         <div>
           <h2 className="font-heading text-lg font-semibold">Sessions</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Title, order, YouTube URL, runtime, and keyline. Open staging to walk
-            Film → Check-in → Action as participants will see it. Sessions with
-            progress cannot be deleted. A film cannot be published over 6:00.
+            Add, edit, reorder, duplicate, and remove sessions. Save incomplete
+            work. Open Stage to walk Film → Check-in → Action as a Father will
+            see it. Sessions with progress cannot be deleted. A film cannot be
+            published over 6:00.
           </p>
           <AdminFilmFlags sessions={training.sessions} />
           {training.sessions.length === 0 ? (
@@ -293,7 +330,7 @@ export default async function AdminTrainingDetailPage({
           ) : null}
         </div>
 
-        {training.sessions.map((session) => (
+        {training.sessions.map((session, index) => (
           <form
             key={session.id}
             action={updateSession}
@@ -303,64 +340,8 @@ export default async function AdminTrainingDetailPage({
             <input type="hidden" name="session_id" value={session.id} />
             <p className="text-sm text-muted-foreground">Session {session.session_number}</p>
             <AdminSessionFilmFlags session={session} />
-            <label className="block space-y-2">
-              <span className="text-sm text-muted-foreground">Title</span>
-              <input className={fieldClassName} name="title" defaultValue={session.title} required />
-            </label>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block space-y-2">
-                <span className="text-sm text-muted-foreground">Session number</span>
-                <input
-                  className={fieldClassName}
-                  name="session_number"
-                  type="number"
-                  min={1}
-                  defaultValue={session.session_number}
-                  required
-                />
-              </label>
-              <label className="block space-y-2">
-                <span className="text-sm text-muted-foreground">Order</span>
-                <input
-                  className={fieldClassName}
-                  name="order_index"
-                  type="number"
-                  defaultValue={session.order_index}
-                />
-              </label>
-            </div>
-            <label className="block space-y-2">
-              <span className="text-sm text-muted-foreground">Keyline</span>
-              <input className={fieldClassName} name="keyline" defaultValue={session.keyline ?? ""} />
-            </label>
-            <label className="block space-y-2">
-              <span className="text-sm text-muted-foreground">YouTube URL</span>
-              <input
-                className={fieldClassName}
-                name="video_url"
-                defaultValue={session.video_url ?? ""}
-                placeholder="https://youtu.be/… or youtube.com/watch?v=…"
-              />
-              <span className="block text-xs text-muted-foreground">
-                A YouTube watch, share, Shorts, or youtu.be link. Playlists will
-                not play.
-              </span>
-            </label>
-            <label className="block space-y-2">
-              <span className="text-sm text-muted-foreground">Runtime</span>
-              <input
-                className={fieldClassName}
-                name="duration_seconds"
-                defaultValue={session.duration_seconds ?? ""}
-                inputMode="numeric"
-                placeholder="seconds or m:ss"
-              />
-              <span className="block text-xs text-muted-foreground">
-                {adminDurationHint(session.duration_seconds)} Filled from YouTube
-                when a server key is configured.
-              </span>
-            </label>
-            <div className="flex flex-col gap-2 sm:flex-row">
+            <SessionAuthoringFields session={session} />
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
               <Button type="submit" className="w-full sm:w-auto">
                 Save session
               </Button>
@@ -372,11 +353,42 @@ export default async function AdminTrainingDetailPage({
               </Link>
               <Button
                 type="submit"
+                formAction={moveSession}
+                name="direction"
+                value="up"
+                variant="outline"
+                className="w-full sm:w-auto"
+                disabled={index === 0}
+              >
+                Move up
+              </Button>
+              <Button
+                type="submit"
+                formAction={moveSession}
+                name="direction"
+                value="down"
+                variant="outline"
+                className="w-full sm:w-auto"
+                disabled={index === training.sessions.length - 1}
+              >
+                Move down
+              </Button>
+              <Button
+                type="submit"
+                formAction={duplicateSession}
+                variant="outline"
+                className="w-full sm:w-auto"
+                disabled={training.sessions.length >= MAX_TRAINING_SESSIONS}
+              >
+                Duplicate
+              </Button>
+              <Button
+                type="submit"
                 formAction={deleteSession}
                 variant="destructive"
                 className="w-full sm:w-auto"
               >
-                Delete session
+                Remove session
               </Button>
             </div>
           </form>
@@ -393,61 +405,11 @@ export default async function AdminTrainingDetailPage({
         <form action={createSession} className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
           <input type="hidden" name="training_id" value={training.id} />
           <h3 className="font-heading text-lg font-semibold">Add session</h3>
-          <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Title</span>
-            <input className={fieldClassName} name="title" required />
-          </label>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block space-y-2">
-              <span className="text-sm text-muted-foreground">Session number</span>
-              <input
-                className={fieldClassName}
-                name="session_number"
-                type="number"
-                min={1}
-                defaultValue={nextNumber}
-                required
-              />
-            </label>
-            <label className="block space-y-2">
-              <span className="text-sm text-muted-foreground">Order</span>
-              <input
-                className={fieldClassName}
-                name="order_index"
-                type="number"
-                defaultValue={nextNumber}
-              />
-            </label>
-          </div>
-          <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Keyline</span>
-            <input className={fieldClassName} name="keyline" />
-          </label>
-          <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">YouTube URL</span>
-            <input
-              className={fieldClassName}
-              name="video_url"
-              placeholder="https://youtu.be/… or youtube.com/watch?v=…"
-            />
-            <span className="block text-xs text-muted-foreground">
-              A YouTube watch, share, Shorts, or youtu.be link. Playlists will
-              not play.
-            </span>
-          </label>
-          <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Runtime</span>
-            <input
-              className={fieldClassName}
-              name="duration_seconds"
-              inputMode="numeric"
-              placeholder="seconds or m:ss"
-            />
-            <span className="block text-xs text-muted-foreground">
-              Whole seconds or m:ss. Required before publish. Filled from YouTube
-              when a server key is configured.
-            </span>
-          </label>
+          <p className="text-sm text-muted-foreground">
+            Save incomplete sessions. Ready and Release still require film,
+            runtime, Check-in, and Action.
+          </p>
+          <SessionAuthoringFields nextNumber={nextNumber} />
           <Button type="submit" className="w-full sm:w-auto">
             Add session
           </Button>
@@ -462,8 +424,8 @@ export default async function AdminTrainingDetailPage({
           {seeded
             ? "Fathering Fundamentals cannot be deleted. Unpublish if you need to hide it from new assignment."
             : canDelete
-              ? "This training has no assignments or progress."
-              : "This training has assignments or progress. Unpublish it instead."}
+              ? "This training has no assignments or progress. Prefer Archive if you may want the idea later."
+              : "This training has assignments or progress. Archive or unpublish it instead."}
         </p>
         <Button
           type="submit"

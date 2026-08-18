@@ -88,8 +88,9 @@ export default async function AdminTrainingStagePage({
                 What he sees
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Platform covers and the same copy participants get. Language
-                follows your Account setting.
+                Same Home card and Trainings card a Father gets after a Leader
+                assigns this. Language follows your Account setting. Nothing
+                here writes progress.
               </p>
             </div>
             <div className="flex gap-2">
@@ -209,9 +210,9 @@ export default async function AdminTrainingStagePage({
             )}
           </ParticipantSnapshotFrame>
           <p className="text-sm text-muted-foreground">
-            In this snapshot every session is open so you can inspect them.
-            Participants finish Film, then Check-in, then Action, in order.
-            Covers are the platform defaults. Organizations can replace them.
+            Every session is open so you can inspect the full path. Fathers
+            finish Film, then Check-in, then Action, in order. This walk does
+            not write session_progress. Covers are the platform defaults.
           </p>
         </div>
 

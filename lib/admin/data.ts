@@ -155,16 +155,20 @@ export async function loadAdminTrainings(): Promise<AdminTrainingRow[]> {
     training_id: string;
     status: string;
   }>;
-  const releaserIds = [
-    ...new Set(trainings.map((training) => training.released_by).filter(Boolean)),
+  const editorIds = [
+    ...new Set(
+      trainings
+        .flatMap((training) => [training.released_by, training.last_edited_by])
+        .filter(Boolean)
+    ),
   ] as string[];
 
   const names = new Map<string, string>();
-  if (releaserIds.length > 0) {
+  if (editorIds.length > 0) {
     const { data: profiles, error: profileError } = await supabase
       .from("profiles")
       .select("id, full_name")
-      .in("id", releaserIds);
+      .in("id", editorIds);
     if (profileError) throw profileError;
     for (const profile of profiles ?? []) {
       const name = profile.full_name?.trim();
@@ -188,6 +192,9 @@ export async function loadAdminTrainings(): Promise<AdminTrainingRow[]> {
       ...training,
       published: isTrainingPublished(training),
       releasedByName: training.released_by ? names.get(training.released_by) ?? "Super-admin" : null,
+      lastEditedByName: training.last_edited_by
+        ? names.get(training.last_edited_by) ?? "Super-admin"
+        : null,
       sessions: sessions
         .filter((session) => session.training_id === training.id)
         .sort((a, b) => a.order_index - b.order_index || a.session_number - b.session_number),
@@ -207,7 +214,7 @@ export async function loadTrainingUsage(trainingId: string) {
   if (sessionsRes.error) throw sessionsRes.error;
   const sessionIds = (sessionsRes.data ?? []).map((row) => row.id);
 
-  const [assignments, progress, certificates] = await Promise.all([
+  const [assignments, progress, certificates, reviews] = await Promise.all([
     supabase
       .from("training_assignments")
       .select("id", { count: "exact", head: true })
@@ -222,16 +229,22 @@ export async function loadTrainingUsage(trainingId: string) {
       .from("certificates")
       .select("id", { count: "exact", head: true })
       .eq("training_id", trainingId),
+    supabase
+      .from("organization_training_reviews")
+      .select("id", { count: "exact", head: true })
+      .eq("training_id", trainingId),
   ]);
 
   if (assignments.error) throw assignments.error;
   if (progress.error) throw progress.error;
   if (certificates.error) throw certificates.error;
+  if (reviews.error) throw reviews.error;
 
   return {
     assignmentCount: assignments.count ?? 0,
     progressCount: progress.count ?? 0,
     certificateCount: certificates.count ?? 0,
+    reviewCount: reviews.count ?? 0,
   };
 }
 
