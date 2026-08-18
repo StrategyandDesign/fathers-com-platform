@@ -1,17 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    { "source": "/verify", "destination": "/verify.html" }
-  ],
-  "headers": [
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "crons": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://player.vimeo.com https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net https://api.stripe.com https://vercel.live; frame-src 'self' https://player.vimeo.com https://js.stripe.com; worker-src 'self' blob:;"
-        }
-      ]
+      "path": "/api/cron/reminders",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/streaks",
+      "schedule": "0 6 * * *"
     }
   ]
 }

@@ -923,9 +923,37 @@
         return;
       }
       persistWriting(payload);
+      if (shouldAskGuestAttach()){
+        try { localStorage.setItem('fc_rh_attach_asked','1'); } catch(e){}
+        showGuestAttach();
+        return;
+      }
       if (msg) msg.textContent = keep;
       continueAfterWriting();
     });
+  }
+
+  function shouldAskGuestAttach(){
+    if (!isGuestPlay()) return false;
+    if (!onRh()) return false;
+    try { if (localStorage.getItem('fc_rh_attach_asked') === '1') return false; } catch(e){}
+    return true;
+  }
+
+  function showGuestAttach(){
+    stage(
+      '<div class="cw-write">'+
+        '<p class="small" style="margin:0 0 10px">This stays with you.</p>'+
+        '<p class="fine" style="margin:0 0 18px">An account keeps it on every device. '+
+          '<a href="login.html?path=rh&amp;next=rh-home.html">Log in</a> · '+
+          '<a href="login.html?path=rh&amp;mode=signup&amp;next=rh-home.html">Create account</a></p>'+
+        '<div class="cw-video-actions">'+
+          '<button class="btn btn-primary" id="cw-w-keep">Continue</button>'+
+        '</div>'+
+      '</div>'
+    );
+    var keepBtn = $('cw-w-keep');
+    if (keepBtn) keepBtn.addEventListener('click', continueAfterWriting);
   }
 
   function replayUrl(v){

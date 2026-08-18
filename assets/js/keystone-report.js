@@ -79,7 +79,9 @@
         assessment_slug: p.assessment_slug || null,
         overall_pct: p.scored.overall, scale_scores: p.scored.scales,
         gap_scale: p.scored.gap, strength_scale: p.scored.strength,
-        completed_at: new Date(p.at||Date.now()).toISOString()
+        completed_at: new Date(p.at||Date.now()).toISOString(),
+        completion_tier: p.completion_tier || null,
+        answered_count: p.answered_count || (p.scored && p.scored.answered) || null
       };
     } catch(e){ return null; }
   }
@@ -102,6 +104,56 @@
     } catch(e){ return null; }
   }
 
+  /* Shared loader for report.html and rh-home. Pending beats an older saved
+     row so a sitting he just finished is never buried. Does not invent a sample. */
+  function loadLatest(cb, opts){
+    opts = opts || {};
+    cb = typeof cb === 'function' ? cb : function(){};
+    var want = opts.assessment || null;
+    function finish(result, state){ cb(result || null, state || null); }
+    function fromPending(){
+      var pend = pendingRow();
+      finish(pend, pend ? 'pending' : null);
+    }
+    function afterReady(){
+      if(window.FC && FC.live && FC.uid && FC.uid() && FC.sb){
+        claimServerPendingThen(function(){ persistLocalPendingThen(function(){
+          FC.sb.from('keystone_results').select('*').eq('user_id', FC.uid())
+            .order('completed_at',{ascending:false})
+            .then(function(r){
+              var all = (r && r.data) || [];
+              var saved = null;
+              if(want){
+                for(var i=0;i<all.length;i++){
+                  var slug = all[i].assessment_slug || 'keystone-father-profile';
+                  if(slug === want){ saved = all[i]; break; }
+                }
+              } else {
+                saved = all.length ? all[0] : null;
+              }
+              RESULT_INDEX = distinctProfiles(all);
+              var pend = pendingRow();
+              if(saved && pend){
+                var ts = function(x){ return new Date(x.completed_at || 0).getTime() || 0; };
+                if(ts(pend) > ts(saved)) return finish(pend, 'pending');
+                return finish(saved, 'account');
+              }
+              if(saved) return finish(saved, 'account');
+              if(pend) return finish(pend, 'pending');
+              return finish(null, null);
+            }).catch(fromPending);
+        }); });
+      } else {
+        fromPending();
+      }
+    }
+    if(window.FC && FC.ready && typeof FC.ready.then === 'function'){
+      FC.ready.then(afterReady, afterReady);
+    } else {
+      afterReady();
+    }
+  }
+
   function load(){
     var pv = previewRequest();
     if(pv){
@@ -109,50 +161,13 @@
       r.assessment_slug = pv.slug;
       return render(r, 'sample');
     }
-    if(window.FC && FC.live && FC.uid && FC.uid()){
-      claimServerPendingThen(function(){ persistLocalPendingThen(function(){
-      /* Every result, newest first, not just the latest one.
-
-         A man can complete more than one profile. Loading only the newest meant
-         that the moment he finished the Manhood Profile his Father Profile
-         report became unreachable: same URL, and the older result could never
-         win the ordering. ?assessment=<slug> now addresses a specific profile,
-         and with no parameter he gets his most recent, as before.
-
-         Legacy rows written before results carried a slug are father results, so
-         a request for the father profile accepts them too. */
-      FC.sb.from('keystone_results').select('*').eq('user_id', FC.uid())
-        .order('completed_at',{ascending:false})
-        .then(function(r){
-          var all = (r && r.data) || [];
-          var want = null;
-          try { want = new URLSearchParams(window.location.search).get('assessment'); } catch(e){}
-          var saved = null;
-          if(want){
-            for(var i=0;i<all.length;i++){
-              var slug = all[i].assessment_slug || 'keystone-father-profile';
-              if(slug === want){ saved = all[i]; break; }
-            }
-          } else {
-            saved = all.length ? all[0] : null;
-          }
-          RESULT_INDEX = distinctProfiles(all);
-          var pend  = pendingRow();
-          if(saved && pend){
-            var ts = function(x){ return new Date(x.completed_at || 0).getTime() || 0; };
-            return render(ts(pend) > ts(saved) ? pend : saved, 'account');
-          }
-          if(saved){ return render(saved, 'account'); }
-          /* Signed in, nothing stored, nothing pending. The sample is the one
-             thing this state must never show: it carries plausible numbers and
-             a plausible date, and a man who just finished elsewhere reads it as
-             his own gone wrong. Say what is true instead. */
-          return needProfile();
-        }).catch(needProfile);
-      }); });
-    } else {
-      pendingOrSample();
-    }
+    var want = null;
+    try { want = new URLSearchParams(window.location.search).get('assessment'); } catch(e){}
+    loadLatest(function(result, state){
+      if(result) return render(result, state || 'account');
+      if(window.FC && FC.live && FC.uid && FC.uid()) return needProfile();
+      return render(sampleResult(), 'sample');
+    }, { assessment: want });
   }
 
   var RESULT_INDEX = null;
@@ -468,11 +483,39 @@
       moves+'</div>';
   }
 
+  function scaleAnswered(sc){
+    if(!sc) return false;
+    if(typeof sc.n === 'number') return sc.n > 0;
+    if(sc.raw===0 && sc.pct===0 && sc.mean==null) return false;
+    return true;
+  }
+
+  function answeredQuestionN(result){
+    if(result && result.answered_count) return result.answered_count;
+    var sc = (result && result.scale_scores) || {};
+    var n = 0, hasN = false;
+    Object.keys(sc).forEach(function(k){
+      if(sc[k] && typeof sc[k].n === 'number'){ hasN = true; n += sc[k].n; }
+    });
+    if(hasN) return n;
+    if(result && result.completion_tier === 'quick' && ACTIVE){
+      var q = 0;
+      (ACTIVE.sections||[]).forEach(function(s){
+        if(s.key !== 'dimensions') return;
+        (s.scales||[]).forEach(function(x){ q += (x.items||[]).length; });
+      });
+      if(q) return q;
+    }
+    var itemN = 0;
+    if(ACTIVE && ACTIVE.sections){ ACTIVE.sections.forEach(function(s){ s.scales.forEach(function(x){ itemN += (x.items||[]).length; }); }); }
+    return itemN;
+  }
+
   function chapterHtml(sec, idx, result, brand){
     var meta=SEC[sec.key]||{cls:'',theme:'',pracA:''};
     // Instrument may override the practice call-out, which is father-worded by default.
     if(sec.key==='practices' && ACTIVE && ACTIVE.practice_callout){ meta = Object.assign({}, meta, {pracA: ACTIVE.practice_callout}); }
-    var scalesIn=sec.scales.filter(function(x){return (result.scale_scores||{})[x.key];});
+    var scalesIn=sec.scales.filter(function(x){return scaleAnswered((result.scale_scores||{})[x.key]);});
     if(!scalesIn.length) return '';
     var rows=scalesIn.map(function(x,i){return scaleRow(x,i===0,result);}).join('');
     // practical panel: dimensions references the gap's first move; others use their own line
@@ -551,6 +594,7 @@
   function render(result, state, rootEl, opts){
     opts = opts || {};
     var COLLAPSE = !!opts.collapse;
+    var EMBED = !!(opts.embed || opts.home);
     rootEl = rootEl || document.getElementById('rpRoot');
     if(!rootEl) return;
     var A = (window.FCReg && FCReg.detect) ? FCReg.detect(result) : null;
@@ -596,10 +640,10 @@
         '<a href="#rp-deep">Deep dive</a></nav>';
 
       var stateLine='';
-      /* A man who has completed more than one profile gets a switcher, because
-         the alternative was the newer profile silently burying the older one.
-         Both of his are one tap away, the one on screen marked. */
-      if(state==='account' && RESULT_INDEX && RESULT_INDEX.length > 1){
+      /* Home embed keeps the glance. It skips sample notes, email capture, and
+         a second "Your home" button that dumps him back where he already is. */
+      if(EMBED){ /* keep stateLine empty */ }
+      else if(state==='account' && RESULT_INDEX && RESULT_INDEX.length > 1){
         var curSlug = (A && A.slug) || 'keystone-father-profile';
         stateLine += '<div class="rp-sample-note rp-noprint" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">'+
           '<span style="opacity:.75">Your profiles:</span>'+
@@ -613,8 +657,8 @@
           }).join(' <span style="opacity:.4">&middot;</span> ')+
         '</div>';
       }
-      if(state==='sample') stateLine+='<div class="rp-sample-note rp-noprint">A sample report. <a href="profile.html">Take your Profile</a> and this becomes yours, free.</div>';
-      if(state==='pending') stateLine=(window.FCPath && FCPath.isRH())
+      if(!EMBED && state==='sample') stateLine+='<div class="rp-sample-note rp-noprint">A sample report. <a href="profile.html">Take your Profile</a> and this becomes yours, free.</div>';
+      if(!EMBED && state==='pending') stateLine=(window.FCPath && FCPath.isRH())
         ? '<div class="rp-sample-note rp-noprint">Saved on this device. An account keeps it.</div>'
         : '<div class="rp-sample-note rp-noprint">Not saved yet. Email yourself a secure link below and this report and your plan are kept.</div>';
 
@@ -644,12 +688,13 @@
         ? '<p class="rp-brandnote rp-noprint">Saved to your account.</p>'
         : '<p class="rp-brandnote rp-noprint" id="rpMsg"></p>';
 
+      var rhView = !!(window.FCPath && FCPath.isRH());
       var glance='<section id="rp-glance" class="rp-glance">'+
         '<article class="rp-gcard rp-gcard-str"><div class="rp-geyebrow">Your strongest ground</div>'+
           '<div class="rp-gbig">'+esc(strength?strength.label:'You showed up')+'</div><p class="rp-gline">'+esc(strCopy.s||'')+'</p></article>'+
-        '<article class="rp-gcard rp-gcard-stand"><div class="rp-geyebrow">Your standing</div>'+
+        '<article class="rp-gcard rp-gcard-stand"><div class="rp-geyebrow">'+(rhView?'Your starting point':'Your standing')+'</div>'+
           '<div class="rp-gbig">'+esc(band.label)+'</div><p class="rp-gline">'+esc(BAND_LINE[band.label]||'')+'</p></article>'+
-        '<article class="rp-gcard rp-gcard-gap"><div class="rp-geyebrow">Your next move</div>'+
+        '<article class="rp-gcard rp-gcard-gap"><div class="rp-geyebrow">'+(rhView?'What to strengthen':'Your next move')+'</div>'+
           '<div class="rp-gbig">'+esc(gap?gap.label:'')+'</div><p class="rp-gline">'+esc(gapCopy.g||'')+'</p></article></section>';
 
       // An instrument without norms must not borrow another instrument's. When
@@ -662,8 +707,7 @@
       var normStat = normed ? (ACTIVE.norms_printable === true ? ACTIVE.norms_n.toLocaleString() : 'thousands') : null;
       var groupN  = (ACTIVE && ACTIVE.norm_group_noun) || 'fathers';
       var subjN   = (ACTIVE && ACTIVE.subject_noun) || 'your fathering';
-      var itemN   = 0;
-      if(ACTIVE && ACTIVE.sections){ ACTIVE.sections.forEach(function(s){ s.scales.forEach(function(x){ itemN += (x.items||[]).length; }); }); }
+      var itemN   = answeredQuestionN(result);
       var firstStat = normed
         ? '<div class="rp-stat"><div class="rp-stat-n">'+normStat+'</div><div class="rp-stat-l">'+esc(groupN)+' in your norm group</div></div>'
         : '<div class="rp-stat"><div class="rp-stat-n">'+itemN+'</div><div class="rp-stat-l">questions you answered</div></div>';
@@ -677,13 +721,14 @@
         stripSvg(result)+'</section>';
 
       var howto = normed
-        ? '<section class="rp-howto"><b>How to read this.</b> Each bar shows where you stand on that scale today. Standings are words, not grades: A starting point, Building, Developing, Solid, Strong. This is a self-report. It is a mirror, not a verdict, and every line in it can move.</section>'
+        ? '<section class="rp-howto"><b>How to read this.</b> Each bar shows where you placed yourself on that scale today. These are words, not grades: A starting point, Building, Developing, Solid, Strong. This is a self-report. It is a mirror, not a verdict, and every line in it can move.</section>'
         : '<section class="rp-howto"><b>How to read this.</b> Each bar shows where you placed yourself on that part of '+esc(subjN)+', not how you compare to other '+esc(groupN)+'. This profile does not yet have a norm group, so nothing here ranks you against anyone. Standings are words, not grades: A starting point, Building, Developing, Solid, Strong. This is a self-report. It is a mirror, not a verdict, and every line in it can move.</section>';
 
       var chapters = ACTIVE.sections.map(function(sec,idx){
         var html = chapterHtml(sec,idx,result,brand);
         if(!html) return '';
-        var n = sec.scales.filter(function(x){ return (result.scale_scores||{})[x.key]; }).length;
+        var n = sec.scales.filter(function(x){ return scaleAnswered((result.scale_scores||{})[x.key]); }).length;
+        if(!n) return '';
         return '<details class="rp-fold" id="rp-fold-'+esc(sec.key)+'">'+
           '<summary class="rp-fold-sum">'+
             '<span class="rp-fold-n">'+('0'+(idx+1)).slice(-2)+'</span>'+
@@ -696,8 +741,9 @@
       var next90='<section id="rp-next90" class="rp-next90">'+
         '<div class="rp-n90-eyebrow">This week</div>'+
         '<h2 class="rp-n90-title">'+esc(gap?gap.label:'Your plan')+', one move at a time.</h2>'+
-        '<p class="rp-n90-line">Your plan concentrates here. Not because you are failing, but because growth here changes the most.</p>'+
+        '<p class="rp-n90-line">Your plan concentrates here. Growth here changes the most.</p>'+
         '<div class="rp-moves rp-n90-moves">'+(((planMoves(result)||{}).actions || gapCopy.m || []).map(function(m,i){return '<div class="rp-move"><span class="rp-move-n">'+(i+1)+'</span>'+esc(m)+'</div>';}).join(''))+'</div>'+
+        (EMBED ? '' : (
         /* The end of the report is the handoff. A man who has just read it needs
            one obvious next step, then everything else within reach but quieter.
            It used to offer the plan alone, which left the courses, the stories
@@ -711,7 +757,7 @@
               : '<a class="rp-btn rp-btn-yellow" href="plan.html'+((A&&A.slug)?'?assessment='+encodeURIComponent(A.slug):'')+'">Open my plan</a>'+
                 '<a class="rp-btn rp-btn-ghost" style="margin-left:10px" href="dashboard.html'+((A&&A.slug)?'?assessment='+encodeURIComponent(A.slug):'')+'">Everything else is on your Home</a>'))+
         '</p>'+
-        '<p class="rp-printonly rp-plan-url">Your live plan: fathers-com-platform.vercel.app/plan.html</p></section>';
+        '<p class="rp-printonly rp-plan-url">Your live plan: fathers-com-platform.vercel.app/plan.html</p>'))+'</section>';
 
       var closing='<section class="rp-closing"'+bgPhoto(brand.photo_footer)+'>'+
         '<p class="rp-closing-line">You were never the problem to solve. You are the keystone. Now you build.</p></section>'+
@@ -720,20 +766,20 @@
         '<div class="rp-colo-lines">Fathers.com is a program of the National Center for Fathering, a 501(c)(3) nonprofit, since 1990.<br>Your results are yours alone. We never share them.</div></footer>';
 
       if(COLLAPSE){
-        var nScales = Object.keys(result.scale_scores||{}).length;
+        var nAsked = answeredQuestionN(result);
         var brief = '<header class="rp-brief">'+
             '<div class="rp-brief-l">'+
               '<div class="rp-eyebrow">Your written report</div>'+
               '<h2 class="rp-brief-t">'+esc(title)+'</h2>'+
               '<p class="rp-brief-m">'+(state==='sample' ? 'A sample report' : 'Completed '+esc(fmtDate(result.completed_at)))+
-                ' &middot; '+nScales+' scales</p>'+
+                ' &middot; '+nAsked+' questions</p>'+
             '</div>'+
             '<div class="rp-brief-r rp-noprint">'+
               '<button type="button" class="rp-fold-all" id="rpFoldAll" aria-expanded="false">Expand all</button>'+
-              '<a class="rp-btn rp-btn-ghost rp-btn-sm" href="report.html'+q+'">Open full report</a>'+
+              '<a class="rp-btn rp-btn-ghost rp-btn-sm" href="report.html'+q+'">'+(EMBED?'Open the full report':'Open full report')+'</a>'+
             '</div></header>';
 
-        rootEl.innerHTML = '<div class="rp-doc rp-doc-compact">'+
+        rootEl.innerHTML = '<div class="rp-doc rp-doc-compact'+(EMBED?' rp-doc-embed':'')+'">'+
           brief+
           /* Summary only. The norm bars and the scatter are reference material,
              not a ten-second read, so they stay in the full report and the
@@ -862,7 +908,15 @@
      The assessment is resolved from the result via the registry, so the same call
      renders a father profile or a manhood profile correctly. */
   window.FCReport = {
-    render: function(el, opts){ opts = opts || {}; return render(opts.result, opts.state || 'live', el, { collapse: !!opts.collapse }); },
+    render: function(el, opts){
+      opts = opts || {};
+      return render(opts.result, opts.state || 'live', el, {
+        collapse: !!opts.collapse,
+        embed: !!(opts.embed || opts.home)
+      });
+    },
+    load: function(cb, opts){ return loadLatest(cb, opts); },
+    pendingRow: pendingRow,
     sampleResult: sampleResult
   };
 

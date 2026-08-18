@@ -1,0 +1,161 @@
+import Link from "next/link";
+
+import { Flash } from "@/components/manager/flash";
+import { DimensionScores } from "@/components/profile/dimension-scores";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { loadFatherAssessmentAccess } from "@/lib/assessments/data";
+import { requireRole } from "@/lib/auth/session";
+import { translateThemeLabel } from "@/lib/i18n/flash";
+import { formatLongDate, getI18n } from "@/lib/i18n/server";
+import { retakeProfile, startProfile } from "@/lib/father/profile-actions";
+import { loadProfileState } from "@/lib/father/profile";
+import { PROFILE_QUESTION_COUNT, answeredCount, firstUnanswered } from "@/lib/father/questions";
+import { readStoredDimensionScores } from "@/lib/profile/score";
+import { cn } from "@/lib/utils";
+
+const eyebrowClassName =
+  "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
+
+function ProfilePageHeader({
+  title,
+  lead,
+}: {
+  title: string;
+  lead: string;
+}) {
+  return (
+    <div>
+      <h1 className="font-heading text-2xl font-semibold tracking-tight">{title}</h1>
+      <p className="mt-1 text-sm text-muted-foreground">{lead}</p>
+    </div>
+  );
+}
+
+export default async function FatherProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; notice?: string }>;
+}) {
+  const flash = await searchParams;
+  const { user } = await requireRole("father");
+  const { t, locale } = await getI18n();
+  const [{ profile, draft }, access] = await Promise.all([
+    loadProfileState(user.id),
+    loadFatherAssessmentAccess(user.id),
+  ]);
+  const banner = <Flash error={flash.error} notice={flash.notice} />;
+  const header = (
+    <ProfilePageHeader
+      title={t("father.profile.title")}
+      lead={profile ? t("father.profile.leadComplete") : t("father.profile.lead")}
+    />
+  );
+
+  if (profile) {
+    const scores = readStoredDimensionScores(profile.raw_scores, profile.full_results);
+    return (
+      <div className="space-y-6">
+        {banner}
+        {header}
+        <div className="grid gap-6 lg:grid-cols-2">
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
+          <p className={eyebrowClassName}>
+            {t("father.profile.yourKeystone")}
+          </p>
+          <p className="mt-6 text-sm text-muted-foreground">{t("father.profile.primaryDetermination")}</p>
+          <h2 className="font-heading mt-1 text-2xl font-semibold tracking-tight uppercase sm:text-3xl">
+            {translateThemeLabel(profile.primary_determination, t)}
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            {t("father.profile.primaryEdge", {
+              edge: translateThemeLabel(profile.primary_edge, t),
+            })}
+          </p>
+          {scores ? <DimensionScores scores={scores} /> : null}
+          <p className="mt-6 text-sm text-muted-foreground">
+            {t("father.profile.lastProfile", { date: formatLongDate(profile.taken_at, locale) })}
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link
+              href="/father/profile/results"
+              className={cn(buttonVariants({ variant: draft ? "outline" : "default" }), "w-full min-h-11 sm:w-auto")}
+            >
+              {t("father.profile.viewResults")}
+            </Link>
+          </div>
+        </section>
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
+          <p className={eyebrowClassName}>
+            {t("father.profile.keystone")}
+          </p>
+          <p className="mt-4 text-muted-foreground">
+            {t("father.profile.retakeLead")}
+          </p>
+          {draft ? (
+            <Link
+              href={`/father/profile/take?q=${firstUnanswered(draft.answers)}`}
+              className={cn(buttonVariants(), "mt-8 w-full min-h-11 lg:w-auto")}
+            >
+              {t("father.profile.continueRetake")}
+            </Link>
+          ) : access.canStartKeystone ? (
+            <form action={retakeProfile} className="mt-8">
+              <Button type="submit" variant="outline" className="w-full min-h-11 lg:w-auto">
+                {t("father.profile.retake")}
+              </Button>
+            </form>
+          ) : (
+            <p className="mt-8 text-sm text-muted-foreground">{t("father.assessments.unavailable")}</p>
+          )}
+        </section>
+        </div>
+      </div>
+    );
+  }
+
+  const answered = draft ? answeredCount(draft.answers) : 0;
+  const resumeAt = draft ? firstUnanswered(draft.answers) : 1;
+
+  return (
+    <div className="space-y-6">
+      {banner}
+      {header}
+      <section className="max-w-xl rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
+        <p className={eyebrowClassName}>
+          {t("father.profile.keystone")}
+        </p>
+        <p className="mt-4 text-muted-foreground">
+          {draft
+            ? t("father.profile.progress", {
+                n: resumeAt,
+                total: PROFILE_QUESTION_COUNT,
+                answered,
+              })
+            : t("father.home.takeProfileBody")}
+        </p>
+        {draft ? (
+          <Link
+            href={`/father/profile/take?q=${resumeAt}`}
+            className={cn(buttonVariants({ size: "lg" }), "mt-8 w-full min-h-12 lg:w-auto")}
+          >
+            {t("common.continue")}
+          </Link>
+        ) : access.canStartKeystone ? (
+          <form action={startProfile} className="mt-8">
+            <Button type="submit" size="lg" className="w-full min-h-12 lg:w-auto">
+              {t("father.profile.takeCta")}
+            </Button>
+          </form>
+        ) : (
+          <p className="mt-8 text-sm text-muted-foreground">{t("father.assessments.unavailable")}</p>
+        )}
+        <p className="mt-6 text-sm text-muted-foreground">
+          {t("father.profile.takeHint")}
+        </p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {t("father.profile.howToAnswer")}
+        </p>
+      </section>
+    </div>
+  );
+}

@@ -224,8 +224,8 @@
     root.innerHTML =
       '<div class="ks-rh-beat" id="ks-start">'+
         '<p class="rh-door-eye">The Keystone Father Profile</p>'+
-        '<h1 class="ks-rh-beat-h">This takes eight minutes. Then you know where you stand.</h1>'+
-        '<p class="ks-rh-beat-lead">You answer honest questions and get a private report of where you stand. Nobody is grading you.</p>'+
+        '<h1 class="ks-rh-beat-h">This takes eight minutes. Then you have a starting point.</h1>'+
+        '<p class="ks-rh-beat-lead">You answer honest questions and get a private starting point. There are no right answers. Answer honestly so this can fit you.</p>'+
         '<p class="ks-rh-beat-keep">An account keeps the report, the trainings, and the work. You can start the questions now and make an account when you want one.</p>'+
         '<button class="btn btn-yellow btn-lg" id="ks-rh-begin" type="button">Begin</button>'+
       '</div>';
@@ -607,9 +607,13 @@
     var meta = KS.sectionMeta(curSection);
     var secIdx = KS.pathSectionKeys().indexOf(curSection)+1;
     var answeredInSec = curItems.filter(function(f){return ans[f.key]!=null;}).length;
+    var rhFrame = (isRhPath() && curSection === 'dimensions')
+      ? '<p class="fine ks-rh-frame">Answer for how it is now. Some of these are hard if you cannot be with your child every day.</p>'
+      : '';
     root.innerHTML = shell(
       progressChrome(curSection, curIndex, curItems.length)+
       '<div class="ks-q">'+
+        rhFrame+
         '<h2 class="ks-prompt">'+esc(it.prompt)+'</h2>'+
         '<div class="ks-opts ks-'+it.kind+'">'+
           it.labels.map(function(lab,i){
@@ -768,7 +772,8 @@
     try { localStorage.setItem("fc_pending_result", JSON.stringify({
       scored: scored, preparing: false, at: Date.now(),
       assessment_slug: slug,
-      completion_tier: "quick"
+      completion_tier: "quick",
+      answered_count: scored.answered || KS.answeredCount()
     })); } catch(e){}
 
     if(!(window.FC && FC.live && FC.uid())){
@@ -828,7 +833,7 @@
         "<div class=\"ks-check\" style=\"margin-bottom:10px\">\u2713</div>"+
         "<div class=\"eyebrow brass\" style=\"margin-bottom:10px\">"+(rh?"YOUR REPORT":("STARTING BASELINE \u00b7 "+esc(dimLabel.toUpperCase())))+"</div>"+
         "<h2 style=\"margin:0 0 6px\">"+(rh?"Your report is ready.":"Starting baseline locked.")+"</h2>"+
-        "<p class=\"helper\" style=\"margin:0\">"+(rh?"Here is where you stand. Start "+esc(rec.title)+".":"Dimensions only, not the full "+esc(fullLabel)+". Your plan can start from this.")+"</p>"+
+        "<p class=\"helper\" style=\"margin:0\">"+(rh?"Here is your starting point. Start "+esc(rec.title)+".":"Dimensions only, not the full "+esc(fullLabel)+". Your plan can start from this.")+"</p>"+
       "</div>"+
       "<div class=\"ks-strength-hero\">"+
         "<div class=\"eyebrow\" style=\"margin-bottom:12px\">YOUR STRONGEST GROUND</div>"+
@@ -837,7 +842,7 @@
       "</div>"+
       (sameScale ? "" :
         "<div class=\"ks-next\">"+
-          "<div class=\"eyebrow\" style=\"margin-bottom:10px\">YOUR NEXT MOVE</div>"+
+          "<div class=\"eyebrow\" style=\"margin-bottom:10px\">"+(rh?"WHAT TO STRENGTHEN":"YOUR NEXT MOVE")+"</div>"+
           "<div class=\"ks-next-name\">"+esc(gap ? gap.label : "")+"</div>"+
           (gCopy.g ? "<p class=\"ks-next-line\">"+esc(gCopy.g)+"</p>" : "")+
         "</div>")+
@@ -873,7 +878,8 @@
       // Which instrument produced this. Without it a man who takes the Manhood
       // Profile signed out is handed a Father Profile report when he lands.
       assessment_slug: (ACTIVE_INS && ACTIVE_INS.slug) || 'keystone-father-profile',
-      completion_tier: finishTier
+      completion_tier: finishTier,
+      answered_count: scored.answered || KS.answeredCount()
     })); } catch(e){}
 
     /* localStorage cannot follow a man to another device, and most men open the
@@ -964,7 +970,7 @@
       'Developing':'You are on your way, and the next moves compound.',
       'Building':'You are building. Every small habit from here counts.',
       'A starting point':'A starting point is still a start, and starting is the part most men skip.'
-    }[band.label] || 'Here is where you stand, and where you move next.';
+    }[band.label] || 'Here is your starting point, and what to strengthen next.';
     var sameScale = (strK === gapK);
     var signedIn = window.FC && FC.live && FC.uid();
 
