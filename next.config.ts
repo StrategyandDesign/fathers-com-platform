@@ -30,12 +30,20 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["pdfkit"],
+  serverExternalPackages: ["pdfkit", "web-push"],
   turbopack: {
     root: path.join(__dirname),
   },
   async headers() {
     return [
+      {
+        source: "/sw.js",
+        headers: [
+          ...securityHeaders,
+          { key: "Cache-Control", value: "no-cache" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
       {
         source: "/:path*",
         headers: securityHeaders,

@@ -25,6 +25,13 @@ export async function saveLocalePreference(formData: FormData) {
   if (error) {
     redirect(`${path}?error=${encodeURIComponent("flash.localeFailed")}`);
   }
+  if (locale) {
+    await supabase.from("notification_preferences").upsert({
+      user_id: user.id,
+      locale,
+      updated_at: new Date().toISOString(),
+    });
+  }
 
   if (locale) {
     await writeLocaleCookie(locale);

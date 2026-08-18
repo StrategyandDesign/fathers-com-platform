@@ -1,3 +1,4 @@
+import { PushPermissionCard } from "@/components/father/push-device-button";
 import { StartPrimaryButton, StartScreen } from "@/components/father/start-screen";
 import { requireStartPage } from "@/lib/father/start-page";
 import { finishOnboarding } from "@/lib/father/start-actions";
@@ -19,6 +20,7 @@ export default async function FatherStartCompletePage({
       error={error}
     >
       <p className="text-sm text-muted-foreground">{t("father.start.streak")}</p>
+      <PushPermissionCard />
       <form action={finishOnboarding}>
         <StartPrimaryButton>{t("father.start.continueHome")}</StartPrimaryButton>
       </form>

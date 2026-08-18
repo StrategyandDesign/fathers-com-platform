@@ -4,16 +4,17 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
-import { notifyManagerNudge } from "@/lib/email/events";
-import { loadNudgeHistory } from "@/lib/manager/nudge-data";
+import { loadNudgeHistory, loadReminderPrefAllowed } from "@/lib/manager/nudge-data";
 import {
-  NUDGE_TEMPLATE_COPY,
   cooldownRemaining,
   isNudgeTemplate,
 } from "@/lib/manager/nudges";
 import { loadManagedParticipant } from "@/lib/manager/data";
+import { queueLeaderEncouragement } from "@/lib/notifications/events";
+import { encouragementHref } from "@/lib/notifications/next-session";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
+import type { Session, SessionProgress, Training } from "@/lib/father/types";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
@@ -65,20 +66,21 @@ export async function sendNudge(formData: FormData) {
     );
   }
 
-  const organizationName = detail.participant.groupName?.trim() || "your";
-  const template = NUDGE_TEMPLATE_COPY[templateKey];
+  const allowed = await loadReminderPrefAllowed(fatherId);
   let status: "sent" | "skipped_pref" | "failed";
 
-  try {
-    const result = await notifyManagerNudge({
-      fatherId,
-      organizationName,
-      template,
-    });
-    status = result.status;
-  } catch (error) {
-    console.error("[nudges] send failed", error);
-    status = "failed";
+  if (allowed === false) {
+    status = "skipped_pref";
+  } else {
+    try {
+      const href = await loadEncouragementHref(fatherId);
+      const nudgeId = crypto.randomUUID();
+      await queueLeaderEncouragement({ fatherId, nudgeId, href });
+      status = "sent";
+    } catch (error) {
+      console.error("[nudges] send failed", error);
+      status = "failed";
+    }
   }
 
   const supabase = await createClient();
@@ -105,7 +107,7 @@ export async function sendNudge(formData: FormData) {
   if (status === "skipped_pref") {
     fail(
       path,
-      "He turned off session reminders. The note was not emailed."
+      "He turned off notes from his leader. The note was not sent."
     );
   }
   if (status === "failed") {
@@ -113,4 +115,28 @@ export async function sendNudge(formData: FormData) {
   }
 
   ok(path, `Reminder sent to ${detail.participant.name}.`);
+}
+
+async function loadEncouragementHref(fatherId: string) {
+  const supabase = await createClient();
+  const [assignmentRes, trainingsRes, sessionsRes, progressRes] = await Promise.all([
+    supabase.from("training_assignments").select("training_id, assigned_at").eq("father_id", fatherId),
+    supabase.from("trainings").select("*"),
+    supabase.from("sessions").select("*"),
+    supabase.from("session_progress").select("*").eq("father_id", fatherId),
+  ]);
+  const trainings = (trainingsRes.data ?? []) as Training[];
+  const assigned = ((assignmentRes.data ?? []) as Array<{ training_id: string; assigned_at: string | null }>)
+    .map((row) => {
+      const training = trainings.find((item) => item.id === row.training_id);
+      if (!training) return null;
+      return { training, assignedAt: Date.parse(row.assigned_at ?? "") || 0 };
+    })
+    .filter((row): row is { training: Training; assignedAt: number } => Boolean(row));
+  return encouragementHref({
+    assigned,
+    allTrainings: trainings,
+    sessions: (sessionsRes.data ?? []) as Session[],
+    progress: (progressRes.data ?? []) as SessionProgress[],
+  });
 }

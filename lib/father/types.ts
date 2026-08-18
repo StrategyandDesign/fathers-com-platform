@@ -98,6 +98,7 @@ export type SessionProgress = {
   film_seconds: number;
   status: "not_started" | "in_progress" | "completed";
   completed_at: string | null;
+  action_try_at?: string | null;
 };
 
 export function asSessionProgress(row: SessionProgress): SessionProgress {

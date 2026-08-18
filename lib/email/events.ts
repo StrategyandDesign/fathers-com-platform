@@ -60,22 +60,13 @@ export async function notifyCertificateIssued(input: {
 }) {
   try {
     const appUrl = getAppUrl();
-    await Promise.all([
-      deliverIfAllowed(input.fatherId, "certificate_sent", {
-        subject: `Your certificate is ready. ${input.serial}`,
-        title: "Your certificate is ready.",
-        body: `${input.trainingTitle} is complete. Serial ${input.serial}.\nSign in to download the PDF.`,
-        ctaLabel: "View certificates",
-        ctaHref: `${appUrl}/father/certificates`,
-      }),
-      deliverIfAllowed(input.managerId, "certificate_sent", {
-        subject: `Certificate issued. ${input.serial}`,
-        title: "Certificate sent.",
-        body: `You issued ${input.serial} to ${input.fatherName} for ${input.trainingTitle}.`,
-        ctaLabel: "Open participant",
-        ctaHref: `${appUrl}/manager/participants/${input.fatherId}`,
-      }),
-    ]);
+    await deliverIfAllowed(input.managerId, "certificate_sent", {
+      subject: `Certificate issued. ${input.serial}`,
+      title: "Certificate sent.",
+      body: `You issued ${input.serial} to ${input.fatherName} for ${input.trainingTitle}.`,
+      ctaLabel: "Open participant",
+      ctaHref: `${appUrl}/manager/participants/${input.fatherId}`,
+    });
   } catch (error) {
     console.error("[email] certificate issued failed", error);
   }
@@ -114,24 +105,6 @@ export async function notifyTrainingReleased(input: {
   }
 }
 
-export async function notifyTrainingAssigned(input: {
-  fatherId: string;
-  trainingTitle: string;
-}) {
-  try {
-    const appUrl = getAppUrl();
-    await deliverIfAllowed(input.fatherId, "new_trainings", {
-      subject: `A training was assigned: ${input.trainingTitle}`,
-      title: "A training is waiting.",
-      body: `${input.trainingTitle} was assigned to you.\nOpen your trainings to begin the first session.`,
-      ctaLabel: "Open trainings",
-      ctaHref: `${appUrl}/father/trainings`,
-    });
-  } catch (error) {
-    console.error("[email] training assigned failed", error);
-  }
-}
-
 export async function notifyAccountCreated(input: {
   email: string;
   userId?: string | null;
@@ -157,7 +130,7 @@ export async function notifyManagerNudge(input: {
   organizationName: string;
   template: NudgeTemplate;
 }) {
-  const recipient = await loadRecipient(input.fatherId, "session_reminders");
+  const recipient = await loadRecipient(input.fatherId, "leader_encouragement");
   if (!recipient) return { status: "failed" as const };
   if (!recipient.allowed) return { status: "skipped_pref" as const };
 

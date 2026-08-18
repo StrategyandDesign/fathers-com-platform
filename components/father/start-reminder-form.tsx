@@ -23,11 +23,14 @@ export function StartReminderForm({
   submitLabel: string;
 }) {
   const [selectedDay, setSelectedDay] = useState<number | null>(weekday);
+  const [timezone, setTimezone] = useState("UTC");
 
   useEffect(() => {
     if (weekday == null) {
       setSelectedDay(new Date().getDay());
     }
+    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (zone) setTimezone(zone);
   }, [weekday]);
 
   return (
@@ -65,6 +68,7 @@ export function StartReminderForm({
           required
         />
       </label>
+      <input type="hidden" name="timezone" value={timezone} />
       <Button type="submit" variant="default" size="lg" className={homePrimaryCtaClassName}>
         {submitLabel}
       </Button>

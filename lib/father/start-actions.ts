@@ -18,6 +18,7 @@ import {
   type OnboardingStep,
   type SetupAnswers,
 } from "@/lib/father/onboarding";
+import { parseTimeZone } from "@/lib/notifications/schedule";
 import { createClient } from "@/lib/supabase/server";
 
 function failStart(step: OnboardingStep, message: string): never {
@@ -118,6 +119,7 @@ export async function saveOnboardingReminder(formData: FormData) {
   const { user } = await requireRole("father");
   const weekday = parseWeekday(formData.get("weekday"));
   const remindAt = parseRemindAt(formData.get("remind_at"));
+  const timezone = parseTimeZone(formData.get("timezone"));
   if (weekday == null || !remindAt) {
     failStart("reminder", "Pick a day and a time.");
   }
@@ -136,6 +138,14 @@ export async function saveOnboardingReminder(formData: FormData) {
     { onConflict: "father_id" }
   );
   if (error) failStart("reminder", "That reminder didn’t save. Try again.");
+
+  await supabase.from("notification_preferences").upsert({
+    user_id: user.id,
+    reminder_day: weekday,
+    reminder_time: `${remindAt}:00`,
+    timezone: timezone ?? "UTC",
+    updated_at: new Date().toISOString(),
+  });
 
   if (state.mode === "reminder-only") {
     try {

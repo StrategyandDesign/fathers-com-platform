@@ -73,6 +73,12 @@ export default async function SessionActionPage({
           invalid={Boolean(error)}
           autoAdvance={hasChoices}
           t={t}
+          sessionId={session.id}
+          defaultTryAt={
+            typeof progress?.action_try_at === "string"
+              ? progress.action_try_at.slice(0, 5)
+              : null
+          }
         />
         <SessionAdvanceButton
           label={t("father.session.completeAction")}

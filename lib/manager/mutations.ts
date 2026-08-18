@@ -2,7 +2,8 @@ import type { User } from "@supabase/supabase-js";
 
 import { renderCertificatePdf } from "@/lib/certificates/pdf";
 import { formatCertificateDate } from "@/lib/certificates/types";
-import { notifyCertificateIssued, notifyTrainingAssigned } from "@/lib/email/events";
+import { notifyCertificateIssued } from "@/lib/email/events";
+import { queueCertificateIssued, queueNewAssignment } from "@/lib/notifications/events";
 import { isSessionComplete, isTrainingPublished } from "@/lib/father/types";
 import { isTrainingAssignable } from "@/lib/manager/reviews";
 import { displayName, profileName } from "@/lib/manager/types";
@@ -28,7 +29,7 @@ export async function assignTrainingToFather(
   const { data: catalog, error: catalogError } = await supabase
     .from("trainings")
     .select(
-      "id, title, published, released_at, first_published_at, first_released_at, series_id, part_number"
+      "id, title, session_count, published, released_at, first_published_at, first_released_at, series_id, part_number"
     )
     .eq("id", trainingId)
     .maybeSingle();
@@ -114,9 +115,22 @@ export async function assignTrainingToFather(
     return { status: "skipped", reason: "Already assigned." };
   }
 
-  await notifyTrainingAssigned({
+  const [{ data: sessionRows }, { data: managerProfile }] = await Promise.all([
+    supabase
+      .from("sessions")
+      .select("id, session_number, order_index")
+      .eq("training_id", trainingId)
+      .order("session_number"),
+    supabase.from("profiles").select("full_name, display_title").eq("id", user.id).maybeSingle(),
+  ]);
+  const firstSessionId = ((sessionRows ?? []) as Array<{ id: string }>)[0]?.id ?? null;
+  await queueNewAssignment({
     fatherId,
+    trainingId,
     trainingTitle: catalog.title ?? "A training",
+    sessionCount: Math.max(catalog.session_count ?? 0, sessionRows?.length ?? 0),
+    leaderName: managerProfile?.full_name?.trim() || "your leader",
+    firstSessionId,
   });
   return { status: "ok" };
 }
@@ -269,14 +283,18 @@ export async function issueCertificateToFather(
 
   if (uploadError) return { status: "failed", reason: "The certificate PDF didn’t save." };
 
-  const { error } = await supabase.from("certificates").insert({
-    father_id: fatherId,
-    training_id: trainingId,
-    serial_number: serial,
-    issued_by: user.id,
-    issued_at: issuedAt.toISOString(),
-    pdf_storage_path: storagePath,
-  });
+  const { data: certificateRow, error } = await supabase
+    .from("certificates")
+    .insert({
+      father_id: fatherId,
+      training_id: trainingId,
+      serial_number: serial,
+      issued_by: user.id,
+      issued_at: issuedAt.toISOString(),
+      pdf_storage_path: storagePath,
+    })
+    .select("id")
+    .maybeSingle();
 
   if (error) {
     await supabase.storage.from(CERTIFICATES_BUCKET).remove([storagePath]);
@@ -290,6 +308,13 @@ export async function issueCertificateToFather(
     trainingTitle: trainingRes.data.title,
     serial,
   });
+  if (certificateRow?.id) {
+    await queueCertificateIssued({
+      fatherId,
+      certificateId: certificateRow.id,
+      trainingTitle: trainingRes.data.title,
+    });
+  }
 
   return { status: "ok", serial };
 }

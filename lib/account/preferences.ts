@@ -9,8 +9,12 @@ export const NOTIFICATION_PREF_KEYS = [
   "weekly_report_ready",
   "account_security_alerts",
   "session_reminders",
+  "action_reminders",
   "new_trainings",
   "training_releases",
+  "leader_encouragement",
+  "push_enabled",
+  "email_enabled",
 ] as const;
 
 export type NotificationPrefKey = (typeof NOTIFICATION_PREF_KEYS)[number];
@@ -26,8 +30,12 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   weekly_report_ready: true,
   account_security_alerts: true,
   session_reminders: true,
+  action_reminders: true,
   new_trainings: true,
   training_releases: true,
+  leader_encouragement: true,
+  push_enabled: true,
+  email_enabled: true,
 };
 
 export type NotificationToggle = {
@@ -61,6 +69,11 @@ const FATHER_TOGGLES: NotificationToggle[] = [
     hintKey: "notify.sessionRemindersHint",
   },
   {
+    key: "action_reminders",
+    labelKey: "notify.actionReminders",
+    hintKey: "notify.actionRemindersHint",
+  },
+  {
     key: "new_trainings",
     labelKey: "notify.newTrainings",
     hintKey: "notify.newTrainingsHint",
@@ -69,6 +82,21 @@ const FATHER_TOGGLES: NotificationToggle[] = [
     key: "certificate_sent",
     labelKey: "notify.certificateIssued",
     hintKey: "notify.certificateIssuedHint",
+  },
+  {
+    key: "leader_encouragement",
+    labelKey: "notify.leaderEncouragement",
+    hintKey: "notify.leaderEncouragementHint",
+  },
+  {
+    key: "push_enabled",
+    labelKey: "notify.channelPush",
+    hintKey: "notify.channelPushHint",
+  },
+  {
+    key: "email_enabled",
+    labelKey: "notify.channelEmail",
+    hintKey: "notify.channelEmailHint",
   },
   {
     key: "account_security_alerts",

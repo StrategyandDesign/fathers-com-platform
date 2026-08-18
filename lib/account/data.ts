@@ -2,6 +2,8 @@ import { cache } from "react";
 
 import { parseManagerDisplayTitle } from "@/lib/account/display-title";
 import { parseNotificationPreferences } from "@/lib/account/preferences";
+import { isLocale } from "@/lib/i18n/config";
+import { parseNotificationPrefsRow, scheduleFromPrefs } from "@/lib/notifications/prefs";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrl } from "@/lib/storage";
 
@@ -76,17 +78,23 @@ export const loadManagerDisplayTitle = cache(async (userId: string) => {
 
 export async function loadAccountState(userId: string) {
   const supabase = await createClient();
-  const [profileRes, prefsRes] = await Promise.all([
+  const [profileRes, prefsRes, reminderRes] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, full_name, avatar_url, locale, display_title, share_anonymous_admin")
       .eq("id", userId)
       .maybeSingle(),
     supabase.from("notification_preferences").select("*").eq("user_id", userId).maybeSingle(),
+    supabase
+      .from("reminder_preferences")
+      .select("weekday, remind_at")
+      .eq("father_id", userId)
+      .maybeSingle(),
   ]);
 
   if (profileRes.error) throw profileRes.error;
   if (prefsRes.error) throw prefsRes.error;
+  if (reminderRes.error) throw reminderRes.error;
 
   let prefsRow = prefsRes.data;
   if (!prefsRow) {
@@ -99,10 +107,23 @@ export async function loadAccountState(userId: string) {
     prefsRow = data;
   }
 
+  const remindAt =
+    typeof reminderRes.data?.remind_at === "string"
+      ? reminderRes.data.remind_at.slice(0, 5)
+      : reminderRes.data?.remind_at ?? null;
+  const parsed = parseNotificationPrefsRow(prefsRow, {
+    weekday: reminderRes.data?.weekday,
+    remindAt,
+  });
+  if (isLocale(profileRes.data?.locale)) {
+    parsed.locale = profileRes.data.locale;
+  }
+
   return {
     fullName: profileRes.data?.full_name ?? null,
     avatarUrl: await signStorageUrl(supabase, AVATARS_BUCKET, profileRes.data?.avatar_url),
     preferences: parseNotificationPreferences(prefsRow),
+    schedule: scheduleFromPrefs(parsed),
     locale: typeof profileRes.data?.locale === "string" ? profileRes.data.locale : null,
     displayTitle: parseManagerDisplayTitle(profileRes.data?.display_title),
     shareAnonymousAdmin: profileRes.data?.share_anonymous_admin === true,

@@ -7,6 +7,8 @@ import { getAuthContext, requireRole } from "@/lib/auth/session";
 import { loadSessionContext } from "@/lib/father/data";
 import { writeFilmSeconds } from "@/lib/father/film-position";
 import { advanceOnboardingAfterSession } from "@/lib/father/start-actions";
+import { cancelActionReminder, queueActionReminder } from "@/lib/notifications/events";
+import { parseClock } from "@/lib/notifications/schedule";
 import {
   ACTION_ANSWER_KEY,
   CHECKIN_CHOICE_KEY,
@@ -33,6 +35,7 @@ type ProgressPatch = {
   checkin_answers?: Record<string, string>;
   action_note?: string | null;
   session_note?: string | null;
+  action_try_at?: string | null;
 };
 
 async function saveProgress(
@@ -70,6 +73,10 @@ async function saveProgress(
         patch.session_note !== undefined
           ? patch.session_note
           : existing?.session_note ?? null,
+      action_try_at:
+        patch.action_try_at !== undefined
+          ? patch.action_try_at
+          : existing?.action_try_at ?? null,
       film_seconds:
         typeof existing?.film_seconds === "number" && existing.film_seconds >= 0
           ? existing.film_seconds
@@ -122,7 +129,7 @@ export async function submitCheckin(formData: FormData) {
     redirect("/father");
   }
 
-  await requireReachableSession(user.id, sessionId);
+  const context = await requireReachableSession(user.id, sessionId);
 
   const choice = String(formData.get(CHECKIN_CHOICE_KEY) ?? "").trim();
   if (!choice) {
@@ -156,6 +163,16 @@ export async function submitCheckin(formData: FormData) {
     );
   }
 
+  try {
+    await queueActionReminder({
+      fatherId: user.id,
+      session: context.session,
+      trainingTitle: context.training.title,
+    });
+  } catch (error) {
+    console.error("[notifications] action reminder enqueue failed", error);
+  }
+
   redirect(`/father/sessions/${sessionId}/action`);
 }
 
@@ -175,6 +192,7 @@ export async function completeAction(formData: FormData) {
 
   const answer = String(formData.get(ACTION_ANSWER_KEY) ?? "").trim();
   const note = String(formData.get("action_note") ?? "").trim();
+  const tryAt = parseClock(formData.get("action_try_at"));
   if (!answer && !note) {
     redirect(
       `/father/sessions/${sessionId}/action?error=${encodeURIComponent("Choose the teaching point to continue.")}`
@@ -185,6 +203,7 @@ export async function completeAction(formData: FormData) {
     await saveProgress(user.id, sessionId, {
       action_completed: true,
       action_note: [answer, note].filter(Boolean).join("\n\n") || null,
+      action_try_at: tryAt,
     });
   } catch {
     redirect(
@@ -192,8 +211,33 @@ export async function completeAction(formData: FormData) {
     );
   }
 
+  try {
+    await cancelActionReminder(user.id, sessionId);
+  } catch (error) {
+    console.error("[notifications] action reminder cancel failed", error);
+  }
+
   const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
   redirect(startHref ?? `/father?done=${encodeURIComponent(sessionId)}`);
+}
+
+export async function saveActionTryAt(sessionId: string, clock: string) {
+  const { user } = await requireRole("father");
+  const parsed = parseClock(clock);
+  if (!parsed) return { ok: false as const };
+  try {
+    const context = await requireReachableSession(user.id, sessionId);
+    await saveProgress(user.id, sessionId, { action_try_at: parsed });
+    await queueActionReminder({
+      fatherId: user.id,
+      session: context.session,
+      trainingTitle: context.training.title,
+      clock: parsed,
+    });
+  } catch {
+    return { ok: false as const };
+  }
+  return { ok: true as const };
 }
 
 export async function saveFilmPosition(sessionId: string, seconds: number) {
