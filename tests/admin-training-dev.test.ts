@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   ARCHIVE_RELEASE_ERROR,
@@ -110,6 +112,13 @@ describe("training development prompts", () => {
     assert.match(sessionAction(authored, packTraining), /Check-in in this training/);
   });
 
+  it("does not throw when a session has no title yet", () => {
+    assert.equal(
+      hasHardcodedSkillPack({ session_number: 99, title: null as unknown as string }),
+      false
+    );
+  });
+
   it("keeps Fundamentals copy when prompts are empty", () => {
     const live = session({
       session_number: 2,
@@ -145,6 +154,17 @@ describe("training development checklist", () => {
     const row = { ...training({ previewed_at: null }), sessions: [session()] };
     assert.equal(trainingDevelopmentChecklist(row).firstMissing, PREVIEW_REQUIRED_ERROR);
     assert.equal(firstReadyBlocker(row), PREVIEW_REQUIRED_ERROR);
+  });
+
+  it("treats a missing title or slug as not ready instead of throwing", () => {
+    const row = {
+      ...training({ title: null as unknown as string, slug: null as unknown as string }),
+      sessions: [session()],
+    };
+    const checklist = trainingDevelopmentChecklist(row);
+    assert.equal(checklist.ready, false);
+    assert.equal(checklist.items.find((item) => item.key === "identity")?.done, false);
+    assert.equal(checklist.firstMissing, "Add a title and slug.");
   });
 
   it("lets Fundamentals pass without authored prompts", () => {
@@ -201,5 +221,19 @@ describe("archive and release gates", () => {
     );
     assert.equal(ARCHIVE_RELEASE_ERROR.includes("archive"), true);
     assert.equal(READY_REQUIRED_ERROR.includes("Ready"), true);
+  });
+});
+
+describe("admin training usage query", () => {
+  it("counts reviews by group_id because the table has no id column", () => {
+    const source = readFileSync(
+      fileURLToPath(new URL("../lib/admin/data.ts", import.meta.url)),
+      "utf8"
+    );
+    const usage = source.slice(source.indexOf("export async function loadTrainingUsage"));
+    const reviews = usage.slice(usage.indexOf('from("organization_training_reviews")'));
+    const reviewsSelect = reviews.slice(0, reviews.indexOf(".eq("));
+    assert.match(reviewsSelect, /\.select\("group_id"/);
+    assert.equal(reviewsSelect.includes('.select("id"'), false);
   });
 });

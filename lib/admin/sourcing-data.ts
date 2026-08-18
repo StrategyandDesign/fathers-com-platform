@@ -148,6 +148,7 @@ export async function loadIntakeForTraining(trainingId: string) {
     const missing =
       error.code === "42P01" ||
       error.code === "PGRST205" ||
+      error.code === "PGRST116" ||
       /training_intakes/i.test(error.message);
     if (missing) return null;
     throw error;
