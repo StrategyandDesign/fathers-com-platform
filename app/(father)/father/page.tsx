@@ -5,12 +5,10 @@ import { AssignedAssessmentList } from "@/components/assessments/assigned-list";
 import { CoverPhoto } from "@/components/brand/cover";
 import { FirstVisitIntro } from "@/components/father/first-visit-intro";
 import { SessionCompleteMark } from "@/components/father/session-complete-mark";
-import { ProfileHomeCard } from "@/components/profile/home-card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
-import { loadProfileFullName } from "@/lib/account/data";
 import { loadFatherAssignments } from "@/lib/assessments/data";
-import { pickFeaturedAssignment, takeHref } from "@/lib/assessments/types";
+import { takeHref } from "@/lib/assessments/types";
 import { requireRole } from "@/lib/auth/session";
 import { startProfile } from "@/lib/father/profile-actions";
 import { loadFatherHome } from "@/lib/father/data";
@@ -47,19 +45,16 @@ export default async function FatherHomePage({
   const { done } = await searchParams;
   const { user } = await requireRole("father");
   const { t } = await getI18n();
-  const [{ trainingCards, next, profile, draft }, customAssignments, orgPhotos, fatherName] =
+  const [{ trainingCards, next, profile, draft }, customAssignments, orgPhotos] =
     await Promise.all([
       loadFatherHome(user.id),
       loadFatherAssignments(user.id),
       loadFatherOrgPhotoCovers(user.id),
-      loadProfileFullName(user.id),
     ]);
   const heroCover = next
     ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl, orgPhotos.photoPack)
     : null;
   const assessmentCoverSrc = resolveHomeProfileCover(orgPhotos.profileUrl, orgPhotos.photoPack);
-  const featuredAssessment = pickFeaturedAssignment(customAssignments);
-  const profileCoverSrc = assessmentCoverSrc;
   const profileNeedsAction = !profile;
   const profileIsPrimary = !next && profileNeedsAction;
   const profileContinueHref = `/father/profile/take?q=${draft ? firstUnanswered(draft.answers) : 1}`;
@@ -159,8 +154,7 @@ export default async function FatherHomePage({
               completed={nextCompleted}
               percent={nextPercent}
               coverSrc={heroCover}
-              assessmentLater={Boolean(pendingAssessment)}
-              profileLater={!profile}
+              assessmentLater={!profile || Boolean(pendingAssessment)}
             />
           ) : (
             <div className="min-w-0 space-y-2">
@@ -273,20 +267,14 @@ export default async function FatherHomePage({
         </section>
       )}
 
-      <div className="order-2 space-y-6 lg:col-start-2 lg:row-start-1">
-        <AssessmentHomeCard
-          card={featuredAssessment}
-          coverSrc={assessmentCoverSrc}
-          fatherName={fatherName}
-        />
-        <ProfileHomeCard
-          profile={profile}
-          draft={draft}
-          coverSrc={profileCoverSrc}
-          neverStarted={neverStarted}
-          hideActions={profileIsPrimary}
-        />
-      </div>
+      <AssessmentHomeCard
+        profile={profile}
+        draft={draft}
+        coverSrc={assessmentCoverSrc}
+        neverStarted={neverStarted}
+        hideActions={profileIsPrimary}
+        className="order-2 lg:col-start-2 lg:row-start-1"
+      />
 
       {trainingCards.length > 0 || customAssignments.length > 0 ? (
         <div className="order-4 space-y-8 lg:col-span-2">
