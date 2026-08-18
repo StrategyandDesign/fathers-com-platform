@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Flash } from "@/components/manager/flash";
+import { TrainingCatalog } from "@/components/manager/training-catalog";
 import {
   ReviewDecisionForms,
   ReviewStatusBadge,
@@ -10,6 +11,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { isLegacyCatalogTraining, isTrainingPublished } from "@/lib/father/types";
 import { requireRole } from "@/lib/auth/session";
 import { formatShortDate, getI18n } from "@/lib/i18n/server";
+import { buildManagerCatalog } from "@/lib/manager/catalog";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadReviewQueue } from "@/lib/manager/reviews";
 import { assignTrainingToUnassigned } from "@/lib/manager/training-actions";
@@ -61,6 +63,22 @@ export default async function ManagerTrainingsPage({
       isLegacyCatalogTraining(training) &&
       !acceptedIds.has(training.id)
   );
+  const catalog = buildManagerCatalog({
+    trainings: workspace.trainings,
+    pending: pending.map((item) => ({
+      training: item.training,
+      sessionCount: item.sessionCount,
+      groupId: item.review.group_id,
+      groupName: item.groupName,
+    })),
+    accepted: accepted.map((item) => ({
+      training: item.training,
+      sessionCount: item.sessionCount,
+      groupId: item.review.group_id,
+      groupName: item.groupName,
+    })),
+    showGroupName: groups.length > 1,
+  });
 
   function assignedCount(trainingId: string, groupId?: string) {
     return workspace.participants.filter((participant) => {
@@ -96,6 +114,7 @@ export default async function ManagerTrainingsPage({
         </Link>
       </div>
       <Flash error={params.error} notice={params.notice} />
+      <TrainingCatalog items={catalog} t={t} />
 
       {unread.length > 0 ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">

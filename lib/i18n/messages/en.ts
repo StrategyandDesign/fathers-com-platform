@@ -778,7 +778,11 @@ export const en = {
       reviewLead:
         "A new training is available. Open Trainings to preview it, then accept to make it available, or decline to keep it hidden.",
       openQueue: "Open Trainings",
-      trainingsLead: "Accept a release, assign it to fathers, or hide it from the group.",
+      openCatalog: "View available trainings",
+      catalogCountOne: "1 training available",
+      catalogCountMany: "{count} trainings available",
+      trainingsLead:
+        "The catalog lists every training this organization can use. Accept a release, then assign it.",
       sessionOne: "1 session",
       sessionMany: "{count} sessions",
       active: "Active Participants",
@@ -1406,7 +1410,15 @@ export const en = {
     },
     trainings: {
       title: "Trainings",
-      lead: "Accept a release to make it available to {org}. Assign it when you want fathers to receive it.",
+      lead: "The catalog lists every training available to {org}. Accept a new release, then assign it when you want fathers to receive it.",
+      catalogTitle: "Available trainings",
+      catalogLead:
+        "Every training this organization can use. Open one to preview it, then accept or assign it below.",
+      catalogEmptyTitle: "No trainings available",
+      catalogEmptyBody:
+        "When a Super-admin releases a training to this organization, it will appear here.",
+      catalogPending: "Waiting on you",
+      catalogReady: "Ready to assign",
       waitingTitle: "Waiting on you",
       waitingLead:
         "Preview, then accept to make it available to assign, or decline to keep it hidden.",

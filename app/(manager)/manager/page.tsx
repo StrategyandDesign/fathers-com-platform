@@ -23,6 +23,7 @@ import { CohortNoteDesk } from "@/components/manager/cohort-note-desk";
 import { loadManagerCohortNotes } from "@/lib/cohort-note/data";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadManagerOrganizationMarks } from "@/lib/org-photos/data";
+import { buildManagerCatalog } from "@/lib/manager/catalog";
 import { loadNudgePanel } from "@/lib/manager/nudge-panel-data";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
 import { needsNudge } from "@/lib/manager/nudges";
@@ -53,6 +54,24 @@ export default async function ManagerHomePage({
   });
   const { groups, summary, needsAttention, participants, trainingProgressFor, certificates } =
     workspace;
+  const catalog = buildManagerCatalog({
+    trainings: workspace.trainings,
+    pending: reviews.pending.map((item) => ({
+      training: item.training,
+      sessionCount: item.sessionCount,
+      groupId: item.review.group_id,
+      groupName: item.groupName,
+    })),
+    accepted: reviews.history
+      .filter((item) => item.review.status === "accepted")
+      .map((item) => ({
+        training: item.training,
+        sessionCount: item.sessionCount,
+        groupId: item.review.group_id,
+        groupName: item.groupName,
+      })),
+    showGroupName: groups.length > 1,
+  });
   const quietIds = participants
     .filter((participant) =>
       needsNudge(participant.lastActivity, trainingProgressFor(participant.fatherId))
@@ -308,11 +327,16 @@ export default async function ManagerHomePage({
           <p className="mt-1 text-sm text-muted-foreground">
             {t("manager.dashboard.trainingsLead")}
           </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {catalog.length === 1
+              ? t("manager.dashboard.catalogCountOne")
+              : t("manager.dashboard.catalogCountMany", { count: catalog.length })}
+          </p>
           <Link
-            href="/manager/trainings"
+            href="/manager/trainings#catalog"
             className={cn(buttonVariants(), "mt-5 w-full sm:w-auto")}
           >
-            {t("manager.dashboard.openQueue")}
+            {t("manager.dashboard.openCatalog")}
           </Link>
         </div>
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
