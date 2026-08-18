@@ -165,7 +165,7 @@ export default async function FatherHomePage({
       ) : null}
 
       {pair ? (
-        <div className="grid items-stretch gap-4 lg:grid-cols-2">
+        <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(14rem,1fr)]">
           {upNext}
           {assessmentCard}
         </div>
