@@ -46,7 +46,7 @@ export default async function FatherHomePage({
 }) {
   const { done, error, notice } = await searchParams;
   const { user } = await requireRole("father");
-  const { t } = await getI18n();
+  const { t, locale } = await getI18n();
   scheduleDueReminderFlush();
   const [
     { pathCards, trainingCards, next, profile, draft, certificates },
@@ -155,6 +155,15 @@ export default async function FatherHomePage({
       {leader ? (
         <LeaderMeta name={leader.name} avatarUrl={leader.avatarUrl} t={t} />
       ) : null}
+      {cohortNote ? (
+        <CohortNoteCard
+          groupId={cohortNote.groupId}
+          body={cohortNote.body}
+          updatedAt={cohortNote.updatedAt}
+          locale={locale}
+          t={t}
+        />
+      ) : null}
       <Flash error={error} notice={notice} />
       <StreakNotices notices={streak.notices} />
       <HomeStreakRow
@@ -164,9 +173,6 @@ export default async function FatherHomePage({
         grid={streak.grid}
         justFinished={justFinished}
       />
-      {cohortNote ? (
-        <CohortNoteCard groupId={cohortNote.groupId} body={cohortNote.body} t={t} />
-      ) : null}
 
       {pair ? (
         <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(14rem,1fr)]">

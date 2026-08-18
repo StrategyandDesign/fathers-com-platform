@@ -16,6 +16,15 @@ export function normalizeCohortNote(raw: string) {
   return raw.replace(/\s+/g, " ").trim();
 }
 
+export function composeCohortNoteParts(
+  body: string,
+  stamp: string | null | undefined
+) {
+  const text = normalizeCohortNote(body);
+  const time = stamp?.trim() && stamp !== "—" ? stamp.trim() : null;
+  return { stamp: time, body: text };
+}
+
 export function isCohortNoteVisible(
   noteUpdatedAt: string,
   dismissedAt: string | null | undefined
