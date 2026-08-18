@@ -839,7 +839,6 @@ export const he = {
       noteReplaceLabel: "הודעה חדשה",
       noteCount: "{n} מתוך {max} תווים",
       notePreview: "מה שהם רואים",
-      notePreviewEmpty: "אין עדכון. דף הבית נשאר כמו שהוא.",
       noteNowShowing: "מוצג עכשיו",
       noteStampPreview: "תאריך ושעת הפרסום",
       noteOneAtATime: "מוצג עדכון אחד. הודעה חדשה מחליפה את זו.",
