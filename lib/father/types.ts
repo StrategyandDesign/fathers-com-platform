@@ -150,18 +150,59 @@ export function continueHref(
   return `/father/sessions/${sessionId}`;
 }
 
-export function youtubeEmbedUrl(url: string | null) {
+const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;
+const YOUTUBE_HOSTS = new Set([
+  "youtube.com",
+  "www.youtube.com",
+  "m.youtube.com",
+  "music.youtube.com",
+  "youtube-nocookie.com",
+  "www.youtube-nocookie.com",
+  "youtu.be",
+  "www.youtu.be",
+]);
+const YOUTUBE_PATH_MARKERS = new Set(["embed", "shorts", "live", "v", "watch"]);
+
+export function youtubeVideoId(url: string | null | undefined) {
   if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (YOUTUBE_ID.test(trimmed)) return trimmed;
+
+  let parsed: URL;
   try {
-    const parsed = new URL(url);
-    const fromQuery = parsed.searchParams.get("v");
-    if (fromQuery) {
-      return `https://www.youtube.com/embed/${fromQuery}`;
-    }
-    const parts = parsed.pathname.split("/").filter(Boolean);
-    const id = parts[parts.length - 1];
-    return id ? `https://www.youtube.com/embed/${id}` : null;
+    parsed = new URL(/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed) ? trimmed : `https://${trimmed}`);
   } catch {
     return null;
   }
+
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+
+  const host = parsed.hostname.toLowerCase();
+  if (!YOUTUBE_HOSTS.has(host)) return null;
+
+  const fromQuery = parsed.searchParams.get("v")?.trim() ?? "";
+  if (YOUTUBE_ID.test(fromQuery)) return fromQuery;
+
+  const parts = parsed.pathname.split("/").filter(Boolean);
+  if (host === "youtu.be" || host === "www.youtu.be") {
+    const id = parts[0] ?? "";
+    return YOUTUBE_ID.test(id) ? id : null;
+  }
+
+  for (let index = 0; index < parts.length - 1; index += 1) {
+    if (
+      YOUTUBE_PATH_MARKERS.has(parts[index].toLowerCase()) &&
+      YOUTUBE_ID.test(parts[index + 1])
+    ) {
+      return parts[index + 1];
+    }
+  }
+
+  return null;
+}
+
+export function youtubeEmbedUrl(url: string | null) {
+  const id = youtubeVideoId(url);
+  return id ? `https://www.youtube.com/embed/${id}` : null;
 }

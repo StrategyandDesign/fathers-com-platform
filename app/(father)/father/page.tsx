@@ -72,7 +72,7 @@ export default async function FatherHomePage({
     next && nextTotal > 0 ? Math.round((nextCompleted / nextTotal) * 100) : 0;
   const hasTraining = trainingCards.length > 0;
   const pendingAssessment = customAssignments.find(
-    (item) => item.assignment.status !== "completed"
+    (item) => item.assignment.status !== "completed" && item.questionCount > 0
   );
   const assessmentIsPrimary = !next && Boolean(pendingAssessment);
   const issuedCertificates = trainingCards.filter((card) => card.certificate);

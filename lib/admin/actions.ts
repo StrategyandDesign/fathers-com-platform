@@ -15,8 +15,12 @@ import {
 } from "@/lib/admin/release";
 import { isAppRole, ROLE_HOME } from "@/lib/auth/roles";
 import { getAuthContext, requireRole } from "@/lib/auth/session";
+import { youtubeVideoId } from "@/lib/father/types";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
+
+const YOUTUBE_URL_ERROR =
+  "Use a YouTube video link. Playlists and other sites will not play.";
 
 const RELEASE_WRITE_ERROR = "Unable to update release status. Please try again.";
 const RELEASE_NOTIFY_WARNING =
@@ -471,6 +475,7 @@ export async function createSession(formData: FormData) {
   if (!trainingId) fail("/admin/trainings", "Choose a training.");
   if (!title) fail(path, "Session title is required.");
   if (sessionNumber < 1) fail(path, "Session number must be 1 or higher.");
+  if (videoUrl && !youtubeVideoId(videoUrl)) fail(path, YOUTUBE_URL_ERROR);
 
   const supabase = await createClient();
   const { error } = await supabase.from("sessions").insert({
@@ -508,6 +513,7 @@ export async function updateSession(formData: FormData) {
   if (!trainingId || !sessionId) fail(path || "/admin/trainings", "Choose a session.");
   if (!title) fail(path, "Session title is required.");
   if (sessionNumber < 1) fail(path, "Session number must be 1 or higher.");
+  if (videoUrl && !youtubeVideoId(videoUrl)) fail(path, YOUTUBE_URL_ERROR);
 
   const supabase = await createClient();
   const { error } = await supabase

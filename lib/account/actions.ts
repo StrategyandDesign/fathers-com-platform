@@ -46,15 +46,17 @@ export async function saveAnonymousShare(enabled: boolean) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("profiles")
     .update({
       share_anonymous_admin: enabled,
       share_anonymous_admin_at: enabled ? new Date().toISOString() : null,
     })
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .select("share_anonymous_admin")
+    .maybeSingle();
 
-  if (error) {
+  if (error || !data || data.share_anonymous_admin !== enabled) {
     return { error: "That preference didn’t save. Try again." };
   }
 

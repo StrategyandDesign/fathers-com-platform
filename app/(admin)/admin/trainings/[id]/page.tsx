@@ -328,7 +328,12 @@ export default async function AdminTrainingDetailPage({
                 className={fieldClassName}
                 name="video_url"
                 defaultValue={session.video_url ?? ""}
+                placeholder="https://youtu.be/… or youtube.com/watch?v=…"
               />
+              <span className="block text-xs text-muted-foreground">
+                A YouTube watch, share, Shorts, or youtu.be link. Playlists will
+                not play.
+              </span>
             </label>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button type="submit" className="w-full sm:w-auto">
@@ -387,7 +392,15 @@ export default async function AdminTrainingDetailPage({
           </label>
           <label className="block space-y-2">
             <span className="text-sm text-muted-foreground">YouTube URL</span>
-            <input className={fieldClassName} name="video_url" />
+            <input
+              className={fieldClassName}
+              name="video_url"
+              placeholder="https://youtu.be/… or youtube.com/watch?v=…"
+            />
+            <span className="block text-xs text-muted-foreground">
+              A YouTube watch, share, Shorts, or youtu.be link. Playlists will
+              not play.
+            </span>
           </label>
           <Button type="submit" className="w-full sm:w-auto">
             Add session

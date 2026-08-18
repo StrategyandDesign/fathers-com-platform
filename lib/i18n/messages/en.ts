@@ -231,6 +231,8 @@ export const en = {
     assessmentNotAssigned: "That assessment is not assigned to you.",
     assessmentNoQuestions:
       "This assessment has no questions yet. Check back after your manager adds some.",
+    youtubeUrlInvalid:
+      "Use a YouTube video link. Playlists and other sites will not play.",
     questionNotFound: "That question was not found.",
     answerSaveFailed: "Your answer didn’t save. Try again.",
     answerEveryQuestion: "Answer every question to finish.",
@@ -341,11 +343,11 @@ export const en = {
     shareLeadManager:
       "Release anonymous counts of assignments, reviews, and certificates you issue. Super-admins do not see names or which organization.",
     shareLeadReviewer:
-      "Release anonymous activity that you use Insights. Super-admins do not see your name or which organizations you watch.",
+      "Release anonymous counts of how you use Insights. Super-admins do not see your name or which organizations you watch.",
     shareToggle: "Share anonymous data with super-admin",
     shareOn: "Sharing",
     shareOff: "Not sharing",
-    shareHint: "You can turn this off anytime. Turning it off stops new counts from including you.",
+    shareHint: "You can turn this off anytime. Turning it off removes you from the counts.",
     staffLead: "Your language and notifications.",
     languageTitle: "Language",
     languageLead:
@@ -605,6 +607,9 @@ export const en = {
       awardRecord: "Your answers",
       completedOn: "Completed {date}",
       recordCount: "{n} answers on record",
+      notReadyTitle: "This assessment is not ready",
+      notReadyBody:
+        "This assessment has no questions yet. Check back after your manager adds some.",
     },
     session: {
       film: "Film",

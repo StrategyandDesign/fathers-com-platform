@@ -70,20 +70,30 @@ export async function AssessmentHomeCard({
                 </Link>
               </div>
             </>
+          ) : questionCount === 0 ? (
+            <>
+              <h2 className="font-heading mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
+                {assessment.title}
+              </h2>
+              <p className="mt-2 text-sm text-white/65">{t("father.assessments.notReadyBody")}</p>
+              <div className="mt-auto pt-5">
+                <Link href="/father" className={actionClassName}>
+                  {t("father.assessments.backHome")}
+                </Link>
+              </div>
+            </>
           ) : assignment.status === "in_progress" ? (
             <>
               <h2 className="font-heading mt-3 text-xl font-semibold tracking-tight sm:text-2xl">
                 {t("father.home.inProgress")}
               </h2>
               <p className="mt-1 text-sm text-white/80">{assessment.title}</p>
-              {questionCount > 0 ? (
-                <p className="mt-2 text-sm text-white/65">
-                  {t("father.home.questionOf", {
-                    n: Math.min(questionCount, answeredCount + 1),
-                    total: questionCount,
-                  })}
-                </p>
-              ) : null}
+              <p className="mt-2 text-sm text-white/65">
+                {t("father.home.questionOf", {
+                  n: Math.min(questionCount, answeredCount + 1),
+                  total: questionCount,
+                })}
+              </p>
               <div className="mt-auto pt-5">
                 <Link href={href} className={actionClassName}>
                   {t("father.home.continueAssessment")}

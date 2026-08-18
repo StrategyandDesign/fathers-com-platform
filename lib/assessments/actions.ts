@@ -236,6 +236,9 @@ export async function assignAssessment(formData: FormData) {
   if (!detail) {
     fail("/manager/assessments", "That assessment was not found.");
   }
+  if (detail.questions.length === 0) {
+    fail(path, "Add at least one question.");
+  }
 
   const allowed = new Set(roster.map((row) => row.fatherId));
   if (fatherIds.some((fatherId) => !allowed.has(fatherId))) {

@@ -58,7 +58,9 @@ export async function AssignedAssessmentList({
               <div className="min-w-0">
                 <p className="font-medium">{assessment.title}</p>
                 <p className="text-sm text-muted-foreground">
-                  {t(`father.assessments.${assignment.status === "not_started" ? "notStarted" : assignment.status === "in_progress" ? "inProgress" : "completed"}`)}
+                  {questionCount === 0 && assignment.status !== "completed"
+                    ? t("father.assessments.notReadyBody")
+                    : t(`father.assessments.${assignment.status === "not_started" ? "notStarted" : assignment.status === "in_progress" ? "inProgress" : "completed"}`)}
                   {questionCount > 0
                     ? ` · ${t("father.assessments.answered", {
                         answered: answeredCount,
@@ -75,9 +77,11 @@ export async function AssignedAssessmentList({
               >
                 {assignment.status === "completed"
                   ? t("father.assessments.view")
-                  : assignment.status === "in_progress"
-                    ? t("father.assessments.continue")
-                    : t("father.assessments.take")}
+                  : questionCount === 0
+                    ? t("father.assessments.notReadyTitle")
+                    : assignment.status === "in_progress"
+                      ? t("father.assessments.continue")
+                      : t("father.assessments.take")}
               </span>
             </Link>
           </li>

@@ -50,10 +50,31 @@ function Waiting({ role, optedIn, needed }: { role: string; optedIn: number; nee
   );
 }
 
+function cellLabel(value: number | null) {
+  return value ?? "—";
+}
+
 export default async function AdminGatheringPage() {
   await requireRole("admin");
   const gathering = await loadAdminGathering();
   const { fathers, managers, reviewers, minCohort } = gathering;
+
+  if (gathering.unavailable) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">Gathering</h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            Anonymous participation from people who chose to share it.
+          </p>
+        </div>
+        <EmptyState title="Gathering unavailable">
+          Anonymous counts could not load. Try again later. Sharing stays off
+          for everyone until this page can read the totals.
+        </EmptyState>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -62,7 +83,8 @@ export default async function AdminGatheringPage() {
         <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
           Anonymous participation from people who chose to share it. No names,
           emails, notes, answers, or certificate serials. Each person turns this
-          on in Account.
+          on in Account. Totals that would describe fewer than {minCohort}{" "}
+          people stay hidden.
         </p>
       </div>
 
@@ -104,22 +126,33 @@ export default async function AdminGatheringPage() {
               <div className="space-y-3">
                 <h3 className="text-sm font-medium">Assigned trainings</h3>
                 <ul className="space-y-3">
-                  {fathers.trainingDistribution.map((row) => (
-                    <li key={row.title} className="space-y-2">
-                      <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <p className="font-medium">{row.title}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {row.completed} complete · {row.inProgress} in progress ·{" "}
-                          {row.notStarted} not started
-                        </p>
-                      </div>
-                      <StackedBar
-                        notStarted={row.notStarted}
-                        inProgress={row.inProgress}
-                        completed={row.completed}
-                      />
-                    </li>
-                  ))}
+                  {fathers.trainingDistribution.map((row) => {
+                    const barReady =
+                      row.notStarted != null &&
+                      row.inProgress != null &&
+                      row.completed != null;
+                    return (
+                      <li key={row.title} className="space-y-2">
+                        <div className="flex flex-wrap items-baseline justify-between gap-2">
+                          <p className="font-medium">{row.title}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {cellLabel(row.completed)} complete ·{" "}
+                            {cellLabel(row.inProgress)} in progress ·{" "}
+                            {cellLabel(row.notStarted)} not started
+                          </p>
+                        </div>
+                        {barReady ? (
+                          <StackedBar
+                            notStarted={row.notStarted ?? 0}
+                            inProgress={row.inProgress ?? 0}
+                            completed={row.completed ?? 0}
+                          />
+                        ) : (
+                          <div className="h-1.5 rounded-full bg-white/10" />
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ) : (

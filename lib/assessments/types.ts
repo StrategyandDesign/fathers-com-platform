@@ -92,10 +92,14 @@ export function asStringOptions(value: unknown): string[] | null {
 }
 
 export function pickFeaturedAssignment(cards: FatherAssignmentCard[]) {
+  const usable = cards.filter(
+    (card) => card.questionCount > 0 || card.assignment.status === "completed"
+  );
+  const pool = usable.length > 0 ? usable : cards;
   return (
-    cards.find((card) => card.assignment.status === "completed") ??
-    cards.find((card) => card.assignment.status === "in_progress") ??
-    cards.find((card) => card.assignment.status === "not_started") ??
+    pool.find((card) => card.assignment.status === "completed") ??
+    pool.find((card) => card.assignment.status === "in_progress") ??
+    pool.find((card) => card.assignment.status === "not_started") ??
     null
   );
 }

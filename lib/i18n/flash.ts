@@ -44,6 +44,8 @@ const EXACT: Record<string, string> = {
   "That assessment is not assigned to you.": "flash.assessmentNotAssigned",
   "This assessment has no questions yet. Check back after your manager adds some.":
     "flash.assessmentNoQuestions",
+  "Use a YouTube video link. Playlists and other sites will not play.":
+    "flash.youtubeUrlInvalid",
   "That question was not found.": "flash.questionNotFound",
   "Your answer didn’t save. Try again.": "flash.answerSaveFailed",
   "Answer every question to finish.": "flash.answerEveryQuestion",

@@ -4,6 +4,7 @@ import { AssessmentChoiceRadios } from "@/components/assessments/choice-radios";
 import { AssessmentResultsAward } from "@/components/assessments/results-award";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { ProgressBar } from "@/components/ui/progress";
 import { loadProfileFullName } from "@/lib/account/data";
 import { saveCustomAnswer } from "@/lib/assessments/actions";
@@ -30,8 +31,22 @@ export default async function FatherAssessmentTakePage({
   const { t } = await getI18n();
   const ctx = await loadAssignmentTake(user.id, assignmentId);
 
-  if (!ctx || ctx.questions.length === 0) {
+  if (!ctx) {
     notFound();
+  }
+
+  if (ctx.questions.length === 0) {
+    return (
+      <div className="mx-auto max-w-2xl space-y-6">
+        <EmptyState
+          title={t("father.assessments.notReadyTitle")}
+          actionHref="/father"
+          actionLabel={t("father.assessments.backHome")}
+        >
+          {t("father.assessments.notReadyBody")}
+        </EmptyState>
+      </div>
+    );
   }
 
   const completed = ctx.assignment.status === "completed";

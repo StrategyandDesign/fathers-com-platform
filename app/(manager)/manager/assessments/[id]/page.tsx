@@ -122,7 +122,11 @@ export default async function ManagerAssessmentDetailPage({
         <p className="mt-1 text-sm text-muted-foreground">
           {t("manager.assessments.assignLead")}
         </p>
-        {detail.roster.length === 0 ? (
+        {detail.questions.length === 0 ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            {t("manager.assessments.noQuestionsBody")}
+          </p>
+        ) : detail.roster.length === 0 ? (
           <EmptyState
             framed={false}
             className="mt-4 p-0"
