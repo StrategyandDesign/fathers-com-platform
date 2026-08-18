@@ -203,8 +203,8 @@ export default async function AdminTrainingDetailPage({
           <div>
             <h2 className="font-heading text-lg font-semibold">Release to organizations</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Push to every organization or only the ones you select. Managers
-              must accept before they can assign it.
+              Push to every organization or only the ones you select. Leaders
+              must accept before they decide who among their fathers receives it.
             </p>
           </div>
           <ReleaseStatusBadge state={alreadyReleased ? "released" : "draft"} />

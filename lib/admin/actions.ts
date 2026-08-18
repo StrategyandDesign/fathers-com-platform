@@ -29,6 +29,7 @@ import {
   UNRELEASE_CONFIRM,
   unreleaseTrainingFromManagers,
 } from "@/lib/admin/release";
+import { seedGroupAssessmentReviews } from "@/lib/admin/assessment-release";
 import { hasHardcodedSkillPack } from "@/lib/father/session-questions";
 import { isAppRole, ROLE_HOME } from "@/lib/auth/roles";
 import { getAuthContext, requireRole } from "@/lib/auth/session";
@@ -96,10 +97,12 @@ function revalidateAdmin(extra?: string) {
   revalidatePath("/admin");
   revalidatePath("/admin/organizations");
   revalidatePath("/admin/trainings");
+  revalidatePath("/admin/assessments");
   revalidatePath("/admin/users");
   revalidatePath("/manager");
   revalidatePath("/manager/reviews");
   revalidatePath("/manager/trainings");
+  revalidatePath("/manager/assessments");
   revalidatePath("/manager/participants");
   revalidatePath("/father");
   revalidatePath("/father/trainings");
@@ -293,6 +296,7 @@ export async function createOrganization(formData: FormData) {
   if (error) fail("/admin/organizations/new", error.message);
   if (data?.id) {
     await seedGroupTrainingReviews(supabase, data.id);
+    await seedGroupAssessmentReviews(supabase, data.id);
   }
 
   revalidateAdmin();

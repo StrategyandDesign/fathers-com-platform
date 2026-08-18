@@ -33,8 +33,9 @@ export default async function AdminTrainingsPage({
         <div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight">Trainings</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Development sandbox. Structure sessions, Stage the Father path, then
-            mark Ready. Only Released trainings enter Leader review.
+            You create and share trainings with organization Leaders. Leaders
+            then decide what their fathers receive. Structure sessions, Stage
+            the Father path, mark Ready, then Release.
           </p>
         </div>
         <Link href="/admin/trainings/new" className={cn(buttonVariants(), "w-full sm:w-auto")}>

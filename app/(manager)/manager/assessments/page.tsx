@@ -1,20 +1,29 @@
 import Link from "next/link";
 
+import { AssessmentReviewForms } from "@/components/manager/assessment-review-forms";
 import { AssessmentVisibilityForms } from "@/components/manager/assessment-visibility-forms";
 import { Flash } from "@/components/manager/flash";
+import { ReviewStatusBadge } from "@/components/manager/review-decision-forms";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { assignAssessmentToUnassigned } from "@/lib/assessments/actions";
+import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
 import {
   buildManagerAssessmentCatalog,
   partitionAssessmentCatalog,
   type AssessmentCatalogItem,
 } from "@/lib/assessments/catalog";
-import { loadAssessmentAvailability, loadManagerAssessments } from "@/lib/assessments/data";
+import {
+  loadAssessmentAvailability,
+  loadManagerAssessments,
+  loadOrganizationAssessmentReviews,
+  loadPlatformAssessmentRelease,
+} from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
 import { loadManagerWorkspace } from "@/lib/manager/data";
-import { interactiveLinkClassName } from "@/lib/ui";
+import { loadManagerNotifications } from "@/lib/manager/reviews";
+import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 function questionLabel(
@@ -89,7 +98,7 @@ function AssessmentCard({
           </form>
         ) : null}
       </div>
-      {item.groupId ? (
+      {item.groupId && item.section !== "pending" && item.section !== "declined" ? (
         <div className="mt-5 border-t border-border pt-5">
           <AssessmentVisibilityForms
             assessmentKey={item.assessmentKey}
@@ -117,7 +126,15 @@ export default async function ManagerAssessmentsPage({
     loadManagerAssessments(user.id),
   ]);
   const groupIds = workspace.groups.map((group) => group.id);
-  const availability = await loadAssessmentAvailability(groupIds);
+  const [availability, reviews, keystoneRelease, notifications] = await Promise.all([
+    loadAssessmentAvailability(groupIds),
+    loadOrganizationAssessmentReviews(groupIds),
+    loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
+    loadManagerNotifications(user.id),
+  ]);
+  const unread = notifications.filter(
+    (row) => !row.read_at && row.kind === "assessment_release"
+  );
   const keystoneCompletedByGroup: Record<string, number> = {};
   const groupSize: Record<string, number> = {};
   for (const participant of workspace.participants) {
@@ -134,8 +151,10 @@ export default async function ManagerAssessmentsPage({
     availability,
     keystoneCompletedByGroup,
     groupSize,
+    reviews,
+    keystoneRelease,
   });
-  const { available, hidden } = partitionAssessmentCatalog(catalog);
+  const { pending, available, hidden, declined } = partitionAssessmentCatalog(catalog);
   const orgName = workspace.groups[0]?.name ?? t("account.orgPhotosFallback");
   const assignedByCustom = new Map(custom.map((row) => [row.id, row.assignedCount]));
 
@@ -162,6 +181,83 @@ export default async function ManagerAssessmentsPage({
         </Link>
       </div>
       <Flash error={params.error} notice={params.notice} />
+
+      {unread.length > 0 ? (
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">{t("manager.reviews.notifications")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {unread.length === 1
+              ? t("manager.assessmentReviews.waitingOne")
+              : t("manager.assessmentReviews.waitingMany", { count: unread.length })}
+          </p>
+          <ul className="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
+            {unread.map((item) => (
+              <li key={item.id}>
+                <Link href={item.href} className={cn("block px-4 py-3", interactiveSurfaceClassName)}>
+                  <span className="block font-medium">{item.title}</span>
+                  {item.body ? (
+                    <span className="mt-0.5 block text-sm text-muted-foreground">{item.body}</span>
+                  ) : null}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <section id="pending" className="space-y-4">
+        <div>
+          <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.waitingTitle")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("manager.assessments.waitingLead")}</p>
+        </div>
+        {pending.length === 0 ? (
+          <EmptyState title={t("manager.assessments.waitingEmptyTitle")}>
+            {t("manager.assessments.waitingEmptyBody")}
+          </EmptyState>
+        ) : (
+          <div className="grid gap-4">
+            {pending.map((item) => (
+              <article key={item.key} className="rounded-xl border border-border bg-card p-4 sm:p-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
+                    <h3 className="font-heading text-lg font-semibold">
+                      {item.kind === "keystone" ? t("father.profile.keystone") : item.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {[
+                        t("manager.assessments.platform"),
+                        questionLabel(item.questionCount, t),
+                        item.groupName,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  </div>
+                  {item.reviewStatus ? <ReviewStatusBadge status={item.reviewStatus} /> : null}
+                </div>
+                <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+                  <Link
+                    href={item.href}
+                    className={cn(buttonVariants({ variant: "outline" }), "w-full min-h-11 sm:w-auto")}
+                  >
+                    {t("manager.assessments.review")}
+                  </Link>
+                </div>
+                {item.groupId && item.reviewStatus ? (
+                  <div className="mt-5 border-t border-border pt-5">
+                    <AssessmentReviewForms
+                      assessmentKey={item.assessmentKey}
+                      groupId={item.groupId}
+                      status={item.reviewStatus}
+                      returnTo="list"
+                    />
+                  </div>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
 
       <section className="space-y-4">
         <div>
@@ -214,6 +310,46 @@ export default async function ManagerAssessmentsPage({
           </div>
         )}
       </section>
+
+      {declined.length > 0 ? (
+        <section className="space-y-4">
+          <div>
+            <h2 className="font-heading text-lg font-semibold">
+              {t("manager.assessments.declinedTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t("manager.assessments.declinedLead")}
+            </p>
+          </div>
+          <div className="grid gap-4">
+            {declined.map((item) => (
+              <article key={item.key} className="rounded-xl border border-border bg-card p-4 sm:p-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
+                    <h3 className="font-heading text-lg font-semibold">
+                      {item.kind === "keystone" ? t("father.profile.keystone") : item.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {[item.groupName, t("manager.reviews.declined")].filter(Boolean).join(" · ")}
+                    </p>
+                  </div>
+                  {item.reviewStatus ? <ReviewStatusBadge status={item.reviewStatus} /> : null}
+                </div>
+                {item.groupId && item.reviewStatus ? (
+                  <div className="mt-5 border-t border-border pt-5">
+                    <AssessmentReviewForms
+                      assessmentKey={item.assessmentKey}
+                      groupId={item.groupId}
+                      status={item.reviewStatus}
+                      returnTo="list"
+                    />
+                  </div>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

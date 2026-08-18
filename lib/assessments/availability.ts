@@ -69,9 +69,27 @@ export function fatherCanStartAssessment(input: {
   homeGroupId?: string | null;
   assessmentKey: string;
   hasProgress?: boolean;
+  release?: {
+    released_at?: string | null;
+    first_released_at?: string | null;
+  } | null;
+  reviewStatus?: "pending" | "accepted" | "declined" | null;
 }) {
   if (input.hasProgress) return true;
   const groupId = primaryFatherGroupId(input.groupIds, input.homeGroupId);
   if (!groupId) return true;
+
+  if (input.assessmentKey === KEYSTONE_ASSESSMENT_KEY) {
+    const firstReleased = Boolean(input.release?.first_released_at);
+    const currentlyReleased = Boolean(input.release?.released_at);
+    if (firstReleased) {
+      if (!currentlyReleased || input.reviewStatus !== "accepted") return false;
+      const row = input.rows.find(
+        (item) => item.group_id === groupId && item.assessment_key === input.assessmentKey
+      );
+      return row?.status === "available";
+    }
+  }
+
   return isAssessmentAvailable(input.rows, groupId, input.assessmentKey);
 }

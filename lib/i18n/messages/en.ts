@@ -327,6 +327,22 @@ export const en = {
     assessmentVisibilityFailed: "That change didn’t save. Try again.",
     assessmentVisibilityTooMany: "Too many assessment changes just now. Try again in a minute.",
     assessmentAssignHidden: "Share this assessment with the group before assigning it.",
+    assessmentShareNeedsAccept:
+      "Accept this assessment for your organization before sharing it with fathers.",
+    assessmentReviewMissing: "Choose an assessment to review.",
+    assessmentDeclineTooLong: "Keep the note under 400 characters.",
+    assessmentReviewLoadFailed: "Couldn’t load that review. Try again.",
+    assessmentReviewNotWaiting: "That assessment is not waiting on your review.",
+    assessmentReviewTypeAccept: "Type ACCEPT to accept this assessment after declining it.",
+    assessmentNoLongerReleased:
+      "This assessment is no longer released. A Super-admin must release it again.",
+    assessmentReviewSaveFailed: "The decision didn’t save. Try again.",
+    assessmentAccepted:
+      "Accepted. Share it with the group when you want fathers to take it.",
+    assessmentAcceptedAgain: "Accepted again. Share it with the group when you want fathers to take it.",
+    assessmentDeclined: "Declined. Fathers in this organization will not see it.",
+    assessmentDeclinedAfterAccept:
+      "Removed from your organization. Fathers who already started keep it.",
     keystoneUnavailable: "That assessment is not available right now.",
   },
   account: {
@@ -418,6 +434,9 @@ export const en = {
     trainingReleases: "New trainings available for review",
     trainingReleasesHint:
       "When a Super-admin releases a training for your organization to preview and accept.",
+    assessmentReleases: "New assessments available for review",
+    assessmentReleasesHint:
+      "When a Super-admin releases an assessment for your organization to preview and accept.",
     certificateSent: "Certificate sent",
     certificateSentHint: "When you issue a completion certificate.",
     security: "Account and security alerts",
@@ -1055,13 +1074,22 @@ export const en = {
     },
     assessments: {
       title: "Assessments",
-      lead: "Assessments fathers in {org} can take. Share or remove them the same way you do trainings.",
+      lead: "A Super-admin shares platform assessments with you. Accept them, then share or hide them for fathers in {org}. You can also create your own.",
       new: "New assessment",
+      waitingTitle: "Waiting on you",
+      waitingLead:
+        "A Super-admin shared these with your organization. Accept to offer them, then share with fathers.",
+      waitingEmptyTitle: "Nothing waiting",
+      waitingEmptyBody: "No new assessments are waiting.",
+      review: "Review",
+      declinedTitle: "Declined",
+      declinedLead: "Accept again if you want to offer one of these to the organization.",
       availableTitle: "Available",
       availableLead:
         "Fathers can take these. Removing hides them from men who have not started.",
       availableEmptyTitle: "Nothing is available",
-      availableEmptyBody: "Share an assessment with the group, or create one.",
+      availableEmptyBody:
+        "Accept a release above, share an assessment with the group, or create one.",
       hiddenTitle: "Hidden",
       hiddenLead: "Share again to make one available to the group.",
       hiddenEmpty: "Nothing is hidden.",
@@ -1073,13 +1101,14 @@ export const en = {
       share: "Share with the group",
       shareTitle: "Share or remove",
       shareLead: "Makes it available to assign to fathers in this group.",
-      shareKeystoneLead: "Fathers in this group can take the Keystone Assessment.",
+      shareKeystoneLead:
+        "Fathers in this group can take the Keystone Assessment. They do not see it until you share it.",
       removeFromGroup: "Remove from the group",
       removeKeystoneLead:
         "Hides it from fathers who have not started. Those who already started or finished keep it.",
       removeCustomLead: "Hides it from new assignment. Fathers who already have it keep it.",
       keystoneLead:
-        "The 128-question Keystone Assessment. Fathers in the group can take it when it is shared.",
+        "The 128-question Keystone Assessment. A Super-admin shares it with you. You decide when fathers in the group can take it.",
       keystoneRosterLead: "Every father in this group. Keystone does not need a separate assignment.",
       completedOfRoster: "{completed}/{total} completed",
       assignRemaining: "Assign to {n} remaining",
@@ -1122,6 +1151,21 @@ export const en = {
       moveDown: "Move down",
       removeQuestion: "Remove question",
       addQuestion: "Add question",
+    },
+    assessmentReviews: {
+      lead: "A Super-admin shared this with {org}. Accept to offer it, then share it with fathers when you want them to take it.",
+      accept: "Accept",
+      acceptLead:
+        "Keeps it in your organization. Fathers do not see it until you share it with the group.",
+      declinedLead:
+        "Hidden from this organization. Accepting lets you share it with fathers later.",
+      declineReason: "Decline reason (optional)",
+      removeReason: "Note for your records (optional)",
+      decline: "Decline",
+      remove: "Remove from organization",
+      waitingOne: "One assessment is waiting on your review.",
+      waitingMany: "{count} assessments are waiting on your review.",
+      notReleased: "A Super-admin has not released this to your organization right now.",
     },
     cert: {
       title: "Certificate",
@@ -1461,7 +1505,7 @@ export const en = {
     },
     trainings: {
       title: "Trainings",
-      lead: "The catalog lists every training available to {org}. Accept a new release, then assign it when you want fathers to receive it.",
+      lead: "A Super-admin shares trainings with you. Accept a release, then assign it when you want fathers in {org} to receive it.",
       catalogTitle: "Available trainings",
       catalogLead:
         "Every training this organization can use. Open one to preview it, then accept or assign it below.",

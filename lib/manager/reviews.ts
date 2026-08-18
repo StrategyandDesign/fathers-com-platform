@@ -37,7 +37,8 @@ export type ManagerNotification = {
   manager_id: string;
   group_id: string | null;
   training_id: string | null;
-  kind: "training_release";
+  kind: "training_release" | "assessment_release";
+  assessment_key?: string | null;
   title: string;
   body: string | null;
   href: string;

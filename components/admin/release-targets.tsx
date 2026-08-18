@@ -15,17 +15,20 @@ function reviewLabel(status: AdminReleaseTarget["reviewStatus"]) {
 export function ReleaseTargets({
   organizations,
   defaultScope = "all",
+  noun = "training",
 }: {
   organizations: AdminReleaseTarget[];
   defaultScope?: "all" | "selected";
+  noun?: "training" | "assessment";
 }) {
   const [scope, setScope] = useState<"all" | "selected">(defaultScope);
 
   if (organizations.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        Create an organization first. Release sends this training to the
-        managers you choose.
+        {noun === "assessment"
+          ? "Create an organization first. Release sends this assessment to the Leaders you choose."
+          : "Create an organization first. Release sends this training to the Leaders you choose."}
       </p>
     );
   }
@@ -78,7 +81,7 @@ export function ReleaseTargets({
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">
-          Every organization with a manager will get this for review.
+          Every organization with a Leader will get this for review.
         </p>
       )}
     </div>

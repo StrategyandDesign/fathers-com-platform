@@ -4,8 +4,15 @@ import {
   KEYSTONE_ASSESSMENT_KEY,
   asAvailabilityRow,
   fatherCanStartAssessment,
+  primaryFatherGroupId,
   type AssessmentAvailabilityRow,
 } from "@/lib/assessments/availability";
+import {
+  isAssessmentReviewStatus,
+  reviewForGroup,
+  type OrganizationAssessmentReview,
+  type PlatformAssessmentRelease,
+} from "@/lib/assessments/reviews";
 import {
   asStringOptions,
   isAssignmentStatus,
@@ -95,6 +102,77 @@ export async function loadManagerRoster(managerId: string): Promise<RosterFather
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
+function missingAssessmentReviewRelation(error: { code?: string; message: string }) {
+  return (
+    error.code === "42P01" ||
+    error.code === "PGRST205" ||
+    /organization_assessment_reviews|platform_assessment_releases/i.test(error.message)
+  );
+}
+
+export async function loadPlatformAssessmentRelease(assessmentKey: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("platform_assessment_releases")
+    .select("assessment_key, released_at, first_released_at, released_by")
+    .eq("assessment_key", assessmentKey)
+    .maybeSingle();
+
+  if (error) {
+    if (missingAssessmentReviewRelation(error)) return null;
+    throw error;
+  }
+  return (data as PlatformAssessmentRelease | null) ?? null;
+}
+
+export async function loadOrganizationAssessmentReviews(groupIds: string[]) {
+  if (groupIds.length === 0) return [] as OrganizationAssessmentReview[];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("organization_assessment_reviews")
+    .select(
+      "group_id, assessment_key, status, decline_reason, decided_by, decided_at, created_at"
+    )
+    .in("group_id", groupIds)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    if (missingAssessmentReviewRelation(error)) return [];
+    throw error;
+  }
+
+  const rows: OrganizationAssessmentReview[] = [];
+  for (const row of (data ?? []) as Array<
+    Omit<OrganizationAssessmentReview, "status"> & { status: string }
+  >) {
+    if (!isAssessmentReviewStatus(row.status)) continue;
+    rows.push({ ...row, status: row.status });
+  }
+  return rows;
+}
+
+export async function markAssessmentNotificationsRead(
+  managerId: string,
+  assessmentKey: string
+) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("manager_notifications")
+    .update({ read_at: new Date().toISOString() })
+    .eq("manager_id", managerId)
+    .eq("kind", "assessment_release")
+    .eq("assessment_key", assessmentKey)
+    .is("read_at", null);
+
+  if (error) {
+    const missingColumn =
+      error.code === "42703" || /assessment_key/i.test(error.message);
+    if (missingColumn) return;
+    console.error("[assessment-reviews] mark read failed", error.message);
+  }
+}
+
 export async function loadAssessmentAvailability(
   groupIds: string[]
 ): Promise<AssessmentAvailabilityRow[]> {
@@ -133,17 +211,29 @@ export async function loadFatherAssessmentAccess(fatherId: string) {
   const groupIds = [...new Set((membershipsRes.data ?? []).map((row) => String(row.group_id)))];
   const homeGroupId =
     typeof profileRes.data?.home_group_id === "string" ? profileRes.data.home_group_id : null;
-  const availability = await loadAssessmentAvailability(groupIds);
+  const [availability, reviews, keystoneRelease] = await Promise.all([
+    loadAssessmentAvailability(groupIds),
+    loadOrganizationAssessmentReviews(groupIds),
+    loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
+  ]);
+  const groupId = primaryFatherGroupId(groupIds, homeGroupId);
+  const review = groupId
+    ? reviewForGroup(reviews, groupId, KEYSTONE_ASSESSMENT_KEY)
+    : null;
 
   return {
     groupIds,
     homeGroupId,
     availability,
+    reviews,
+    keystoneRelease,
     canStartKeystone: fatherCanStartAssessment({
       rows: availability,
       groupIds,
       homeGroupId,
       assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+      release: keystoneRelease,
+      reviewStatus: review?.status ?? null,
     }),
   };
 }

@@ -5,6 +5,14 @@ import { redirect } from "next/navigation";
 
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
 import { loadManagerAssessmentDetail } from "@/lib/assessments/data";
+import {
+  loadOrganizationAssessmentReviews,
+  loadPlatformAssessmentRelease,
+} from "@/lib/assessments/data";
+import {
+  organizationMayOfferAssessment,
+  reviewForGroup,
+} from "@/lib/assessments/reviews";
 import { requireRole } from "@/lib/auth/session";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
@@ -69,6 +77,23 @@ async function saveVisibility(formData: FormData, status: "available" | "hidden"
     const detail = await loadManagerAssessmentDetail(user.id, assessmentKey);
     if (!detail) {
       fail("/manager/assessments", "flash.assessmentNotFound");
+    }
+  }
+
+  if (assessmentKey === KEYSTONE_ASSESSMENT_KEY && status === "available") {
+    const [release, reviews] = await Promise.all([
+      loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
+      loadOrganizationAssessmentReviews([groupId]),
+    ]);
+    const review = reviewForGroup(reviews, groupId, KEYSTONE_ASSESSMENT_KEY);
+    if (
+      !organizationMayOfferAssessment({
+        assessmentKey,
+        release,
+        reviewStatus: review?.status ?? null,
+      })
+    ) {
+      fail(path, "flash.assessmentShareNeedsAccept");
     }
   }
 

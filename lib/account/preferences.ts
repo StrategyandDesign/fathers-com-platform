@@ -12,6 +12,7 @@ export const NOTIFICATION_PREF_KEYS = [
   "action_reminders",
   "new_trainings",
   "training_releases",
+  "assessment_releases",
   "leader_encouragement",
   "push_enabled",
   "email_enabled",
@@ -33,6 +34,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   action_reminders: true,
   new_trainings: true,
   training_releases: true,
+  assessment_releases: true,
   leader_encouragement: true,
   push_enabled: true,
   email_enabled: true,
@@ -49,6 +51,11 @@ const MANAGER_TOGGLES: NotificationToggle[] = [
     key: "training_releases",
     labelKey: "notify.trainingReleases",
     hintKey: "notify.trainingReleasesHint",
+  },
+  {
+    key: "assessment_releases",
+    labelKey: "notify.assessmentReleases",
+    hintKey: "notify.assessmentReleasesHint",
   },
   {
     key: "certificate_sent",

@@ -11,6 +11,11 @@ import {
   buildManagerAssessmentCatalog,
   partitionAssessmentCatalog,
 } from "../lib/assessments/catalog";
+import {
+  catalogVisibility,
+  organizationMayOfferAssessment,
+  type PlatformAssessmentRelease,
+} from "../lib/assessments/reviews";
 import type { AssessmentListItem } from "../lib/assessments/types";
 
 const groups = [
@@ -28,6 +33,18 @@ const custom: AssessmentListItem = {
   questionCount: 4,
   assignedCount: 1,
   completedCount: 0,
+};
+
+const released: PlatformAssessmentRelease = {
+  assessment_key: KEYSTONE_ASSESSMENT_KEY,
+  released_at: "2026-08-18T12:00:00Z",
+  first_released_at: "2026-08-18T12:00:00Z",
+  released_by: "admin-1",
+};
+
+const unreleasedAfterFirst: PlatformAssessmentRelease = {
+  ...released,
+  released_at: null,
 };
 
 describe("assessment availability", () => {
@@ -60,6 +77,96 @@ describe("assessment availability", () => {
     );
   });
 
+  it("keeps Keystone open before Super-admin starts Leader review", () => {
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: null,
+        reviewStatus: null,
+      }),
+      true
+    );
+  });
+
+  it("blocks new starts after release until the Leader accepts and shares", () => {
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: released,
+        reviewStatus: "pending",
+      }),
+      false
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: released,
+        reviewStatus: "accepted",
+      }),
+      false
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [
+          { group_id: "g1", assessment_key: KEYSTONE_ASSESSMENT_KEY, status: "available" },
+        ],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: released,
+        reviewStatus: "accepted",
+      }),
+      true
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [
+          { group_id: "g1", assessment_key: KEYSTONE_ASSESSMENT_KEY, status: "available" },
+        ],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: released,
+        reviewStatus: "accepted",
+        hasProgress: true,
+      }),
+      true
+    );
+  });
+
+  it("does not restore catalog access after un-release", () => {
+    assert.equal(
+      organizationMayOfferAssessment({
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: unreleasedAfterFirst,
+        reviewStatus: "accepted",
+      }),
+      false
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [
+          { group_id: "g1", assessment_key: KEYSTONE_ASSESSMENT_KEY, status: "available" },
+        ],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: unreleasedAfterFirst,
+        reviewStatus: "accepted",
+      }),
+      false
+    );
+  });
+
   it("prefers the home group when a father is in more than one", () => {
     assert.equal(primaryFatherGroupId(["g2", "g1"], "g1"), "g1");
   });
@@ -87,5 +194,66 @@ describe("assessment catalog", () => {
       available.filter((item) => item.kind === "custom").length,
       2
     );
+  });
+
+  it("puts a released Keystone in Waiting on you until the Leader accepts", () => {
+    const items = buildManagerAssessmentCatalog({
+      groups: [groups[0]!],
+      custom: [],
+      availability: [],
+      keystoneCompletedByGroup: {},
+      groupSize: { g1: 4 },
+      keystoneRelease: released,
+      reviews: [
+        {
+          group_id: "g1",
+          assessment_key: KEYSTONE_ASSESSMENT_KEY,
+          status: "pending",
+          decline_reason: null,
+          decided_by: null,
+          decided_at: null,
+          created_at: "2026-08-18T12:00:00Z",
+        },
+      ],
+    });
+    const { pending, available, hidden } = partitionAssessmentCatalog(items);
+    assert.equal(pending.length, 1);
+    assert.equal(available.length, 0);
+    assert.equal(hidden.length, 0);
+    assert.match(pending[0]?.href ?? "", /assessment-reviews/);
+  });
+
+  it("treats an accepted Keystone as hidden until the Leader shares it", () => {
+    assert.equal(
+      catalogVisibility({
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        groupId: "g1",
+        availability: [],
+        reviewStatus: "accepted",
+      }),
+      "hidden"
+    );
+    const items = buildManagerAssessmentCatalog({
+      groups: [groups[0]!],
+      custom: [],
+      availability: [],
+      keystoneCompletedByGroup: {},
+      groupSize: { g1: 4 },
+      keystoneRelease: released,
+      reviews: [
+        {
+          group_id: "g1",
+          assessment_key: KEYSTONE_ASSESSMENT_KEY,
+          status: "accepted",
+          decline_reason: null,
+          decided_by: "m1",
+          decided_at: "2026-08-18T13:00:00Z",
+          created_at: "2026-08-18T12:00:00Z",
+        },
+      ],
+    });
+    const { available, hidden } = partitionAssessmentCatalog(items);
+    assert.equal(available.length, 0);
+    assert.equal(hidden.length, 1);
   });
 });

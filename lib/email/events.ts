@@ -72,6 +72,39 @@ export async function notifyCertificateIssued(input: {
   }
 }
 
+export async function notifyAssessmentReleased(input: {
+  managerId: string;
+  assessmentKey: string;
+  assessmentTitle: string;
+}): Promise<"sent" | "skipped" | "failed"> {
+  try {
+    const recipient = await loadRecipient(input.managerId, "assessment_releases");
+    if (!recipient) return "failed";
+    if (!recipient.allowed) return "skipped";
+
+    const appUrl = getAppUrl();
+    const rendered = renderTransactionalEmail({
+      title: "A new assessment is available for your review",
+      body: `${input.assessmentTitle} is ready for your organization.\nAccept it if you want to offer it, then share it with fathers when you want them to take it.`,
+      ctaLabel: "Review assessment",
+      ctaHref: `${appUrl}/manager/assessment-reviews/${input.assessmentKey}`,
+    });
+    const result = await sendEmail({
+      to: recipient.email,
+      subject: "A new assessment is available for your review",
+      html: rendered.html,
+      text: rendered.text,
+    });
+    if (result.sent) return "sent";
+    if (result.reason === "not_configured") return "skipped";
+    console.error("[email] assessment released failed", result.reason);
+    return "failed";
+  } catch (error) {
+    console.error("[email] assessment released failed", error);
+    return "failed";
+  }
+}
+
 export async function notifyTrainingReleased(input: {
   managerId: string;
   trainingId: string;

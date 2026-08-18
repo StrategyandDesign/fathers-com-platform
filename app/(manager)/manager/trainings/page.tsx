@@ -49,10 +49,11 @@ export default async function ManagerTrainingsPage({
   const params = await searchParams;
   const { user } = await requireRole("manager");
   const { t, locale } = await getI18n();
-  const [{ pending, history, unread, groups }, workspace] = await Promise.all([
+  const [{ pending, history, unread: unreadAll, groups }, workspace] = await Promise.all([
     loadReviewQueue(user.id),
     loadManagerWorkspace(user.id),
   ]);
+  const unread = unreadAll.filter((row) => row.kind === "training_release");
   const orgName = groups[0]?.name ?? t("account.orgPhotosFallback");
   const accepted = history.filter((item) => item.review.status === "accepted");
   const declined = history.filter((item) => item.review.status === "declined");
