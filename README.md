@@ -19,7 +19,7 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:3456/login
+Open http://127.0.0.1:3000/login
 
 Pilot seats (password `12345` on local and Vercel): `father@nwa`, `manager@nwa`, `reviewer@nwa`, plus the Unit 8200 `*@il` seats and `admin@fathers`. See `PILOT.md`.
 
