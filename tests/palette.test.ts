@@ -49,6 +49,7 @@ describe("palette", () => {
     const menu = readRepo("components/layout/account-menu.tsx");
     const account = readRepo("components/layout/account-view.tsx");
     assert.match(shell, /<AccountMenu/);
+    assert.match(shell, /<HeaderPaletteSwitch/);
     assert.match(menu, /<PaletteSwitcher compact/);
     assert.match(account, /<PaletteForm/);
   });

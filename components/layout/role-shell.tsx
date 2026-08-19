@@ -4,6 +4,7 @@ import { AccountMenu } from "@/components/layout/account-menu";
 import { AppNav } from "@/components/layout/app-nav";
 import { ManagerHeaderMenu } from "@/components/layout/manager-header-menu";
 import { StaffMenu } from "@/components/layout/staff-menu";
+import { HeaderPaletteSwitch } from "@/components/theme/header-palette-switch";
 import { Badge } from "@/components/ui/badge";
 import { ROLE_HOME, type AppRole } from "@/lib/auth/roles";
 import { isFatherStartPath } from "@/lib/father/onboarding";
@@ -69,7 +70,8 @@ export async function RoleShell({
         ) : (
           <div className="hidden flex-1 md:block" />
         )}
-        <div className="ms-auto flex shrink-0 justify-end">
+        <div className="ms-auto flex shrink-0 items-center justify-end gap-2">
+          <HeaderPaletteSwitch />
           <AccountMenu
             role={role}
             email={email}
