@@ -63,14 +63,8 @@ function CohortNoteEditor({
   const { t, locale } = useI18n();
   const [draft, setDraft] = useState("");
   const liveBody = normalizeCohortNote(group.body);
-  const preview = normalizeCohortNote(draft);
+  const draftCount = normalizeCohortNote(draft).length;
   const liveStamp = group.updatedAt ? formatShortDateTime(group.updatedAt, locale) : null;
-  const draftMatchesLive = Boolean(liveBody) && preview === liveBody;
-  const previewStamp = draftMatchesLive
-    ? liveStamp
-    : preview
-      ? t("manager.dashboard.noteStampPreview")
-      : null;
 
   return (
     <div className="space-y-4">
@@ -112,27 +106,11 @@ function CohortNoteEditor({
           />
           <span className="block text-xs text-muted-foreground">
             {t("manager.dashboard.noteCount", {
-              n: preview.length,
+              n: draftCount,
               max: COHORT_NOTE_MAX,
             })}
           </span>
         </label>
-        <div className="rounded-xl border border-border bg-black/20 p-4">
-          <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
-            {preview
-              ? t("father.home.noteEyebrow")
-              : t("manager.dashboard.notePreview")}
-          </p>
-          <div className="mt-2">
-            {preview ? (
-              <CohortNoteMessage body={preview} stamp={previewStamp} />
-            ) : (
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {t("manager.dashboard.notePreviewEmpty")}
-              </p>
-            )}
-          </div>
-        </div>
         <Button type="submit" className="w-full sm:w-auto">
           {liveBody ? t("manager.dashboard.noteReplace") : t("manager.dashboard.notePost")}
         </Button>
