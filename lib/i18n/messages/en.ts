@@ -351,7 +351,7 @@ export const en = {
     title: "Account",
     fatherLead: "Your certificates, palette, language, notifications, and anonymous sharing.",
     managerLead:
-      "Your displayed name, designation, palette, language, organization mark, notifications, anonymous sharing, and training requests.",
+      "Your displayed name, designation, palette, language, notifications, anonymous sharing, and training requests.",
     reviewerLead: "Your palette, language, notifications, and anonymous sharing.",
     displayNameTitle: "Displayed name",
     displayNameLead:

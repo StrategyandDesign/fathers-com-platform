@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   HOME_HERO_SLOT,
@@ -10,6 +12,10 @@ import {
   trainingPhotoSlot,
 } from "../lib/org-photos/slots";
 import { hasOrganizationLogo } from "../components/brand/organization-mark";
+
+function readRepo(relativePath: string) {
+  return readFileSync(fileURLToPath(new URL(`../${relativePath}`, import.meta.url)), "utf8");
+}
 
 describe("organization photo slots", () => {
   it("accepts the group logo, Home cards, and catalog training covers", () => {
@@ -30,5 +36,23 @@ describe("organization photo slots", () => {
     assert.equal(hasOrganizationLogo(null), false);
     assert.equal(hasOrganizationLogo("   "), false);
     assert.equal(hasOrganizationLogo("/brand/group.png"), true);
+  });
+});
+
+describe("organization photo desk", () => {
+  it("keeps photo management on Org Photos only", () => {
+    const account = readRepo("app/(manager)/manager/account/page.tsx");
+    const home = readRepo("app/(manager)/manager/page.tsx");
+    const photos = readRepo("app/(manager)/manager/account/photos/page.tsx");
+    const nav = readRepo("components/layout/app-nav.tsx");
+    const lead = readRepo("lib/i18n/messages/en.ts");
+
+    assert.doesNotMatch(account, /OrganizationLogoCard|managePhotos|account\/photos/);
+    assert.doesNotMatch(home, /photosTitle|photosOpen|OrganizationMark|loadManagerOrganizationMarks/);
+    assert.match(photos, /OrganizationLogoCard/);
+    assert.match(photos, /OrganizationPhotoSlot/);
+    assert.match(nav, /nav\.photos/);
+    assert.match(nav, /\/manager\/account\/photos/);
+    assert.doesNotMatch(lead, /organization mark, notifications/);
   });
 });

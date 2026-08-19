@@ -23,6 +23,10 @@ export const interactiveUnderlineClassName =
 export const interactiveIconClassName =
   `${interactiveControlClassName} hover:bg-white/5`;
 
+/** Light pill on the black header: card surface with card text, never header-white on white. */
+export const headerChipClassName =
+  "border border-border bg-card text-card-foreground";
+
 export const radioOptionClassName =
   `flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-border px-3 py-3 text-base ${interactiveControlClassName} hover:bg-white/5 has-[:checked]:border-primary/50 has-[:checked]:bg-white/5 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50`;
 

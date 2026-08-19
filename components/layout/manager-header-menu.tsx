@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { useT } from "@/components/i18n/locale-provider";
-import { interactiveControlClassName } from "@/lib/ui";
+import { headerChipClassName, interactiveControlClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
@@ -30,7 +30,7 @@ export function ManagerHeaderMenu() {
       aria-label={t("nav.dashboardMenu")}
       className="shrink-0 max-w-full"
     >
-      <div className="flex h-10 items-center gap-0.5 rounded-lg border border-border bg-card p-0.5">
+      <div className={cn("flex h-10 items-center gap-0.5 rounded-lg p-0.5", headerChipClassName)}>
         {ITEMS.map((item) => {
           const active = item.match(pathname);
           return (

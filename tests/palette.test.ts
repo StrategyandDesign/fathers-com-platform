@@ -50,4 +50,15 @@ describe("palette", () => {
     assert.doesNotMatch(shell, /HeaderPaletteSwitch|PaletteSwitcher|PaletteForm/);
     assert.match(account, /<PaletteForm/);
   });
+
+  it("keeps header chip text on the card color so Light does not hide the name", () => {
+    const shell = readRepo("components/layout/role-shell.tsx");
+    const menu = readRepo("components/layout/manager-header-menu.tsx");
+    const ui = readRepo("lib/ui.ts");
+    assert.match(ui, /headerChipClassName/);
+    assert.match(ui, /text-card-foreground/);
+    assert.match(shell, /lg:bg-card/);
+    assert.match(shell, /lg:text-card-foreground/);
+    assert.match(menu, /headerChipClassName/);
+  });
 });

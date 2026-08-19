@@ -76,7 +76,7 @@ export async function RoleShell({
             <Link
               href={ROLE_ACCOUNT[role]}
               className={cn(
-                "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full lg:border lg:border-border lg:bg-card lg:px-2 lg:py-1 lg:pe-3 lg:text-sm",
+                "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full lg:px-2 lg:py-1 lg:pe-3 lg:text-sm lg:border lg:border-border lg:bg-card lg:text-card-foreground",
                 interactiveIconClassName
               )}
             >
