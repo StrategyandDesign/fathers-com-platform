@@ -9,7 +9,6 @@ import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import {
   COMPLETION_STATUSES,
   loadManagerReport,
-  localizeProgressDetail,
   parseReportSearchParams,
   reportQuery,
 } from "@/lib/manager/reports";
@@ -20,6 +19,7 @@ export default async function ManagerReportsPage({
   searchParams,
 }: {
   searchParams: Promise<{
+    group_id?: string;
     training_id?: string;
     status?: string;
     from?: string;
@@ -36,11 +36,18 @@ export default async function ManagerReportsPage({
   const query = reportQuery(parsed.filters);
   const exportQuery = query ? `${query}&` : "";
   const hasFilters = Boolean(
-    parsed.filters.trainingId ||
+    parsed.filters.groupId ||
+      parsed.filters.trainingId ||
       parsed.filters.status ||
       parsed.filters.from ||
       parsed.filters.to
   );
+  const tiles = [
+    { label: t("manager.reports.tileMen"), value: report.summary.men },
+    { label: t("manager.reports.tileCompleted"), value: report.summary.completed },
+    { label: t("manager.reports.tileInProgress"), value: report.summary.inProgress },
+    { label: t("manager.reports.tileNotStarted"), value: report.summary.notStarted },
+  ];
 
   return (
     <div className="space-y-6">
@@ -49,9 +56,7 @@ export default async function ManagerReportsPage({
           <h1 className="font-heading text-2xl font-semibold tracking-tight">
             {t("manager.reports.title")}
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.reports.lead")}
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("manager.reports.lead")}</p>
         </div>
         <Link
           href="/manager/impact"
@@ -62,12 +67,39 @@ export default async function ManagerReportsPage({
       </div>
       <Flash error={params.error || parsed.error || report.error} notice={params.notice} />
 
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {tiles.map((tile) => (
+          <div key={tile.label} className="rounded-xl border border-border bg-card px-4 py-3">
+            <p className="text-xs tracking-wide text-muted-foreground uppercase">{tile.label}</p>
+            <p className="mt-1 font-heading text-2xl font-semibold">{tile.value}</p>
+          </div>
+        ))}
+      </section>
+      <p className="text-sm text-muted-foreground">{t("manager.reports.definitions")}</p>
+
       <form
         method="get"
         action="/manager/reports"
         className="rounded-xl border border-border bg-card p-4 sm:p-6"
       >
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {report.groups.length > 1 ? (
+            <label className="block space-y-2">
+              <span className="text-sm text-muted-foreground">{t("manager.reports.group")}</span>
+              <select
+                className={fieldClassName}
+                name="group_id"
+                defaultValue={parsed.filters.groupId ?? ""}
+              >
+                <option value="">{t("manager.reports.allGroups")}</option>
+                {report.groups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <label className="block space-y-2">
             <span className="text-sm text-muted-foreground">{t("manager.reports.training")}</span>
             <select
@@ -131,7 +163,7 @@ export default async function ManagerReportsPage({
           ) : null}
           <Link
             href={`/api/manager/reports/export?${exportQuery}format=csv`}
-            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            className={cn(buttonVariants(), "w-full sm:w-auto")}
           >
             {t("manager.reports.csv")}
           </Link>
@@ -148,15 +180,11 @@ export default async function ManagerReportsPage({
         <div className="border-b border-border px-4 py-4 sm:px-6">
           <h2 className="font-heading text-lg font-semibold">{t("manager.reports.preview")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {parsed.filters.trainingId
-              ? t("manager.reports.countSelected", {
-                  shown: report.rows.length,
-                  total: report.participantCount,
-                })
-              : t("manager.reports.countCatalog", {
-                  shown: report.rows.length,
-                  total: report.participantCount,
-                })}
+            {t("manager.reports.countRows", {
+              shown: report.rows.length,
+              men: report.summary.men,
+              total: report.participantCount,
+            })}
           </p>
         </div>
         {report.rows.length === 0 ? (
@@ -183,7 +211,10 @@ export default async function ManagerReportsPage({
           <>
             <ul className="md:hidden">
               {report.rows.map((row) => (
-                <li key={row.fatherId} className="border-b border-border last:border-0">
+                <li
+                  key={`${row.fatherId}:${row.trainingId ?? "none"}:${row.groupId}`}
+                  className="border-b border-border last:border-0"
+                >
                   <Link
                     href={`/manager/participants/${row.fatherId}`}
                     className={cn("block space-y-2 px-4 py-4", interactiveSurfaceClassName)}
@@ -191,49 +222,56 @@ export default async function ManagerReportsPage({
                     <p className="font-medium">{row.name}</p>
                     <p className="text-sm text-muted-foreground">{row.groupName}</p>
                     <p className="flex justify-between gap-3 text-sm">
+                      <span className="text-muted-foreground">{t("manager.reports.trainingCol")}</span>
+                      <span className="text-right">
+                        {row.trainingTitle === "None assigned"
+                          ? t("manager.reports.noneAssigned")
+                          : row.trainingTitle}
+                      </span>
+                    </p>
+                    <p className="flex justify-between gap-3 text-sm">
                       <span className="text-muted-foreground">{t("manager.reports.statusCol")}</span>
                       <span>{translateAssignmentStatus(row.completionStatus, t)}</span>
                     </p>
                     <p className="flex justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">{t("manager.reports.trainings")}</span>
-                      <span className="text-right">
-                        {row.assignmentTitles.join(", ") || t("manager.reports.noneAssigned")}
-                        <span className="mt-1 block text-xs text-muted-foreground">
-                          {localizeProgressDetail(row.progressDetail, t)}
-                        </span>
+                      <span className="text-muted-foreground">{t("manager.reports.sessionsCol")}</span>
+                      <span>
+                        {t("manager.reports.sessionsProgress", {
+                          completed: row.sessionsCompleted,
+                          total: row.sessionsTotal,
+                        })}
                       </span>
                     </p>
-                    {row.certificateSerials ? (
+                    <p className="flex justify-between gap-3 text-sm">
+                      <span className="text-muted-foreground">{t("manager.reports.csvCompletedOn")}</span>
+                      <span>{formatShortDate(row.completedAt, locale)}</span>
+                    </p>
+                    {row.certificateSerial ? (
                       <p className="flex justify-between gap-3 text-sm">
                         <span className="text-muted-foreground">{t("manager.reports.serials")}</span>
-                        <span className="text-right font-mono text-xs">
-                          {row.certificateSerials}
-                        </span>
+                        <span className="text-right font-mono text-xs">{row.certificateSerial}</span>
                       </p>
                     ) : null}
-                    <p className="flex justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">{t("manager.reports.lastActive")}</span>
-                      <span>{formatShortDate(row.lastActivity, locale)}</span>
-                    </p>
                   </Link>
                 </li>
               ))}
             </ul>
             <div className="hidden overflow-x-auto md:block">
-              <table className="w-full min-w-[52rem] text-left text-sm">
+              <table className="w-full min-w-[60rem] text-left text-sm">
                 <thead>
                   <tr className="border-b border-border text-xs tracking-wide text-muted-foreground uppercase">
                     <th className="px-6 py-3 font-medium">{t("manager.reports.name")}</th>
+                    <th className="px-4 py-3 font-medium">{t("manager.reports.trainingCol")}</th>
                     <th className="px-4 py-3 font-medium">{t("manager.reports.statusCol")}</th>
-                    <th className="px-4 py-3 font-medium">{t("manager.reports.assignments")}</th>
-                    <th className="px-4 py-3 font-medium">{t("manager.reports.serials")}</th>
-                    <th className="px-6 py-3 font-medium">{t("manager.reports.lastActivity")}</th>
+                    <th className="px-4 py-3 font-medium">{t("manager.reports.sessionsCol")}</th>
+                    <th className="px-4 py-3 font-medium">{t("manager.reports.csvCompletedOn")}</th>
+                    <th className="px-6 py-3 font-medium">{t("manager.reports.serials")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {report.rows.map((row) => (
                     <tr
-                      key={row.fatherId}
+                      key={`${row.fatherId}:${row.trainingId ?? "none"}:${row.groupId}`}
                       className="border-b border-border transition-[color,background-color] duration-150 ease-out last:border-0 hover:bg-white/5"
                     >
                       <td className="px-6 py-3">
@@ -246,19 +284,21 @@ export default async function ManagerReportsPage({
                         <p className="text-muted-foreground">{row.groupName}</p>
                       </td>
                       <td className="px-4 py-3">
-                        {translateAssignmentStatus(row.completionStatus, t)}
+                        {row.trainingTitle === "None assigned"
+                          ? t("manager.reports.noneAssigned")
+                          : row.trainingTitle}
                       </td>
                       <td className="px-4 py-3">
-                        {row.assignmentTitles.join("; ") || t("manager.reports.noneAssigned")}
-                        <p className="text-xs text-muted-foreground">
-                          {localizeProgressDetail(row.progressDetail, t)}
-                        </p>
+                        {translateAssignmentStatus(row.completionStatus, t)}
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
-                        {row.certificateSerials || "—"}
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {row.sessionsCompleted}/{row.sessionsTotal}
                       </td>
-                      <td className="px-6 py-3 text-muted-foreground">
-                        {formatShortDate(row.lastActivity, locale)}
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {formatShortDate(row.completedAt, locale)}
+                      </td>
+                      <td className="px-6 py-3 font-mono text-xs text-muted-foreground">
+                        {row.certificateSerial || t("common.emDash")}
                       </td>
                     </tr>
                   ))}

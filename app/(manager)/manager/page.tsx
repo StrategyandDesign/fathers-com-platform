@@ -21,6 +21,7 @@ import { loadManagerAssessments } from "@/lib/assessments/data";
 import { CohortNoteDesk } from "@/components/manager/cohort-note-desk";
 import { loadManagerCohortNotes } from "@/lib/cohort-note/data";
 import { loadManagerWorkspace } from "@/lib/manager/data";
+import { buildManagerReport } from "@/lib/manager/reports";
 import { buildManagerCatalog } from "@/lib/manager/catalog";
 import { loadNudgePanel } from "@/lib/manager/nudge-panel-data";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
@@ -97,6 +98,15 @@ export default async function ManagerHomePage({
     reminderPrefs,
     historyUnavailable,
     limit: 4,
+  });
+
+  const report = buildManagerReport({
+    participants,
+    groups,
+    assignments: workspace.assignments,
+    progress: workspace.progress,
+    trainings: workspace.trainings,
+    trainingProgressFor,
   });
 
   const stats = [
@@ -330,12 +340,31 @@ export default async function ManagerHomePage({
           <p className="mt-1 text-sm text-muted-foreground">
             {t("manager.dashboard.reportsLead")}
           </p>
-          <Link
-            href="/manager/reports"
-            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
-          >
-            {t("manager.dashboard.openReports")}
-          </Link>
+          <dl className="mt-4 grid grid-cols-3 gap-3 text-sm">
+            <div>
+              <dt className="text-muted-foreground">{t("manager.dashboard.reportMen")}</dt>
+              <dd className="font-heading text-xl font-semibold">{report.summary.men}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">{t("manager.dashboard.reportCompleted")}</dt>
+              <dd className="font-heading text-xl font-semibold">{report.summary.completed}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">{t("manager.dashboard.reportInProgress")}</dt>
+              <dd className="font-heading text-xl font-semibold">{report.summary.inProgress}</dd>
+            </div>
+          </dl>
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+            <Link href="/api/manager/reports/export?format=csv" className={cn(buttonVariants(), "w-full sm:w-auto")}>
+              {t("manager.dashboard.downloadCsv")}
+            </Link>
+            <Link
+              href="/manager/reports"
+              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            >
+              {t("manager.dashboard.openReports")}
+            </Link>
+          </div>
         </div>
       </section>
 
