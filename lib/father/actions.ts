@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 
 import { getAuthContext, requireWalkUser } from "@/lib/auth/session";
 import { loadSessionContext } from "@/lib/father/data";
+import { nextSkillUse, parseSkillUse } from "@/lib/father/skill-use";
+import { isSessionComplete } from "@/lib/father/types";
 import { writeFilmSeconds } from "@/lib/father/film-position";
 import {
   isIntentionOption,
@@ -354,6 +356,50 @@ export async function finishActionSession(formData: FormData) {
 
   const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
   redirect(startHref ?? paths.done(sessionId));
+}
+
+export async function reportSkillUse(formData: FormData) {
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
+  const sessionId = String(formData.get("session_id") ?? "");
+  const report = parseSkillUse(formData.get("skill_use"));
+  const returnTo = String(formData.get("return_to") ?? "home") === "done" ? "done" : "home";
+  const dest = returnTo === "done" ? paths.done(sessionId) : paths.home;
+
+  if (!sessionId || !report) {
+    redirect(dest);
+  }
+
+  const context = await loadSessionContext(user.id, sessionId);
+  if (!context || !isSessionComplete(context.progress)) {
+    redirect(dest);
+  }
+
+  const next = nextSkillUse(parseSkillUse(context.progress?.skill_use), report);
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("session_progress")
+    .update({
+      skill_use: next,
+      skill_use_at: new Date().toISOString(),
+    })
+    .eq("father_id", user.id)
+    .eq("session_id", sessionId);
+
+  if (error) {
+    redirect(`${dest}${dest.includes("?") ? "&" : "?"}error=${encodeURIComponent("That didn’t save. Try again.")}`);
+  }
+
+  revalidatePath("/father");
+  revalidatePath(`/father/sessions/${sessionId}/done`);
+  revalidatePath("/manager");
+  revalidatePath("/manager/participants");
+  revalidatePath(`/manager/participants/${user.id}`);
+  revalidatePath("/manager/reports");
+  revalidatePath("/manager/practice");
+  revalidatePath(`${paths.done(sessionId)}`);
+
+  redirect(dest);
 }
 
 export async function saveFilmPosition(sessionId: string, seconds: number) {

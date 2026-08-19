@@ -64,7 +64,14 @@ function cellValues(row: ReportRow, locale: Locale, t: Translate) {
     locale === "he" && row.trainingTitle === "None assigned"
       ? t("manager.reports.noneAssigned")
       : row.trainingTitle;
-  const sessions = `${row.sessionsCompleted}/${row.sessionsTotal}`;
+  const sessions =
+    row.skillsUsed > 0
+      ? `${row.sessionsCompleted}/${row.sessionsTotal} · ${
+          locale === "he"
+            ? t("manager.reports.skillsUsedCount", { n: row.skillsUsed })
+            : `${row.skillsUsed} used`
+        }`
+      : `${row.sessionsCompleted}/${row.sessionsTotal}`;
   if (locale !== "he") {
     return {
       name: row.name,

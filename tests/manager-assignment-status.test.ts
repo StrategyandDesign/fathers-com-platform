@@ -39,6 +39,7 @@ function card(
     total,
     assigned,
     gated: false,
+    skillsUsed: 0,
     certificate: null,
     current: null,
   };

@@ -74,6 +74,7 @@ export type TrainingProgress = {
     session: Session;
     progress: SessionProgress | null;
   } | null;
+  skillsUsed?: number;
 };
 
 export type ParticipantRow = {

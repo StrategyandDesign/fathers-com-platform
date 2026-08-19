@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.05**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.06**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -22,3 +22,4 @@ The badge on this checkout is **Shared 1-1.05**. It ticks on each push of the Sh
 | **1.03** | undefined | Keep photo work on Org Photos and fix Light header contrast. |
 | **1.04** | undefined | Give Org Managers an assignment-level report they can hand up. |
 | **1.05** | undefined | Put assignment and status on the first screens a leader uses. |
+| **1.06** | undefined | Add expected and open framing for assigned training. |
