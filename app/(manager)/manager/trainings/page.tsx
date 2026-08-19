@@ -12,6 +12,7 @@ import { isLegacyCatalogTraining, isTrainingPublished } from "@/lib/father/types
 import { requireRole } from "@/lib/auth/session";
 import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { buildManagerCatalog } from "@/lib/manager/catalog";
+import { summarizeAssignmentStatus } from "@/lib/manager/assignment-status";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadReviewQueue } from "@/lib/manager/reviews";
 import { assignTrainingToUnassigned } from "@/lib/manager/training-actions";
@@ -73,21 +74,6 @@ export default async function ManagerTrainingsPage({
     defaultGroupId: groups[0]?.id,
     showGroupName: groups.length > 1,
   });
-
-  function assignedCount(trainingId: string, groupId?: string) {
-    return workspace.participants.filter((participant) => {
-      if (groupId && participant.groupId !== groupId) return false;
-      return workspace
-        .trainingProgressFor(participant.fatherId)
-        .some((card) => card.training.id === trainingId && card.assigned);
-    }).length;
-  }
-
-  function groupSize(groupId?: string) {
-    return workspace.participants.filter((participant) =>
-      groupId ? participant.groupId === groupId : true
-    ).length;
-  }
 
   return (
     <div className="space-y-8">
@@ -196,9 +182,16 @@ export default async function ManagerTrainingsPage({
         ) : (
           <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
             {accepted.map((item) => {
-              const assigned = assignedCount(item.training.id, item.review.group_id);
-              const total = groupSize(item.review.group_id);
-              const remaining = Math.max(0, total - assigned);
+              const status = summarizeAssignmentStatus({
+                training: item.training,
+                participants: workspace.participants,
+                reviews: workspace.reviews,
+                progressFor: workspace.trainingProgressFor,
+                groupId: item.review.group_id,
+              });
+              const assigned = status.assigned;
+              const total = status.total;
+              const remaining = status.remaining;
               return (
                 <li key={`${item.review.group_id}-${item.training.id}`} className="px-4 py-5 sm:px-6">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -213,6 +206,9 @@ export default async function ManagerTrainingsPage({
                         {[
                           sessionLabel(item.sessionCount, t),
                           t("manager.trainings.assignedOf", { assigned, total }),
+                          t("manager.status.notStartedCount", { n: status.notStarted }),
+                          t("manager.status.inProgressCount", { n: status.inProgress }),
+                          t("manager.status.doneCount", { n: status.completed }),
                           item.review.decided_at
                             ? t("manager.trainings.acceptedOn", {
                                 date: formatShortDate(item.review.decided_at, locale),
@@ -240,6 +236,7 @@ export default async function ManagerTrainingsPage({
                       <form action={assignTrainingToUnassigned}>
                         <input type="hidden" name="training_id" value={item.training.id} />
                         <input type="hidden" name="group_id" value={item.review.group_id} />
+                        <input type="hidden" name="return_to" value="trainings" />
                         <Button type="submit" className="w-full min-h-11 sm:w-auto">
                           {t("manager.trainings.assignRemaining", { n: remaining })}
                         </Button>
@@ -250,7 +247,7 @@ export default async function ManagerTrainingsPage({
                       </p>
                     )}
                     <Link
-                      href={`/manager/participants?training=${item.training.id}#assign`}
+                      href={`/manager/participants?training=${item.training.id}#status`}
                       className={cn(
                         buttonVariants({ variant: "outline" }),
                         "w-full min-h-11 sm:w-auto"
@@ -275,9 +272,15 @@ export default async function ManagerTrainingsPage({
               );
             })}
             {legacy.map((training) => {
-              const assigned = assignedCount(training.id);
-              const total = groupSize();
-              const remaining = Math.max(0, total - assigned);
+              const status = summarizeAssignmentStatus({
+                training,
+                participants: workspace.participants,
+                reviews: workspace.reviews,
+                progressFor: workspace.trainingProgressFor,
+              });
+              const assigned = status.assigned;
+              const total = status.total;
+              const remaining = status.remaining;
               const viewHref = `/manager/reviews/${training.id}`;
               return (
                 <li key={training.id} className="px-4 py-5 sm:px-6">
@@ -286,11 +289,14 @@ export default async function ManagerTrainingsPage({
                       {training.title}
                     </Link>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {[
-                        sessionLabel(training.session_count, t),
-                        t("manager.trainings.assignedOf", { assigned, total }),
-                        t("manager.trainings.catalogItem"),
-                      ]
+                        {[
+                          sessionLabel(training.session_count, t),
+                          t("manager.trainings.assignedOf", { assigned, total }),
+                          t("manager.status.notStartedCount", { n: status.notStarted }),
+                          t("manager.status.inProgressCount", { n: status.inProgress }),
+                          t("manager.status.doneCount", { n: status.completed }),
+                          t("manager.trainings.catalogItem"),
+                        ]
                         .filter(Boolean)
                         .join(" · ")}
                     </p>
@@ -308,6 +314,7 @@ export default async function ManagerTrainingsPage({
                     {remaining > 0 ? (
                       <form action={assignTrainingToUnassigned}>
                         <input type="hidden" name="training_id" value={training.id} />
+                        <input type="hidden" name="return_to" value="trainings" />
                         <Button type="submit" className="w-full min-h-11 sm:w-auto">
                           {t("manager.trainings.assignRemaining", { n: remaining })}
                         </Button>
@@ -318,7 +325,7 @@ export default async function ManagerTrainingsPage({
                       </p>
                     )}
                     <Link
-                      href={`/manager/participants?training=${training.id}#assign`}
+                      href={`/manager/participants?training=${training.id}#status`}
                       className={cn(
                         buttonVariants({ variant: "outline" }),
                         "w-full min-h-11 sm:w-auto"

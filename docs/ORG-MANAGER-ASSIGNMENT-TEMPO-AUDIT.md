@@ -365,4 +365,66 @@ Implemented on `cursor/assignment-visibility-tempo-7c78`. Helpers live in `lib/m
 
 ## Phase 4 — Verification
 
-Filled after the code change. See the bottom of this file and the pull request.
+### New step counts (training already accepted)
+
+Counted after sign-in. Landing page is `/manager`.
+
+| Job | Before | After |
+| --- | --- | --- |
+| One module → one person | 6–8 clicks + long detail scroll | **1 click** on that man’s Assign cell on the board (2 if the leader is still on Dashboard and taps Open names first) |
+| One module → remaining / cohort | 3 clicks (Trainings → find row → Assign remaining) | **1 click** on Dashboard Assign remaining |
+| See overall status | No clear overview. 2+ clicks still left a single progress label | **0 extra clicks** — Dashboard strip shows assigned / not started / in progress / done. **1 click** (Open names) for the name × training board |
+
+Assign → see-status loop: Assign remaining on the strip reloads `/manager#status` with the same counts updated. A cell assign reloads `/manager/participants#status` with that cell flipped to Not started. No second app area.
+
+### Experience
+
+**Rehab director (Org Manager):** After login the first card is the unit’s assignment status. If two men still need Fundamentals, one tap assigns both. Opening names shows every man against every assignable training.
+
+**Military leader:** Same strip, same board. Mixed subsets still use checkboxes + Assign now (no review page). Whole-unit push stays uncapped via Assign remaining.
+
+### Organization scoping
+
+Unchanged and tightened:
+
+- Workspace still loads `groups.manager_id =` the signed-in manager only.
+- Board columns only include trainings assignable to **his** groups (`isTrainingAssignable` + that group’s review).
+- Assign remaining now skips men whose group has not accepted the training (does not fail the batch on another org).
+- Cell assign still goes through `assignTrainingToFather` + `manages_father` RLS.
+
+### Files changed
+
+- `docs/ORG-MANAGER-ASSIGNMENT-TEMPO-AUDIT.md`
+- `lib/manager/assignment-status.ts`
+- `lib/manager/return-path.ts`
+- `lib/manager/actions.ts`
+- `lib/manager/training-actions.ts`
+- `components/manager/assignment-status-strip.tsx`
+- `components/manager/assignment-board.tsx`
+- `components/manager/participant-bulk-list.tsx`
+- `app/(manager)/manager/page.tsx`
+- `app/(manager)/manager/participants/page.tsx`
+- `app/(manager)/manager/participants/[id]/page.tsx`
+- `app/(manager)/manager/trainings/page.tsx`
+- `lib/i18n/messages/en.ts`
+- `lib/i18n/messages/he.ts`
+- `tests/manager-assignment-status.test.ts`
+- `tests/manager-return-path.test.ts`
+
+### What is robust vs what needs live tempo testing
+
+**Robust in this tree**
+
+- Status math (unassigned ≠ not started; other-org men excluded).
+- Return paths after assign.
+- Typecheck and unit tests for board/scoping/return path.
+- Permissions still use the existing mutation + RLS path.
+
+**Needs a real Org Manager under time pressure**
+
+- Whether the Dashboard strip is visible enough above companion / notes / invite on a phone.
+- Whether a 12–20 man roster × 4 trainings stays scannable; horizontal scroll on desktop.
+- Whether “Assign now” without a review page feels safe enough for subset assigns.
+- Whether leaders still wander into Reports/Impact for daily status out of habit.
+- Live assign remaining against Pilot seats (`manager@nwa`) to confirm flash + board update in one breath.
+
