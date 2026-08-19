@@ -1,3 +1,4 @@
+import { countSkillsUsed } from "@/lib/father/skill-use";
 import {
   asSessionProgress,
   isSessionComplete,
@@ -152,6 +153,9 @@ export async function loadManagerWorkspace(managerId: string) {
         total: trainingSessions.length,
         assigned: assignedIds.has(training.id),
         gated: false,
+        skillsUsed: countSkillsUsed(
+          trainingSessions.map((session) => fatherProgress.get(session.id) ?? {})
+        ),
         certificate:
           certificates.find(
             (row) => row.father_id === fatherId && row.training_id === training.id
@@ -219,6 +223,7 @@ export async function loadManagerWorkspace(managerId: string) {
   participants.sort((a, b) => a.name.localeCompare(b.name));
 
   const sessionsCompleted = progress.filter((row) => isSessionComplete(row)).length;
+  const skillsUsed = countSkillsUsed(progress);
   const trainingsCompleted = fatherIds.reduce((count, fatherId) => {
     return (
       count +
@@ -272,6 +277,7 @@ export async function loadManagerWorkspace(managerId: string) {
       activeParticipants: fatherIds.length,
       profilesCompleted: latestProfile.size,
       sessionsCompleted,
+      skillsUsed,
       trainingsCompleted,
       pendingActions: needsAttention.length,
     },

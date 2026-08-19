@@ -34,6 +34,7 @@ const EXACT: Record<string, string> = {
   "That group is not in the cohort.": "reviewer.groupNotInCohort",
   "That training is not in the catalog.": "reviewer.trainingNotInCatalog",
   "Your progress didn’t save. Try again.": "flash.progressSaveFailed",
+  "That didn’t save. Try again.": "flash.skillUseFailed",
   "Choose an answer to continue.": "flash.chooseAnswer",
   "Your check-in didn’t save. Try again.": "flash.checkinSaveFailed",
   "Choose the teaching point to continue.": "flash.chooseTeaching",

@@ -222,10 +222,59 @@ Varied: this one optional tap and the count leaders see.
 
 ## Phase 3 — Implementation notes
 
-Implemented on `cursor/skill-use-signals-7c78`. Helpers in `lib/father/skill-use.ts`. Column pair on `session_progress`.
+Implemented on `cursor/skill-use-signals-7c78`. Helpers in `lib/father/skill-use.ts`. Columns `session_progress.skill_use` (`used` | `later` | null) and `skill_use_at`. Completion, certificates, and assignment are unchanged.
+
+Pilot (`koeplcybddrvbliuepsy`) has the columns. Existing rows stay null until a father taps.
 
 ---
 
 ## Phase 4 — Verification
 
-Filled after the code change.
+### Father
+
+1. Finishes film, check-in, and Action as before. “I did it” still completes the session.
+2. On the done page: optional **Did you use this skill?** / **I used it**. Continue and Home still work if he skips.
+3. Twelve hours later, Home can show the same question once for the most recent unanswered session, with **Not yet**. That dismisses the card for that session. He can still tap **I used it** later. He cannot take back **I used it**.
+4. No new email. No score. No required form. The optional Action one-liner stays father-only.
+
+### Org Manager (rehab director / other leader)
+
+- Dashboard: **Skills used** next to Sessions Completed. Count of `used` taps in the organization. Not a percentage. Not “later.”
+- Participant detail: `{n} used` on each training card that has completed sessions.
+- Reports table and CSV: **Skills used** as a count. PDF keeps five columns; the assignments cell adds “· n used” when the count is above zero.
+- Same group scoping as the rest of the desk. Manager practice taps do not land in org totals.
+
+### What stays non-clinical
+
+Copy is “Did you use this skill?” / “I used it” / “Skills used.” No outcome, assessment, score, intervention, or required questionnaire. Keystone is untouched. `outcome_note` is still not shown to leaders.
+
+### Files changed
+
+- `docs/ORG-MANAGER-SKILL-USE-SIGNALS-AUDIT.md`
+- `supabase/migrations/20260819200000_session_skill_use.sql`
+- `lib/father/skill-use.ts`, `lib/father/types.ts`, `lib/father/data.ts`, `lib/father/actions.ts`
+- `components/father/skill-use-card.tsx`, `components/father/session-closeout.tsx`
+- `app/(father)/father/page.tsx`
+- `app/(father)/father/sessions/[sessionId]/done/page.tsx`
+- `app/(manager)/manager/practice/sessions/[sessionId]/done/page.tsx`
+- `lib/manager/types.ts`, `lib/manager/data.ts`, `lib/manager/reports.ts`, `lib/manager/report-pdf.ts`
+- `app/(manager)/manager/page.tsx`
+- `app/(manager)/manager/participants/[id]/page.tsx`
+- `app/(manager)/manager/reports/page.tsx`
+- `lib/i18n/messages/en.ts`, `lib/i18n/messages/he.ts`, `lib/i18n/flash.ts`
+- `tests/skill-use.test.ts`, `tests/nudge-panel.test.ts`, `tests/certificate-desk.test.ts`
+
+### Robust now
+
+- One optional tap, stored on the progress row the desk already loads.
+- Counts are org-scoped. `used` cannot be downgraded to `later`.
+- Missing/unknown values read as no report. Completion still works if nobody ever taps.
+- Typecheck and 160 unit tests pass.
+
+### Still needs live users
+
+- Whether fathers will tap on closeout, wait for Home, or skip both.
+- Whether “I used it” is credible enough for rehab and military leaders, or whether they will want a facilitator check later.
+- Whether church leaders find the new Dashboard number useful or noisy.
+- Hebrew tone with Israeli fathers and leaders.
+- Whether 12 hours is the right gap before Home asks again.

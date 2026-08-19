@@ -379,12 +379,15 @@ export default async function ManagerParticipantDetailPage({
                 <span className="shrink-0 text-sm tabular-nums text-muted-foreground">{percent}%</span>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                {t("manager.participants.sessionsOf", {
-                  completed: card.completed,
-                  total: card.total,
-                })}
-                {card.assigned ? ` · ${t("manager.participants.assigned")}` : ""}
-                {card.certificate ? ` · ${t("manager.participants.certified")}` : ""}
+                  {t("manager.participants.sessionsOf", {
+                    completed: card.completed,
+                    total: card.total,
+                  })}
+                  {card.completed > 0
+                    ? ` · ${t("manager.participants.skillsUsed", { n: card.skillsUsed })}`
+                    : ""}
+                  {card.assigned ? ` · ${t("manager.participants.assigned")}` : ""}
+                  {card.certificate ? ` · ${t("manager.participants.certified")}` : ""}
               </p>
               <ProgressBar value={percent} className="mt-4" />
               {card.certificate ? (

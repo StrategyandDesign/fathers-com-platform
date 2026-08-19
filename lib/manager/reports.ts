@@ -27,6 +27,7 @@ export type ReportRow = {
   completionStatus: CompletionStatus;
   assignmentTitles: string[];
   progressDetail: string;
+  skillsUsed: number;
   certificateSerials: string;
   lastActivity: string | null;
 };
@@ -267,6 +268,7 @@ function toRow(
         : assigned
             .map((card) => `${card.training.title} ${card.completed}/${card.total}`)
             .join("; "),
+    skillsUsed: (trainingId ? scoped : cards).reduce((count, card) => count + card.skillsUsed, 0),
     certificateSerials: certCards
       .map((card) => `${card.training.title}: ${card.certificate?.serial_number}`)
       .join("; "),
@@ -321,6 +323,7 @@ export function rowsToCsv(rows: ReportRow[], locale: Locale = DEFAULT_LOCALE) {
       "Training assignments",
       "Completion status",
       "Session progress",
+      "Skills used",
       "Certificate serials",
       "Last activity",
     ];
@@ -334,6 +337,7 @@ export function rowsToCsv(rows: ReportRow[], locale: Locale = DEFAULT_LOCALE) {
           row.assignmentTitles.join("; ") || "None assigned",
           COMPLETION_STATUS_LABEL[row.completionStatus],
           row.progressDetail,
+          String(row.skillsUsed),
           row.certificateSerials,
           formatShortDate(row.lastActivity),
         ]
@@ -352,6 +356,7 @@ export function rowsToCsv(rows: ReportRow[], locale: Locale = DEFAULT_LOCALE) {
     t("manager.reports.csvAssignments"),
     t("manager.reports.csvCompletion"),
     t("manager.reports.csvProgress"),
+    t("manager.reports.csvSkillsUsed"),
     t("manager.reports.csvSerials"),
     t("manager.reports.lastActivity"),
   ];
@@ -365,6 +370,7 @@ export function rowsToCsv(rows: ReportRow[], locale: Locale = DEFAULT_LOCALE) {
         row.assignmentTitles.join("; ") || t("manager.reports.noneAssigned"),
         statusLabel(row.completionStatus, t),
         localizeProgressDetail(row.progressDetail, t),
+        String(row.skillsUsed),
         row.certificateSerials,
         formatReportDate(row.lastActivity, locale),
       ]

@@ -5,6 +5,7 @@ import { HomeEarnedRow } from "@/components/father/home-earned";
 import { HomePathRow } from "@/components/father/home-path";
 import { HomeStreakRow } from "@/components/father/home-streak";
 import { HomeUpNextCard } from "@/components/father/home-up-next";
+import { SkillUseCard } from "@/components/father/skill-use-card";
 import { LeaderMeta } from "@/components/father/leader-meta";
 import { StreakNotices } from "@/components/father/streak-notices";
 import { Flash } from "@/components/manager/flash";
@@ -49,7 +50,7 @@ export default async function FatherHomePage({
   const { t, locale } = await getI18n();
   scheduleDueReminderFlush();
   const [
-    { pathCards, trainingCards, next, profile, draft, certificates },
+    { pathCards, trainingCards, next, profile, draft, certificates, skillUsePrompt },
     customAssignments,
     orgPhotos,
     streak,
@@ -173,6 +174,16 @@ export default async function FatherHomePage({
         grid={streak.grid}
         justFinished={justFinished}
       />
+      {skillUsePrompt ? (
+        <SkillUseCard
+          sessionId={skillUsePrompt.sessionId}
+          skill={skillUsePrompt.skill}
+          reported={null}
+          returnTo="home"
+          showLater
+          t={t}
+        />
+      ) : null}
 
       {pair ? (
         <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(14rem,1fr)]">

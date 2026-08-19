@@ -12,6 +12,8 @@ import {
 } from "@/lib/father/types";
 import { loadAcceptedTrainingIds } from "@/lib/manager/reviews";
 import type { Certificate } from "@/lib/manager/types";
+import { actionSkillText } from "@/lib/father/action-commitment";
+import { parseSkillUse, pickSkillUseFollowUp } from "@/lib/father/skill-use";
 import { parseTimeZone } from "@/lib/notifications/schedule";
 
 function asProgress(row: SessionProgress): SessionProgress {
@@ -183,6 +185,21 @@ export async function loadFatherHome(fatherId: string) {
   const completedAts = ((progressRes.data ?? []) as SessionProgress[])
     .filter((row) => isSessionComplete(asProgress(row)) && row.completed_at)
     .map((row) => row.completed_at as string);
+  const skillUsePrompt = pickSkillUseFollowUp(
+    sessions
+      .map((session) => {
+        const progress = progressBySession.get(session.id);
+        if (!isSessionComplete(progress ?? null)) return null;
+        return {
+          sessionId: session.id,
+          sessionTitle: session.title,
+          skill: actionSkillText(session, session.title),
+          completedAt: progress?.completed_at ?? null,
+          skillUse: parseSkillUse(progress?.skill_use),
+        };
+      })
+      .filter((row): row is NonNullable<typeof row> => Boolean(row))
+  );
 
   return {
     trainingCards,
@@ -198,6 +215,7 @@ export async function loadFatherHome(fatherId: string) {
     draft,
     certificates,
     completedAts,
+    skillUsePrompt,
     timezone: parseTimeZone(zoneRes.data?.timezone) ?? "UTC",
   };
 }
