@@ -55,6 +55,19 @@ export function shouldPreserve(filePath) {
   return PRESERVE_PATHS.includes(filePath.replace(/\\/g, "/"));
 }
 
+export function normalizeRepoPath(filePath) {
+  return String(filePath || "").replace(/\\/g, "/").replace(/\/$/, "");
+}
+
+/** Files on review that the incoming tree dropped — leftover HTML, moved docs. */
+export function staleOverlayPaths(existingPaths, incomingPaths, preservePaths = PRESERVE_PATHS) {
+  const incoming = new Set([...incomingPaths].map(normalizeRepoPath).filter(Boolean));
+  const preserve = new Set([...preservePaths].map(normalizeRepoPath));
+  return [...existingPaths]
+    .map(normalizeRepoPath)
+    .filter((filePath) => filePath && !incoming.has(filePath) && !preserve.has(filePath));
+}
+
 export function markUrl(mark) {
   return `${SHARED_REPO_URL}/releases/tag/shared/${mark}`;
 }
@@ -195,6 +208,17 @@ function writeMarkFiles(dir, mark) {
 }
 
 function overlayTree(sourceSha, worktree) {
+  const incoming = requireGit(["ls-tree", "-r", "--name-only", sourceSha])
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const existing = requireGit(["ls-files"], worktree)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  for (const file of staleOverlayPaths(existing, incoming)) {
+    rmSync(path.join(worktree, file), { force: true });
+  }
   const archivePath = path.join(os.tmpdir(), `fathers-shared-${sourceSha.slice(0, 12)}.tar`);
   const archive = run("git", ["archive", "--format=tar", "-o", archivePath, sourceSha], REPO_ROOT);
   if (archive.status !== 0) {

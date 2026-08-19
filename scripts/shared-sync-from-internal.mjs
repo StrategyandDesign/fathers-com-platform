@@ -18,6 +18,18 @@ const PRESERVE_PATHS = [
   "lib/i18n/translate.ts",
 ];
 
+function normalizeRepoPath(filePath) {
+  return String(filePath || "").replace(/\\/g, "/").replace(/\/$/, "");
+}
+
+function staleOverlayPaths(existingPaths, incomingPaths) {
+  const incoming = new Set([...incomingPaths].map(normalizeRepoPath).filter(Boolean));
+  const preserve = new Set(PRESERVE_PATHS);
+  return [...existingPaths]
+    .map(normalizeRepoPath)
+    .filter((filePath) => filePath && !incoming.has(filePath) && !preserve.has(filePath));
+}
+
 function run(cmd, args, cwd = ROOT) {
   return spawnSync(cmd, args, { cwd, encoding: "utf8" });
 }
@@ -121,6 +133,18 @@ export async function syncFromInternal() {
   if (currentMark?.internalSha && String(currentMark.internalSha).startsWith(internalSha.slice(0, 7))) {
     log(`already at Shared ${currentMark.mark} for ${internalSha.slice(0, 7)}`);
     return { ok: true, skipped: true, reason: "already-published" };
+  }
+
+  const incoming = requireRun("git", ["ls-tree", "-r", "--name-only", "HEAD"], cloneDir)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const existing = requireRun("git", ["ls-files"], ROOT)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  for (const file of staleOverlayPaths(existing, incoming)) {
+    rmSync(path.join(ROOT, file), { force: true });
   }
 
   const archivePath = path.join(os.tmpdir(), `fathers-shared-${internalSha.slice(0, 12)}.tar`);

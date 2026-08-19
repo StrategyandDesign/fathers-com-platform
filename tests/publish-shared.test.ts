@@ -9,6 +9,7 @@ import {
   readSharedMark,
   renderSharedLedger,
   shouldPreserve,
+  staleOverlayPaths,
   upsertLedgerRow,
 } from "../scripts/publish-shared.mjs";
 
@@ -22,6 +23,16 @@ describe("shared publish marks", () => {
     assert.equal(shouldPreserve("lib/i18n/messages/he.ts"), true);
     assert.equal(shouldPreserve("lib/i18n/translate.ts"), true);
     assert.equal(shouldPreserve("app/(admin)/admin/assessments/page.tsx"), false);
+  });
+
+  it("drops leftover root HTML when the incoming tree moved those pages to archive", () => {
+    assert.deepEqual(
+      staleOverlayPaths(
+        ["about.html", "app/page.tsx", "lib/i18n/messages/he.ts", "PILOT.md"],
+        ["app/page.tsx", "README.md", "archive/static-site/about.html", "docs/engineering/PILOT.md"]
+      ),
+      ["about.html", "PILOT.md"]
+    );
   });
 
   it("treats the isolated remote as Eric's shared repo, not the internal one", () => {
