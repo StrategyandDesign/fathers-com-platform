@@ -1,4 +1,5 @@
 import type { Translate } from "@/lib/i18n/translate";
+import { participationCopyKey, type ParticipationMode } from "@/lib/participation";
 
 function daysSince(value: string | null | undefined) {
   if (!value) return Number.POSITIVE_INFINITY;
@@ -113,6 +114,9 @@ const EXACT: Record<string, string> = {
   "1 participant needs a closer look.": "manager.bulk.closerLook",
   "The group didn’t save. Try again.": "flash.groupSaveFailed",
   "Group created. Share the invite code with fathers.": "flash.groupCreated",
+  "Choose a group.": "manager.dashboard.noteChooseGroup",
+  "The setting didn’t save. Try again.": "flash.participationSaveFailed",
+  "Participation setting saved.": "flash.participationSaved",
   "Choose a training to assign.": "flash.chooseTrainingAssign",
   "That training is already assigned.": "flash.trainingAlreadyAssigned",
   "Training assigned.": "flash.trainingAssigned",
@@ -398,10 +402,17 @@ export function translateNudgeStatus(status: string, t: Translate) {
   return key ? t(key) : status;
 }
 
-export function translateNudgeTemplate(key: string, t: Translate) {
+export function translateNudgeTemplate(
+  key: string,
+  t: Translate,
+  mode: ParticipationMode = "unset"
+) {
   const mapped = NUDGE_TEMPLATE[key];
   if (!mapped) return { label: key, preview: "" };
-  return { label: t(mapped.label), preview: t(mapped.preview) };
+  return {
+    label: t(mapped.label),
+    preview: t(participationCopyKey(mode, mapped.preview)),
+  };
 }
 
 export function translateAssignmentStatus(

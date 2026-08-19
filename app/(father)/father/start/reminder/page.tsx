@@ -1,8 +1,11 @@
 import { StartReminderForm } from "@/components/father/start-reminder-form";
 import { StartScreen } from "@/components/father/start-screen";
 import { defaultRemindAt } from "@/lib/father/onboarding";
+import { requireRole } from "@/lib/auth/session";
 import { requireStartPage } from "@/lib/father/start-page";
 import { getI18n } from "@/lib/i18n/server";
+import { loadFatherParticipationMode } from "@/lib/participation-data";
+import { participationCopyKey } from "@/lib/participation";
 
 export default async function FatherStartReminderPage({
   searchParams,
@@ -11,14 +14,16 @@ export default async function FatherStartReminderPage({
 }) {
   const { error } = await searchParams;
   const { state } = await requireStartPage("reminder");
+  const { user } = await requireRole("father");
   const { t } = await getI18n();
+  const mode = await loadFatherParticipationMode(user.id);
   const weekday = state.reminder?.weekday ?? null;
   const remindAt = state.reminder?.remindAt ?? defaultRemindAt(state.answers.when);
 
   return (
     <StartScreen
       title={t("father.start.reminderTitle")}
-      body={t("father.start.reminderBody")}
+      body={t(participationCopyKey(mode, "father.start.reminderBody"))}
       error={error}
     >
       <StartReminderForm

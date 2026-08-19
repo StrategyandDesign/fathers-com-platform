@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import type { Translate } from "@/lib/i18n/translate";
 import type { CohortTrainingStatus } from "@/lib/manager/assignment-status";
 import { assignTrainingToUnassigned } from "@/lib/manager/training-actions";
+import { participationCopyKey, type ParticipationMode } from "@/lib/participation";
 import { cn } from "@/lib/utils";
 
 function statusLine(item: CohortTrainingStatus, t: Translate) {
@@ -20,11 +21,13 @@ export function AssignmentStatusStrip({
   items,
   emptyHref,
   returnTo,
+  mode = "unset",
   t,
 }: {
   items: CohortTrainingStatus[];
   emptyHref: string;
   returnTo: "dashboard" | "trainings";
+  mode?: ParticipationMode;
   t: Translate;
 }) {
   return (
@@ -32,7 +35,9 @@ export function AssignmentStatusStrip({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h2 className="font-heading text-lg font-semibold">{t("manager.status.title")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("manager.status.lead")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t(participationCopyKey(mode, "manager.status.lead"))}
+          </p>
         </div>
         {items.length > 0 ? (
           <Link

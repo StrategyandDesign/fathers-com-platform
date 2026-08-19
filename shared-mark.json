@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 4,
-  "label": "Shared 1-1.04",
+  "patch": 5,
+  "label": "Shared 1-1.05",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Give Org Managers an assignment-level report they can hand up.",
+  "title": "Put assignment and status on the first screens a leader uses.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -36,6 +36,13 @@
       "label": "Shared 1-1.04",
       "at": "2026-08-19",
       "title": "Give Org Managers an assignment-level report they can hand up."
+    },
+    {
+      "patch": 5,
+      "revision": "1.05",
+      "label": "Shared 1-1.05",
+      "at": "2026-08-19",
+      "title": "Put assignment and status on the first screens a leader uses."
     }
   ]
 }

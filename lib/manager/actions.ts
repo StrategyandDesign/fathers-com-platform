@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { seedGroupAssessmentReviews } from "@/lib/admin/assessment-release";
 import { seedGroupTrainingReviews } from "@/lib/admin/release";
 import { requireRole } from "@/lib/auth/session";
+import { parseParticipationMode } from "@/lib/participation";
 import {
   assignTrainingToFather,
   issueCertificateToFather,
@@ -61,6 +62,36 @@ export async function createGroup(formData: FormData) {
 
   revalidateManager();
   ok("/manager", "Group created. Share the invite code with fathers.");
+}
+
+export async function saveParticipationMode(formData: FormData) {
+  const { user } = await requireRole("manager");
+  const groupId = String(formData.get("group_id") ?? "").trim();
+  const mode = parseParticipationMode(formData.get("participation_mode"));
+
+  if (!groupId) {
+    fail("/manager", "Choose a group.");
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("groups")
+    .update({ participation_mode: mode })
+    .eq("id", groupId)
+    .eq("manager_id", user.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    fail("/manager", "The setting didn’t save. Try again.");
+  }
+  if (!data) {
+    fail("/manager", "That group is not yours.");
+  }
+
+  revalidateManager();
+  revalidatePath("/father");
+  ok("/manager", "Participation setting saved.");
 }
 
 export async function assignTraining(formData: FormData) {

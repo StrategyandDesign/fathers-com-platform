@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { useT } from "@/components/i18n/locale-provider";
 import { sendNudgePanelNotes } from "@/lib/manager/nudge-panel-actions";
 import type { NudgePanelView } from "@/lib/manager/nudge-panel";
+import { participationCopyKey, type ParticipationMode } from "@/lib/participation";
 import { initials } from "@/lib/ui";
 import { Button } from "@/components/ui/button";
 
@@ -25,7 +26,13 @@ function formatStamp(value: string | undefined) {
   });
 }
 
-export function NudgePanel({ panel }: { panel: NudgePanelView }) {
+export function NudgePanel({
+  panel,
+  mode = "unset",
+}: {
+  panel: NudgePanelView;
+  mode?: ParticipationMode;
+}) {
   const t = useT();
   const [states, setStates] = useState<Record<string, RowState>>({});
   const [bulkOpen, setBulkOpen] = useState(false);
@@ -62,7 +69,9 @@ export function NudgePanel({ panel }: { panel: NudgePanelView }) {
   return (
     <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
       <h2 className="font-heading text-lg font-semibold">{t("manager.nudgePanel.title")}</h2>
-      <p className="mt-1 text-sm text-muted-foreground">{t("manager.nudgePanel.lead")}</p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {t(participationCopyKey(mode, "manager.nudgePanel.lead"))}
+      </p>
 
       {panel.rows.length === 0 ? (
         <p className="mt-5 text-sm text-muted-foreground">{t("manager.nudgePanel.empty")}</p>
