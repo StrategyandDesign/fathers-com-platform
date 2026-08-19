@@ -8,6 +8,8 @@ Erik tracks official copies by **even submit number** and **date**, not by “wh
 
 The table lives in `/SUBMITS.md` at the repo root.
 
-Submit **2** (19 Aug 2026) is the first official stamp. The 18 Aug share had no number.
+Submit **2** (19 Aug 2026) is the first official stamp. Frozen on `submit/2` at `00eb91a`. Issue: https://github.com/StrategyandDesign/fathers-com-clean-pilot/issues/1
+
+The 18 Aug share had no number.
 
 Next cut is Submit **4**.

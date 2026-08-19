@@ -2,10 +2,10 @@
 
 Official review copies are **even-numbered** and **date-stamped**.
 
-| Submit | Date (UTC) | Frozen branch | What it is |
-|---|---|---|---|
-| *(informal)* | 18 Aug 2026 | — | First share. No number. Do not use this as the review SHA. |
-| **2** | 19 Aug 2026 | `submit/2` | First official submit. Clean-pilot Next.js app plus the seven UX refinements. |
+| Submit | Date (UTC) | Frozen branch | Issue | What it is |
+|---|---|---|---|---|
+| *(informal)* | 18 Aug 2026 | — | — | First share. No number. Do not use this as the review SHA. |
+| **2** | 19 Aug 2026 | `submit/2` | [#1](https://github.com/StrategyandDesign/fathers-com-clean-pilot/issues/1) | First official submit. Clean-pilot Next.js app plus the seven UX refinements. |
 
 Next official submit is **4**, then **6**, then **8**. Do not use odd numbers.
 
