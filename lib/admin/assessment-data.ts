@@ -1,4 +1,5 @@
-import { keystoneDeskItem } from "@/lib/admin/assessment-desk";
+import { keystoneDeskItem, sourcedAssessmentDeskItem } from "@/lib/admin/assessment-desk";
+import { loadPlatformAssessments } from "@/lib/admin/assessment-sourcing-data";
 import { createClient } from "@/lib/supabase/server";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
 import type { AdminReleaseTarget, AdminReviewStatus } from "@/lib/admin/types";
@@ -67,6 +68,9 @@ export async function loadAdminKeystoneRelease(): Promise<AdminAssessmentRelease
 }
 
 export async function loadAdminAssessmentDesk() {
-  const keystone = await loadAdminKeystoneRelease();
-  return [keystoneDeskItem(keystone)];
+  const [keystone, sourced] = await Promise.all([
+    loadAdminKeystoneRelease(),
+    loadPlatformAssessments(),
+  ]);
+  return [keystoneDeskItem(keystone), ...sourced.map(sourcedAssessmentDeskItem)];
 }

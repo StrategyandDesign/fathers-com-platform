@@ -1,11 +1,15 @@
+import Link from "next/link";
+
 import { AdminCatalogDesk } from "@/components/admin/catalog-desk";
 import { AdminDeskList, AdminDeskRow } from "@/components/admin/desk-list";
 import { DevelopmentStatusBadge } from "@/components/admin/development-status";
 import { ReleaseStatusBadge } from "@/components/admin/release-status";
+import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { loadAdminAssessmentDesk } from "@/lib/admin/assessment-data";
 import { formatEditedAt } from "@/lib/admin/development";
 import { requireRole } from "@/lib/auth/session";
+import { cn } from "@/lib/utils";
 
 export default async function AdminAssessmentsPage({
   searchParams,
@@ -29,6 +33,14 @@ export default async function AdminAssessmentsPage({
       archivedView={archivedView}
       activeHref="/admin/assessments"
       archivedHref="/admin/assessments?view=archived"
+      actions={
+        <Link
+          href="/admin/assessments/sources"
+          className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+        >
+          Bring in an assessment
+        </Link>
+      }
     >
       <AdminDeskList
         countHeader="Questions"
@@ -43,7 +55,7 @@ export default async function AdminAssessmentsPage({
             >
               {archivedView
                 ? "Archive an unfinished instrument from its desk. Recover it anytime."
-                : "Platform assessments appear here. Release one when you want Leaders to review it."}
+                : "Keystone stays here. Bring in a researcher instrument when you have their questions and scoring key."}
             </EmptyState>
           ) : undefined
         }

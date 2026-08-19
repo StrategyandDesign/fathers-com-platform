@@ -1,5 +1,6 @@
+import type { PlatformAssessmentRow } from "@/lib/admin/assessment-sourcing-data";
 import type { DevelopmentStatus } from "@/lib/admin/development";
-import { formatEditedAt } from "@/lib/admin/development";
+import { asDevelopmentStatus, formatEditedAt } from "@/lib/admin/development";
 import type { TrainingReleaseState } from "@/lib/admin/release";
 import type { AdminReviewStatus } from "@/lib/admin/types";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
@@ -86,5 +87,26 @@ export function keystoneDeskItem(keystone: {
     archived: false,
     developmentStatus: assessmentDevelopmentStatus(release),
     releaseState: assessmentReleaseState(release),
+  };
+}
+
+export function sourcedAssessmentDeskItem(row: PlatformAssessmentRow): AdminAssessmentDeskItem {
+  const questionCount = row.instrument?.items.length ?? 0;
+  return {
+    key: row.assessmentKey,
+    title: row.title,
+    href: row.intakeId
+      ? `/admin/assessments/intakes/${row.intakeId}`
+      : "/admin/assessments/sources",
+    actionHref: row.intakeId
+      ? `/admin/assessments/intakes/${row.intakeId}`
+      : "/admin/assessments/sources",
+    actionLabel: "Desk",
+    questionCount,
+    kindLabel: row.attribution ? `From ${row.attribution}` : "Brought in",
+    editedAt: row.lastEditedAt,
+    archived: row.archived || asDevelopmentStatus(row.developmentStatus) === "archived",
+    developmentStatus: asDevelopmentStatus(row.developmentStatus),
+    releaseState: row.developmentStatus === "released" ? "released" : "draft",
   };
 }

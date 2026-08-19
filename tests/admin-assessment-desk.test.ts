@@ -8,6 +8,7 @@ import {
   assessmentEditedLabel,
   assessmentReleaseState,
   keystoneDeskItem,
+  sourcedAssessmentDeskItem,
 } from "../lib/admin/assessment-desk";
 import { KEYSTONE_ASSESSMENT_KEY } from "../lib/assessments/availability";
 
@@ -81,5 +82,35 @@ describe("admin assessment desk", () => {
       }),
       "2026-08-01T12:00:00Z"
     );
+  });
+
+  it("lists a brought-in instrument on the same desk as Keystone", () => {
+    const item = sourcedAssessmentDeskItem({
+      id: "p1",
+      assessmentKey: "presence-scale",
+      title: "Presence Scale",
+      description: null,
+      attribution: "Dr. Rivera",
+      instrument: {
+        version: "1.0.0",
+        items: [
+          { id: "a", prompt: "I stay nearby", dimension: "presence", coding: 1 },
+        ],
+        scoring: {
+          method: "sum_coded",
+          scale: { min: 1, max: 5 },
+          dimensions: [{ id: "presence", label: "Presence" }],
+          outcome: { kind: "highest_dimension", labels: { presence: "Present" } },
+        },
+      },
+      developmentStatus: "draft",
+      archived: false,
+      lastEditedAt: "2026-08-19T12:00:00Z",
+      intakeId: "intake-1",
+    });
+    assert.equal(item.questionCount, 1);
+    assert.equal(item.kindLabel, "From Dr. Rivera");
+    assert.equal(item.actionLabel, "Desk");
+    assert.equal(item.href, "/admin/assessments/intakes/intake-1");
   });
 });
