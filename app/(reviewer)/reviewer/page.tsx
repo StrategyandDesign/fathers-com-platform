@@ -61,11 +61,11 @@ function StackedBar({
 }) {
   const total = notStarted + inProgress + completed;
   if (total === 0) {
-    return <div className="h-1.5 rounded-full bg-white/10" />;
+    return <div className="h-1.5 rounded-full bg-foreground/10" />;
   }
 
   return (
-    <div className="flex h-1.5 overflow-hidden rounded-full bg-white/10">
+    <div className="flex h-1.5 overflow-hidden rounded-full bg-foreground/10">
       <div
         className="h-full bg-primary"
         style={{ width: `${(completed / total) * 100}%` }}

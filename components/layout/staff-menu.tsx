@@ -7,7 +7,7 @@ import { Menu, X } from "lucide-react";
 import { useT } from "@/components/i18n/locale-provider";
 import { type AppRole } from "@/lib/auth/roles";
 import { AppNav } from "@/components/layout/app-nav";
-import { interactiveIconClassName } from "@/lib/ui";
+import { headerIconClassName, interactiveIconClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export function StaffMenu({ role }: { role: AppRole }) {
@@ -33,8 +33,8 @@ export function StaffMenu({ role }: { role: AppRole }) {
       <button
         type="button"
         className={cn(
-          "flex size-11 items-center justify-center rounded-lg text-foreground",
-          interactiveIconClassName
+          "flex size-11 items-center justify-center rounded-lg",
+          headerIconClassName
         )}
         aria-label={t("nav.openMenu")}
         onClick={() => setOpen(true)}
@@ -45,7 +45,7 @@ export function StaffMenu({ role }: { role: AppRole }) {
         <div className="fixed inset-0 z-40">
           <button
             type="button"
-            className="absolute inset-0 bg-black/70 outline-none"
+            className="absolute inset-0 bg-overlay outline-none"
             aria-label={t("nav.closeMenu")}
             onClick={() => setOpen(false)}
           />

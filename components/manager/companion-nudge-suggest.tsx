@@ -81,7 +81,7 @@ export function CompanionNudgeSuggest({
         </Button>
       </div>
       {open ? (
-        <div className="space-y-3 rounded-lg border border-border bg-black/30 px-4 py-3">
+        <div className="space-y-3 rounded-lg border border-border bg-inset px-4 py-3">
           <p className="text-sm">
             <span className="font-medium text-foreground">{t("manager.companion.suggestedNote")}: </span>
             {suggested.label}

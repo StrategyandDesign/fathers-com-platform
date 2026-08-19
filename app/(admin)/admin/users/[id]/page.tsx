@@ -32,7 +32,7 @@ export default async function AdminUserDetailPage({
         <Link href="/admin/users" className={interactiveLinkClassName}>
           Users
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span className="min-w-0">{user.full_name || user.email || user.id.slice(0, 8)}</span>
       </p>
       <Flash error={flash.error} notice={flash.notice} />

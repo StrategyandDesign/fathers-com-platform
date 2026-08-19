@@ -55,7 +55,7 @@ function HomeShelfRow({
                 interactiveSurfaceClassName
               )}
             >
-              <div className="h-20 overflow-hidden bg-[#101510]">
+              <div className="h-20 overflow-hidden bg-cover">
                 <CoverPhoto src={card.coverSrc} />
               </div>
               <div className="space-y-1.5 p-3">

@@ -78,7 +78,7 @@ export default async function AdminTrainingDetailPage({
           <Link href="/admin/trainings" className={interactiveLinkClassName}>
             Trainings
           </Link>
-          <span className="text-white/20">|</span>
+          <span className="text-foreground/20">|</span>
           <span className="min-w-0">{training.title}</span>
         </p>
         <Link
@@ -257,7 +257,7 @@ export default async function AdminTrainingDetailPage({
 
         {alreadyReleased ? (
           <div className="mt-5 space-y-5">
-            <div className="rounded-lg border border-input bg-black/30 px-4 py-3">
+            <div className="rounded-lg border border-input bg-inset px-4 py-3">
               <p className="font-medium">Released {formatShortDate(training.released_at)}</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 by {training.releasedByName ?? "Super-admin"}

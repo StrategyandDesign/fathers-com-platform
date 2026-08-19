@@ -105,7 +105,7 @@ export function FatherTrainingCatalogCard({
           href={href}
           aria-label={openLabel}
           className={cn(
-            "block overflow-hidden bg-[#101510]",
+            "block overflow-hidden bg-cover",
             featured
               ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]"
               : quiet
@@ -119,7 +119,7 @@ export function FatherTrainingCatalogCard({
       ) : (
         <div
           className={cn(
-            "overflow-hidden bg-[#101510]",
+            "overflow-hidden bg-cover",
             featured ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]" : "h-32 sm:h-36"
           )}
         >
@@ -232,7 +232,7 @@ function SessionList({
   t: Translate;
 }) {
   return (
-    <details className="rounded-lg border border-border bg-black/20">
+    <details className="rounded-lg border border-border bg-inset">
       <summary
         className={cn(
           "flex min-h-11 cursor-pointer list-none items-center px-3 py-2.5 text-sm text-muted-foreground select-none",

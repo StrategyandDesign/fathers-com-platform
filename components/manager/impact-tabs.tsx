@@ -34,7 +34,7 @@ export async function ImpactTabs({
                 interactiveControlClassName,
                 active
                   ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  : "text-muted-foreground hover:bg-hover hover:text-foreground"
               )}
             >
               {item.label}

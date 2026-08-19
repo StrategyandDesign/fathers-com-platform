@@ -25,7 +25,7 @@ export async function SupportHelpPage({
         <Link href={ROLE_HOME[role]} className={interactiveLinkClassName}>
           {homeLabel}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>{t("account.help")}</span>
       </p>
       <div>
