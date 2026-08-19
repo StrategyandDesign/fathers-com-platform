@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import type { Training } from "../lib/father/types";
 import {
@@ -169,5 +171,16 @@ describe("cohort status and board", () => {
 
     assert.equal(board.columns.length, 0);
     assert.equal(board.rows[0]?.cells.length, 0);
+  });
+});
+
+describe("dashboard assignment status", () => {
+  it("does not render the assignment status strip on Home", () => {
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/(manager)/manager/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.doesNotMatch(page, /AssignmentStatusStrip/);
+    assert.doesNotMatch(page, /assignmentStatus/);
   });
 });

@@ -13,12 +13,12 @@ describe("manager assign return path", () => {
     });
   });
 
-  it("returns the leader to the dashboard status strip", () => {
+  it("returns the leader to the dashboard without a missing status hash", () => {
     const form = new FormData();
     form.set("return_to", "dashboard");
     assert.deepEqual(managerAssignDestination(form), {
       path: "/manager",
-      hash: "#status",
+      hash: "",
     });
   });
 
