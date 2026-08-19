@@ -14,6 +14,11 @@ const ITEMS = [
     match: (path: string) => path === "/manager",
   },
   {
+    href: "/manager/reports",
+    labelKey: "nav.reports",
+    match: (path: string) => path.startsWith("/manager/reports"),
+  },
+  {
     href: "/manager/impact",
     labelKey: "nav.impact",
     match: (path: string) =>

@@ -180,6 +180,8 @@ const EXACT: Record<string, string> = {
   "Completion status must be not started, in progress, or completed.":
     "manager.reports.statusInvalid",
   "The start date must be on or before the end date.": "manager.reports.dateOrder",
+  "That group is not yours.": "manager.reports.groupInvalid",
+  "That training is not available.": "manager.reports.trainingInvalid",
   "Too many reports just now. Try again in a few minutes.": "help.tooMany",
   "Choose a category.": "help.chooseCategory",
   "Write a message before sending.": "help.writeMessage",

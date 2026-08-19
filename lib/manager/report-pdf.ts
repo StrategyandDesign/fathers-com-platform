@@ -6,6 +6,7 @@ import { createTranslator, type Translate } from "@/lib/i18n/translate";
 import {
   COMPLETION_STATUS_LABEL,
   filterSummary,
+  summarizeReport,
   type ReportFilters,
   type ReportRow,
 } from "@/lib/manager/reports";
@@ -20,14 +21,16 @@ const HEADER_TEXT = rgb(1, 1, 1);
 
 const PAGE_WIDTH = 792;
 const PAGE_HEIGHT = 612;
-const MARGIN = 36;
+const MARGIN = 28;
 const ROW_HEIGHT = 18;
 const COLS = [
-  { key: "name", label: "Name", width: 156 },
-  { key: "status", label: "Status", width: 88 },
-  { key: "assignments", label: "Assignments", width: 188 },
-  { key: "serials", label: "Certificate serials", width: 188 },
-  { key: "activity", label: "Last activity", width: 100 },
+  { key: "name", label: "Name", width: 112 },
+  { key: "group", label: "Group", width: 88 },
+  { key: "training", label: "Training", width: 132 },
+  { key: "status", label: "Status", width: 72 },
+  { key: "sessions", label: "Sessions", width: 64 },
+  { key: "completed", label: "Completed on", width: 88 },
+  { key: "serials", label: "Serial", width: 152 },
 ] as const;
 
 function drawText(
@@ -57,39 +60,50 @@ function statusCopy(status: ReportRow["completionStatus"], locale: Locale, t: Tr
 }
 
 function cellValues(row: ReportRow, locale: Locale, t: Translate) {
+  const training =
+    locale === "he" && row.trainingTitle === "None assigned"
+      ? t("manager.reports.noneAssigned")
+      : row.trainingTitle;
+  const sessions = `${row.sessionsCompleted}/${row.sessionsTotal}`;
   if (locale !== "he") {
     return {
       name: row.name,
+      group: row.groupName,
+      training,
       status: COMPLETION_STATUS_LABEL[row.completionStatus],
-      assignments: row.assignmentTitles.join("; ") || "None assigned",
-      serials: row.certificateSerials || "—",
-      activity: formatShortDate(row.lastActivity),
+      sessions,
+      completed: formatShortDate(row.completedAt),
+      serials: row.certificateSerial || "—",
     };
   }
 
   return {
     name: row.name,
+    group: row.groupName,
+    training,
     status: statusCopy(row.completionStatus, locale, t),
-    assignments: row.assignmentTitles.join("; ") || t("manager.reports.noneAssigned"),
-    serials: row.certificateSerials || t("common.emDash"),
-    activity: row.lastActivity
-      ? new Date(row.lastActivity).toLocaleDateString(dateLocale(locale), {
+    sessions,
+    completed: row.completedAt
+      ? new Date(row.completedAt).toLocaleDateString(dateLocale(locale), {
           year: "numeric",
           month: "short",
           day: "numeric",
         })
       : t("common.emDash"),
+    serials: row.certificateSerial || t("common.emDash"),
   };
 }
 
 function columnLabels(locale: Locale, t: Translate) {
   if (locale !== "he") return COLS;
   return [
-    { key: "name", label: t("manager.reports.name"), width: 156 },
-    { key: "status", label: t("manager.reports.statusCol"), width: 88 },
-    { key: "assignments", label: t("manager.reports.assignments"), width: 188 },
-    { key: "serials", label: t("manager.reports.csvSerials"), width: 188 },
-    { key: "activity", label: t("manager.reports.lastActivity"), width: 100 },
+    { key: "name", label: t("manager.reports.name"), width: 112 },
+    { key: "group", label: t("manager.reports.csvGroup"), width: 88 },
+    { key: "training", label: t("manager.reports.trainingCol"), width: 132 },
+    { key: "status", label: t("manager.reports.statusCol"), width: 72 },
+    { key: "sessions", label: t("manager.reports.sessionsCol"), width: 64 },
+    { key: "completed", label: t("manager.reports.csvCompletedOn"), width: 88 },
+    { key: "serials", label: t("manager.reports.serials"), width: 152 },
   ] as const;
 }
 
@@ -100,39 +114,56 @@ function drawHeader(
   bold: PDFFont,
   filters: ReportFilters,
   trainings: Training[],
+  groups: Array<{ id: string; name: string }>,
+  organization: string,
   generatedOn: string,
-  matched: number,
+  rows: ReportRow[],
   locale: Locale,
   t: Translate
 ) {
-  const title = locale === "he" ? t("manager.reports.pdfTitle") : "Fathers.com Leader Report";
+  const title = locale === "he" ? t("manager.reports.pdfTitle") : "Fathers.com participation report";
   drawText(page, title, MARGIN, y, bold, 16, FOREST, locale);
   const dateWidth = font.widthOfTextAtSize(shapePdfText(generatedOn, locale), 9);
   drawText(page, generatedOn, PAGE_WIDTH - MARGIN - dateWidth, y + 2, font, 9, MUTED, locale);
 
-  const summary = filterSummary(filters, trainings, locale);
+  const summary = filterSummary(filters, trainings, groups, locale);
+  const counts = summarizeReport(rows);
   const count =
     locale === "he"
-      ? matched === 1
-        ? t("manager.reports.participantsOne")
-        : t("manager.reports.participantsMany", { n: matched })
-      : `${matched} participant${matched === 1 ? "" : "s"}`;
+      ? t("manager.reports.csvRowCount", { rows: counts.rows, men: counts.men })
+      : `${counts.rows} assignment row${counts.rows === 1 ? "" : "s"} · ${counts.men} men`;
+  const org = organization || (locale === "he" ? t("manager.impact.yourOrg") : "Your organization");
   const line =
     locale === "he"
       ? t("manager.reports.pdfFilter", {
+          group: summary.group,
           training: summary.training,
           status: summary.status,
           range: summary.range,
           count,
         })
-      : `Training: ${summary.training}  ·  Status: ${summary.status}  ·  Last activity: ${summary.range}  ·  ${count}`;
+      : `${org}  ·  ${summary.group}  ·  ${summary.training}  ·  ${summary.status}  ·  ${summary.range}  ·  ${count}`;
   drawText(
     page,
     fit(line, font, 9, PAGE_WIDTH - MARGIN * 2, locale),
     MARGIN,
-    y - 18,
+    y - 16,
     font,
     9,
+    MUTED,
+    DEFAULT_LOCALE
+  );
+  const definition =
+    locale === "he"
+      ? t("manager.reports.pdfDefinition")
+      : "Completed means every session in that training is finished. Date range is last program activity, not join date.";
+  drawText(
+    page,
+    fit(definition, font, 8, PAGE_WIDTH - MARGIN * 2, locale),
+    MARGIN,
+    y - 30,
+    font,
+    8,
     MUTED,
     DEFAULT_LOCALE
   );
@@ -192,14 +223,18 @@ export async function renderReportPdf(
   rows: ReportRow[],
   filters: ReportFilters,
   trainings: Training[],
-  locale: Locale = DEFAULT_LOCALE
+  locale: Locale = DEFAULT_LOCALE,
+  extras: {
+    groups?: Array<{ id: string; name: string }>;
+    organization?: string;
+  } = {}
 ) {
   try {
-    return await renderReportPdfWithLocale(rows, filters, trainings, locale);
+    return await renderReportPdfWithLocale(rows, filters, trainings, locale, extras);
   } catch (error) {
     if (locale === "he") {
       console.error("Hebrew manager report PDF failed; falling back to English.", error);
-      return renderReportPdfWithLocale(rows, filters, trainings, DEFAULT_LOCALE);
+      return renderReportPdfWithLocale(rows, filters, trainings, DEFAULT_LOCALE, extras);
     }
     throw error;
   }
@@ -209,11 +244,15 @@ async function renderReportPdfWithLocale(
   rows: ReportRow[],
   filters: ReportFilters,
   trainings: Training[],
-  locale: Locale
+  locale: Locale,
+  extras: {
+    groups?: Array<{ id: string; name: string }>;
+    organization?: string;
+  }
 ) {
   const t = createTranslator(locale);
   const doc = await PDFDocument.create();
-  doc.setTitle(locale === "he" ? t("manager.reports.pdfTitle") : "Fathers.com Leader Report");
+  doc.setTitle(locale === "he" ? t("manager.reports.pdfTitle") : "Fathers.com participation report");
   doc.setAuthor("Fathers.com");
   doc.setCreator("Fathers.com");
 
@@ -229,12 +268,14 @@ async function renderReportPdfWithLocale(
     }
   );
 
-  const firstTop = PAGE_HEIGHT - 56;
+  const firstTop = PAGE_HEIGHT - 52;
   const nextTop = PAGE_HEIGHT - 40;
   const bottom = MARGIN + 20;
   let page = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
   let y = firstTop;
   let pageIndex = 1;
+  const groups = extras.groups ?? [];
+  const organization = extras.organization ?? "";
 
   const stampPage = (target: PDFPage, index: number) => {
     const label = locale === "he" ? t("manager.reports.page", { n: index }) : `Page ${index}`;
@@ -245,14 +286,27 @@ async function renderReportPdfWithLocale(
     drawText(target, footer, MARGIN, 22, font, 8, MUTED, locale);
   };
 
-  drawHeader(page, y, font, bold, filters, trainings, generatedOn, rows.length, locale, t);
-  y -= 40;
+  drawHeader(
+    page,
+    y,
+    font,
+    bold,
+    filters,
+    trainings,
+    groups,
+    organization,
+    generatedOn,
+    rows,
+    locale,
+    t
+  );
+  y -= 52;
   drawTableHead(page, y, bold, locale, t);
   y -= ROW_HEIGHT;
 
   if (rows.length === 0) {
     const empty =
-      locale === "he" ? t("manager.reports.noMatch") : "No participants match these filters.";
+      locale === "he" ? t("manager.reports.noMatch") : "No assignments match these filters.";
     drawText(page, empty, MARGIN, y, font, 10, MUTED, locale);
     stampPage(page, pageIndex);
     return doc.save();

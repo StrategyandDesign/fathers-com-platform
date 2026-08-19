@@ -26,6 +26,7 @@ export async function GET(request: Request) {
   const { user } = await requireRole("manager");
   const url = new URL(request.url);
   const parsed = parseReportSearchParams({
+    group_id: url.searchParams.get("group_id") ?? undefined,
     training_id: url.searchParams.get("training_id") ?? undefined,
     status: url.searchParams.get("status") ?? undefined,
     from: url.searchParams.get("from") ?? undefined,
@@ -52,18 +53,32 @@ export async function GET(request: Request) {
 
   const locale = await resolveManagerExportLocale(user.id);
 
+  const generatedAt = new Date().toISOString();
+
   if (format === "csv") {
-    return new Response(rowsToCsv(report.rows, locale), {
-      headers: {
-        "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": `attachment; filename="${reportFilename("csv")}"`,
-        "Cache-Control": "private, no-store",
-      },
-    });
+    return new Response(
+      rowsToCsv(report.rows, locale, {
+        generatedAt,
+        organization: report.organization,
+        filters: parsed.filters,
+        trainings: report.trainings,
+        groups: report.groups,
+      }),
+      {
+        headers: {
+          "Content-Type": "text/csv; charset=utf-8",
+          "Content-Disposition": `attachment; filename="${reportFilename("csv")}"`,
+          "Cache-Control": "private, no-store",
+        },
+      }
+    );
   }
 
   try {
-    const bytes = await renderReportPdf(report.rows, parsed.filters, report.trainings, locale);
+    const bytes = await renderReportPdf(report.rows, parsed.filters, report.trainings, locale, {
+      groups: report.groups,
+      organization: report.organization,
+    });
     return new Response(Buffer.from(bytes), {
       headers: {
         "Content-Type": "application/pdf",
