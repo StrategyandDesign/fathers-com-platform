@@ -21,6 +21,7 @@ def _wait_port(port, timeout=10):
 def server():
     proc = subprocess.Popen(
         ["python3", "-m", "http.server", str(PORT)],
+        cwd="archive/static-site",
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
     _wait_port(PORT)

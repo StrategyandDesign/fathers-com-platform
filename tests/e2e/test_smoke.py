@@ -1,4 +1,5 @@
-"""Smoke tests for the critical public flows. Structural assertions only:
+"""Smoke tests for the archived static site in archive/static-site/.
+Current CI does not run this file. Structural assertions only:
 they verify the pages our users depend on are present and wired, without
 depending on live data. Run locally with: python3 -m pytest tests/e2e -q"""
 

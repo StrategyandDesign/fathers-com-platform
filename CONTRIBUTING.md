@@ -1,47 +1,47 @@
-# Contributing and Deploying
+# How we work in this repo
 
-This repository ships a live platform. The process below is what keeps a push safe.
+Two jobs share one GitHub repo:
 
-## The rules
+| Role | Owns | Does not have to read |
+|---|---|---|
+| Eric — hardening and backend | `app/`, `lib/`, `supabase/`, `tests/`, CI | `docs/product/`, `handoff/`, `archive/` |
+| Micah — product discovery and agent work | `docs/product/`, `handoff/`, Shared marks | Must not dump essays into `app/` or `lib/` |
 
-1. Edit sources, never generated HTML. Pages come from `build_pages.py`, `build_dashboards.py`, and `build_short_courses.py`. CI rejects drift.
-2. Never touch `assets/js/config.js`. It holds the live public keys. If keys are rotated deliberately, update the pinned md5 in `.github/workflows/ci.yml` in the same PR and say why.
-3. Every database change is a new file in `supabase/migrations/` (see the README there). No dashboard-only SQL after the baseline.
-4. Money, secrets, approvals: server-side only (edge functions). The browser never computes a price or holds a token.
-5. Every feature lands with tests. At minimum, extend `tests/e2e/test_smoke.py` for new critical surfaces.
+The live product is Next.js. Root HTML is archived. PRs stay small. Product notes and schema changes do not land in the same commit unless they must.
+
+## Rules for the Next.js app
+
+1. Edit `app/`, `components/`, and `lib/`. Do not edit `archive/static-site/*.html` to change the product.
+2. Every database change is a new file in `supabase/migrations/`.
+3. Secrets and money stay server-side (Route Handlers, Supabase Edge Functions). The browser never holds a service-role key.
+4. New behavior gets a test under `tests/` when there is an existing pattern to extend.
+5. Roles stay `father` / `manager` / `reviewer` / `admin`. Do not add a fifth product role without an explicit product decision.
 
 ## Local loop
 
 ```bash
-python3 build_pages.py && python3 build_dashboards.py && python3 build_short_courses.py     # rebuild
-for f in $(find assets/js -name '*.js'); do node --check "$f"; done
-pip install -r requirements-dev.txt && python3 -m playwright install chromium   # once
-python3 -m pytest tests/e2e -q                             # smoke tests
+git checkout review
+cp .env.example .env.local
+npm install
+npm run dev
 ```
 
-## Deploying
-
-Work lands through a branch and a pull request so CI gates it before it goes live:
+http://127.0.0.1:3000/login — seats in `docs/engineering/PILOT.md`.
 
 ```bash
-cd ~/Downloads/fathers-com
-git checkout -b feature/short-name
-git add -A
-git commit -m "What and why"
-git push -u origin feature/short-name
+npm run lint
+npx tsx --test tests/*.test.ts
+npx tsc --noEmit
 ```
 
-Then open the PR on GitHub. CI runs automatically; Vercel posts a preview link on the PR for visual review. Merge when green. Merging to `main` deploys production.
+## Shared drops vs official submits
 
-Rollback: revert the merge commit and push. The site is static, so rollback is immediate.
+- **`review`** is the moving line Micah and Eric share.
+- **`shared/N`** tags in `SHARED.md` number those drops. They do not freeze a submit.
+- **`submit/2`** is frozen. Do not fast-forward it.
 
-## One-time repository setup (owner)
+## Pull requests
 
-GitHub → Settings → Branches → Add branch protection rule for `main`:
-- Require a pull request before merging (1 approval once the team reviews; 0 while solo)
-- Require status checks to pass: select the `Build, integrity, and smoke tests` check
-- Do not allow bypassing the above (optional, recommended once the team is active)
+Work on a branch. Open a PR. Say what changed and what you verified. Merge when checks are green.
 
-## Definition of done
-
-Code, rebuilt pages, tests, migration file (if schema changed), flag (if user-facing rollout), and a PR description stating what and why.
+This isolated repo is the review line. It is not a cutover of `fathers.com` and it is not `fathers-com-platform` `main`.

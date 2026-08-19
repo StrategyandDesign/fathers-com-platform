@@ -45,10 +45,10 @@ You need their GitHub usernames to send the invite. Access is repo-wide on the i
 - Added: `handoff/*`
 - Ported UX: overview film, streak dialog, certificate placement, quiet Home update, Super-admin Assessments desk, Assessments-tab Keystone results, check-in save freeze fix
 
-**Omitted from the isolated repo on purpose**
+**Archived so the root looks like the Next.js app**
 
-- Root `*.html`, `assets/`, `content/`, `emails/`, `partner-kit/`, `build_*.py`, `tools/`
-- Those are leftover static-site source from the old platform. They are not the Next.js app. They were left on the internal `clean-pilot` branch so a later merge to `fathers-com-platform` `main` could not wipe that history. The isolated review copy does not include them.
+- Old `*.html` and `build_*.py` now live in `archive/static-site/`
+- Those are leftover static-site source. They are not what `npm run dev` serves.
 
 ---
 
@@ -127,7 +127,7 @@ Both hosts 307 `/` and `/father` to `/login` when signed out. Both are Next.js. 
 
 ### What to share instead
 
-1. Tell the team to clone the isolated repo and run `npm run dev` (`PILOT.md`).
+1. Tell the team to clone the isolated repo and run `npm run dev` (`docs/engineering/PILOT.md`).
 2. If they create their own Vercel project from **this** repo, that preview is in scope. A preview attached to `fathers-com-platform` is not.
 3. Write this sentence in the email: “Do not use fathers-com-platform.vercel.app or fathers-com-pilot.vercel.app to judge this handoff. The first is `main` on the old repo. The second is a stale Pilot deploy.”
 
@@ -156,7 +156,7 @@ Point the team at these in the isolated repo, in this order:
 5. `handoff/04-CHANGE-LOG.md`
 6. `handoff/05-ENGINEERING-NOTES.md`
 7. `handoff/06-VERIFICATION-CHECKLIST.md`
-8. `PILOT.md` — how to create seats and run locally
+8. `docs/engineering/PILOT.md` — how to create seats and run locally
 
 Do not send `README.md` from `fathers-com-platform` `main`. Do not send `ARCHITECTURE.md` as the system description of this app (it still describes the static site).
 
@@ -200,7 +200,7 @@ Preferred review order
 1) handoff/00-SUBMISSION-GUIDE.md
 2) handoff/01-EXECUTIVE-SUMMARY.md
 3) handoff/02-INVENTORY.md and handoff/03-AUDIT-FINDINGS.md
-4) Run locally (PILOT.md) — not fathers-com-pilot.vercel.app (stale)
+4) Run locally (`docs/engineering/PILOT.md`) — not fathers-com-pilot.vercel.app (stale)
    and not fathers-com-platform.vercel.app (old-repo main)
 
 This app is a signed-in pilot. It is not live on fathers.com.

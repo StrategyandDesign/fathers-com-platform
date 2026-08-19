@@ -9,8 +9,8 @@ This Next.js app talks to the **Pilot** Supabase project. Local and Vercel use t
 ```bash
 git clone https://github.com/StrategyandDesign/fathers-com-clean-pilot.git
 cd fathers-com-clean-pilot
-git checkout submit/2          # frozen official copy
-# git checkout review          # moving draft, if you are iterating
+git checkout review            # current shared drop
+# git checkout submit/2        # frozen official stamp; older tree, do not move it
 cp .env.example .env.local
 # Leave Supabase keys blank. The app falls back to Pilot.
 # NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000 is already in .env.example

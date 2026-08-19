@@ -6,7 +6,7 @@ Erik tracks official copies by **even submit number** and **date**, not by “wh
 - **`submit/2`, `submit/4`, …** — frozen. A submit never moves after it is cut.
 - **Issue titled `Submit N — date`** — the human record and notification.
 
-The table lives in `/SUBMITS.md` at the repo root.
+The table lives in `SUBMITS.md` at the repo root.
 
 Submit **2** (19 Aug 2026) is the first official stamp. Frozen on `submit/2` at `00eb91a`. Issue: https://github.com/StrategyandDesign/fathers-com-clean-pilot/issues/1
 

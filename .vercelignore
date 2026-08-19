@@ -11,6 +11,7 @@ __pycache__/
 .pytest_cache/
 docs/
 *.md
-!PILOT.md
+!README.md
+!docs/engineering/PILOT.md
 .env*
 !.env.example

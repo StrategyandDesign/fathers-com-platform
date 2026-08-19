@@ -1,32 +1,59 @@
-# Fathers.com — clean-pilot (Next.js)
+# Fathers.com clean-pilot
 
-This repository is the **Next.js clean-pilot app** for review and hardening. It is not the older static HTML Fathers.com site, and it is not a production cutover of `fathers.com`.
+This is the **Next.js 15 / React 19** app. Clone this repo, run it, harden `app/`, `lib/`, and `supabase/`.
 
-Official copies for Erik are even-numbered and date-stamped in the isolated repo. See `SUBMITS.md`. The first official stamp is **Submit 2** (19 Aug 2026) on frozen branch `submit/2`.
+It is not the old static HTML site. Those pages used to sit in the repo root. They now live in `archive/static-site/` and are not what `npm run dev` serves.
 
-| What | Where |
-|---|---|
-| Official submit record | `SUBMITS.md` |
-| Isolated frozen copy | https://github.com/StrategyandDesign/fathers-com-clean-pilot/tree/submit/2 |
-| Runbook | `PILOT.md` |
-| App | `app/` — Next.js 15 App Router |
-| Auth / data | Pilot Supabase project `koeplcybddrvbliuepsy` |
-| Handoff for reviewers | `handoff/` |
+## Start (Eric)
 
 ```bash
+git clone https://github.com/StrategyandDesign/fathers-com-clean-pilot.git
+cd fathers-com-clean-pilot
+git checkout review
+cp .env.example .env.local
 npm install
-# Copy .env.example to .env.local. Missing Supabase keys fall back to the Pilot project.
 npm run dev
 ```
 
 Open http://127.0.0.1:3000/login
 
-Pilot seats (password `12345` on local and Vercel): `father@nwa`, `manager@nwa`, `reviewer@nwa`, plus the Unit 8200 `*@il` seats and `admin@fathers`. See `PILOT.md`.
+Pilot password: `12345`  
+Seats: `father@nwa` · `manager@nwa` · `reviewer@nwa` · `admin@fathers`
 
-- Lint: `npm run lint`
-- Unit tests: `npx tsx --test tests/*.test.ts`
-- Typecheck: `npx tsc --noEmit`
+Missing Supabase env vars fall back to the Pilot project. Full seat list and hosts: `docs/engineering/PILOT.md`.
 
-Start here: `handoff/00-SUBMISSION-GUIDE.md`
+```bash
+npm run lint
+npx tsx --test tests/*.test.ts
+npx tsc --noEmit
+```
 
-This repo is the review line. Do not use https://fathers-com-platform.vercel.app to judge it. That host serves a different line.
+## What to work on
+
+| Work here | Ignore unless you need history |
+|---|---|
+| `app/` pages and routes | `archive/static-site/` old HTML + Python builders |
+| `components/` React UI | `docs/product/` discovery notes |
+| `lib/` server and domain logic | `docs/archive/` outdated architecture writeups |
+| `supabase/migrations/` schema and RLS | `handoff/` reviewer packet |
+| `tests/*.test.ts` | `partner-kit/` field PDFs and scripts |
+| `package.json` | Root `*.html` is gone on purpose |
+
+Stack evidence: `package.json` lists `react` `19.1.0` and `next` `15.5.23`. UI is `.tsx`. Interactive files start with `"use client"`.
+
+## How this repo is numbered
+
+| Mark | Meaning |
+|---|---|
+| **`review`** | Current shared drop. Use this to start work. |
+| **`shared/N`** | Numbered snapshots of `review`. Ledger: `SHARED.md`. |
+| **`submit/2`** | Frozen official stamp. Do not move it. Older tree. |
+
+## Docs map
+
+- `CONTRIBUTING.md` — how product discovery and backend hardening share this repo
+- `docs/README.md` — index of everything else
+- `docs/engineering/PILOT.md` — runbook, seats, Supabase
+- `AGENTS.md` — notes for cloud agents (not required for your work)
+
+Do not use https://fathers-com-platform.vercel.app to judge this line. That host is a different branch.

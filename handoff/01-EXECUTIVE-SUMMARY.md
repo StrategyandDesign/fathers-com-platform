@@ -58,4 +58,4 @@ Ported from later `main`-based work so the review copy matches the product polis
 - Certificates are Leader-issued PDFs, not a public verify site.
 - Optional integrations (Resend, VAPID, Sentry, YouTube Data API) are unset in this environment.
 
-A PhD reviewer can read `app/`, `lib/`, `components/`, `handoff/`, and `PILOT.md` without first deleting AI scaffolding from the Next.js tree. They should ignore root HTML and `assets/` for behavior.
+A PhD reviewer can read `app/`, `lib/`, `components/`, `handoff/`, and `docs/engineering/PILOT.md` without first deleting AI scaffolding from the Next.js tree. They should ignore `archive/static-site/` and `assets/` for behavior.
