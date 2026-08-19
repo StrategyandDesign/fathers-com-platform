@@ -1650,11 +1650,13 @@ export const en = {
       assignFromTrainings: "Assign from Trainings",
       sessions: "Sessions",
       sessionsLead:
-        "Full structure in order. You can watch the film. Nothing here can be edited or marked complete.",
+        "Open a session to watch the film and read the check-in. Nothing here can be edited or marked complete.",
       noSessionsTitle: "No sessions yet",
       noSessionsBody:
         "An admin still needs to add sessions. You can accept later once the structure is ready.",
       sessionN: "Session {n}",
+      checkin: "Check-in",
+      noFilm: "No film on this session.",
     },
     reviews: {
       crumb: "New trainings",

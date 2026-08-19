@@ -6,10 +6,10 @@ import {
   ReviewDecisionForms,
   ReviewStatusBadge,
 } from "@/components/manager/review-decision-forms";
+import { ReviewSessionList } from "@/components/manager/review-session-list";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
-import { youtubeEmbedUrl } from "@/lib/father/types";
 import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { loadReviewDetail } from "@/lib/manager/reviews";
 import { interactiveLinkClassName } from "@/lib/ui";
@@ -161,42 +161,7 @@ export default async function ManagerTrainingReviewPage({
             {t("manager.reviewDetail.noSessionsBody")}
           </EmptyState>
         ) : (
-          <ol className="space-y-4">
-            {sessions.map((session) => {
-              const embed = youtubeEmbedUrl(session.video_url);
-              return (
-                <li
-                  key={session.id}
-                  className="overflow-hidden rounded-xl border border-border bg-card"
-                >
-                  <div className="p-4 sm:p-6">
-                    <p className="text-sm text-muted-foreground">
-                      {t("manager.reviewDetail.sessionN", { n: session.session_number })}
-                    </p>
-                    <h3 className="mt-1 font-heading text-lg font-semibold">
-                      {session.title}
-                    </h3>
-                    {session.keyline ? (
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        {session.keyline}
-                      </p>
-                    ) : null}
-                  </div>
-                  {embed ? (
-                    <div className="aspect-video border-t border-border bg-black">
-                      <iframe
-                        className="h-full w-full"
-                        src={embed}
-                        title={session.title}
-                        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ol>
+          <ReviewSessionList sessions={sessions} training={training} t={t} />
         )}
       </section>
     </div>

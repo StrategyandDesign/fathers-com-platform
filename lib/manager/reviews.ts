@@ -257,7 +257,9 @@ async function loadTrainingSessions(trainingId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("sessions")
-    .select("id, training_id, session_number, title, keyline, video_url, order_index")
+    .select(
+      "id, training_id, session_number, title, keyline, video_url, order_index, checkin_prompt, action_prompt"
+    )
     .eq("training_id", trainingId)
     .order("order_index", { ascending: true })
     .order("session_number", { ascending: true });

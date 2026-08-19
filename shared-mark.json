@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 6,
-  "label": "Shared 1-1.06",
+  "patch": 7,
+  "label": "Shared 1-1.07",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Add expected and open framing for assigned training.",
+  "title": "Add an optional I-used-it tap after a session is complete.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -50,6 +50,13 @@
       "label": "Shared 1-1.06",
       "at": "2026-08-19",
       "title": "Add expected and open framing for assigned training."
+    },
+    {
+      "patch": 7,
+      "revision": "1.07",
+      "label": "Shared 1-1.07",
+      "at": "2026-08-19",
+      "title": "Add an optional I-used-it tap after a session is complete."
     }
   ]
 }
