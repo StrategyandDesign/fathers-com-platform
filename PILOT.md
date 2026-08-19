@@ -13,12 +13,12 @@ git checkout submit/2          # frozen official copy
 # git checkout review          # moving draft, if you are iterating
 cp .env.example .env.local
 # Leave Supabase keys blank. The app falls back to Pilot.
-# NEXT_PUBLIC_SITE_URL=http://localhost:3000 is already in .env.example
+# NEXT_PUBLIC_SITE_URL can stay http://localhost:3456 (or leave the example as-is)
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000/login
+Open http://127.0.0.1:3456/login
 
 To keep working on this internal line instead:
 
@@ -228,4 +228,4 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000
+Open http://127.0.0.1:3456/login

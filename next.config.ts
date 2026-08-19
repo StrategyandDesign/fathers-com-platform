@@ -30,6 +30,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   serverExternalPackages: ["pdfkit", "web-push"],
   turbopack: {
     root: path.join(__dirname),
@@ -52,13 +53,22 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
+const sentryOptions = {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   silent: true,
   sourcemaps: {
     disable: !process.env.SENTRY_AUTH_TOKEN,
   },
-  disableLogger: true,
-  automaticVercelMonitors: false,
-});
+  webpack: {
+    treeshake: { removeDebugLogging: true },
+    automaticVercelMonitors: false,
+  },
+};
+
+const sentryOn =
+  Boolean(process.env.SENTRY_AUTH_TOKEN) ||
+  Boolean(process.env.SENTRY_DSN) ||
+  Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN);
+
+export default sentryOn ? withSentryConfig(nextConfig, sentryOptions) : nextConfig;
