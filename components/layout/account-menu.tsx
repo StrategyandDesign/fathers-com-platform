@@ -4,12 +4,13 @@ import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { ChevronDown } from "lucide-react";
+
 import { useT } from "@/components/i18n/locale-provider";
 import { UserAvatar } from "@/components/layout/user-avatar";
-import { useTheme } from "@/components/theme/theme-provider";
+import { PaletteSwitcher } from "@/components/theme/palette-switcher";
 import { signOut } from "@/lib/auth/actions";
 import { ROLE_ACCOUNT, type AppRole } from "@/lib/auth/roles";
-import { type Palette } from "@/lib/theme/palette";
 import { headerIconClassName, interactiveControlClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +28,6 @@ export function AccountMenu({
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const t = useT();
-  const { palette, setPalette } = useTheme();
   const menuId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -79,6 +79,13 @@ export function AccountMenu({
             {email ?? chromeLabel}
           </span>
         ) : null}
+        <ChevronDown
+          aria-hidden
+          className={cn(
+            "hidden size-4 shrink-0 text-header-muted lg:block",
+            open && "rotate-180"
+          )}
+        />
       </button>
 
       {open ? (
@@ -99,26 +106,9 @@ export function AccountMenu({
             <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
               {t("account.palette")}
             </p>
-            <div
-              className="mt-2 grid grid-cols-2 gap-1 rounded-lg border border-border bg-muted p-1"
-              role="group"
-              aria-label={t("account.palette")}
-            >
-              {(["dark", "light"] as const).map((option) => (
-                <PaletteChoice
-                  key={option}
-                  option={option}
-                  active={palette === option}
-                  label={
-                    option === "dark" ? t("account.paletteDark") : t("account.paletteLight")
-                  }
-                  onChoose={setPalette}
-                />
-              ))}
+            <div className="mt-2">
+              <PaletteSwitcher compact />
             </div>
-            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              {t("account.paletteHint")}
-            </p>
           </div>
 
           <div className="mt-2 flex flex-col gap-1">
@@ -151,34 +141,5 @@ export function AccountMenu({
         </div>
       ) : null}
     </div>
-  );
-}
-
-function PaletteChoice({
-  option,
-  active,
-  label,
-  onChoose,
-}: {
-  option: Palette;
-  active: boolean;
-  label: string;
-  onChoose: (palette: Palette) => void;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      className={cn(
-        "min-h-10 rounded-md px-2 text-sm",
-        interactiveControlClassName,
-        active
-          ? "bg-card text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground"
-      )}
-      onClick={() => onChoose(option)}
-    >
-      {label}
-    </button>
   );
 }

@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   clientPaletteCookie,
@@ -9,6 +11,10 @@ import {
   parsePalette,
   resolvePalette,
 } from "../lib/theme/palette";
+
+function readRepo(relativePath: string) {
+  return readFileSync(fileURLToPath(new URL(`../${relativePath}`, import.meta.url)), "utf8");
+}
 
 describe("palette", () => {
   it("defaults to dark", () => {
@@ -36,5 +42,14 @@ describe("palette", () => {
   it("writes a client cookie for the chosen palette", () => {
     assert.match(clientPaletteCookie("light"), /^fc_palette=light;/);
     assert.match(clientPaletteCookie("dark"), /SameSite=Lax/);
+  });
+
+  it("puts the switcher in the avatar account menu and on Account", () => {
+    const shell = readRepo("components/layout/role-shell.tsx");
+    const menu = readRepo("components/layout/account-menu.tsx");
+    const account = readRepo("components/layout/account-view.tsx");
+    assert.match(shell, /<AccountMenu/);
+    assert.match(menu, /<PaletteSwitcher compact/);
+    assert.match(account, /<PaletteForm/);
   });
 });
