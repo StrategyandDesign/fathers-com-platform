@@ -1507,6 +1507,8 @@ export const en = {
       catalogTitle: "In your catalog",
       catalogLead:
         "Watch each session the way a father would. Nothing here assigns or marks work complete.",
+      summary: "Training Summary",
+      summaryEmpty: "No summary yet. Super-admin can add it when they edit this training.",
       assignFromTrainings: "Assign from Trainings",
       sessions: "Sessions",
       sessionsLead:
