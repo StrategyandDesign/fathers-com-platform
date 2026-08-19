@@ -198,3 +198,40 @@ Keep Impact as the 30-day cover snapshot. Make **Reports** the evidence packet.
 - Completed: every session in that training is finished
 - In progress: at least one session finished, not all
 - Not started: assigned (or listed) with zero sessions finished, or none assigned
+
+---
+
+## 8. Phase 3–4 — what landed
+
+Implemented on `cursor/manager-reporting-simplicity-7c78`. No schema change. Same `loadManagerWorkspace` scoping (`groups.manager_id` → members → father rows). A `group_id` that is not one of the manager’s groups returns no rows and `"That group is not yours."`
+
+### New login → export path
+
+1. Sign in as Org Manager → `/manager`
+2. Reports card shows men / completed / in progress (same math as the file)
+3. **Download CSV** (one click) or header **Reports** → **Download CSV**
+4. Optional: filter by group, training, status, or program-activity dates, then download again
+
+### Files changed
+
+- `lib/manager/reports.ts` — assignment-level builder, date semantics, CSV packet
+- `lib/manager/report-pdf.ts` — matching columns + definition line
+- `app/api/manager/reports/export/route.ts` — passes organization and filters into the file
+- `app/(manager)/manager/reports/page.tsx` — tiles, definitions, group filter, assignment table
+- `app/(manager)/manager/page.tsx` — report strip + Download CSV; dashboard tile says Enrolled
+- `components/layout/manager-header-menu.tsx` — Reports pill
+- `lib/i18n/messages/en.ts`, `lib/i18n/messages/he.ts`, `lib/i18n/flash.ts`
+- `tests/manager-reports.test.ts`
+
+### Export fields now
+
+Name, Participant ID, Group, Training, Status, Sessions completed, Sessions total, Assigned on, Completed on, Certificate serial, Certificate issued, Last program activity, Generated at UTC, Organization. CSV opens with `#` definitions.
+
+### Still needs live testing with directors
+
+- Whether they want “none assigned” rows in the packet or only assigned trainings
+- Whether Participant ID (account UUID) is enough without an org-internal ID
+- Assigned-by **name** (we store the assigner UUID only)
+- Timezone of “program activity” dates (UTC day)
+- Whether Impact’s 30-day “currently active” still confuses people next to Enrolled (Impact was left alone on purpose)
+- Real cohort size and Excel comfort with the `#` definition block
