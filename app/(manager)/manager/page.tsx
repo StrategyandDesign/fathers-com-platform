@@ -299,7 +299,7 @@ export default async function ManagerHomePage({
             )}
           </div>
           <Link
-            href="/manager/participants#status"
+            href="/manager/participants#assign"
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
             {t("manager.dashboard.viewParticipants")}

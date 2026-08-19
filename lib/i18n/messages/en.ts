@@ -1108,7 +1108,7 @@ export const en = {
     },
     participants: {
       title: "Participants",
-      lead: "Who has which training. Assign from the board, or open anyone.",
+      lead: "Open anyone. Assign stays on this page.",
       goneQuiet: "Gone quiet",
       goneQuietLead:
         "No activity in 14 days, and training is still open. A note emails only if he left session reminders on.",

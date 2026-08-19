@@ -4,12 +4,12 @@ import { describe, it } from "node:test";
 import { managerAssignDestination } from "../lib/manager/return-path";
 
 describe("manager assign return path", () => {
-  it("returns the leader to the status board after a roster assign", () => {
+  it("returns the leader to the assign list after a roster assign", () => {
     const form = new FormData();
     form.set("return_to", "participants");
     assert.deepEqual(managerAssignDestination(form), {
       path: "/manager/participants",
-      hash: "#status",
+      hash: "#assign",
     });
   });
 

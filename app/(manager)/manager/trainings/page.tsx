@@ -247,7 +247,7 @@ export default async function ManagerTrainingsPage({
                       </p>
                     )}
                     <Link
-                      href={`/manager/participants?training=${item.training.id}#status`}
+                      href={`/manager/participants?training=${item.training.id}#assign`}
                       className={cn(
                         buttonVariants({ variant: "outline" }),
                         "w-full min-h-11 sm:w-auto"
@@ -325,7 +325,7 @@ export default async function ManagerTrainingsPage({
                       </p>
                     )}
                     <Link
-                      href={`/manager/participants?training=${training.id}#status`}
+                      href={`/manager/participants?training=${training.id}#assign`}
                       className={cn(
                         buttonVariants({ variant: "outline" }),
                         "w-full min-h-11 sm:w-auto"

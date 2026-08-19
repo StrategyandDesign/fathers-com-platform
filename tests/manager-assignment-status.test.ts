@@ -174,7 +174,7 @@ describe("cohort status and board", () => {
   });
 });
 
-describe("dashboard assignment status", () => {
+describe("hidden assignment surfaces", () => {
   it("does not render the assignment status strip on Home", () => {
     const page = readFileSync(
       fileURLToPath(new URL("../app/(manager)/manager/page.tsx", import.meta.url)),
@@ -182,5 +182,14 @@ describe("dashboard assignment status", () => {
     );
     assert.doesNotMatch(page, /AssignmentStatusStrip/);
     assert.doesNotMatch(page, /assignmentStatus/);
+  });
+
+  it("does not render the who-has-what board on Participants", () => {
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/(manager)/manager/participants/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.doesNotMatch(page, /AssignmentBoard/);
+    assert.doesNotMatch(page, /buildAssignmentBoard/);
   });
 });

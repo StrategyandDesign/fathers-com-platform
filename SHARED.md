@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.08**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.09**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -25,3 +25,4 @@ The badge on this checkout is **Shared 1-1.08**. It ticks on each push of the Sh
 | **1.06** | undefined | Add expected and open framing for assigned training. |
 | **1.07** | undefined | Add an optional I-used-it tap after a session is complete. |
 | **1.08** | undefined | Collapse audit sessions until a leader opens one. |
+| **1.09** | undefined | Hide assignment status on the manager dashboard. |
