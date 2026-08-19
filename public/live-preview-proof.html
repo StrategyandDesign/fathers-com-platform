@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Live preview loop</title>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      background: #0b0d10;
+      color: #f4f1ea;
+    }
+    main { max-width: 760px; margin: 0 auto; padding: 48px 24px; }
+    .ok {
+      display: inline-block;
+      background: #1f6a3a;
+      color: #e8ffe9;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+    }
+    h1 { font-size: 30px; margin: 16px 0 8px; }
+    p { color: #c6c0b4; line-height: 1.5; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #f4f1ea;
+    }
+    .card {
+      background: #161a1f;
+      border: 1px solid #2a313a;
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="ok">This page arrived through the live preview loop</p>
+    <h1>Your local app is following GitHub</h1>
+    <p>
+      If you can see this at <code>/live-preview-proof.html</code> on the
+      checkout that is running <code>npm run dev</code>, the Cloud Agent
+      push already fast-forwarded this branch and Next.js served the new file.
+    </p>
+    <div class="card">
+      <p>
+        After one restart of <code>npm run dev</code> on this branch, later
+        agent pushes land in a few seconds. Dirty local files are left alone.
+      </p>
+    </div>
+  </main>
+</body>
+</html>
