@@ -1,10 +1,10 @@
 import Link from "next/link";
 
+import { AdminCatalogDesk } from "@/components/admin/catalog-desk";
 import { AdminDeskList, AdminDeskRow } from "@/components/admin/desk-list";
 import { DevelopmentStatusBadge } from "@/components/admin/development-status";
 import { AdminFilmFlags } from "@/components/admin/film-flags";
 import { ReleaseStatusBadge } from "@/components/admin/release-status";
-import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { loadAdminTrainings } from "@/lib/admin/data";
@@ -27,17 +27,16 @@ export default async function AdminTrainingsPage({
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">Trainings</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            You create and share trainings with organization Leaders. Leaders
-            then decide what their fathers receive. Structure sessions, Stage
-            the Father path, mark Ready, then Release.
-          </p>
-        </div>
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+    <AdminCatalogDesk
+      title="Trainings"
+      lead="You create and share trainings with organization Leaders. Leaders then decide what their fathers receive. Structure sessions, Stage the Father path, mark Ready, then Release."
+      error={flash.error}
+      notice={flash.notice}
+      archivedView={archivedView}
+      activeHref="/admin/trainings"
+      archivedHref="/admin/trainings?view=archived"
+      actions={
+        <>
           <Link
             href="/admin/trainings/sources"
             className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
@@ -47,29 +46,9 @@ export default async function AdminTrainingsPage({
           <Link href="/admin/trainings/new" className={cn(buttonVariants(), "w-full sm:w-auto")}>
             New training
           </Link>
-        </div>
-      </div>
-      <Flash error={flash.error} notice={flash.notice} />
-
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href="/admin/trainings"
-          className={cn(
-            buttonVariants({ variant: archivedView ? "outline" : "default", size: "sm" })
-          )}
-        >
-          Active
-        </Link>
-        <Link
-          href="/admin/trainings?view=archived"
-          className={cn(
-            buttonVariants({ variant: archivedView ? "default" : "outline", size: "sm" })
-          )}
-        >
-          Archived
-        </Link>
-      </div>
-
+        </>
+      }
+    >
       <AdminDeskList
         countHeader="Sessions"
         actionHeader="Stage"
@@ -122,6 +101,6 @@ export default async function AdminTrainingsPage({
           </AdminDeskRow>
         ))}
       </AdminDeskList>
-    </div>
+    </AdminCatalogDesk>
   );
 }

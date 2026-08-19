@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import {
   assessmentDeskNote,
   assessmentDevelopmentStatus,
+  assessmentEditedAt,
   assessmentEditedLabel,
   assessmentReleaseState,
   keystoneDeskItem,
@@ -22,15 +23,17 @@ describe("admin assessment desk", () => {
     assert.equal(item.developmentStatus, "ready_for_review");
     assert.equal(item.releaseState, "catalog");
     assert.equal(item.questionCount, 128);
+    assert.equal(item.kindLabel, "Platform assessment");
     assert.equal(item.actionLabel, "Release");
+    assert.equal(item.archived, false);
+    assert.equal(item.editedAt, null);
     assert.equal(
-      item.note,
-      "Not in Leader review yet. Every organization can already offer it."
+      assessmentEditedLabel({ releasedAt: null, firstReleasedAt: null }),
+      "Edited —"
     );
-    assert.equal(item.editedLabel, "Not released yet");
   });
 
-  it("counts accepted and waiting organizations after release", () => {
+  it("uses the same edited stamp as the Trainings list after release", () => {
     const item = keystoneDeskItem({
       assessmentKey: KEYSTONE_ASSESSMENT_KEY,
       releasedAt: "2026-08-18T12:00:00Z",
@@ -45,8 +48,15 @@ describe("admin assessment desk", () => {
 
     assert.equal(item.developmentStatus, "released");
     assert.equal(item.releaseState, "released");
-    assert.equal(item.note, "1 accepted · 1 waiting");
-    assert.match(item.editedLabel, /^Released /);
+    assert.equal(item.editedAt, "2026-08-18T12:00:00Z");
+    assert.match(
+      assessmentEditedLabel({
+        releasedAt: "2026-08-18T12:00:00Z",
+        firstReleasedAt: "2026-08-01T12:00:00Z",
+      }),
+      /^Edited /
+    );
+    assert.equal(item.archived, false);
   });
 
   it("marks an un-released instrument ready, not back in the open catalog", () => {
@@ -64,12 +74,12 @@ describe("admin assessment desk", () => {
       }),
       "Un-released. Leaders cannot accept it again until you release it."
     );
-    assert.match(
-      assessmentEditedLabel({
+    assert.equal(
+      assessmentEditedAt({
         releasedAt: null,
         firstReleasedAt: "2026-08-01T12:00:00Z",
       }),
-      /^Last released /
+      "2026-08-01T12:00:00Z"
     );
   });
 });

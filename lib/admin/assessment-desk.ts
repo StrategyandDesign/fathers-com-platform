@@ -12,9 +12,9 @@ export type AdminAssessmentDeskItem = {
   actionHref: string;
   actionLabel: string;
   questionCount: number;
-  subtitle: string;
-  editedLabel: string;
-  note: string | null;
+  kindLabel: string;
+  editedAt: string | null;
+  archived: boolean;
   developmentStatus: DevelopmentStatus;
   releaseState: TrainingReleaseState;
 };
@@ -49,20 +49,18 @@ export function assessmentDeskNote(input: {
   return "Not in Leader review yet. Every organization can already offer it.";
 }
 
+export function assessmentEditedAt(input: {
+  releasedAt: string | null;
+  firstReleasedAt: string | null;
+}): string | null {
+  return input.releasedAt ?? input.firstReleasedAt ?? null;
+}
+
 export function assessmentEditedLabel(input: {
   releasedAt: string | null;
   firstReleasedAt: string | null;
 }): string {
-  if (input.releasedAt) return `Released ${formatEditedAt(input.releasedAt)}`;
-  if (input.firstReleasedAt) return `Last released ${formatEditedAt(input.firstReleasedAt)}`;
-  return "Not released yet";
-}
-
-function countReviews(
-  targets: Array<{ reviewStatus: AdminReviewStatus | null }>,
-  status: AdminReviewStatus
-) {
-  return targets.filter((row) => row.reviewStatus === status).length;
+  return `Edited ${formatEditedAt(assessmentEditedAt(input))}`;
 }
 
 export function keystoneDeskItem(keystone: {
@@ -71,8 +69,6 @@ export function keystoneDeskItem(keystone: {
   firstReleasedAt: string | null;
   releaseTargets: Array<{ reviewStatus: AdminReviewStatus | null }>;
 }): AdminAssessmentDeskItem {
-  const accepted = countReviews(keystone.releaseTargets, "accepted");
-  const pending = countReviews(keystone.releaseTargets, "pending");
   const release = {
     releasedAt: keystone.releasedAt,
     firstReleasedAt: keystone.firstReleasedAt,
@@ -85,9 +81,9 @@ export function keystoneDeskItem(keystone: {
     actionHref: "/admin/assessments/keystone#release",
     actionLabel: "Release",
     questionCount: PROFILE_QUESTION_COUNT,
-    subtitle: `${PROFILE_QUESTION_COUNT} questions · Platform assessment`,
-    editedLabel: assessmentEditedLabel(release),
-    note: assessmentDeskNote({ ...release, accepted, pending }),
+    kindLabel: "Platform assessment",
+    editedAt: assessmentEditedAt(release),
+    archived: false,
     developmentStatus: assessmentDevelopmentStatus(release),
     releaseState: assessmentReleaseState(release),
   };
