@@ -2,15 +2,18 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
+  formatSharedLabel,
   isInternalRemote,
   isSharedRemote,
   nextSharedMark,
+  parseDeskRevisions,
   parseSharedLedger,
   readSharedMark,
   renderSharedLedger,
   shouldPreserve,
   upsertLedgerRow,
 } from "../scripts/publish-shared.mjs";
+import { nextSharedPatch, shouldBumpSharedPatch } from "../scripts/shared-revision.mjs";
 
 describe("shared publish marks", () => {
   it("numbers the next mark from shared/ tags and starts at 1", () => {
@@ -55,6 +58,46 @@ describe("shared publish marks", () => {
     });
     assert.equal(updated.length, 1);
     assert.equal(updated[0].internalSha, "cafebab");
+    assert.doesNotMatch(markdown, /Desk revisions/);
+  });
+
+  it("keeps desk revisions under the Shared 1 mark", () => {
+    const markdown = renderSharedLedger(
+      [
+        {
+          mark: 1,
+          date: "2026-08-19",
+          tag: "shared/1",
+          internalSha: "2549c76",
+          title: "Make the shared-repo sync script run on its own.",
+        },
+      ],
+      [
+        {
+          revision: "1.01",
+          date: "2026-08-19",
+          title: "Show Shared 1-1.01 on the desk and tick it on each push.",
+          label: "Shared 1-1.01",
+        },
+      ]
+    );
+    const rows = parseDeskRevisions(markdown);
+    assert.equal(rows.length, 1);
+    assert.equal(rows[0].revision, "1.01");
+    assert.match(markdown, /Shared 1-1.01/);
+    assert.match(markdown, /does not create Shared 2/);
+    assert.equal(formatSharedLabel(1, 1), "Shared 1-1.01");
+  });
+
+  it("ticks the desk patch once per push", () => {
+    assert.equal(shouldBumpSharedPatch(0, 0, 0), true);
+    assert.equal(nextSharedPatch(0, 0, 0), 1);
+    assert.equal(shouldBumpSharedPatch(0, 0, 1), false);
+    assert.equal(nextSharedPatch(0, 0, 1), 1);
+    assert.equal(shouldBumpSharedPatch(1, 1, 1), true);
+    assert.equal(nextSharedPatch(1, 1, 1), 2);
+    assert.equal(shouldBumpSharedPatch(1, 2, 2), false);
+    assert.equal(nextSharedPatch(1, 2, 2), 2);
   });
 
   it("reads the local Shared badge file", () => {
@@ -71,6 +114,7 @@ describe("shared publish marks", () => {
     );
     assert.equal(mark?.mark, 2);
     assert.equal(mark?.tag, "shared/2");
+    assert.equal(mark?.label, "Shared 2");
     assert.equal(readSharedMark("{"), null);
   });
 });

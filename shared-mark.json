@@ -1,9 +1,20 @@
 {
   "mark": 1,
+  "patch": 1,
+  "label": "Shared 1-1.01",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Make the shared-repo sync script run on its own.",
-  "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1"
+  "title": "Show Shared 1-1.01 on the desk and tick it on each push.",
+  "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
+  "revisions": [
+    {
+      "patch": 1,
+      "revision": "1.01",
+      "label": "Shared 1-1.01",
+      "at": "2026-08-19",
+      "title": "Show Shared 1-1.01 on the desk and tick it on each push."
+    }
+  ]
 }

@@ -61,7 +61,7 @@ function parseSharedLedger(markdown) {
   return rows;
 }
 
-function renderSharedLedger(rows) {
+function renderSharedLedger(rows, mark = {}) {
   const lines = [
     "# Shared marks",
     "",
@@ -81,6 +81,21 @@ function renderSharedLedger(rows) {
     );
   }
   lines.push("");
+  const revisions = mark.revisions ?? [];
+  if (!revisions.length) return lines.join("\n");
+  const current = revisions[revisions.length - 1];
+  lines.push(
+    "## Desk revisions",
+    "",
+    `The badge on this checkout is **${current.label || `Shared ${current.revision}`}**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.`,
+    "",
+    "| Revision | Date (UTC) | What landed |",
+    "|---|---|---|",
+  );
+  for (const row of revisions) {
+    lines.push(`| **${row.revision}** | ${row.date || row.at} | ${row.title} |`);
+  }
+  lines.push("");
   return lines.join("\n");
 }
 
@@ -94,7 +109,7 @@ function writeMark(dir, mark, existingMarkdown) {
     title: mark.title,
   });
   const rows = [...byMark.values()].sort((a, b) => a.mark - b.mark);
-  writeFileSync(path.join(dir, SHARED_LEDGER), renderSharedLedger(rows));
+  writeFileSync(path.join(dir, SHARED_LEDGER), renderSharedLedger(rows, mark));
   writeFileSync(path.join(dir, SHARED_MARK_FILE), `${JSON.stringify(mark, null, 2)}\n`);
 }
 
@@ -138,14 +153,20 @@ export async function syncFromInternal() {
     .map((line) => line.trim())
     .filter(Boolean);
   const markNumber = nextSharedMark(tags);
+  const overlaid = existsSync(path.join(ROOT, SHARED_MARK_FILE))
+    ? JSON.parse(readFileSync(path.join(ROOT, SHARED_MARK_FILE), "utf8"))
+    : {};
   const mark = {
     mark: markNumber,
+    patch: Number(overlaid.patch) || 0,
+    label: typeof overlaid.label === "string" ? overlaid.label : `Shared ${markNumber}`,
     tag: `${SHARED_TAG_PREFIX}${markNumber}`,
     at: new Date().toISOString(),
     internalSha,
     sharedSha: "",
     title,
     url: `https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/${markNumber}`,
+    revisions: Array.isArray(overlaid.revisions) ? overlaid.revisions : [],
   };
   writeMark(
     ROOT,
