@@ -59,11 +59,11 @@ export default async function AdminTrainingStagePage({
         <Link href="/admin/trainings" className={interactiveLinkClassName}>
           Trainings
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <Link href={paths.edit} className={interactiveLinkClassName}>
           {training.title}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>Staging</span>
       </p>
 
@@ -182,7 +182,7 @@ export default async function AdminTrainingStagePage({
                       interactiveSurfaceClassName
                     )}
                   >
-                    <div className="h-28 overflow-hidden rounded-t-xl bg-[#101510] sm:h-32">
+                    <div className="h-28 overflow-hidden rounded-t-xl bg-cover sm:h-32">
                       <CoverPhoto src={coverSrc} />
                     </div>
                     <div className="p-4 sm:p-5">

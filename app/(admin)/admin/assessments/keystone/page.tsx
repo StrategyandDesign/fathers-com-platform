@@ -34,7 +34,7 @@ export default async function AdminKeystonePage({
         <Link href="/admin/assessments" className={interactiveLinkClassName}>
           Assessments
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span className="min-w-0">Keystone Assessment</span>
       </p>
       <Flash error={flash.error} notice={flash.notice} />
@@ -71,7 +71,7 @@ export default async function AdminKeystonePage({
 
         {alreadyReleased ? (
           <div className="mt-5 space-y-5">
-            <div className="rounded-lg border border-input bg-black/30 px-4 py-3">
+            <div className="rounded-lg border border-input bg-inset px-4 py-3">
               <p className="font-medium">Released {formatShortDate(keystone.releasedAt)}</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 by {keystone.releasedByName ?? "Super-admin"}

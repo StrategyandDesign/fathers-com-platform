@@ -1,0 +1,4 @@
+import { PALETTE_COOKIE, PALETTE_STORAGE_KEY } from "@/lib/theme/palette";
+
+/** Runs before paint so the first frame matches the stored palette. */
+export const PALETTE_BOOT_SCRIPT = `(function(){try{var k=${JSON.stringify(PALETTE_COOKIE)};var s=${JSON.stringify(PALETTE_STORAGE_KEY)};var c=document.cookie.split("; ").find(function(r){return r.indexOf(k+"=")===0});var fromCookie=c?decodeURIComponent(c.slice(k.length+1)):"";var fromStore="";try{fromStore=localStorage.getItem(s)||""}catch(e){}var saved=fromCookie==="light"||fromCookie==="dark"?fromCookie:fromStore==="light"||fromStore==="dark"?fromStore:"";var palette=saved||"dark";var root=document.documentElement;root.classList.remove("light","dark");root.classList.add(palette==="light"?"light":"dark");root.style.colorScheme=palette;root.setAttribute("data-palette",palette)}catch(e){document.documentElement.classList.add("dark")}})();`;

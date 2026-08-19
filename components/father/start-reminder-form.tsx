@@ -45,7 +45,7 @@ export function StartReminderForm({
               className={cn(
                 "flex min-h-12 min-w-0 cursor-pointer items-center justify-center rounded-lg border border-border px-3 text-center text-sm",
                 interactiveControlClassName,
-                "has-[:checked]:border-primary/50 has-[:checked]:bg-white/5"
+                "has-[:checked]:border-primary/50 has-[:checked]:bg-hover"
               )}
             >
               <input

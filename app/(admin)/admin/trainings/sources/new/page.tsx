@@ -29,11 +29,11 @@ export default async function AdminBringInTrainingPage({
         <Link href="/admin/trainings" className={interactiveLinkClassName}>
           Trainings
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <Link href="/admin/trainings/sources" className={interactiveLinkClassName}>
           Bring in
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>New</span>
       </p>
       <div>

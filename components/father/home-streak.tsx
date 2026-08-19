@@ -83,7 +83,7 @@ export function HomeStreakRow({
       </button>
       <dialog
         ref={dialogRef}
-        className="fixed inset-x-4 bottom-4 top-auto mb-0 w-[calc(100%-2rem)] max-w-xl rounded-xl border border-border bg-card p-5 text-foreground shadow-none backdrop:bg-black/50"
+        className="fixed inset-x-4 bottom-4 top-auto mb-0 w-[calc(100%-2rem)] max-w-xl rounded-xl border border-border bg-card p-5 text-foreground shadow-none backdrop:bg-overlay"
       >
         <p className="text-base font-medium">{weekLabel(t, weeks)}</p>
         {weeks > 0 ? (

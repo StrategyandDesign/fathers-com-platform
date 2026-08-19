@@ -246,7 +246,7 @@ export default async function ManagerHomePage({
               {groups.map((group) => (
                 <div
                   key={group.id}
-                  className="flex flex-col gap-3 rounded-lg border border-input bg-black/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-3 rounded-lg border border-input bg-inset px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-medium">{group.name}</p>
@@ -297,7 +297,7 @@ export default async function ManagerHomePage({
                       href={`/manager/participants/${item.fatherId}`}
                       className={cn("flex items-center gap-3 px-3 py-3", interactiveSurfaceClassName)}
                     >
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-medium">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-xs font-medium">
                         {initials(item.name)}
                       </span>
                       <span className="min-w-0 flex-1">

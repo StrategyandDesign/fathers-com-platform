@@ -40,18 +40,18 @@ export default async function AdminTrainingIntakePage({
         <Link href="/admin/trainings" className={interactiveLinkClassName}>
           Trainings
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <Link href="/admin/trainings/sources" className={interactiveLinkClassName}>
           Bring in
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <Link
           href={`/admin/trainings/sources/${intake.sourceId}`}
           className={interactiveLinkClassName}
         >
           {intake.sourceName}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span className="min-w-0">{intake.title}</span>
       </p>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">

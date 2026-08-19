@@ -114,7 +114,7 @@ export default async function ReviewerImpactSummaryPage({
         <Link href={backHref} className={interactiveLinkClassName}>
           {t("reviewer.title")}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>{t("reviewer.summary.crumb")}</span>
       </p>
 

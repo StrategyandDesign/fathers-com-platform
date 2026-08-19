@@ -21,16 +21,28 @@ const ITEMS = [
   },
 ] as const;
 
-export function ManagerHeaderMenu() {
+export function ManagerHeaderMenu({
+  tone = "page",
+}: {
+  tone?: "page" | "header";
+}) {
   const pathname = usePathname();
   const t = useT();
+  const header = tone === "header";
 
   return (
     <nav
       aria-label={t("nav.dashboardMenu")}
       className="shrink-0 max-w-full"
     >
-      <div className="flex h-10 items-center gap-0.5 rounded-lg border border-border bg-card p-0.5">
+      <div
+        className={cn(
+          "flex h-10 items-center gap-0.5 rounded-lg border p-0.5",
+          header
+            ? "border-header-border bg-header-accent"
+            : "border-border bg-card"
+        )}
+      >
         {ITEMS.map((item) => {
           const active = item.match(pathname);
           return (
@@ -42,8 +54,10 @@ export function ManagerHeaderMenu() {
                 "inline-flex h-9 shrink-0 items-center rounded-md px-2.5 text-xs whitespace-nowrap sm:px-3",
                 interactiveControlClassName,
                 active
-                  ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                  ? "bg-primary/20 text-primary"
+                  : header
+                    ? "text-header-muted hover:bg-header-hover hover:text-header-foreground"
+                    : "text-muted-foreground hover:bg-hover hover:text-foreground"
               )}
             >
               {t(item.labelKey)}

@@ -97,7 +97,7 @@ export function NotificationPrefs({
                 <span
                   className={cn(
                     "relative h-6 w-11 rounded-full transition-colors duration-150 ease-out",
-                    prefs[item.key] ? "bg-primary" : "bg-white/15"
+                    prefs[item.key] ? "bg-primary" : "bg-foreground/15"
                   )}
                 >
                   <span

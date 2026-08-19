@@ -14,7 +14,7 @@ export function AssessmentPhotoPlate({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border border-border bg-[#101510]",
+        "relative overflow-hidden rounded-xl border border-border bg-cover",
         className
       )}
     >
@@ -26,7 +26,7 @@ export function AssessmentPhotoPlate({
           alt=""
           className="h-full w-full object-cover object-[center_62%] opacity-45"
         />
-        <div className="absolute inset-0 bg-[#141414]/50" />
+        <div className="absolute inset-0 bg-card/50" />
         <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a]/55 via-[#0a0a0a]/25 to-transparent" />
         {completed ? (
           <div className="absolute inset-0 bg-gradient-to-br from-[#1c1c1c]/70 to-[#101510]/80" />

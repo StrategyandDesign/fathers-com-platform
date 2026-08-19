@@ -58,7 +58,7 @@ export async function SessionSteps({
         const Icon = step.icon;
         const className = cn(
           "relative flex min-h-[5.5rem] flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card px-1 py-3 text-center sm:min-h-24 sm:gap-1.5 sm:px-1.5 lg:min-h-[7.5rem] lg:gap-3 lg:px-4 lg:py-5",
-          isCurrent && "border-white/20",
+          isCurrent && "border-border",
           step.locked && "opacity-55"
         );
 
