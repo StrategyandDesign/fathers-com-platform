@@ -88,14 +88,14 @@ export async function AccountView({
         </div>
       </section>
 
+      <PaletteForm />
+
       {role === "manager" ? (
         <>
           <DisplayNameForm savedName={account.fullName?.trim() ?? ""} />
           <DisplayTitleForm savedTitle={account.displayTitle} />
         </>
       ) : null}
-
-      <PaletteForm />
 
       <LanguageForm savedLocale={account.locale} />
 
