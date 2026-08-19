@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "node scripts/live-preview/dev.mjs",
+    "dev:app": "next dev --turbopack",
+    "live-preview:pull": "node scripts/live-preview/local-pull.mjs",
+    "live-preview:push": "node scripts/live-preview/agent-push.mjs",
+    "prepare": "node scripts/live-preview/install-hooks.mjs",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint"
