@@ -1,0 +1,5 @@
+{
+  "task.allowAutomaticTasks": "on",
+  "git.autofetch": true,
+  "git.autofetchPeriod": 15
+}
