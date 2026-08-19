@@ -5,7 +5,7 @@ import {
   type Training,
 } from "@/lib/father/types";
 
-export type ManagerCatalogStatus = "pending" | "ready" | "catalog";
+export type ManagerCatalogStatus = "pending" | "ready" | "catalog" | "declined";
 
 export type ManagerCatalogSource = {
   training: Training;
@@ -20,6 +20,7 @@ export type ManagerCatalogItem = {
   sessionCount: number;
   status: ManagerCatalogStatus;
   href: string;
+  groupId?: string;
   groupName?: string;
 };
 
@@ -40,6 +41,7 @@ function asItem(
     sessionCount: source.sessionCount,
     status,
     href: reviewHref(source.training.id, source.groupId),
+    groupId: source.groupId,
     groupName: showGroupName ? source.groupName : undefined,
   };
 }
@@ -48,6 +50,8 @@ export function buildManagerCatalog(input: {
   trainings: Training[];
   pending: ManagerCatalogSource[];
   accepted: ManagerCatalogSource[];
+  declined?: ManagerCatalogSource[];
+  defaultGroupId?: string;
   showGroupName?: boolean;
 }): ManagerCatalogItem[] {
   const showGroupName = Boolean(input.showGroupName);
@@ -66,6 +70,12 @@ export function buildManagerCatalog(input: {
     covered.add(source.training.id);
   }
 
+  for (const source of input.declined ?? []) {
+    if (!isTrainingPublished(source.training)) continue;
+    items.push(asItem(source, "declined", showGroupName));
+    covered.add(source.training.id);
+  }
+
   for (const training of input.trainings) {
     if (!isTrainingPublished(training) || !isLegacyCatalogTraining(training)) continue;
     if (covered.has(training.id)) continue;
@@ -74,6 +84,7 @@ export function buildManagerCatalog(input: {
         {
           training,
           sessionCount: catalogSessionTotal(training, training.session_count),
+          groupId: input.defaultGroupId,
         },
         "catalog",
         false

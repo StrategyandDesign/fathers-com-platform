@@ -64,6 +64,13 @@ export default async function ManagerTrainingsPage({
       groupId: item.review.group_id,
       groupName: item.groupName,
     })),
+    declined: declined.map((item) => ({
+      training: item.training,
+      sessionCount: item.sessionCount,
+      groupId: item.review.group_id,
+      groupName: item.groupName,
+    })),
+    defaultGroupId: groups[0]?.id,
     showGroupName: groups.length > 1,
   });
 

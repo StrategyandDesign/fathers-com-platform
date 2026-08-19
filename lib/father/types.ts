@@ -51,7 +51,7 @@ export function isTrainingAssignable(
 ) {
   if (!isTrainingPublished(training)) return false;
   if (training.released_at) return reviewStatus === "accepted";
-  return isLegacyCatalogTraining(training);
+  return isLegacyCatalogTraining(training) && reviewStatus !== "declined";
 }
 
 export function isTrainingVisibleInCatalog(
@@ -66,11 +66,13 @@ export function isTrainingVisibleInCatalog(
     assigned: boolean;
     hasProgress: boolean;
     hasCertificate: boolean;
+    declined?: boolean;
   }
 ) {
   if (access.assigned || access.hasProgress || access.hasCertificate) return true;
   if (!isTrainingPublished(training)) return false;
   if (training.released_at) return access.accepted;
+  if (access.declined) return false;
   return isLegacyCatalogTraining(training);
 }
 
