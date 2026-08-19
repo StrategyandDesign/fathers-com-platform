@@ -45,7 +45,7 @@ export async function RoleShell({
 
   return (
     <div className="min-h-svh bg-background">
-      <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-border bg-background/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden lg:px-5">
+      <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-header-border bg-header px-3 pt-[env(safe-area-inset-top)] text-header-foreground print:hidden lg:px-5">
         <div className="flex min-w-0 shrink-0 items-center gap-1.5 lg:gap-3">
           {role !== "father" && role !== "manager" ? <StaffMenu role={role} /> : null}
           <BrandLogo href={funnel ? "/father/start" : ROLE_HOME[role]} />
