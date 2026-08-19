@@ -19,6 +19,7 @@ describe("review session list", () => {
     assert.match(list, /<details/);
     assert.doesNotMatch(list, /<details[^>]*\sopen[\s>]/);
     assert.match(list, /<summary/);
+    assert.match(list, /session\.keyline/);
     assert.match(list, /hostedVideoEmbed/);
     assert.match(list, /checkinQuestionsFor/);
     assert.doesNotMatch(list, /SessionCheckinFields/);

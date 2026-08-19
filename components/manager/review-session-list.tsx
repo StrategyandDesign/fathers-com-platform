@@ -40,6 +40,9 @@ export function ReviewSessionList({
                     {t("manager.reviewDetail.sessionN", { n: session.session_number })}
                   </p>
                   <h3 className="mt-1 font-heading text-lg font-semibold">{session.title}</h3>
+                  {session.keyline ? (
+                    <p className="mt-1 text-sm text-muted-foreground">{session.keyline}</p>
+                  ) : null}
                 </div>
                 <ChevronDown
                   aria-hidden
@@ -47,11 +50,6 @@ export function ReviewSessionList({
                 />
               </summary>
               <div className="space-y-4 border-t border-border">
-                {session.keyline ? (
-                  <p className="px-4 pt-4 text-sm text-muted-foreground sm:px-6">
-                    {session.keyline}
-                  </p>
-                ) : null}
                 {embed ? (
                   <div className="aspect-video bg-black">
                     <iframe
