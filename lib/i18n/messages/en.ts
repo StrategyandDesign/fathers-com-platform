@@ -368,7 +368,7 @@ export const en = {
     displayTitleSave: "Save designation",
     logoTitle: "Organization mark",
     logoLead:
-      "Fathers in {name} see this as the left mark on Home. It identifies this group — the same group as the invite code.",
+      "Fathers in {name} see this as the left mark on Home. It identifies this group, the same group as the invite code.",
     logoPreview: "What he sees",
     logoEmpty: "No logo yet. The name still appears.",
     logoUpload: "Upload logo",
@@ -380,7 +380,7 @@ export const en = {
     logoRemoved: "Logo removed. Fathers will see the organization name only.",
     shareTitle: "Anonymous sharing",
     shareLeadFather:
-      "Release anonymous training progress to Fathers.com. Super-admins see counts only — not your name, email, written answers, or notes. Off until you turn it on.",
+      "Release anonymous training progress to Fathers.com. Super-admins see counts only, not your name, email, written answers, or notes. Off until you turn it on.",
     shareLeadManager:
       "Release anonymous counts of assignments, reviews, and certificates you issue. Super-admins do not see names or which organization.",
     shareLeadReviewer:
@@ -1620,7 +1620,7 @@ export const en = {
       title: "Organization Photos",
       backDashboard: "Back to Dashboard",
       logoAndCode:
-        "The logo is the group mark fathers see on the left of Home. It belongs to this invite-code group — a rehab, a unit, or any other organization.",
+        "The logo is the group mark fathers see on the left of Home. It belongs to this invite-code group: a rehab, a unit, or any other organization.",
       inviteCode: "Invite code {code}",
       leadOne:
         "Replace the photos {name} participants see on Home, Assessment, and Trainings. Any photo works. We fit it to the card.",
