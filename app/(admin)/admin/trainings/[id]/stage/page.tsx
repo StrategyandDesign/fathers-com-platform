@@ -150,6 +150,8 @@ export default async function AdminTrainingStagePage({
                     hrefOverride={firstHref}
                     sessionHref={paths.session}
                     hasOverview={hasOverview}
+                    overviewHref={hasOverview ? paths.overview : null}
+                    showOverviewSlot
                     t={t}
                   />
                 ) : (

@@ -591,6 +591,9 @@ export const en = {
       overviewLead:
         "A conversation that introduces this training. It is not one of the sessions.",
       overviewCardLine: "Starts with the overview film",
+      overviewSlotBody:
+        "A short film that introduces this training. It is not one of the sessions.",
+      overviewMissing: "The overview film will appear here.",
       overviewThen: "Then the first open session",
       backToTrainings: "Back to Trainings",
       trainingComplete: "This training is complete.",

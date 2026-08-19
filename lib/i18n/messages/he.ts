@@ -560,6 +560,8 @@ export const he = {
       overviewTitle: "סקירה: {title}",
       overviewLead: "שיחה שמציגה את ההכשרה. זה אינו אחד המפגשים.",
       overviewCardLine: "מתחילים בסרטון הסקירה",
+      overviewSlotBody: "סרט קצר שמציג את ההכשרה. זה אינו אחד המפגשים.",
+      overviewMissing: "סרטון הסקירה יופיע כאן.",
       overviewThen: "ואז המפגש הפתוח הראשון",
       backToTrainings: "חזרה להכשרות",
       trainingComplete: "ההכשרה הזו הושלמה.",
