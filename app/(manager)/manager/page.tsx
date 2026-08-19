@@ -155,7 +155,6 @@ export default async function ManagerHomePage({
           </Link>
         </div>
       </section>
-      <NudgePanel panel={nudgePanel} />
       <CompanionPanel briefing={companion} t={t} />
 
       {reviews.pending.length > 0 || reviews.unread.length > 0 ? (
@@ -320,6 +319,8 @@ export default async function ManagerHomePage({
           </Link>
         </div>
       </section>
+
+      <NudgePanel panel={nudgePanel} />
 
       <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
