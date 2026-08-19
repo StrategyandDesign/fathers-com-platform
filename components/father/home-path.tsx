@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CoverPhoto } from "@/components/brand/cover";
 import { homeTrainingLabel } from "@/lib/father/home";
 import type { Translate } from "@/lib/i18n/translate";
-import { trainingDoorHref } from "@/lib/father/training-door";
+import { trainingContinueHref } from "@/lib/father/training-door";
 import { type Session, type SessionProgress, type Training } from "@/lib/father/types";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ export type HomeShelfItem = {
   gated: boolean;
   next?: Session;
   nextProgress: SessionProgress | null;
+  sessionDots?: Array<{ done?: boolean }>;
   coverSrc?: string | null;
 };
 
@@ -50,7 +51,7 @@ function HomeShelfRow({
           return (
             <Link
               key={card.training.id}
-              href={trainingDoorHref(card)}
+              href={trainingContinueHref(card)}
               className={cn(
                 "w-[9.75rem] shrink-0 overflow-hidden rounded-xl border border-border bg-card",
                 interactiveSurfaceClassName

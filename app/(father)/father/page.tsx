@@ -14,7 +14,7 @@ import { requireRole } from "@/lib/auth/session";
 import { pickHomeAssessment, splitHomeRows } from "@/lib/father/home";
 import { loadFatherHome } from "@/lib/father/data";
 import { loadFatherStreakHome } from "@/lib/father/streak-store";
-import { hasTrainingOverview, trainingContinueHref } from "@/lib/father/training-door";
+import { hasStartedTrainingWork, hasTrainingOverview, trainingContinueHref } from "@/lib/father/training-door";
 import { type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { scheduleDueReminderFlush } from "@/lib/jobs/flush-due-work";
@@ -106,8 +106,7 @@ export default async function FatherHomePage({
   const startWithOverview = Boolean(
     next &&
       hasTrainingOverview(next.training) &&
-      nextCompleted === 0 &&
-      !nextInProgress
+      !hasStartedTrainingWork(nextCompleted, next.progress, nextCard?.sessionDots)
   );
   const upNext = next ? (
     <HomeUpNextCard
@@ -116,6 +115,7 @@ export default async function FatherHomePage({
         next: next.session,
         nextProgress: next.progress,
         completed: nextCompleted,
+        sessionDots: nextCard?.sessionDots,
       })}
       trainingTitle={next.training.title}
       sessionTitle={next.session.title}

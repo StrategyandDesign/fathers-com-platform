@@ -3,6 +3,7 @@ export type Training = {
   slug: string;
   title: string;
   description: string | null;
+  leader_summary?: string | null;
   session_count: number;
   order_index: number;
   published?: boolean | null;

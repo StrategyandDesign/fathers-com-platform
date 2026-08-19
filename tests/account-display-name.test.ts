@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 
 import { parseDisplayName } from "../lib/account/display-name";
 import { managerDisplayTitleLabel } from "../lib/account/display-title";
+import { shouldShowReminderSchedule } from "../lib/account/preferences";
 import { createTranslator } from "../lib/i18n/translate";
 
 describe("parseDisplayName", () => {
@@ -30,5 +31,12 @@ describe("manager display title", () => {
     const t = createTranslator("en");
     assert.equal(managerDisplayTitleLabel("leader", t), "Leader");
     assert.equal(managerDisplayTitleLabel("manager", t), "Manager");
+  });
+});
+
+describe("reminder schedule visibility", () => {
+  it("shows When to send it only while the weekly session reminder is on", () => {
+    assert.equal(shouldShowReminderSchedule({ session_reminders: true }), true);
+    assert.equal(shouldShowReminderSchedule({ session_reminders: false }), false);
   });
 });

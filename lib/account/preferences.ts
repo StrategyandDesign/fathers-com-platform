@@ -137,3 +137,10 @@ export function parseNotificationPreferences(row: unknown): NotificationPreferen
   }
   return prefs;
 }
+
+/** Day/time/quiet hours only apply to the weekly session reminder. */
+export function shouldShowReminderSchedule(
+  prefs: Pick<NotificationPreferences, "session_reminders">
+) {
+  return prefs.session_reminders === true;
+}

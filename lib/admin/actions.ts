@@ -10,6 +10,7 @@ import {
   ARCHIVED_STATUS_ERROR,
   ATTRIBUTION_MAX,
   DEVELOPMENT_NOTES_MAX,
+  LEADER_SUMMARY_MAX,
   READY_REQUIRED_ERROR,
   SKILL_PROMPT_MAX,
   WORKING_TITLE_MAX,
@@ -382,6 +383,13 @@ export async function createTraining(formData: FormData) {
     path,
     "Development notes"
   );
+  const leaderSummary = readCappedText(
+    formData,
+    "leader_summary",
+    LEADER_SUMMARY_MAX,
+    path,
+    "Training Summary"
+  );
   const attribution = readCappedText(formData, "attribution", ATTRIBUTION_MAX, path, "Credit");
 
   if (!title) fail(path, "Title is required.");
@@ -400,6 +408,7 @@ export async function createTraining(formData: FormData) {
       title,
       slug,
       description: description || null,
+      leader_summary: leaderSummary || null,
       published,
       order_index: orderIndex,
       session_count: 0,
@@ -441,6 +450,13 @@ export async function updateTraining(formData: FormData) {
     path,
     "Development notes"
   );
+  const leaderSummary = readCappedText(
+    formData,
+    "leader_summary",
+    LEADER_SUMMARY_MAX,
+    path,
+    "Training Summary"
+  );
   const attribution = readCappedText(formData, "attribution", ATTRIBUTION_MAX, path, "Credit");
   const overviewVideoUrl = String(formData.get("overview_video_url") ?? "").trim();
 
@@ -481,6 +497,7 @@ export async function updateTraining(formData: FormData) {
       title,
       slug,
       description: description || null,
+      leader_summary: leaderSummary || null,
       published,
       order_index: orderIndex,
       working_title: workingTitle || null,

@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import { composeCohortNoteParts, isCohortNoteVisible, normalizeCohortNote } from "../lib/cohort-note/types";
 import { formatShortDateTime } from "../lib/i18n/dates";
@@ -68,5 +70,17 @@ describe("cohort note notifications", () => {
     assert.equal(fatherHomeHref(), "/father");
     assert.equal(isFatherDeepLink("/father"), true);
     assert.equal(normalizeDeepLink("/father"), "/father");
+  });
+});
+
+describe("home update desk", () => {
+  it("does not keep a What they see preview on the composer", () => {
+    const desk = readFileSync(
+      fileURLToPath(new URL("../components/manager/cohort-note-desk.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.doesNotMatch(desk, /notePreview/);
+    assert.doesNotMatch(desk, /noteStampPreview/);
+    assert.match(desk, /noteNowShowing/);
   });
 });
