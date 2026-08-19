@@ -11,6 +11,7 @@ import {
   issueCertificateToFather,
   markSessionsCompleteForFather,
 } from "@/lib/manager/mutations";
+import { redirectManagerAssign } from "@/lib/manager/return-path";
 import { createClient } from "@/lib/supabase/server";
 
 function fail(path: string, message: string): never {
@@ -66,24 +67,28 @@ export async function assignTraining(formData: FormData) {
   const { user } = await requireRole("manager");
   const fatherId = String(formData.get("father_id") ?? "");
   const trainingId = String(formData.get("training_id") ?? "");
-  const path = `/manager/participants/${fatherId}`;
 
   if (!fatherId || !trainingId) {
-    fail(path || "/manager/participants", "Choose a training to assign.");
+    redirectManagerAssign("error", "Choose a training to assign.", formData, fatherId);
   }
 
   const supabase = await createClient();
   const result = await assignTrainingToFather(supabase, user, fatherId, trainingId);
 
   if (result.status === "failed") {
-    fail(path, `${result.reason ?? "The assignment didn’t save."} Try again.`);
+    redirectManagerAssign(
+      "error",
+      `${result.reason ?? "The assignment didn’t save."} Try again.`,
+      formData,
+      fatherId
+    );
   }
   if (result.status === "skipped") {
-    fail(path, "That training is already assigned.");
+    redirectManagerAssign("error", "That training is already assigned.", formData, fatherId);
   }
 
   revalidateManager(fatherId);
-  ok(path, "Training assigned.");
+  redirectManagerAssign("notice", "Training assigned.", formData, fatherId);
 }
 
 export async function markTrainingComplete(formData: FormData) {

@@ -8,6 +8,7 @@ import { UserAvatar } from "@/components/layout/user-avatar";
 import { Button } from "@/components/ui/button";
 import { dateLocale } from "@/lib/i18n/config";
 import { MAX_BULK } from "@/lib/manager/bulk";
+import { runBulkAction } from "@/lib/manager/bulk-actions";
 import { fieldClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -70,6 +71,7 @@ export function ParticipantBulkList({
     ? trainingId
     : (trainingOptions[0]?.id ?? "");
   const scopedSessions = sessions.filter((session) => session.trainingId === effectiveTrainingId);
+  const assignDirect = action === "assign";
 
   function toggle(id: string) {
     setSelected((current) => {
@@ -86,8 +88,9 @@ export function ParticipantBulkList({
   return (
     <div className="space-y-4">
       <form
-        method="get"
-        action="/manager/participants/bulk"
+        {...(assignDirect
+          ? { action: runBulkAction }
+          : { method: "get", action: "/manager/participants/bulk" })}
         className="rounded-xl border border-border bg-card p-4 sm:p-6"
       >
         <h2 className="font-heading text-lg font-semibold">{t("manager.bulk.title")}</h2>
@@ -153,7 +156,7 @@ export function ParticipantBulkList({
               : t("manager.bulk.selected", { n: selected.length })}
           </p>
           <Button type="submit" disabled={selected.length === 0 || !effectiveTrainingId} className="w-full sm:w-auto">
-            {t("manager.bulk.review")}
+            {assignDirect ? t("manager.bulk.assignNow") : t("manager.bulk.review")}
           </Button>
         </div>
       </form>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AssignmentStatusStrip } from "@/components/manager/assignment-status-strip";
 import { CompanionPanel } from "@/components/manager/companion-panel";
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
@@ -20,6 +21,10 @@ import {
 import { loadManagerAssessments } from "@/lib/assessments/data";
 import { CohortNoteDesk } from "@/components/manager/cohort-note-desk";
 import { loadManagerCohortNotes } from "@/lib/cohort-note/data";
+import {
+  listAssignableTrainings,
+  summarizeAssignmentStatus,
+} from "@/lib/manager/assignment-status";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { buildManagerReport } from "@/lib/manager/reports";
 import { buildManagerCatalog } from "@/lib/manager/catalog";
@@ -50,8 +55,27 @@ export default async function ManagerHomePage({
     workspace,
     t,
   });
-  const { groups, summary, needsAttention, participants, trainingProgressFor, certificates } =
-    workspace;
+  const {
+    groups,
+    summary,
+    needsAttention,
+    participants,
+    trainingProgressFor,
+    certificates,
+    reviews: orgReviews,
+  } = workspace;
+  const assignmentStatus = listAssignableTrainings({
+    trainings: workspace.trainings,
+    groups,
+    reviews: orgReviews,
+  }).map((training) =>
+    summarizeAssignmentStatus({
+      training,
+      participants,
+      reviews: orgReviews,
+      progressFor: trainingProgressFor,
+    })
+  );
   const catalog = buildManagerCatalog({
     trainings: workspace.trainings,
     pending: reviews.pending.map((item) => ({
@@ -131,6 +155,12 @@ export default async function ManagerHomePage({
         </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
+      <AssignmentStatusStrip
+        items={assignmentStatus}
+        emptyHref="/manager/trainings#catalog"
+        returnTo="dashboard"
+        t={t}
+      />
       <CohortNoteDesk groups={cohortNotes} />
       <CompanionPanel briefing={companion} t={t} />
 
@@ -289,7 +319,7 @@ export default async function ManagerHomePage({
             )}
           </div>
           <Link
-            href="/manager/participants"
+            href="/manager/participants#status"
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
             {t("manager.dashboard.viewParticipants")}

@@ -840,7 +840,7 @@ export const en = {
   manager: {
     dashboard: {
       title: "Dashboard",
-      lead: "Your group’s progress. Fathers join with the invite code.",
+      lead: "Assign work and see who has it. Fathers join with the invite code.",
       impact: "Impact Snapshot",
       compare: "Compare",
       newTrainings: "Trainings",
@@ -925,6 +925,26 @@ export const en = {
       noteNotYours: "That group is not yours.",
       noteSaveFailed: "The update didn’t post. Try again.",
       noteClearFailed: "The update didn’t clear. Try again.",
+    },
+    status: {
+      title: "Assignment status",
+      lead: "Who has which training. Assign the rest without leaving this page.",
+      openBoard: "Open names",
+      emptyTitle: "Nothing to assign yet",
+      emptyBody: "Include a training for this organization, then assign it from here.",
+      emptyAction: "Open trainings",
+      assignedOf: "{assigned} of {total} assigned",
+      notStartedCount: "{n} not started",
+      inProgressCount: "{n} in progress",
+      doneCount: "{n} done",
+      boardTitle: "Who has what",
+      boardLead: "Each cell is one man and one training. Assign stays on this page.",
+      assign: "Assign",
+      notStarted: "Not started",
+      done: "Done",
+      sessionsShort: "{completed}/{total}",
+      allHaveIt: "All assigned",
+      assignRemainingLead: "Give a training to everyone who does not have it yet.",
     },
     practice: {
       title: "Your training and assessments",
@@ -1043,7 +1063,7 @@ export const en = {
     },
     participants: {
       title: "Participants",
-      lead: "Fathers in your group. Send a Certificate of Completion from the section below, or open anyone.",
+      lead: "Who has which training. Assign from the board, or open anyone.",
       goneQuiet: "Gone quiet",
       goneQuietLead:
         "No activity in 14 days, and training is still open. A note emails only if he left session reminders on.",
@@ -1471,7 +1491,8 @@ export const en = {
     },
     bulk: {
       title: "Bulk actions",
-      lead: "Select participants below, then review before anything is saved. No deletions or role changes.",
+      lead: "Assign saves now. Mark complete and certificates still open a review first. No deletions or role changes.",
+      assignNow: "Assign now",
       action: "Action",
       assign: "Assign training",
       complete: "Mark complete",
@@ -1642,7 +1663,7 @@ export const en = {
       waitingEmptyBody: "No new trainings are waiting.",
       cohortTitle: "In your cohort",
       cohortLead:
-        "Open a training to watch the sessions, then assign to the group or choose fathers.",
+        "Assigned, not started, in progress, and done. Assign remaining from this row.",
       cohortEmptyTitle: "No trainings in the cohort yet",
       cohortEmptyBody: "Accept a release above, or request a training.",
       assignedOf: "{assigned} of {total} assigned",
