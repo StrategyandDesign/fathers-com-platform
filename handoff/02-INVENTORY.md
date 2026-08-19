@@ -114,7 +114,7 @@ Status key: **Working** = page exists, gated, linked or is an intentional deep l
 | `lib/` | Server logic, auth, i18n, notifications |
 | `public/` | Brand images, `sw.js` |
 | `supabase/migrations/` from `20260817025510` | Pilot schema |
-| `supabase/sql/` | `promote_pilot_role.sql`, `seed_unit_8200.sql` |
+| `supabase/sql/` | `promote_pilot_role.sql`, `seed_unit_8200.sql`, `seed_returning_home_nwa.sql` |
 | `tests/*.test.ts` | Next.js unit tests |
 | `handoff/` | This package |
 | `*.html`, `assets/`, `build_*.py`, `content/`, `tools/`, `emails/`, `partner-kit/` | Leftover static site. Not served by Next. |

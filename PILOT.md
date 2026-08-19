@@ -1,6 +1,78 @@
 # Clean Pilot — runbook
 
-This Next.js app talks to the **Pilot** Supabase project. The review copy is the isolated repo `fathers-com-clean-pilot`. It is not the old static HTML site.
+This Next.js app talks to the **Pilot** Supabase project. Local and Vercel use that same database, so the seats below work in both places.
+
+## Run locally and on Vercel
+
+### Local (fastest loop)
+
+```bash
+git clone https://github.com/StrategyandDesign/fathers-com-clean-pilot.git
+cd fathers-com-clean-pilot
+git checkout submit/2          # frozen official copy
+# git checkout review          # moving draft, if you are iterating
+cp .env.example .env.local
+# Leave Supabase keys blank. The app falls back to Pilot.
+# NEXT_PUBLIC_SITE_URL=http://localhost:3000 is already in .env.example
+npm install
+npm run dev
+```
+
+Open http://localhost:3000/login
+
+To keep working on this internal line instead:
+
+```bash
+git fetch origin cursor/clean-pilot-ux-refinements-7c78
+git checkout cursor/clean-pilot-ux-refinements-7c78
+npm install
+npm run dev
+```
+
+### Vercel (already live)
+
+| URL | What you get |
+|---|---|
+| https://fathers-com-platform.vercel.app/login | Public production. Current `main` (check-in freeze fix). Same Pilot seats. |
+| https://fathers-com-pilot.vercel.app/login | Live but stale. Do not use this to judge new work. |
+
+Same emails and password work on localhost and on the public production URL. Use two browser profiles if you stay signed in on both.
+
+### Shared pilot password
+
+**`12345`** for every seat in the tables below. Weak on purpose. Pilot only. Not production.
+
+### Returning Home NWA (English)
+
+Invite code for new fathers: `12345`
+
+| Email | Role | Lands on |
+|---|---|---|
+| `father@nwa` | Father | `/father` |
+| `father2@nwa` | Father | `/father` |
+| `manager@nwa` | Leader (Brenda) | `/manager` |
+| `reviewer@nwa` | Reviewer, scoped to NWA | `/reviewer` |
+
+### Unit 8200 (Hebrew)
+
+Invite code: `il`
+
+| Email | Role | Lands on |
+|---|---|---|
+| `father1@il` | Father | `/father` |
+| `father2@il` | Father | `/father` |
+| `manager@il` | Leader | `/manager` |
+| `reviewer@il` | Reviewer, scoped to Unit 8200 | `/reviewer` |
+
+### Super-admin
+
+| Email | Role | Lands on |
+|---|---|---|
+| `admin@fathers` | Super-admin | `/admin` |
+
+Sign out and sign in once if a role looks wrong (JWT refresh). Use three browsers or profiles so cookies do not collide.
+
+Re-run `supabase/sql/seed_returning_home_nwa.sql` or `supabase/sql/seed_unit_8200.sql` in the Pilot SQL editor if a seat loses its organization.
 
 ## Current hosts (probed 18 August 2026)
 

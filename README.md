@@ -21,6 +21,8 @@ npm run dev
 
 Open http://localhost:3000
 
+Pilot seats (password `12345` on local and Vercel): `father@nwa`, `manager@nwa`, `reviewer@nwa`, plus the Unit 8200 `*@il` seats and `admin@fathers`. See `PILOT.md`.
+
 - Lint: `npm run lint`
 - Unit tests: `npx tsx --test tests/*.test.ts`
 - Typecheck: `npx tsc --noEmit`

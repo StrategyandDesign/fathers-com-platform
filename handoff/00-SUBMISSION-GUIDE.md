@@ -86,10 +86,15 @@ Pilot test seats (already documented in `docs/CLEAN-PILOT-AUDITOR-LINK-REPORT.md
 
 | Email | Role |
 |---|---|
-| `father1@il` | father |
+| `father@nwa` | father (Returning Home NWA) |
+| `manager@nwa` | manager / Leader (Brenda) |
+| `reviewer@nwa` | reviewer, scoped to NWA |
+| `father1@il` | father (Unit 8200) |
 | `manager@il` | manager (shown as Leader) |
 | `reviewer@il` | reviewer |
 | `admin@fathers` | admin |
+
+Shared pilot password: `12345`. Same seats work on localhost and Vercel (they share the Pilot database).
 
 Tell the team these are **pilot-only** and must not be reused on any production project.
 
