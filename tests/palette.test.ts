@@ -44,13 +44,13 @@ describe("palette", () => {
     assert.match(clientPaletteCookie("dark"), /SameSite=Lax/);
   });
 
-  it("puts the switcher in the avatar account menu and on Account", () => {
+  it("puts the switcher only on Account", () => {
     const shell = readRepo("components/layout/role-shell.tsx");
     const menu = readRepo("components/layout/account-menu.tsx");
     const account = readRepo("components/layout/account-view.tsx");
     assert.match(shell, /<AccountMenu/);
-    assert.match(shell, /<HeaderPaletteSwitch/);
-    assert.match(menu, /<PaletteSwitcher compact/);
+    assert.doesNotMatch(shell, /HeaderPaletteSwitch|PaletteSwitcher/);
+    assert.doesNotMatch(menu, /PaletteSwitcher|account\.palette/);
     assert.match(account, /<PaletteForm/);
   });
 });
