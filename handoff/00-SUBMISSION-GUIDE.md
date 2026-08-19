@@ -17,8 +17,9 @@ GitHub collaborator access is **per repository**, not per branch. Anyone invited
 | Point them here | Do not point them here |
 |---|---|
 | Isolated repo: https://github.com/StrategyandDesign/fathers-com-clean-pilot | https://github.com/StrategyandDesign/fathers-com-platform |
-| That repo’s `review` branch (clean-pilot Next.js app + UX refinements) | `main` on `fathers-com-platform` |
-| `handoff/` in the isolated repo | Pull request **#109** on the old repo (internal only) |
+| Frozen submit branch `submit/2` (first official stamp, 19 Aug 2026) | `main` on `fathers-com-platform` |
+| Later even submits `submit/4`, `submit/6`, … | Moving `review` unless you mean “current draft” |
+| `SUBMITS.md`, `handoff/`, and the `Submit N` GitHub issues | Pull request **#109** on the old repo (internal only) |
 | | Any `cursor/*-7c78` PR whose **base is `main`** (PRs 103–108) |
 | | Draft PR **#92** (532 files, dirty) |
 | | The `0b8c` stack (PRs 93–99) |
@@ -159,13 +160,17 @@ Do not send `README.md` from `fathers-com-platform` `main`. Do not send `ARCHITE
 ## 5. Recommended message to the technical team
 
 ```text
-Subject: Fathers.com clean-pilot handoff — Next.js review only (not production)
+Subject: Fathers.com clean-pilot — Submit 2 (19 Aug 2026)
 
-Repo (clean-pilot only):
+Repo:
 https://github.com/StrategyandDesign/fathers-com-clean-pilot
 
-Clone:
+Official copy (frozen):
 git clone https://github.com/StrategyandDesign/fathers-com-clean-pilot.git
+cd fathers-com-clean-pilot
+git checkout submit/2
+
+Record: SUBMITS.md and the GitHub issue titled Submit 2.
 
 Start with handoff/00-SUBMISSION-GUIDE.md
 
