@@ -96,6 +96,14 @@ function renderSharedLedger(rows) {
   return lines.join("\n");
 }
 
+function mergeLedgerMarkdown(...markdowns) {
+  const byMark = new Map();
+  for (const markdown of markdowns) {
+    for (const row of parseSharedLedger(markdown)) byMark.set(row.mark, row);
+  }
+  return renderSharedLedger([...byMark.values()].sort((a, b) => a.mark - b.mark));
+}
+
 function writeMark(dir, mark, existingMarkdown) {
   const byMark = new Map(parseSharedLedger(existingMarkdown).map((row) => [row.mark, row]));
   byMark.set(mark.mark, {
@@ -135,6 +143,10 @@ export async function syncFromInternal() {
     return { ok: true, skipped: true, reason: "already-published" };
   }
 
+  const ledgerBefore = existsSync(path.join(ROOT, SHARED_LEDGER))
+    ? readFileSync(path.join(ROOT, SHARED_LEDGER), "utf8")
+    : "";
+
   const incoming = requireRun("git", ["ls-tree", "-r", "--name-only", "HEAD"], cloneDir)
     .split("\n")
     .map((line) => line.trim())
@@ -171,11 +183,10 @@ export async function syncFromInternal() {
     title,
     url: `https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/${markNumber}`,
   };
-  writeMark(
-    ROOT,
-    mark,
-    existsSync(path.join(ROOT, SHARED_LEDGER)) ? readFileSync(path.join(ROOT, SHARED_LEDGER), "utf8") : ""
-  );
+  const ledgerIncoming = existsSync(path.join(ROOT, SHARED_LEDGER))
+    ? readFileSync(path.join(ROOT, SHARED_LEDGER), "utf8")
+    : "";
+  writeMark(ROOT, mark, mergeLedgerMarkdown(ledgerBefore, ledgerIncoming));
   requireRun("git", ["add", "-A"], ROOT);
   const dirty = run("git", ["diff", "--cached", "--quiet"], ROOT);
   if (dirty.status === 0) {

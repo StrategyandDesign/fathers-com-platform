@@ -37,7 +37,7 @@ npx tsc --noEmit
 | `lib/` server and domain logic | `docs/archive/` outdated architecture writeups |
 | `supabase/migrations/` schema and RLS | `handoff/` reviewer packet |
 | `tests/*.test.ts` | `partner-kit/` field PDFs and scripts |
-| `package.json` | Root `*.html` is gone on purpose |
+| `package.json` | `assets/` leftover CSS/JS from the old HTML site |
 
 Stack evidence: `package.json` lists `react` `19.1.0` and `next` `15.5.23`. UI is `.tsx`. Interactive files start with `"use client"`.
 

@@ -193,10 +193,10 @@ function subjectFor(sha) {
   return subject.replace(/^Shared \d+\.\s*/, "") || "Update";
 }
 
-function writeMarkFiles(dir, mark) {
+function writeMarkFiles(dir, mark, extraRows = []) {
   const ledgerPath = path.join(dir, SHARED_LEDGER);
   const existing = existsSync(ledgerPath) ? parseSharedLedger(readFileSync(ledgerPath, "utf8")) : [];
-  const rows = upsertLedgerRow(existing, {
+  const rows = upsertLedgerRow([...extraRows, ...existing], {
     mark: mark.mark,
     date: mark.at.slice(0, 10),
     tag: mark.tag,
@@ -290,8 +290,11 @@ export async function publishShared(input = {}) {
 
   try {
     requireGit(["worktree", "add", "--detach", worktree, `${SHARED_REMOTE}/${SHARED_BRANCH}`]);
+    const ledgerBefore = existsSync(path.join(worktree, SHARED_LEDGER))
+      ? parseSharedLedger(readFileSync(path.join(worktree, SHARED_LEDGER), "utf8"))
+      : [];
     overlayTree(sourceSha, worktree);
-    writeMarkFiles(worktree, mark);
+    writeMarkFiles(worktree, mark, ledgerBefore);
     requireGit(["add", "-A"], worktree);
     const staged = git(["diff", "--cached", "--quiet"], worktree);
     if (staged.status === 0) {
