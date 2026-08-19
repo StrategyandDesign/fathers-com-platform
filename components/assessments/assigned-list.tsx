@@ -11,18 +11,20 @@ export async function AssignedAssessmentList({
   title,
   quiet = false,
   hideHeader = false,
+  framed = true,
 }: {
   assignments: FatherAssignmentCard[];
   title?: string;
   quiet?: boolean;
   hideHeader?: boolean;
+  framed?: boolean;
 }) {
   if (assignments.length === 0) return null;
   const { t } = await getI18n();
   const heading = title ?? t("father.assessments.title");
 
   return (
-    <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+    <section className={framed ? "rounded-xl border border-border bg-card p-4 sm:p-6" : undefined}>
       {hideHeader ? null : (
         <>
           <h2

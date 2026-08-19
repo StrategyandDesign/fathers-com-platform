@@ -71,6 +71,27 @@ describe("hosted overview video", () => {
       "/father/sessions/s1"
     );
     assert.equal(
+      trainingDoorHref({
+        training: { id: "t1", overview_video_url: null },
+        next,
+        nextProgress: {
+          id: "p1",
+          father_id: "f1",
+          session_id: "s1",
+          film_completed: true,
+          checkin_completed: true,
+          action_completed: false,
+          checkin_answers: {},
+          action_note: null,
+          session_note: null,
+          film_seconds: 12,
+          status: "in_progress",
+          completed_at: null,
+        },
+      }),
+      "/father/sessions/s1"
+    );
+    assert.equal(
       trainingContinueHref({ training, next, nextProgress: null, completed: 0 }),
       "/father/trainings/t1"
     );

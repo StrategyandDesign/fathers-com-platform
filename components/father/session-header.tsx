@@ -3,6 +3,7 @@ import { ChevronLeft } from "lucide-react";
 
 import { FilmRuntime } from "@/components/father/film-runtime";
 import { sessionChrome, type SessionStep } from "@/lib/father/action-commitment";
+import { sessionPlaceLabel } from "@/lib/father/session-place";
 import { hasTrainingOverview } from "@/lib/father/training-door";
 import { trainingOverviewPath, type Session, type Training } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
@@ -11,11 +12,13 @@ import { cn } from "@/lib/utils";
 
 type StepKey = SessionStep;
 
+const courseEyebrowClassName =
+  "min-w-0 text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.16em]";
+
 export async function SessionHeader({
   training,
   session,
   current,
-  completedCount,
   sessionTotal,
   backHref,
   filmCompleted = false,
@@ -49,6 +52,7 @@ export async function SessionHeader({
         : "/father/trainings"
       : trainingHref;
   const total = sessionTotal ?? training.session_count;
+  const place = sessionPlaceLabel(session.session_number, total, t);
   const subtitle =
     chrome.showKeyline && session.keyline && session.keyline !== session.title
       ? session.keyline
@@ -72,7 +76,7 @@ export async function SessionHeader({
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Link
         href={backHref}
         className={cn(
@@ -84,77 +88,84 @@ export async function SessionHeader({
         {t("common.back")}
       </Link>
 
-      <div className="space-y-1">
-        <p className="text-xs text-muted-foreground">
-          {catalogHref ? (
-            <Link href={catalogHref} className={interactiveLinkClassName}>
-              {training.title}
-            </Link>
-          ) : (
-            <span>{training.title}</span>
-          )}
-          {chrome.showSessionHeading ? (
-            <>
-              {" · "}
-              {total === 1
-                ? t("father.home.sessionOne")
-                : t("father.home.sessionMany", { n: total })}
-            </>
+      <div className="space-y-3">
+        <div className="flex items-baseline justify-between gap-4">
+          <p className={courseEyebrowClassName}>
+            {catalogHref ? (
+              <Link href={catalogHref} className={interactiveLinkClassName}>
+                {training.title}
+              </Link>
+            ) : (
+              <span>{training.title}</span>
+            )}
+          </p>
+          {place ? (
+            <p className="shrink-0 text-[11px] tabular-nums text-muted-foreground sm:text-xs">
+              {place}
+            </p>
           ) : null}
-        </p>
+        </div>
+
         {chrome.showSessionHeading ? (
-          <h1 className="text-xl font-medium leading-snug tracking-tight sm:text-2xl">
-            {session.title}
-          </h1>
-        ) : null}
-        {chrome.showRuntime ? <FilmRuntime seconds={session.duration_seconds} t={t} /> : null}
-        {subtitle ? (
-          <p className="text-sm text-muted-foreground">{subtitle}</p>
+          <div className="space-y-1.5">
+            <h1 className="text-xl font-medium leading-snug tracking-tight sm:text-2xl">
+              {session.title}
+            </h1>
+            {subtitle ? (
+              <p className="text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
+            ) : null}
+            {chrome.showRuntime ? (
+              <FilmRuntime seconds={session.duration_seconds} t={t} />
+            ) : null}
+          </div>
+        ) : chrome.showRuntime ? (
+          <FilmRuntime seconds={session.duration_seconds} t={t} />
         ) : null}
       </div>
 
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-        <nav
-          aria-label={t("father.session.steps")}
-          className="flex flex-wrap items-center text-sm"
-        >
+      <nav aria-label={t("father.session.steps")}>
+        <ol className="grid grid-cols-3 border-b border-white/10">
           {steps.map((step, index) => {
             const label = t(`father.session.${step.key}`);
             const isCurrent = step.key === current;
-            const className = cn(
-              isCurrent ? "font-medium text-foreground" : "text-muted-foreground",
-              step.unlocked && !isCurrent && interactiveLinkClassName
+            const itemClassName = cn(
+              "flex flex-col items-center gap-0.5 border-b-2 px-1 pb-3 pt-1 text-center",
+              isCurrent
+                ? "border-foreground text-foreground"
+                : "border-transparent text-muted-foreground",
+              !step.unlocked && "opacity-40"
+            );
+            const body = (
+              <>
+                <span className="font-mono text-[10px] tabular-nums tracking-[0.18em] text-muted-foreground">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className={cn("text-sm", isCurrent && "font-medium")}>{label}</span>
+              </>
             );
 
             return (
-              <span key={step.key} className="inline-flex items-center">
-                {index > 0 ? (
-                  <span className="px-2 text-white/20" aria-hidden>
-                    ·
-                  </span>
-                ) : null}
+              <li key={step.key}>
                 {step.unlocked && !isCurrent ? (
-                  <Link href={step.href} className={className}>
-                    {label}
+                  <Link
+                    href={step.href}
+                    className={cn(itemClassName, interactiveLinkClassName)}
+                  >
+                    {body}
                   </Link>
                 ) : (
                   <span
-                    className={className}
+                    className={itemClassName}
                     aria-current={isCurrent ? "step" : undefined}
                   >
-                    {label}
+                    {body}
                   </span>
                 )}
-              </span>
+              </li>
             );
           })}
-        </nav>
-        {typeof completedCount === "number" ? (
-          <p className="text-xs text-muted-foreground">
-            {t("father.session.sessionsCount", { completed: completedCount, total })}
-          </p>
-        ) : null}
-      </div>
+        </ol>
+      </nav>
     </div>
   );
 }

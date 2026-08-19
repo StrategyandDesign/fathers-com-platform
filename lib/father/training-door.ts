@@ -2,6 +2,7 @@ import { hasHostedVideo } from "@/lib/media/hosted-video";
 import {
   continueHref,
   isSessionComplete,
+  sessionFilmPath,
   trainingOverviewPath,
   type Session,
   type SessionProgress,
@@ -36,7 +37,7 @@ export function trainingDoorHref(input: {
     return trainingOverviewPath(input.training.id);
   }
   if (input.next) {
-    return continueHref(input.next.id, input.nextProgress ?? null);
+    return sessionFilmPath(input.next.id);
   }
   return "/father/trainings";
 }

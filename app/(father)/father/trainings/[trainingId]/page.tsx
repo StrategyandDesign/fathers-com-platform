@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
 import { loadFatherHome } from "@/lib/father/data";
 import { hasTrainingOverview } from "@/lib/father/training-door";
-import { continueHref } from "@/lib/father/types";
+import { sessionFilmPath } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
 import { trainingCoverSlug } from "@/lib/trainings/series";
@@ -33,12 +33,10 @@ export default async function FatherTrainingOverviewPage({
   }
 
   if (!hasTrainingOverview(card.training)) {
-    redirect(
-      card.next ? continueHref(card.next.id, card.nextProgress) : "/father/trainings"
-    );
+    redirect(card.next ? sessionFilmPath(card.next.id) : "/father/trainings");
   }
 
-  const sessionHref = card.next ? continueHref(card.next.id, card.nextProgress) : null;
+  const sessionHref = card.next ? sessionFilmPath(card.next.id) : null;
   const coverSrc = resolveTrainingCardCover(
     trainingCoverSlug(card.training),
     orgPhotos.trainingUrls[trainingCoverSlug(card.training)],

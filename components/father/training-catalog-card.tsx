@@ -4,7 +4,7 @@ import { CoverPhoto } from "@/components/brand/cover";
 import { FilmRuntime } from "@/components/father/film-runtime";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
-import { continueHref, type Session, type SessionProgress } from "@/lib/father/types";
+import { sessionFilmPath, type Session, type SessionProgress } from "@/lib/father/types";
 import type { Translate } from "@/lib/i18n/translate";
 import {
   homePrimaryCtaClassName,
@@ -81,7 +81,7 @@ export function FatherTrainingCatalogCard({
 }) {
   const href = gated
     ? null
-    : hrefOverride ?? (next ? continueHref(next.id, nextProgress) : null);
+    : hrefOverride ?? (next ? sessionFilmPath(next.id) : null);
   const started = completed > 0 || sessionInProgress(nextProgress);
   const complete = !next && total > 0 && completed >= total;
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);

@@ -158,6 +158,11 @@ export function isSessionComplete(
   );
 }
 
+export function sessionFilmPath(sessionId: string, options?: { root?: string }) {
+  const root = options?.root ?? "/father";
+  return `${root}/sessions/${sessionId}`;
+}
+
 export function continueHref(
   sessionId: string,
   progress: Pick<
@@ -167,7 +172,7 @@ export function continueHref(
   options?: { root?: string }
 ) {
   const root = options?.root ?? "/father";
-  if (!progress?.film_completed) return `${root}/sessions/${sessionId}`;
+  if (!progress?.film_completed) return sessionFilmPath(sessionId, { root });
   if (!progress.checkin_completed) {
     return `${root}/sessions/${sessionId}/checkin`;
   }
