@@ -1713,7 +1713,9 @@ export const en = {
       catalogReady: "Included",
       catalogDeclined: "Declined",
       include: "Include",
+      included: "Included",
       decline: "Decline",
+      declined: "Declined",
       waitingTitle: "Waiting on you",
       waitingLead:
         "New releases still land here. You can also include or decline them in Available trainings without opening them.",

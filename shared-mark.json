@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 9,
-  "label": "Shared 1-1.09",
+  "patch": 10,
+  "label": "Shared 1-1.10",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Hide assignment status on the manager dashboard.",
+  "title": "Hide the who-has-what board on Participants.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -71,6 +71,13 @@
       "label": "Shared 1-1.09",
       "at": "2026-08-19",
       "title": "Hide assignment status on the manager dashboard."
+    },
+    {
+      "patch": 10,
+      "revision": "1.10",
+      "label": "Shared 1-1.10",
+      "at": "2026-08-19",
+      "title": "Hide the who-has-what board on Participants."
     }
   ]
 }
