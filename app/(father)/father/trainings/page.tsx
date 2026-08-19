@@ -6,6 +6,8 @@ import { hasTrainingOverview } from "@/lib/father/training-door";
 import { sessionFilmPath, trainingOverviewPath, type Session, type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
+import { loadFatherParticipationMode } from "@/lib/participation-data";
+import { participationCopyKey } from "@/lib/participation";
 import { trainingCoverSlug } from "@/lib/trainings/series";
 import { cn } from "@/lib/utils";
 
@@ -22,9 +24,10 @@ function cardRank(card: {
 export default async function FatherTrainingsPage() {
   const { user } = await requireRole("father");
   const { t } = await getI18n();
-  const [{ trainingCards }, orgPhotos] = await Promise.all([
+  const [{ trainingCards }, orgPhotos, mode] = await Promise.all([
     loadFatherHome(user.id),
     loadFatherOrgPhotoCovers(user.id),
+    loadFatherParticipationMode(user.id),
   ]);
   const cards = [...trainingCards].sort((left, right) => cardRank(left) - cardRank(right));
   const inProgressCount = cards.filter((card) =>
@@ -49,7 +52,7 @@ export default async function FatherTrainingsPage() {
           actionHref="/father"
           actionLabel={t("father.trainings.backHome")}
         >
-          {t("father.trainings.emptyBody")}
+          {t(participationCopyKey(mode, "father.trainings.emptyBody"))}
         </EmptyState>
       ) : (
         <div className="grid gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-6">

@@ -31,6 +31,7 @@ import {
   translateThemeLabel,
 } from "@/lib/i18n/flash";
 import { formatShortDate, formatShortDateTime } from "@/lib/i18n/server";
+import { loadFatherParticipationMode } from "@/lib/participation-data";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
   fieldClassName,
@@ -74,12 +75,14 @@ export default async function ManagerParticipantDetailPage({
   }
 
   const { participant, progress, reviews } = detail;
-  const [customAssignments, historyByFather, remindersAllowed, notes] = await Promise.all([
-    loadParticipantCustomAssignments(user.id, id),
-    loadNudgeHistory([id]),
-    loadReminderPrefAllowed(id),
-    loadParticipantNotes(id),
-  ]);
+  const [customAssignments, historyByFather, remindersAllowed, notes, participationMode] =
+    await Promise.all([
+      loadParticipantCustomAssignments(user.id, id),
+      loadNudgeHistory([id]),
+      loadReminderPrefAllowed(id),
+      loadParticipantNotes(id),
+      loadFatherParticipationMode(id),
+    ]);
   const nudgeHistory = historyByFather.byFather.get(id) ?? [];
   const historyUnavailable = historyByFather.unavailable;
   const quiet = needsNudge(participant.lastActivity, progress);
@@ -350,6 +353,7 @@ export default async function ManagerParticipantDetailPage({
                 cooldownDays={companionSuggestion.cooldownDays}
                 returnTo="detail"
                 defaultOpen
+                mode={participationMode}
               />
             </div>
           ) : null}
@@ -390,7 +394,7 @@ export default async function ManagerParticipantDetailPage({
             />
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               {(["continue", "encouragement", "welcome_back"] as const).map((key) => {
-                const template = translateNudgeTemplate(key, t);
+                const template = translateNudgeTemplate(key, t, participationMode);
                 return (
                   <li key={key}>
                     <span className="font-medium text-foreground">{template.label}.</span>{" "}

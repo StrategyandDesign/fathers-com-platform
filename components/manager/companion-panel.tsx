@@ -6,14 +6,17 @@ import { buttonVariants } from "@/components/ui/button";
 import { initials, interactiveLinkClassName } from "@/lib/ui";
 import type { Translate } from "@/lib/i18n/translate";
 import type { CompanionBriefing } from "@/lib/manager/companion";
+import { participationCopyKey, type ParticipationMode } from "@/lib/participation";
 import { cn } from "@/lib/utils";
 
 export function CompanionPanel({
   briefing,
   t,
+  mode = "unset",
 }: {
   briefing: CompanionBriefing;
   t: Translate;
+  mode?: ParticipationMode;
 }) {
   const org = briefing.organizationName;
   const narrative =
@@ -46,11 +49,13 @@ export function CompanionPanel({
             }),
     },
     {
-      title: t("manager.companion.savingsTitle"),
+      title: t(participationCopyKey(mode, "manager.companion.savingsTitle")),
       body:
         briefing.quietCount === 0
           ? t("manager.companion.savingsClear")
-          : t("manager.companion.savingsBody", { quiet: briefing.quietCount }),
+          : t(participationCopyKey(mode, "manager.companion.savingsBody"), {
+              quiet: briefing.quietCount,
+            }),
     },
     {
       title: t("manager.companion.timeTitle"),
@@ -129,6 +134,7 @@ export function CompanionPanel({
                         cooldownDays={item.cooldownDays}
                         returnTo="dashboard"
                         compact
+                        mode={mode}
                       />
                     </div>
                   </div>

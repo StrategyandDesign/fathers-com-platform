@@ -16,6 +16,7 @@ import { buildQuietSuggestion } from "@/lib/manager/companion";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
 import { latestSentAt, needsNudge } from "@/lib/manager/nudges";
 import { formatShortDate } from "@/lib/manager/types";
+import { participationModeFromGroups } from "@/lib/participation";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +47,7 @@ export default async function ManagerParticipantsPage({
   const quietIds = quiet.map((row) => row.fatherId);
   const [{ byFather: historyByFather, unavailable: historyUnavailable }, reminderPrefs] =
     await Promise.all([loadNudgeHistory(quietIds), loadReminderPrefs(quietIds)]);
+  const participationMode = participationModeFromGroups(groups);
 
   return (
     <div className="space-y-6">
@@ -119,6 +121,7 @@ export default async function ManagerParticipantsPage({
                       cooldownDays={suggestion.cooldownDays}
                       returnTo="list"
                       compact
+                      mode={participationMode}
                     />
                   </div>
                 </li>

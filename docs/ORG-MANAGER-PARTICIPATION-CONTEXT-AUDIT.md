@@ -250,10 +250,88 @@ On Dashboard, under the invite code for each group: three options, one sentence 
 
 ## Phase 3 — Implementation notes
 
-Implemented on `cursor/mandatory-voluntary-context-7c78`. Helpers in `lib/participation.ts`. Column `groups.participation_mode`. Copy keys `*Expected` / `*Open` next to the shared string.
+Implemented on `cursor/mandatory-voluntary-context-7c78`. Helpers in `lib/participation.ts`. Column `groups.participation_mode` (`unset` | `expected` | `open`, default `unset`). Copy keys `*Expected` / `*Open` sit next to the shared string. `participationCopyKey(mode, base)` picks the variant.
+
+The Dashboard setting is one card under the invite codes. It updates only that group. It does not change who can be assigned, reminder cadence, mute, or status colors.
+
+Father-facing notifications read the father’s group at send time (`lib/notifications/dispatch.ts`). Mixed groups on one manager stay `unset` on shared desk copy. Opening one man uses *his* group.
+
+Pilot (`koeplcybddrvbliuepsy`) has the column. Existing groups stay `unset` until a leader saves.
 
 ---
 
 ## Phase 4 — Verification
 
-Filled after the code change.
+### Rehab / military leader (Expected)
+
+- Dashboard lead: “Assign the training you expect them to complete.”
+- Status strip: “Assigned work and who has not started it.” Same not-started / in-progress / done words. No overdue color.
+- Quiet panel: “Assigned training with no recent activity.”
+- Assistant: “Assigned, no recent activity.” Stall line is “Still on Session n,” not “Stalled.”
+- Note previews: “The assigned session is still open.” / “still his to finish.”
+- Father empty / hold: the program will assign the training it uses.
+- Weekly / new assignment / leader note: “assigned session,” “{leader} assigned this training.” No `must`, `required`, `late`, `rehab`, or `unit` in the father channel.
+- Reminder cadence, quiet hours, confirm-before-send, and father mute are unchanged.
+
+### Church leader (Open)
+
+- Dashboard lead: “Offer a training. Men set the pace.”
+- Status strip: “Who has been offered which training.”
+- Quiet panel: “No recent activity. A short note is optional.”
+- Assistant: “No recent activity.” Stall line is “Last opened Session n.”
+- Note previews: “when he wants it” / “Invite him back when it fits.”
+- Father empty / hold / reminder opt-in: invitational, including “No rush” on hold.
+- Weekly: “ready when you want it.” New assignment: “{leader} opened a training for you.”
+- Same tools, same mute, no overdue.
+
+### Unset (default, mixed groups, or never saved)
+
+- Shared professional copy. Factual. No “whenever you are ready.” No “must.”
+- Dashboard lead stays “Assign work and see who has it.”
+- Father home: “Your leader will open your first training. We will let you know.”
+- Leader note A: “Your first session is open.” (the old “when you are ready” leak is gone)
+- Safe if a church or rehab never opens the setting.
+
+### What does not leak
+
+| Direction | Guard |
+| --- | --- |
+| Expected → father | No `late`, `required`, `must`, `rehab`, `unit`, `days` in notifications (`tests/nudge-panel.test.ts`, `tests/participation.test.ts`) |
+| Open → rehab desk | Expected mode never shows “optional note” / “when he wants it” |
+| Unset → either house | Neutral. Neither “no rush” nor “you must finish.” |
+| Manager hints | “Rehab, unit…” appears only on the Dashboard setting, never in father copy |
+
+### Files changed
+
+- `supabase/migrations/20260819190000_group_participation_mode.sql`
+- `lib/participation.ts`, `lib/participation-data.ts`
+- `lib/manager/types.ts`, `lib/manager/actions.ts`, `lib/manager/nudges.ts`
+- `lib/notifications/types.ts`, `lib/notifications/copy.ts`, `lib/notifications/dispatch.ts`
+- `lib/i18n/messages/en.ts`, `lib/i18n/messages/he.ts`, `lib/i18n/flash.ts`
+- `components/manager/participation-mode-card.tsx`
+- `components/manager/assignment-status-strip.tsx`
+- `components/manager/companion-panel.tsx`, `companion-nudge-suggest.tsx`, `nudge-panel.tsx`
+- `app/(manager)/manager/page.tsx`
+- `app/(manager)/manager/participants/page.tsx`, `participants/[id]/page.tsx`
+- `app/(father)/father/page.tsx`, `trainings/page.tsx`
+- `app/(father)/father/start/hold/page.tsx`, `start/reminder/page.tsx`
+- `tests/participation.test.ts`, `tests/nudge-panel.test.ts`
+- `docs/ORG-MANAGER-PARTICIPATION-CONTEXT-AUDIT.md`
+
+Unchanged on purpose: assignment RLS, status words and colors, reminder frequency, mute, certificates, reports filters.
+
+### Robust now
+
+- One group flag, three voices, default safe.
+- Father mail follows his group even when the manager’s other groups differ.
+- Missing column or unknown value reads as `unset`.
+- Typecheck and 205 unit tests pass.
+
+### Still needs live leaders
+
+- Whether **Expected** / **Open** / **Not set** are the words rehab directors and pastors would choose.
+- Whether expected father copy is firm enough for a required house without feeling like attendance.
+- Whether church leaders will find the setting under the invite code, or leave `unset` and still hear “Assign work.”
+- Mixed-org managers (one expected house + one church) seeing neutral desk copy. Rare in the pilot.
+- Hebrew tone with Israeli church and rehab leaders.
+- The existing product decision that a father in a required program can still mute weekly mail. Directors may want that discussed; this pass does not override mute.

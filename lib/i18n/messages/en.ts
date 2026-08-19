@@ -301,6 +301,8 @@ export const en = {
     chooseTraining: "Choose a training.",
     groupSaveFailed: "The group didn’t save. Try again.",
     groupCreated: "Group created. Share the invite code with fathers.",
+    participationSaved: "Participation setting saved.",
+    participationSaveFailed: "The setting didn’t save. Try again.",
     chooseTrainingAssign: "Choose a training to assign.",
     trainingAlreadyAssigned: "That training is already assigned.",
     trainingAssigned: "Training assigned.",
@@ -557,6 +559,10 @@ export const en = {
       nothingAssigned: "Nothing assigned yet.",
       nothingAssignedBody:
         "Your leader will open your first training. We will let you know.",
+      nothingAssignedBodyExpected:
+        "Your leader will assign the training this program uses. It will appear here.",
+      nothingAssignedBodyOpen:
+        "When your leader opens a training, it will show up here.",
       viewCertificates: "View certificates",
       sessionsReady: "Sessions will appear when this training is ready.",
       sessionsCount: "{completed} of {total} complete",
@@ -568,6 +574,10 @@ export const en = {
       emptyTitle: "No training assigned",
       emptyBody:
         "Your leader has not assigned a training yet. It will appear here when they do.",
+      emptyBodyExpected:
+        "Your leader will assign the training this program uses. It will appear here.",
+      emptyBodyOpen:
+        "When your leader opens a training, it will show up here.",
       backHome: "Back to Home",
       startTitle: "Start {title}",
       continueTitle: "Continue {title}",
@@ -814,6 +824,10 @@ export const en = {
       reminderTitle: "Want a weekly session reminder?",
       reminderBody:
         "If your next session is open and you have not started it, we can send one reminder that week. Skip it if you do not want one. You can change this later in Account.",
+      reminderBodyExpected:
+        "If your next assigned session is open and you have not started it, we can send one reminder that week. You can change this later in Account.",
+      reminderBodyOpen:
+        "If you want a weekly reminder when a session is open, set one. Skip it if you do not want one.",
       reminderTime: "Time",
       setReminder: "Set reminder",
       skipReminder: "Skip",
@@ -825,7 +839,11 @@ export const en = {
       dayFri: "Friday",
       daySat: "Saturday",
       holdTitle: "Your leader has not assigned a training yet.",
+      holdTitleExpected: "Your leader will assign the training this program uses.",
+      holdTitleOpen: "No training is open yet.",
       holdBody: "You will get a reminder when your first one is ready.",
+      holdBodyExpected: "It will appear here, and we can remind you when it is ready.",
+      holdBodyOpen: "You will hear when your leader opens one. No rush.",
       completeTitle: "Session 1 done.",
       completeBody:
         "You have one skill to work on this week. We will remind you when the next session opens.",
@@ -837,6 +855,8 @@ export const en = {
     dashboard: {
       title: "Dashboard",
       lead: "Assign work and see who has it. Fathers join with the invite code.",
+      leadExpected: "Assign the training you expect them to complete. Fathers join with the invite code.",
+      leadOpen: "Offer a training. Men set the pace. Fathers join with the invite code.",
       impact: "Impact Snapshot",
       compare: "Compare",
       newTrainings: "Trainings",
@@ -916,10 +936,22 @@ export const en = {
       noteNotYours: "That group is not yours.",
       noteSaveFailed: "The update didn’t post. Try again.",
       noteClearFailed: "The update didn’t clear. Try again.",
+      participationTitle: "How men take assigned training",
+      participationLead:
+        "This only changes notes, reminders, and how status is described. It does not change who you can assign.",
+      participationUnset: "Not set",
+      participationUnsetHint: "Plain language. Neither required nor invitational.",
+      participationExpected: "Expected",
+      participationExpectedHint: "Rehab, unit, or any program where completion is expected.",
+      participationOpen: "Open",
+      participationOpenHint: "Church or voluntary. Men set the pace.",
+      participationSave: "Save",
     },
     status: {
       title: "Assignment status",
       lead: "Who has which training. Assign the rest without leaving this page.",
+      leadExpected: "Assigned work and who has not started it. Assign the rest without leaving this page.",
+      leadOpen: "Who has been offered which training. Men set the pace.",
       openBoard: "Open names",
       emptyTitle: "Nothing to assign yet",
       emptyBody: "Include a training for this organization, then assign it from here.",
@@ -956,6 +988,8 @@ export const en = {
     nudgePanel: {
       title: "Quiet participants",
       lead: "These men have been quiet. Send a short note.",
+      leadExpected: "Assigned training with no recent activity. Send a short note.",
+      leadOpen: "No recent activity. A short note is optional.",
       empty: "No one is quiet right now.",
       sendNote: "Send a note",
       sendToAll: "Send to all {count}",
@@ -1001,8 +1035,14 @@ export const en = {
       fundingEmpty:
         "When fathers begin, completion and certificates become a short record of participation. Nothing extra to assemble.",
       savingsTitle: "Quiet seats",
+      savingsTitleExpected: "Assigned, no recent activity",
+      savingsTitleOpen: "No recent activity",
       savingsBody:
         "{quiet} assigned seats have no recent activity. A confirmed note takes a moment.",
+      savingsBodyExpected:
+        "{quiet} men have assigned training and no recent activity. A confirmed note takes a moment.",
+      savingsBodyOpen:
+        "{quiet} men have no recent activity. A note is optional.",
       savingsClear:
         "Assigned seats have recent activity.",
       timeTitle: "What to do next",
@@ -1031,6 +1071,8 @@ export const en = {
       reasonQuietOne: "No activity in 1 day",
       reasonNoActivity: "No activity yet",
       reasonStalledTitle: "Stalled on Session {n}: {title}",
+      reasonStalledTitleExpected: "Still on Session {n}: {title}",
+      reasonStalledTitleOpen: "Last opened Session {n}: {title}",
       whyContinue: "The next session is still open.",
       whyEncouragement: "He already started. The next session is still open.",
       whyWelcomeBack: "The training is still here.",
@@ -1153,11 +1195,17 @@ export const en = {
       sendNudge: "Send note",
       continue: "Continue",
       continuePreview: "The next session is still open.",
+      continuePreviewExpected: "The assigned session is still open.",
+      continuePreviewOpen: "The next session is still here when he wants it.",
       encouragement: "Progress note",
       encouragementPreview:
         "He started. The next session is still open.",
+      encouragementPreviewExpected: "He started. The next assigned session is still his to finish.",
+      encouragementPreviewOpen: "He started. Invite him back when it fits.",
       welcomeBack: "Still open",
       welcomeBackPreview: "The training is still here.",
+      welcomeBackPreviewExpected: "The assigned training is still open.",
+      welcomeBackPreviewOpen: "The training is still here when he wants it.",
       sent: "Sent",
       skipped: "Not sent. Reminders off",
       failed: "Didn’t send",

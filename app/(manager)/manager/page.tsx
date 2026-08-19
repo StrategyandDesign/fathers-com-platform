@@ -6,6 +6,7 @@ import { CompanionPanel } from "@/components/manager/companion-panel";
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
 import { NudgePanel } from "@/components/manager/nudge-panel";
+import { ParticipationModeCard } from "@/components/manager/participation-mode-card";
 import { ReviewStatusBadge } from "@/components/manager/review-decision-forms";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -33,6 +34,7 @@ import { loadNudgePanel } from "@/lib/manager/nudge-panel-data";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
 import { needsNudge } from "@/lib/manager/nudges";
 import { loadReviewQueue } from "@/lib/manager/reviews";
+import { participationCopyKey, participationModeFromGroups } from "@/lib/participation";
 import { cn } from "@/lib/utils";
 
 export default async function ManagerHomePage({
@@ -118,6 +120,7 @@ export default async function ManagerHomePage({
     historyUnavailable,
     limit: 4,
   });
+  const participationMode = participationModeFromGroups(groups);
 
   const stats = [
     { label: t("manager.dashboard.active"), value: summary.activeParticipants },
@@ -153,7 +156,7 @@ export default async function ManagerHomePage({
           ) : null}
           <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("manager.dashboard.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.dashboard.lead")}
+            {t(participationCopyKey(participationMode, "manager.dashboard.lead"))}
           </p>
         </div>
       </div>
@@ -163,9 +166,10 @@ export default async function ManagerHomePage({
         emptyHref="/manager/trainings#catalog"
         returnTo="dashboard"
         t={t}
+        mode={participationMode}
       />
       <CohortNoteDesk groups={cohortNotes} />
-      <CompanionPanel briefing={companion} t={t} />
+      <CompanionPanel briefing={companion} t={t} mode={participationMode} />
 
       {reviews.pending.length > 0 || reviews.unread.length > 0 ? (
         <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
@@ -330,7 +334,9 @@ export default async function ManagerHomePage({
         </div>
       </section>
 
-      <NudgePanel panel={nudgePanel} />
+      <ParticipationModeCard groups={groups} t={t} />
+
+      <NudgePanel panel={nudgePanel} mode={participationMode} />
 
       <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
         <h2 className="font-heading text-lg font-semibold">

@@ -18,6 +18,8 @@ import { hasTrainingOverview, trainingContinueHref } from "@/lib/father/training
 import { type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { scheduleDueReminderFlush } from "@/lib/jobs/flush-due-work";
+import { loadFatherParticipationMode } from "@/lib/participation-data";
+import { participationCopyKey } from "@/lib/participation";
 import {
   loadFatherOrgPhotoCovers,
   resolveHomeHeroCover,
@@ -56,6 +58,7 @@ export default async function FatherHomePage({
     streak,
     leader,
     cohortNote,
+    mode,
   ] = await Promise.all([
     loadFatherHome(user.id),
     loadFatherAssignments(user.id),
@@ -63,6 +66,7 @@ export default async function FatherHomePage({
     loadFatherStreakHome(user.id),
     loadFatherLeader(user.id),
     loadVisibleCohortNote(user.id),
+    loadFatherParticipationMode(user.id),
   ]);
 
   const nextCard = next
@@ -136,7 +140,7 @@ export default async function FatherHomePage({
         {t("father.home.nothingAssigned")}
       </h1>
       <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-        {t("father.home.nothingAssignedBody")}
+        {t(participationCopyKey(mode, "father.home.nothingAssignedBody"))}
       </p>
     </section>
   ) : null;
