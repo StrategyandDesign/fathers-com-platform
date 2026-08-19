@@ -8,7 +8,6 @@ import { ChevronDown } from "lucide-react";
 
 import { useT } from "@/components/i18n/locale-provider";
 import { UserAvatar } from "@/components/layout/user-avatar";
-import { PaletteSwitcher } from "@/components/theme/palette-switcher";
 import { signOut } from "@/lib/auth/actions";
 import { ROLE_ACCOUNT, type AppRole } from "@/lib/auth/roles";
 import { headerIconClassName, interactiveControlClassName } from "@/lib/ui";
@@ -102,16 +101,7 @@ export function AccountMenu({
             ) : null}
           </div>
 
-          <div className="rounded-lg border border-border bg-card p-3">
-            <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
-              {t("account.palette")}
-            </p>
-            <div className="mt-2">
-              <PaletteSwitcher compact />
-            </div>
-          </div>
-
-          <div className="mt-2 flex flex-col gap-1">
+          <div className="flex flex-col gap-1">
             <Link
               href={ROLE_ACCOUNT[role]}
               role="menuitem"
