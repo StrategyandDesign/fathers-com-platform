@@ -6,11 +6,11 @@ This Next.js app talks to the **Pilot** Supabase project. Local and Vercel use t
 
 ### Local (fastest loop)
 
+The default tree in this repo is the current app. Clone if you want a local server. Do not switch branches.
+
 ```bash
 git clone https://github.com/StrategyandDesign/fathers-com-clean-pilot.git
 cd fathers-com-clean-pilot
-git checkout review            # current shared drop
-# git checkout submit/2        # frozen official stamp; older tree, do not move it
 cp .env.example .env.local
 # Leave Supabase keys blank. The app falls back to Pilot.
 # NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000 is already in .env.example
@@ -19,15 +19,6 @@ npm run dev
 ```
 
 Open http://127.0.0.1:3000/login
-
-To keep working on this internal line instead:
-
-```bash
-git fetch origin cursor/clean-pilot-ux-refinements-7c78
-git checkout cursor/clean-pilot-ux-refinements-7c78
-npm install
-npm run dev
-```
 
 ### Vercel (already live)
 

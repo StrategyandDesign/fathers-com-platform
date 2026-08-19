@@ -2,9 +2,9 @@
 
 Official review copies are **even-numbered** and **date-stamped**.
 
-Moving pushes that Micah and Eric share are numbered separately as **Shared 1, Shared 2, …** on `review`. See `SHARED.md`. Those marks do not freeze a submit and do not move `submit/2`.
+Moving pushes that Micah and Eric share are numbered separately as **Shared 1, Shared 2, …** on this default tree. See `SHARED.md`. Those marks do not freeze a submit and do not move `submit/2`.
 
-For current engineering work, check out **`review`**. `submit/2` is the frozen official stamp and does not receive this repo-layout cleanup.
+The current engineering work is this default tree. `submit/2` is the frozen official stamp and does not receive this repo-layout cleanup.
 
 | Submit | Date (UTC) | Frozen branch | Issue | What it is |
 |---|---|---|---|---|
