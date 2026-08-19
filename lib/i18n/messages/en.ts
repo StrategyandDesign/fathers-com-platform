@@ -961,7 +961,7 @@ export const en = {
       readyCert: "Ready for certificate: {title}",
     },
     companion: {
-      eyebrow: "Assistant",
+      eyebrow: "Agent",
       title: "Assistant",
       lead: "A short summary of your group. Nothing sends or assigns until you confirm.",
       collapse: "Hide assistant",

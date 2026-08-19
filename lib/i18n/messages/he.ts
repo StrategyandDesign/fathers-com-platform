@@ -914,7 +914,7 @@ export const he = {
       readyCert: "מוכן לתעודה: {title}",
     },
     companion: {
-      eyebrow: "עוזר",
+      eyebrow: "סוכן",
       title: "עוזר",
       lead: "סיכום קצר של הקבוצה. שום דבר לא נשלח ולא מוקצה עד שתאשר.",
       collapse: "הסתרת העוזר",
