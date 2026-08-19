@@ -279,11 +279,19 @@ export async function publishShared(input = {}) {
       { FATHERS_PUBLISHING: "1" }
     );
     mark.sharedSha = requireGit(["rev-parse", "HEAD"], worktree);
-    requireGit(
+    const pushed = git(
       ["push", SHARED_REMOTE, `HEAD:refs/heads/${SHARED_BRANCH}`],
       worktree,
       { FATHERS_PUBLISHING: "1" }
     );
+    if (pushed.status !== 0) {
+      const detail = `${pushed.stderr} ${pushed.stdout}`;
+      if (/403|Permission|denied/i.test(detail)) {
+        log("This machine cannot write the shared repo. The Shared marks Action on review will number the push.");
+        return { ok: true, skipped: true, reason: "delegated-to-action", mark };
+      }
+      throw new Error(detail.trim() || "Could not push the shared review branch.");
+    }
     git(["tag", "-f", mark.tag, mark.sharedSha], worktree);
     requireGit(["push", "-f", SHARED_REMOTE, `refs/tags/${mark.tag}`], worktree, {
       FATHERS_PUBLISHING: "1",
