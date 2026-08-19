@@ -15,9 +15,11 @@ export function hasTrainingOverview(training: Pick<Training, "overview_video_url
 
 export function hasStartedTrainingWork(
   completed: number | null | undefined,
-  progress: SessionProgress | null | undefined
+  progress: SessionProgress | null | undefined,
+  sessionDots?: Array<{ done?: boolean }> | null
 ) {
   if ((completed ?? 0) > 0) return true;
+  if (sessionDots?.some((dot) => Boolean(dot.done))) return true;
   if (!progress) return false;
   return (
     isSessionComplete(progress) ||
@@ -28,17 +30,30 @@ export function hasStartedTrainingWork(
   );
 }
 
+function shouldOpenOverview(
+  training: Pick<Training, "overview_video_url">,
+  completed?: number | null,
+  progress?: SessionProgress | null,
+  sessionDots?: Array<{ done?: boolean }> | null
+) {
+  return (
+    hasTrainingOverview(training) &&
+    !hasStartedTrainingWork(completed, progress, sessionDots)
+  );
+}
+
 /** Catalog card: overview only before the first session is started. */
 export function shouldShowCatalogOverview(input: {
   enabled?: boolean;
   gated?: boolean;
   completed?: number | null;
   progress?: SessionProgress | null;
+  sessionDots?: Array<{ done?: boolean }> | null;
 }) {
   return (
     Boolean(input.enabled) &&
     !input.gated &&
-    !hasStartedTrainingWork(input.completed, input.progress)
+    !hasStartedTrainingWork(input.completed, input.progress, input.sessionDots)
   );
 }
 
@@ -46,8 +61,10 @@ export function trainingDoorHref(input: {
   training: Pick<Training, "id" | "overview_video_url">;
   next?: Session | null;
   nextProgress?: SessionProgress | null;
+  completed?: number | null;
+  sessionDots?: Array<{ done?: boolean }> | null;
 }) {
-  if (hasTrainingOverview(input.training)) {
+  if (shouldOpenOverview(input.training, input.completed, input.nextProgress, input.sessionDots)) {
     return trainingOverviewPath(input.training.id);
   }
   if (input.next) {
@@ -62,11 +79,9 @@ export function trainingContinueHref(input: {
   next?: Session | null;
   nextProgress?: SessionProgress | null;
   completed?: number | null;
+  sessionDots?: Array<{ done?: boolean }> | null;
 }) {
-  if (
-    hasTrainingOverview(input.training) &&
-    !hasStartedTrainingWork(input.completed, input.nextProgress)
-  ) {
+  if (shouldOpenOverview(input.training, input.completed, input.nextProgress, input.sessionDots)) {
     return trainingOverviewPath(input.training.id);
   }
   if (input.next) {

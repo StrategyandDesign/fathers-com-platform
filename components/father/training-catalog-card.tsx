@@ -87,7 +87,10 @@ export function FatherTrainingCatalogCard({
   const href = gated
     ? null
     : hrefOverride ?? (next ? sessionFilmPath(next.id) : null);
-  const started = completed > 0 || sessionInProgress(nextProgress);
+  const started =
+    completed > 0 ||
+    sessionInProgress(nextProgress) ||
+    sessionDots.some((dot) => dot.done);
   const complete = !next && total > 0 && completed >= total;
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
   const ctaLabel = next
@@ -104,6 +107,7 @@ export function FatherTrainingCatalogCard({
     gated,
     completed,
     progress: nextProgress,
+    sessionDots,
   });
 
   return (

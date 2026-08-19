@@ -121,6 +121,14 @@ describe("hosted overview video", () => {
       }),
       "/father/sessions/s1/checkin"
     );
+    assert.equal(
+      trainingDoorHref({ training, next, nextProgress: null, completed: 8 }),
+      "/father/sessions/s1"
+    );
+    assert.equal(
+      trainingContinueHref({ training, next, nextProgress: null, completed: 8 }),
+      "/father/sessions/s1"
+    );
   });
 
   it("shows the catalog overview only before a session is started", () => {
@@ -160,6 +168,23 @@ describe("hosted overview video", () => {
         enabled: true,
         completed: 1,
         progress: null,
+      }),
+      false
+    );
+    assert.equal(
+      shouldShowCatalogOverview({
+        enabled: true,
+        completed: 8,
+        progress: null,
+      }),
+      false
+    );
+    assert.equal(
+      shouldShowCatalogOverview({
+        enabled: true,
+        completed: 0,
+        progress: null,
+        sessionDots: [{ done: true }, { done: false }],
       }),
       false
     );
