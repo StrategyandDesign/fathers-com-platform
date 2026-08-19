@@ -905,9 +905,10 @@ export const he = {
       participationUnset: "לא הוגדר",
       participationUnsetHint: "שפה עניינית. לא חובה ולא הזמנה.",
       participationExpected: "מצופה",
-      participationExpectedHint: "שיקום, מסגרת, או כל תוכנית שמצפה להשלמה.",
+      participationExpectedHint:
+        "שיקום, יחידה צבאית, או כל תוכנית לשיפור ביצועים שמצפה להשלמה.",
       participationOpen: "פתוח",
-      participationOpenHint: "קהילה או התנדבות. הם קובעים את הקצב.",
+      participationOpenHint: "השתתפות וולונטרית. המשתתפים קובעים את הקצב.",
       participationSave: "שמירה",
     },
     status: {

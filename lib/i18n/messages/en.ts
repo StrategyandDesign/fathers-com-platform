@@ -955,9 +955,10 @@ export const en = {
       participationUnset: "Not set",
       participationUnsetHint: "Plain language. Neither required nor invitational.",
       participationExpected: "Expected",
-      participationExpectedHint: "Rehab, unit, or any program where completion is expected.",
+      participationExpectedHint:
+        "Rehab, armed forces unit, or any performance optimization program where completion is expected.",
       participationOpen: "Open",
-      participationOpenHint: "Church or voluntary. Men set the pace.",
+      participationOpenHint: "Voluntary participation. Participants set their pace.",
       participationSave: "Save",
     },
     status: {
