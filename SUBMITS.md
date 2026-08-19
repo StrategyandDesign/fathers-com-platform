@@ -2,6 +2,8 @@
 
 Official review copies are **even-numbered** and **date-stamped**.
 
+Moving pushes that Micah and Eric share are numbered separately as **Shared 1, Shared 2, …** on `review`. See `SHARED.md`. Those marks do not freeze a submit and do not move `submit/2`.
+
 | Submit | Date (UTC) | Frozen branch | Issue | What it is |
 |---|---|---|---|---|
 | *(informal)* | 18 Aug 2026 | — | — | First share. No number. Do not use this as the review SHA. |

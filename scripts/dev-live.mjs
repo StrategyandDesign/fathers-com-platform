@@ -255,6 +255,12 @@ function writeLaunchAgent(home, execPath, scriptPath, workingDirectory) {
   return plistPath;
 }
 
+function installSharedPublishHooks(cwd) {
+  const hooks = path.join(cwd, "scripts", "git-hooks");
+  if (!existsSync(hooks)) return;
+  run("git", ["config", "core.hooksPath", "scripts/git-hooks"], cwd);
+}
+
 function startNext(cwd, port) {
   const child = spawn(
     "npx",
@@ -305,6 +311,8 @@ async function main() {
   if (served && isGitRepo(served) && !clones.includes(path.resolve(served))) {
     clones.unshift(path.resolve(served));
   }
+
+  installSharedPublishHooks(cwd);
 
   if (process.platform === "darwin") {
     try {
