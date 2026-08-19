@@ -23,7 +23,7 @@ export default async function AdminNewOrganizationPage({
         <Link href="/admin/organizations" className={interactiveLinkClassName}>
           Organizations
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>New</span>
       </p>
       <div>

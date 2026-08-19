@@ -73,7 +73,7 @@ export function CompanionPanel({
         <h3 className="text-sm font-medium">{t("manager.companion.questionsTitle")}</h3>
         <ul className="mt-3 grid gap-3 sm:grid-cols-2">
           {questions.map((question) => (
-            <li key={question.title} className="rounded-lg border border-border bg-black/30 p-4">
+            <li key={question.title} className="rounded-lg border border-border bg-inset p-4">
               <p className="font-medium">{question.title}</p>
               <p className="mt-2 text-sm text-muted-foreground">{question.body}</p>
             </li>
@@ -108,7 +108,7 @@ export function CompanionPanel({
             {briefing.quiet.map((item) => (
               <li key={item.fatherId} className="px-4 py-4">
                 <div className="flex items-start gap-3">
-                  <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-medium">
+                  <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-xs font-medium">
                     {initials(item.name)}
                   </span>
                   <div className="min-w-0 flex-1">

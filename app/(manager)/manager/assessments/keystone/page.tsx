@@ -74,7 +74,7 @@ export default async function ManagerKeystonePage({
         <Link href="/manager/assessments" className={interactiveLinkClassName}>
           {t("manager.assessments.title")}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span className="min-w-0 text-foreground">{t("father.profile.keystone")}</span>
       </p>
       <div>

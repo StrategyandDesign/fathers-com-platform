@@ -386,6 +386,11 @@ export const en = {
     shareOff: "Not sharing",
     shareHint: "You can turn this off anytime. Turning it off removes you from the counts.",
     staffLead: "Your language and notifications.",
+    openMenu: "Open account menu",
+    palette: "Palette",
+    paletteDark: "Dark",
+    paletteLight: "Light",
+    paletteHint: "Dark is the usual look. Light is the other option. The top bar stays dark.",
     languageTitle: "Language",
     languageLead:
       "This account can follow the organization default, or you can choose a language.",

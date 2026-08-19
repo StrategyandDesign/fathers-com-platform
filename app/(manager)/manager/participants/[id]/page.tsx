@@ -46,7 +46,7 @@ function Step({ done, label }: { done: boolean; label: string }) {
       <span
         className={cn(
           "size-2 rounded-full",
-          done ? "bg-primary" : "bg-white/20"
+          done ? "bg-primary" : "bg-foreground/20"
         )}
       />
       <span className={done ? "text-foreground" : "text-muted-foreground"}>
@@ -115,7 +115,7 @@ export default async function ManagerParticipantDetailPage({
         <Link href="/manager/participants" className={interactiveLinkClassName}>
           {t("manager.participants.title")}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span className="min-w-0">{participant.name}</span>
       </p>
       <Flash error={flash.error} notice={flash.notice} />
@@ -201,7 +201,7 @@ export default async function ManagerParticipantDetailPage({
             {t("manager.companion.detailLead")}
           </p>
           {withoutCert[0] ? (
-            <div className="mt-5 rounded-lg border border-border bg-black/30 px-4 py-3">
+            <div className="mt-5 rounded-lg border border-border bg-inset px-4 py-3">
               <p className="text-sm text-muted-foreground">
                 {t("manager.companion.detailCert", { title: withoutCert[0].training.title })}
               </p>
@@ -244,11 +244,11 @@ export default async function ManagerParticipantDetailPage({
             : t("manager.participants.nudgeActive")}
         </p>
         {historyUnavailable ? (
-          <p className="mt-4 rounded-xl border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
+          <p className="mt-4 rounded-xl border border-border bg-inset px-4 py-3 text-sm text-muted-foreground">
             {t("manager.participants.nudgeCheckFailed")}
           </p>
         ) : remindersAllowed === false ? (
-          <p className="mt-4 rounded-xl border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
+          <p className="mt-4 rounded-xl border border-border bg-inset px-4 py-3 text-sm text-muted-foreground">
             {t("manager.participants.remindersOffLong")}
           </p>
         ) : cooldown > 0 ? (
@@ -486,11 +486,11 @@ export default async function ManagerParticipantDetailPage({
         <form action={previewCertificate} className="mt-5 space-y-4">
           <input type="hidden" name="father_id" value={participant.fatherId} />
           {progress.length === 0 ? (
-            <p className="rounded-lg border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
+            <p className="rounded-lg border border-border bg-inset px-4 py-3 text-sm text-muted-foreground">
               {t("manager.participants.noCatalogYet")}
             </p>
           ) : withoutCert.length === 0 ? (
-            <p className="rounded-lg border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
+            <p className="rounded-lg border border-border bg-inset px-4 py-3 text-sm text-muted-foreground">
               {t("manager.participants.certOnlyComplete")}{" "}
               {progress.some((card) => !card.certificate)
                 ? t("manager.participants.finishSessions")

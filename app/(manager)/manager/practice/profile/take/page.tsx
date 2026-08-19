@@ -131,7 +131,7 @@ export default async function LeaderPracticeProfileTakePage({
           />
           <ProgressBar
             value={overallPercent}
-            className="h-1 bg-white/[0.06]"
+            className="h-1 bg-foreground/10"
             indicatorClassName="bg-primary/45"
             label={t("father.home.questionOf", {
               n: question.id,

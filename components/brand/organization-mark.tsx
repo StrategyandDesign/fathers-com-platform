@@ -23,7 +23,7 @@ export function OrganizationMark({
     if (!logo) return null;
     return (
       <span
-        className="inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/10"
+        className="inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-foreground/10"
         title={label ?? undefined}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -77,7 +77,7 @@ function CohortNoteEditor({
       {showGroupName ? <p className="text-sm font-medium">{group.groupName}</p> : null}
 
       {liveBody ? (
-        <div className="rounded-xl border border-border bg-black/20 p-4">
+        <div className="rounded-xl border border-border bg-inset p-4">
           <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
             {t("manager.dashboard.noteNowShowing")}
           </p>
@@ -89,7 +89,7 @@ function CohortNoteEditor({
           </p>
         </div>
       ) : (
-        <p className="rounded-lg border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
+        <p className="rounded-lg border border-border bg-inset px-4 py-3 text-sm text-muted-foreground">
           {t("manager.dashboard.notePreviewEmpty")}
         </p>
       )}
@@ -117,7 +117,7 @@ function CohortNoteEditor({
             })}
           </span>
         </label>
-        <div className="rounded-xl border border-border bg-black/20 p-4">
+        <div className="rounded-xl border border-border bg-inset p-4">
           <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
             {preview
               ? t("father.home.noteEyebrow")

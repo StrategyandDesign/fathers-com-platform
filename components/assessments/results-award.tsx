@@ -64,7 +64,7 @@ export async function AssessmentResultsAward({
         <p className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground uppercase">
           {t("father.assessments.awardRecord")}
         </p>
-        <ol className="mt-5 divide-y divide-white/10 overflow-hidden rounded-xl border border-white/10 bg-[#141414]">
+        <ol className="mt-5 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
           {questions.map((item, index) => {
             const answer = answers.get(item.id)?.trim() || "—";
             return (

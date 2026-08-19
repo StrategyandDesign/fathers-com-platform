@@ -21,7 +21,7 @@ export default async function AdminNewTrainingPage({
         <Link href="/admin/trainings" className={interactiveLinkClassName}>
           Trainings
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>New</span>
       </p>
       <div>

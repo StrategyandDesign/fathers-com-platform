@@ -39,7 +39,7 @@ export function CertificateDesk({
       </p>
 
       {ready.length === 0 ? (
-        <p className="mt-5 rounded-lg border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
+        <p className="mt-5 rounded-lg border border-border bg-inset px-4 py-3 text-sm text-muted-foreground">
           {t("manager.certificates.emptyReady")}
         </p>
       ) : (

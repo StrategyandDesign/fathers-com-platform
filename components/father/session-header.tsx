@@ -123,7 +123,7 @@ export async function SessionHeader({
             return (
               <span key={step.key} className="inline-flex items-center">
                 {index > 0 ? (
-                  <span className="px-2 text-white/20" aria-hidden>
+                  <span className="px-2 text-foreground/20" aria-hidden>
                     ·
                   </span>
                 ) : null}

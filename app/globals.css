@@ -7,9 +7,9 @@
 /*
   Fathers.com design system — extracted from Higgsfield Sign In + brand lockup.
 
-  Tone: masculine, high-contrast, clean. Near-black canvas, charcoal cards,
-  forest-green for progress and in-app actions, white inverse CTAs on session
-  flows. Film grain. Desktop: icon sidebar + slim top bar.
+  Tone: masculine, high-contrast, clean. Dark is the default palette.
+  Light is the optional second palette. The upper header stays black
+  in both modes via --header* tokens.
   Breakpoints (Tailwind defaults): mobile <768 (md), tablet 768–1024 (lg), desktop >1024.
 */
 
@@ -36,6 +36,7 @@
   --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
+  --color-input-fill: var(--input-fill);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
@@ -54,6 +55,19 @@
   --color-brand-foreground: var(--brand-foreground);
   --color-inverse: var(--inverse);
   --color-inverse-foreground: var(--inverse-foreground);
+  --color-inset: var(--inset);
+  --color-hover: var(--hover);
+  --color-cover: var(--cover);
+  --color-overlay: var(--overlay);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-header: var(--header);
+  --color-header-foreground: var(--header-foreground);
+  --color-header-muted: var(--header-muted);
+  --color-header-border: var(--header-border);
+  --color-header-hover: var(--header-hover);
+  --color-header-accent: var(--header-accent);
   --radius-sm: calc(var(--radius) * 0.5);
   --radius-md: calc(var(--radius) * 0.7);
   --radius-lg: var(--radius);
@@ -63,7 +77,76 @@
   --radius-4xl: calc(var(--radius) * 2.4);
 }
 
-:root,
+:root {
+  --background: #f3f4f2;
+  --foreground: #141414;
+
+  --card: #ffffff;
+  --card-foreground: #141414;
+  --popover: #ffffff;
+  --popover-foreground: #141414;
+
+  --primary: #326638;
+  --primary-foreground: #ffffff;
+
+  --inverse: #141414;
+  --inverse-foreground: #f3f4f2;
+
+  --brand: #326638;
+  --brand-foreground: #ffffff;
+
+  --secondary: #e6e9e4;
+  --secondary-foreground: #141414;
+
+  --muted: #e8ebe6;
+  --muted-foreground: #5a605a;
+
+  --accent: #dce8de;
+  --accent-foreground: #1b3320;
+
+  --destructive: #a43b3b;
+
+  --border: rgb(20 20 20 / 12%);
+  --input: rgb(20 20 20 / 16%);
+  --input-fill: #ffffff;
+  --ring: #326638;
+
+  --chart-1: #326638;
+  --chart-2: #4d7a56;
+  --chart-3: #5a605a;
+  --chart-4: #c5cbc3;
+  --chart-5: #ffffff;
+
+  --radius: 0.75rem;
+
+  --sidebar: #eceee9;
+  --sidebar-foreground: #3f463f;
+  --sidebar-primary: #326638;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dfe3db;
+  --sidebar-accent-foreground: #141414;
+  --sidebar-border: rgb(20 20 20 / 10%);
+  --sidebar-ring: #326638;
+
+  --inset: rgb(20 20 20 / 5%);
+  --hover: rgb(20 20 20 / 6%);
+  --cover: #dce1da;
+  --overlay: rgb(10 10 10 / 45%);
+
+  --success: #2e6b4f;
+  --warning: #9a6b12;
+  --info: #3d6b8a;
+
+  --header: #0a0a0a;
+  --header-foreground: #ffffff;
+  --header-muted: #a1a1aa;
+  --header-border: rgb(255 255 255 / 10%);
+  --header-hover: rgb(255 255 255 / 8%);
+  --header-accent: #1c1c1c;
+
+  --grain-opacity: 0.05;
+}
+
 .dark {
   --background: #0a0a0a;
   --foreground: #ffffff;
@@ -95,6 +178,7 @@
 
   --border: rgb(255 255 255 / 9%);
   --input: rgb(255 255 255 / 14%);
+  --input-fill: rgb(0 0 0 / 40%);
   --ring: #326638;
 
   --chart-1: #326638;
@@ -102,8 +186,6 @@
   --chart-3: #a1a1aa;
   --chart-4: #3f3f46;
   --chart-5: #1c1c1c;
-
-  --radius: 0.75rem;
 
   --sidebar: #111111;
   --sidebar-foreground: #a1a1aa;
@@ -114,6 +196,22 @@
   --sidebar-border: rgb(255 255 255 / 8%);
   --sidebar-ring: #326638;
 
+  --inset: rgb(0 0 0 / 28%);
+  --hover: rgb(255 255 255 / 5%);
+  --cover: #101510;
+  --overlay: rgb(0 0 0 / 70%);
+
+  --success: #4c8f68;
+  --warning: #d4a017;
+  --info: #6d9bb8;
+
+  --header: #0a0a0a;
+  --header-foreground: #ffffff;
+  --header-muted: #a1a1aa;
+  --header-border: rgb(255 255 255 / 10%);
+  --header-hover: rgb(255 255 255 / 8%);
+  --header-accent: #1c1c1c;
+
   --grain-opacity: 0.12;
 }
 
@@ -123,9 +221,13 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
     overflow-x: clip;
     @apply font-sans;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   html[lang="he"],
@@ -150,8 +252,8 @@
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--primary) 70%, black);
-    color: #fff;
+    background: color-mix(in srgb, var(--primary) 55%, var(--background));
+    color: var(--foreground);
   }
 }
 
@@ -195,6 +297,10 @@ body::after {
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 180px 180px;
+}
+
+html:not(.dark) body::after {
+  mix-blend-mode: multiply;
 }
 
 @media print {

@@ -40,9 +40,9 @@ export function TrainingStageBanner({
           {current && sessionTitle ? (
             <p className="mt-2 text-sm text-foreground">
               {trainingTitle}
-              <span className="text-white/20"> · </span>
+              <span className="text-foreground/20"> · </span>
               {sessionTitle}
-              <span className="text-white/20"> · </span>
+              <span className="text-foreground/20"> · </span>
               {STEP_LABEL[current]}
             </p>
           ) : null}

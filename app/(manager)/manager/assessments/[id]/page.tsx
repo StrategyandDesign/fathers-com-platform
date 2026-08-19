@@ -52,7 +52,7 @@ export default async function ManagerAssessmentDetailPage({
         <Link href="/manager/assessments" className={interactiveLinkClassName}>
           {t("manager.assessments.title")}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span className="min-w-0 text-foreground">{detail.assessment.title}</span>
       </p>
       <div>
@@ -144,7 +144,7 @@ export default async function ManagerAssessmentDetailPage({
         ) : (
         <ol className="mt-4 space-y-3">
           {detail.questions.map((question, index) => (
-            <li key={question.id} className="rounded-lg border border-border bg-black/20 p-4">
+            <li key={question.id} className="rounded-lg border border-border bg-inset p-4">
               <p className="text-sm text-muted-foreground">
                 {index + 1}.{" "}
                 {question.question_type === "single_select"

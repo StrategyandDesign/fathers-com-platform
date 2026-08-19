@@ -1,17 +1,14 @@
-import Link from "next/link";
-
 import { BrandLogo } from "@/components/brand/logo";
 import { OrganizationMark } from "@/components/brand/organization-mark";
+import { AccountMenu } from "@/components/layout/account-menu";
 import { AppNav } from "@/components/layout/app-nav";
 import { ManagerHeaderMenu } from "@/components/layout/manager-header-menu";
 import { StaffMenu } from "@/components/layout/staff-menu";
-import { UserAvatar } from "@/components/layout/user-avatar";
 import { Badge } from "@/components/ui/badge";
-import { ROLE_ACCOUNT, ROLE_HOME, type AppRole } from "@/lib/auth/roles";
+import { ROLE_HOME, type AppRole } from "@/lib/auth/roles";
 import { isFatherStartPath } from "@/lib/father/onboarding";
 import { requestPathname } from "@/lib/http/pathname";
 import { getI18n } from "@/lib/i18n/server";
-import { interactiveIconClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export async function RoleShell({
@@ -45,17 +42,20 @@ export async function RoleShell({
 
   return (
     <div className="min-h-svh bg-background">
-      <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-border bg-background/90 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md print:hidden lg:px-5">
+      <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-header-border bg-header px-3 pt-[env(safe-area-inset-top)] text-header-foreground print:hidden lg:px-5">
         <div className="flex min-w-0 shrink-0 items-center gap-1.5 lg:gap-3">
           {role !== "father" && role !== "manager" ? <StaffMenu role={role} /> : null}
-          <BrandLogo href={funnel ? "/father/start" : ROLE_HOME[role]} />
+          <BrandLogo
+            href={funnel ? "/father/start" : ROLE_HOME[role]}
+            tone="header"
+          />
           {groupName ? (
-            <p className="hidden min-w-0 max-w-[12rem] truncate text-sm text-muted-foreground sm:block">
+            <p className="hidden min-w-0 max-w-[12rem] truncate text-sm text-header-muted sm:block">
               {groupName}
             </p>
           ) : null}
           {chromeLabel ? (
-            <Badge variant="secondary" className="hidden max-w-[14rem] truncate lg:inline-flex">
+            <Badge variant="header" className="hidden max-w-[14rem] truncate lg:inline-flex">
               {chromeLabel}
             </Badge>
           ) : null}
@@ -63,36 +63,20 @@ export async function RoleShell({
         {role === "manager" ? (
           <div className="hidden min-w-0 flex-1 justify-end overflow-x-auto md:flex [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="shrink-0">
-              <ManagerHeaderMenu />
+              <ManagerHeaderMenu tone="header" />
             </div>
           </div>
         ) : (
           <div className="hidden flex-1 md:block" />
         )}
-        {funnel ? (
-          <div className="flex-1" />
-        ) : (
-          <div className="flex shrink-0 justify-end">
-            <Link
-              href={ROLE_ACCOUNT[role]}
-              className={cn(
-                "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full lg:border lg:border-border lg:bg-card lg:px-2 lg:py-1 lg:pe-3 lg:text-sm",
-                interactiveIconClassName
-              )}
-            >
-              <UserAvatar
-                name={email}
-                src={avatarUrl}
-                className="size-10 text-xs font-medium lg:size-7"
-              />
-              {email || chromeLabel ? (
-                <span className="hidden max-w-[12rem] truncate lg:inline">
-                  {email ?? chromeLabel}
-                </span>
-              ) : null}
-            </Link>
-          </div>
-        )}
+        <div className="ms-auto flex shrink-0 justify-end">
+          <AccountMenu
+            role={role}
+            email={email}
+            avatarUrl={avatarUrl}
+            chromeLabel={chromeLabel}
+          />
+        </div>
       </header>
 
       {managerMobileNav ? (
@@ -102,7 +86,7 @@ export async function RoleShell({
       ) : null}
 
       {funnel ? null : (
-        <aside className="fixed bottom-0 start-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col overflow-y-auto border-e border-border bg-sidebar print:hidden lg:flex">
+        <aside className="fixed bottom-0 start-0 top-[calc(3.5rem+env(safe-area-inset-top))] z-20 hidden w-[5.5rem] flex-col overflow-y-auto border-e border-sidebar-border bg-sidebar print:hidden lg:flex">
           {role === "father" && groupLogo ? (
             <div className="flex justify-center px-2 pt-4">
               {/* Uploaded group mark lives only here, above Home — not beside the Fathers lockup. */}

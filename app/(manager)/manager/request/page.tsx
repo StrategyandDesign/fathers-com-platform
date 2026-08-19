@@ -23,7 +23,7 @@ export default async function ManagerTrainingRequestPage({
         <Link href="/manager/trainings" className={interactiveLinkClassName}>
           {t("manager.trainings.title")}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>{t("manager.request.title")}</span>
       </p>
       <div>

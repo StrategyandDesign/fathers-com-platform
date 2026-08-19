@@ -10,6 +10,7 @@ import {
 } from "@/lib/auth/roles";
 import { isLocale, LOCALE_COOKIE, type Locale } from "@/lib/i18n/config";
 import { getSupabasePublishableKey, getSupabaseUrl } from "@/lib/supabase/env";
+import { PALETTE_COOKIE, paletteCookieOptions, parsePalette } from "@/lib/theme/palette";
 
 function redirectWithSession(supabaseResponse: NextResponse, url: URL) {
   const response = NextResponse.redirect(url);
@@ -88,7 +89,7 @@ export async function updateSession(request: NextRequest) {
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("role, locale, home_group_id")
+      .select("role, locale, home_group_id, color_scheme")
       .eq("id", user.id)
       .maybeSingle();
     role = resolveProfileRole(profile?.role, user);
@@ -131,6 +132,18 @@ export async function updateSession(request: NextRequest) {
           sameSite: "lax",
         });
       }
+    }
+
+    const accountPalette = parsePalette(
+      (profile as { color_scheme?: unknown } | null)?.color_scheme
+    );
+    const cookiePalette = parsePalette(request.cookies.get(PALETTE_COOKIE)?.value);
+    if (accountPalette && accountPalette !== cookiePalette) {
+      supabaseResponse.cookies.set(
+        PALETTE_COOKIE,
+        accountPalette,
+        paletteCookieOptions()
+      );
     }
   }
 

@@ -23,7 +23,7 @@ export function StartChoiceForm({
           className={cn(
             radioOptionClassName,
             "w-full min-h-12 justify-start text-left text-base",
-            selected === option.value && "border-primary/50 bg-white/5"
+            selected === option.value && "border-primary/50 bg-hover"
           )}
         >
           {option.label}
