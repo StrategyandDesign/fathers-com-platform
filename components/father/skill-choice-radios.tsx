@@ -1,8 +1,6 @@
 "use client";
 
-import { useRef, useState, type ChangeEvent, type MouseEvent } from "react";
-import { useFormStatus } from "react-dom";
-
+import { useAutoAdvanceSubmit } from "@/components/form/use-auto-advance-submit";
 import { useT } from "@/components/i18n/locale-provider";
 import { choiceIsSelected, type SkillChoice } from "@/lib/father/session-questions";
 import { radioOptionClassName } from "@/lib/ui";
@@ -24,28 +22,10 @@ export function SkillChoiceRadios({
   required?: boolean;
 }) {
   const t = useT();
-  const { pending } = useFormStatus();
-  const [advancing, setAdvancing] = useState(false);
-  const started = useRef(false);
-  const locked = pending || advancing;
-
-  function advance(form: HTMLFormElement | null) {
-    if (!autoAdvance || locked || started.current || !form) return;
-    started.current = true;
-    setAdvancing(true);
-    const nextButton = form.querySelector<HTMLButtonElement>("[data-session-advance]");
-    requestAnimationFrame(() => {
-      form.requestSubmit(nextButton ?? undefined);
-    });
-  }
-
-  function handleClick(event: MouseEvent<HTMLInputElement>) {
-    advance(event.currentTarget.form);
-  }
-
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    advance(event.currentTarget.form);
-  }
+  const { locked, handleChange } = useAutoAdvanceSubmit(
+    autoAdvance,
+    "[data-session-advance]"
+  );
 
   return (
     <fieldset
@@ -62,7 +42,6 @@ export function SkillChoiceRadios({
             required={required}
             defaultChecked={choiceIsSelected(defaultValue, choice)}
             className="size-4 accent-primary"
-            onClick={handleClick}
             onChange={handleChange}
           />
           <span>

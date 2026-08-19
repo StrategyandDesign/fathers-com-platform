@@ -39,6 +39,14 @@ function nextWithPathname(request: NextRequest) {
 }
 
 export async function updateSession(request: NextRequest) {
+  try {
+    return await applySession(request);
+  } catch {
+    return nextWithPathname(request);
+  }
+}
+
+async function applySession(request: NextRequest) {
   let supabaseResponse = nextWithPathname(request);
 
   const config = supabasePublicConfig();

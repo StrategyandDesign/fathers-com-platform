@@ -13,6 +13,7 @@ import {
   type StageSessionReadiness,
 } from "@/lib/admin/stage";
 import { hasHardcodedSkillPack } from "@/lib/father/session-questions";
+import { hasTrainingOverview } from "@/lib/father/training-door";
 import type { AdminTrainingRow } from "@/lib/admin/types";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -25,9 +26,12 @@ export function TrainingStageDesk({ training }: { training: AdminTrainingRow }) 
     stageSessionReadiness(session, training)
   );
   const firstMissing = rows.find((row) => !row.hasVideo);
-  const walkHref = training.sessions[0]
-    ? paths.session(training.sessions[0].id)
-    : paths.edit;
+  const hasOverview = hasTrainingOverview(training);
+  const walkHref = hasOverview
+    ? paths.overview
+    : training.sessions[0]
+      ? paths.session(training.sessions[0].id)
+      : paths.edit;
   const checklist = trainingDevelopmentChecklist(training, {
     sessionHasHardcoded: (session) => hasHardcodedSkillPack(session, training),
   });
@@ -39,7 +43,7 @@ export function TrainingStageDesk({ training }: { training: AdminTrainingRow }) 
           <h2 className="font-heading text-lg font-semibold">Sourcing desk</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {videoTraining
-              ? "Sandbox walk. Same Home card, Film, Check-in, and Action a Father gets after Leader assignment. Nothing is written."
+              ? "Sandbox walk. Same overview film, Home card, session Film, Check-in, and Action a Father gets after Leader assignment. Nothing is written."
               : "Add YouTube URLs to stage the films. Check-in and Action already use the same prompts he will get."}
           </p>
         </div>
@@ -53,7 +57,7 @@ export function TrainingStageDesk({ training }: { training: AdminTrainingRow }) 
         </div>
       </div>
 
-      <dl className="grid gap-3 sm:grid-cols-3">
+      <dl className="grid gap-3 sm:grid-cols-2">
         <DeskStat
           label="Published"
           value={training.published ? "Yes" : "Not yet"}
@@ -69,6 +73,10 @@ export function TrainingStageDesk({ training }: { training: AdminTrainingRow }) 
               ? "—"
               : `${video.withVideo} of ${video.total}`
           }
+        />
+        <DeskStat
+          label="Overview film"
+          value={hasOverview ? "Posted" : "Not yet"}
         />
       </dl>
 

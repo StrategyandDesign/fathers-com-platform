@@ -1,57 +1,32 @@
-# Fathers.com Platform
+# Fathers.com — clean-pilot (Next.js)
 
-Static HTML on Vercel. Postgres, Auth, and secrets on Supabase.
-The browser reports. The server decides. Row-level security is the boundary.
+This repository is the **Next.js clean-pilot app** for review and hardening. It is not the older static HTML Fathers.com site, and it is not a production cutover of `fathers.com`.
 
-Live: https://fathers-com-platform.vercel.app
-Repo: this tree is the app. `python3 tools/check_release.py` fails if a referenced file is missing.
+Official copies for Erik are even-numbered and date-stamped in the isolated repo. See `SUBMITS.md`. The first official stamp is **Submit 2** (19 Aug 2026) on frozen branch `submit/2`.
 
-## How a change becomes the site
-
-1. Edit sources, not generated HTML.
-   - Pages: `build_pages.py`
-   - Dashboards: `build_dashboards.py`
-   - Short courses: `build_short_courses.py`
-   - Emails: `build_emails.py`
-   - Course JSON: `content/*.json` via `tools/import_content.py`
-2. Rebuild: `python3 build_pages.py && python3 build_dashboards.py && python3 build_short_courses.py`
-3. Gate: `python3 tools/check_release.py` (determinism, claim bans, asset manifest)
-4. PR to `main`. Vercel serves the committed HTML. Hobby plan: weekday production window 9:15 CT.
-
-Doctrine: `POSITIONING.md`. Process: `CONTRIBUTING.md`. System: `ARCHITECTURE.md`. Roles: `ROLES.md`. Launch: `LAUNCH.md`. Deferred: `docs/DEFERRED.md`.
-
-## Hidden infrastructure
-
-| Layer | Where | Rule |
-|---|---|---|
-| Pages | generated `*.html` | never hand-edit; CI fails drift |
-| Client | `assets/js/` | UX only; no prices, no eligibility, no secrets |
-| Public config | `assets/js/config.js` | anon key is public by design; never put a service role here |
-| Schema | `supabase/migrations/` | `supabase db push`. No dashboard SQL without a file |
-| Historical SQL | `supabase/sql-archive/` | record of hand-applied SQL. Do not run again |
-| Secrets / money / grades | `supabase/functions/` | service role, explicit auth. Browser never holds the token |
-| Release | `tools/check_release.py` | repo is the whole app |
-
-Edge functions in play: `checkout`, `checkout-hook`, `checkpoint_submit`, `progress_beat`, `submit_award`, `review_award`, `issue-certificate`, `send-email`, `esign-bridge`, `verify_serial`. Deploy with `supabase functions deploy`.
-
-Auth is email + password. Magic link is retired. `SHOW_MILITARY` and `SHOW_MANHOOD_COURSE` ship surfaces dark.
-
-## Local
+| What | Where |
+|---|---|
+| Official submit record | `SUBMITS.md` |
+| Isolated frozen copy | https://github.com/StrategyandDesign/fathers-com-clean-pilot/tree/submit/2 |
+| Runbook | `PILOT.md` |
+| App | `app/` — Next.js 15 App Router |
+| Auth / data | Pilot Supabase project `koeplcybddrvbliuepsy` |
+| Handoff for reviewers | `handoff/` |
 
 ```bash
-python3 build_pages.py && python3 build_dashboards.py && python3 build_short_courses.py
-python3 tools/check_release.py
-for f in assets/js/*.js; do node --check "$f"; done
+npm install
+# Copy .env.example to .env.local. Missing Supabase keys fall back to the Pilot project.
+npm run dev
 ```
 
-Fresh database: `SUPABASE_DB_URL=... bash tools/bootstrap_db.sh`, then `supabase db push` and `supabase functions deploy`.
+Open http://127.0.0.1:3000/login
 
-Upload zips (`fathers-com_NN.zip`) are diffs of a release, not the tree. Auditing a zip alone will report missing files by design.
+Pilot seats (password `12345` on local and Vercel): `father@nwa`, `manager@nwa`, `reviewer@nwa`, plus the Unit 8200 `*@il` seats and `admin@fathers`. See `PILOT.md`.
 
-## What a Friday reader should hold
+- Lint: `npm run lint`
+- Unit tests: `npx tsx --test tests/*.test.ts`
+- Typecheck: `npx tsc --noEmit`
 
-- RLS is security. Client checks are UX.
-- A father never pays. Claims gate certificates, not the Profile or the films.
-- Facilitators see progress Y/N and counts, never answers or scores.
-- Practices must not require a child visit.
-- Previews currently read production `config.js`. Do not use a preview to mutate prod data.
+Start here: `handoff/00-SUBMISSION-GUIDE.md`
+
+This repo is the review line. Do not use https://fathers-com-platform.vercel.app to judge it. That host serves a different line.

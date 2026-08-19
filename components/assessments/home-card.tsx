@@ -59,7 +59,7 @@ export async function AssessmentHomeCard({
                 {t("father.home.taken", { date: formatLongDate(profile.taken_at, locale) })}
               </p>
               <div className="mt-auto pt-5">
-                <Link href="/father/profile/results" className={actionClassName}>
+                <Link href="/father/assessments" className={actionClassName}>
                   {t("father.profile.viewResults")}
                 </Link>
               </div>

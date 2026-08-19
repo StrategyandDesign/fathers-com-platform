@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Heebo, Inter, Source_Serif_4 } from "next/font/google";
 
+import { ClearStaleServiceWorkers } from "@/components/dev/clear-stale-service-workers";
+import { DevLiveReload } from "@/components/dev/live-reload";
 import { LocaleProvider } from "@/components/i18n/locale-provider";
 import { localeDir } from "@/lib/i18n/config";
 import { getI18n } from "@/lib/i18n/server";
@@ -58,6 +60,8 @@ export default async function RootLayout({
       className={`dark ${inter.variable} ${heebo.variable} ${geistMono.variable} ${sourceSerif.variable}`}
     >
       <body className="font-sans antialiased">
+        <ClearStaleServiceWorkers />
+        <DevLiveReload />
         <LocaleProvider locale={locale}>{children}</LocaleProvider>
       </body>
     </html>

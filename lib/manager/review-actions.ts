@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireRole } from "@/lib/auth/session";
+import { isLegacyCatalogTraining, isTrainingPublished } from "@/lib/father/types";
 import {
   DECLINE_REASON_MAX,
   isReviewStatus,
@@ -43,6 +44,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
   const groupId = String(formData.get("group_id") ?? "").trim();
   const reason = String(formData.get("decline_reason") ?? "").trim();
   const confirm = String(formData.get("confirm") ?? "").trim();
+  const quick = String(formData.get("quick") ?? "").trim() === "1";
   const returnTo = String(formData.get("return_to") ?? "").trim();
   const path =
     returnTo === "queue" || returnTo === "trainings"
@@ -82,37 +84,51 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
   if (currentError) {
     fail(path, "Couldn’t load that review. Try again.");
   }
-  if (!current || !isReviewStatus(current.status)) {
+  const { data: catalog, error: catalogError } = await supabase
+    .from("trainings")
+    .select("published, released_at, first_published_at, first_released_at")
+    .eq("id", trainingId)
+    .maybeSingle();
+  if (catalogError) {
+    fail(path, "Couldn’t check this training. Try again.");
+  }
+  if (!catalog || !isTrainingPublished(catalog)) {
+    fail(path, "That training is not published.");
+  }
+  const released = Boolean(catalog.released_at);
+  const legacy = isLegacyCatalogTraining(catalog);
+  if (!released && !legacy) {
+    fail(path, "This training is no longer released. A Super-admin must release it again.");
+  }
+
+  if (current && !isReviewStatus(current.status)) {
+    fail("/manager/trainings", "That training is not waiting on your review.");
+  }
+  if (!current && released && status === "accepted") {
     fail("/manager/trainings", "That training is not waiting on your review.");
   }
 
-  if (status === "accepted") {
-    if (current.status === "declined" && confirm !== REVERSE_ACCEPT_CONFIRM) {
-      fail(path, `Type ${REVERSE_ACCEPT_CONFIRM} to accept this training after declining it.`);
-    }
-    const { data: catalog, error: catalogError } = await supabase
-      .from("trainings")
-      .select("released_at")
-      .eq("id", trainingId)
-      .maybeSingle();
-    if (catalogError) {
-      fail(path, "Couldn’t check this training. Try again.");
-    }
-    if (!catalog?.released_at) {
-      fail(path, "This training is no longer released. A Super-admin must release it again.");
-    }
+  if (status === "accepted" && current?.status === "declined" && !quick && confirm !== REVERSE_ACCEPT_CONFIRM) {
+    fail(path, `Type ${REVERSE_ACCEPT_CONFIRM} to accept this training after declining it.`);
   }
 
-  const { error } = await supabase
-    .from("organization_training_reviews")
-    .update({
-      status,
-      decline_reason: status === "declined" ? reason || null : null,
-      decided_by: user.id,
-      decided_at: new Date().toISOString(),
-    })
-    .eq("group_id", groupId)
-    .eq("training_id", trainingId);
+  const decision = {
+    status,
+    decline_reason: status === "declined" ? reason || null : null,
+    decided_by: user.id,
+    decided_at: new Date().toISOString(),
+  };
+  const { error } = current
+    ? await supabase
+        .from("organization_training_reviews")
+        .update(decision)
+        .eq("group_id", groupId)
+        .eq("training_id", trainingId)
+    : await supabase.from("organization_training_reviews").insert({
+        group_id: groupId,
+        training_id: trainingId,
+        ...decision,
+      });
 
   if (error) {
     fail(path, "The decision didn’t save. Try again.");
@@ -123,7 +139,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
   if (status === "accepted") {
     ok(
       path,
-      current.status === "declined"
+      current?.status === "declined"
         ? "Training is available to assign again."
         : "Training is available to assign. Fathers are not enrolled until you assign it."
     );
@@ -131,7 +147,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
 
   ok(
     path,
-    current.status === "accepted"
+    current?.status === "accepted"
       ? "Training is hidden from new assignment for your organization."
       : "Training is hidden from your organization."
   );

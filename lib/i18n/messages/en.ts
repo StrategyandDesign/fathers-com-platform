@@ -240,6 +240,8 @@ export const en = {
       "This assessment has no questions yet. Check back after your leader adds some.",
     youtubeUrlInvalid:
       "Use a YouTube video link. Playlists and other sites will not play.",
+    hostedVideoUrlInvalid:
+      "Use a YouTube or Vimeo video link. Playlists and other sites will not play.",
     questionNotFound: "That question was not found.",
     answerSaveFailed: "Your answer didn’t save. Try again.",
     answerEveryQuestion: "Answer every question to finish.",
@@ -359,12 +361,14 @@ export const en = {
     displayTitleTitle: "How you are named",
     displayTitleLead:
       "Choose Leader or Manager. Fathers still see your displayed name. This does not change what you can do.",
+    displayTitleManager: "Manager",
+    displayTitleLeader: "Leader",
     displayTitleManagerHint: "The usual designation.",
     displayTitleLeaderHint: "For informal groups, or when that is how you are known.",
     displayTitleSave: "Save designation",
     logoTitle: "Organization mark",
     logoLead:
-      "Fathers in {name} see this as the left mark on Home. It identifies this group — the same group as the invite code.",
+      "Fathers in {name} see this as the left mark on Home. It identifies this group, the same group as the invite code.",
     logoPreview: "What he sees",
     logoEmpty: "No logo yet. The name still appears.",
     logoUpload: "Upload logo",
@@ -376,7 +380,7 @@ export const en = {
     logoRemoved: "Logo removed. Fathers will see the organization name only.",
     shareTitle: "Anonymous sharing",
     shareLeadFather:
-      "Release anonymous training progress to Fathers.com. Super-admins see counts only — not your name, email, written answers, or notes. Off until you turn it on.",
+      "Release anonymous training progress to Fathers.com. Super-admins see counts only, not your name, email, written answers, or notes. Off until you turn it on.",
     shareLeadManager:
       "Release anonymous counts of assignments, reviews, and certificates you issue. Super-admins do not see names or which organization.",
     shareLeadReviewer:
@@ -542,7 +546,6 @@ export const en = {
       streakClose: "Close",
       longestStreak: "Longest week count",
       freezesRemaining: "Freezes remaining",
-      streakGrid: "Last twelve weeks",
       freezeConsumed: "Last week used a freeze. You have {n} left.",
       freezeReplenished: "A freeze was restored. You have {n}.",
       streakReset:
@@ -582,6 +585,19 @@ export const en = {
       openSession: "Open Session {n}",
       startSessionN: "Start Session {n}",
       seeSessions: "See sessions",
+      watchOverview: "Watch overview",
+      overviewEyebrow: "Training overview",
+      overviewBadge: "Overview",
+      overviewNotSession: "Not a session",
+      overviewTitle: "Overview: {title}",
+      overviewLead:
+        "A conversation that introduces this training. It is not one of the sessions.",
+      overviewCardLine: "Starts with the overview film",
+      overviewSlotBody:
+        "A short film that introduces this training. It is not one of the sessions.",
+      overviewMissing: "The overview film will appear here.",
+      overviewThen: "Then the first open session",
+      backToTrainings: "Back to Trainings",
       trainingComplete: "This training is complete.",
       sessionDone: "Done",
       downloadCertificate: "Download certificate",
@@ -684,6 +700,8 @@ export const en = {
       lead: "Your assessments.",
       emptyTitle: "No assigned assessments yet",
       emptyBody: "When your leader shares an assessment, it will appear here.",
+      futureTitle: "More assessments",
+      futureBody: "This is where future assessments will be available.",
       unavailable: "Your leader has not shared this assessment.",
       answered: "{answered}/{total} answered",
       notStarted: "Not started",
@@ -714,6 +732,8 @@ export const en = {
       sessionN: "Session {n}",
       sessionDetail: "Session {n} · {detail}",
       sessionsCount: "{completed} of {total} sessions",
+      sessionOfTotal: "Session {n} of {total}",
+      programLength: "{total} sessions",
       crumb: "Film, then one question, then one skill.",
       steps: "In this session",
       watched: "Watched",
@@ -816,7 +836,7 @@ export const en = {
   manager: {
     dashboard: {
       title: "Dashboard",
-      lead: "Your group’s progress. Fathers join with the invite code.",
+      lead: "Assign work and see who has it. Fathers join with the invite code.",
       impact: "Impact Snapshot",
       compare: "Compare",
       newTrainings: "Trainings",
@@ -881,7 +901,6 @@ export const en = {
       noteReplaceLabel: "New message",
       noteCount: "{n} of {max} characters",
       notePreview: "What they see",
-      notePreviewEmpty: "Nothing is showing. Home has no update.",
       noteNowShowing: "Now showing",
       noteStampPreview: "The date and time of posting",
       noteOneAtATime:
@@ -897,6 +916,26 @@ export const en = {
       noteNotYours: "That group is not yours.",
       noteSaveFailed: "The update didn’t post. Try again.",
       noteClearFailed: "The update didn’t clear. Try again.",
+    },
+    status: {
+      title: "Assignment status",
+      lead: "Who has which training. Assign the rest without leaving this page.",
+      openBoard: "Open names",
+      emptyTitle: "Nothing to assign yet",
+      emptyBody: "Include a training for this organization, then assign it from here.",
+      emptyAction: "Open trainings",
+      assignedOf: "{assigned} of {total} assigned",
+      notStartedCount: "{n} not started",
+      inProgressCount: "{n} in progress",
+      doneCount: "{n} done",
+      boardTitle: "Who has what",
+      boardLead: "Each cell is one man and one training. Assign stays on this page.",
+      assign: "Assign",
+      notStarted: "Not started",
+      done: "Done",
+      sessionsShort: "{completed}/{total}",
+      allHaveIt: "All assigned",
+      assignRemainingLead: "Give a training to everyone who does not have it yet.",
     },
     practice: {
       title: "Your training and assessments",
@@ -944,7 +983,7 @@ export const en = {
       readyCert: "Ready for certificate: {title}",
     },
     companion: {
-      eyebrow: "Assistant",
+      eyebrow: "Agent",
       title: "Assistant",
       lead: "A short summary of your group. Nothing sends or assigns until you confirm.",
       collapse: "Hide assistant",
@@ -1015,7 +1054,7 @@ export const en = {
     },
     participants: {
       title: "Participants",
-      lead: "Fathers in your group. Send a Certificate of Completion from the section below, or open anyone.",
+      lead: "Who has which training. Assign from the board, or open anyone.",
       goneQuiet: "Gone quiet",
       goneQuietLead:
         "No activity in 14 days, and training is still open. A note emails only if he left session reminders on.",
@@ -1078,7 +1117,7 @@ export const en = {
       noAssignedTitle: "No training assigned",
       noContinueBody: "An admin needs to add a training to the catalog first.",
       allCompleteBody: "Every session in the catalog is complete. You can send a certificate below.",
-      noAssignedBody: "Assign a training below so he has a next session.",
+      noAssignedBody: "Assign a training on a card so he has a next session.",
       assignLead: "Adds this training to his path.",
       noneAssignable:
         "No trainings are available to assign yet. Review new releases from the dashboard, or wait for an admin to publish one.",
@@ -1106,7 +1145,7 @@ export const en = {
       issuedMany: "{count} already issued",
       emptyReady:
         "No one is ready yet. A name appears here when every session in a training is done.",
-      how: "Open a name to preview and send, or use Bulk actions below and choose Issue certificates.",
+      how: "Open a name to preview and send, or use Bulk actions above and choose Issue certificates.",
     },
     nudge: {
       note: "Note",
@@ -1410,7 +1449,8 @@ export const en = {
     },
     bulk: {
       title: "Bulk actions",
-      lead: "Select participants below, then review before anything is saved. No deletions or role changes.",
+      lead: "Assign saves now. Mark complete and certificates still open a review first. No deletions or role changes.",
+      assignNow: "Assign now",
       action: "Action",
       assign: "Assign training",
       complete: "Mark complete",
@@ -1563,20 +1603,23 @@ export const en = {
       lead: "A Super-admin shares trainings with you. Accept a release, then assign it when you want fathers in {org} to receive it.",
       catalogTitle: "Available trainings",
       catalogLead:
-        "Every training this organization can use. Open one to preview it, then accept or assign it below.",
+        "Every training this organization can use. Include it to assign later, or decline to keep it hidden from your cohort. You can decide here without opening the training.",
       catalogEmptyTitle: "No trainings available",
       catalogEmptyBody:
         "When a Super-admin releases a training to this organization, it will appear here.",
-      catalogPending: "Waiting on you",
-      catalogReady: "Ready to assign",
+      catalogPending: "Not decided",
+      catalogReady: "Included",
+      catalogDeclined: "Declined",
+      include: "Include",
+      decline: "Decline",
       waitingTitle: "Waiting on you",
       waitingLead:
-        "Preview, then accept to make it available to assign, or decline to keep it hidden.",
+        "New releases still land here. You can also include or decline them in Available trainings without opening them.",
       waitingEmptyTitle: "Nothing waiting",
       waitingEmptyBody: "No new trainings are waiting.",
       cohortTitle: "In your cohort",
       cohortLead:
-        "Open a training to watch the sessions, then assign to the group or choose fathers.",
+        "Assigned, not started, in progress, and done. Assign remaining from this row.",
       cohortEmptyTitle: "No trainings in the cohort yet",
       cohortEmptyBody: "Accept a release above, or request a training.",
       assignedOf: "{assigned} of {total} assigned",
@@ -1587,17 +1630,18 @@ export const en = {
       preview: "Preview",
       viewTraining: "View training",
       removeLead: "Removing hides it from new assignment. Fathers who already have it keep it.",
-      catalogItem: "In the catalog",
+      catalogItem: "Included",
       fromSource: "From {name}",
-      hiddenTitle: "Hidden",
-      hiddenLead: "Declined for your organization. You can accept again if it is still released.",
-      hiddenEmpty: "No hidden trainings.",
+      hiddenTitle: "Hidden from your cohort",
+      hiddenLead:
+        "Declined trainings stay in Available trainings. Your cohort does not get them until you include them.",
+      hiddenEmpty: "Nothing is hidden from your cohort.",
     },
     photos: {
       title: "Organization Photos",
       backDashboard: "Back to Dashboard",
       logoAndCode:
-        "The logo is the group mark fathers see on the left of Home. It belongs to this invite-code group — a rehab, a unit, or any other organization.",
+        "The logo is the group mark fathers see on the left of Home. It belongs to this invite-code group: a rehab, a unit, or any other organization.",
       inviteCode: "Invite code {code}",
       leadOne:
         "Replace the photos {name} participants see on Home, Assessment, and Trainings. Any photo works. We fit it to the card.",

@@ -30,7 +30,11 @@ export async function DisplayTitleForm({
               className="size-4 accent-primary"
             />
             <span>
-              <span className="block font-medium">{t(`role.${title}`)}</span>
+              <span className="block font-medium">
+                {title === "leader"
+                  ? t("account.displayTitleLeader")
+                  : t("account.displayTitleManager")}
+              </span>
               <span className="block text-sm text-muted-foreground">
                 {title === "leader"
                   ? t("account.displayTitleLeaderHint")

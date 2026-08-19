@@ -219,6 +219,16 @@ describe("archive and release gates", () => {
       ),
       true
     );
+    assert.equal(
+      isTrainingAssignable(
+        {
+          published: true,
+          first_published_at: "2026-01-01T00:00:00.000Z",
+        },
+        "declined"
+      ),
+      false
+    );
     assert.equal(ARCHIVE_RELEASE_ERROR.includes("archive"), true);
     assert.equal(READY_REQUIRED_ERROR.includes("Ready"), true);
   });

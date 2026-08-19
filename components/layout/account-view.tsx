@@ -9,6 +9,7 @@ import { LegalLinks } from "@/components/legal/legal-links";
 import { Flash } from "@/components/manager/flash";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { managerDisplayTitleLabel } from "@/lib/account/display-title";
 import { loadAccountState, loadOrganizationName } from "@/lib/account/data";
 import { loadFatherLeader } from "@/lib/cohort-note/data";
 import { signOut } from "@/lib/auth/actions";
@@ -41,7 +42,7 @@ export async function AccountView({
     role === "father"
       ? organizationName?.trim() || null
       : role === "manager"
-        ? t(`role.${account.displayTitle}`)
+        ? managerDisplayTitleLabel(account.displayTitle, t)
         : t(`role.${role}`);
 
   return (

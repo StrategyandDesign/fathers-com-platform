@@ -10,7 +10,7 @@ import {
   type SessionProgress,
   type Training,
 } from "@/lib/father/types";
-import { loadAcceptedTrainingIds } from "@/lib/manager/reviews";
+import { loadAcceptedTrainingIds, loadDeclinedTrainingIds } from "@/lib/manager/reviews";
 import type { Certificate } from "@/lib/manager/types";
 import { parseTimeZone } from "@/lib/notifications/schedule";
 
@@ -75,7 +75,7 @@ function pickNextSession(
 export async function loadFatherHome(fatherId: string) {
   const supabase = await createClient();
 
-  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes, certificatesRes, assignmentsRes, accepted, zoneRes] =
+  const [trainingsRes, sessionsRes, progressRes, profileRes, draftRes, certificatesRes, assignmentsRes, accepted, declined, zoneRes] =
     await Promise.all([
       supabase.from("trainings").select("*").order("order_index"),
       supabase.from("sessions").select("*").order("order_index"),
@@ -94,6 +94,7 @@ export async function loadFatherHome(fatherId: string) {
         .select("training_id, assigned_at")
         .eq("father_id", fatherId),
       loadAcceptedTrainingIds(),
+      loadDeclinedTrainingIds(),
       supabase
         .from("notification_preferences")
         .select("timezone")
@@ -132,6 +133,7 @@ export async function loadFatherHome(fatherId: string) {
   const trainings = allTrainings.filter((training) => {
     const access = {
       accepted: accepted.ids.has(training.id),
+      declined: declined.ids.has(training.id),
       assigned: assignedIds.has(training.id),
       hasCertificate: certificateIds.has(training.id),
       hasProgress: sessions.some(
@@ -268,8 +270,9 @@ export async function loadSessionContext(fatherId: string, sessionId: string) {
 
   const unlocked = isSessionUnlocked(trainingSessions, progressBySession, sessionId);
 
-  const [accepted, assignmentRes, certificateRes] = await Promise.all([
+  const [accepted, declined, assignmentRes, certificateRes] = await Promise.all([
     loadAcceptedTrainingIds(),
+    loadDeclinedTrainingIds(),
     supabase
       .from("training_assignments")
       .select("training_id")
@@ -289,6 +292,7 @@ export async function loadSessionContext(fatherId: string, sessionId: string) {
 
   const access = {
     accepted: accepted.ids.has(typedTraining.id),
+    declined: declined.ids.has(typedTraining.id),
     assigned: Boolean(assignmentRes.data),
     hasProgress: trainingSessions.some((session) => progressBySession.has(session.id)),
     hasCertificate: Boolean(certificateRes.data),

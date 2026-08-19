@@ -14,7 +14,8 @@ import { requireRole } from "@/lib/auth/session";
 import { pickHomeAssessment, splitHomeRows } from "@/lib/father/home";
 import { loadFatherHome } from "@/lib/father/data";
 import { loadFatherStreakHome } from "@/lib/father/streak-store";
-import { continueHref, type SessionProgress } from "@/lib/father/types";
+import { hasTrainingOverview, trainingContinueHref } from "@/lib/father/training-door";
+import { type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { scheduleDueReminderFlush } from "@/lib/jobs/flush-due-work";
 import {
@@ -102,14 +103,26 @@ export default async function FatherHomePage({
   const profileCover = resolveHomeProfileCover(orgPhotos.profileUrl, orgPhotos.photoPack);
   const pair = Boolean(next && assessment);
 
+  const startWithOverview = Boolean(
+    next &&
+      hasTrainingOverview(next.training) &&
+      nextCompleted === 0 &&
+      !nextInProgress
+  );
   const upNext = next ? (
     <HomeUpNextCard
-      href={continueHref(next.session.id, next.progress)}
+      href={trainingContinueHref({
+        training: next.training,
+        next: next.session,
+        nextProgress: next.progress,
+        completed: nextCompleted,
+      })}
       trainingTitle={next.training.title}
       sessionTitle={next.session.title}
       subtitle={next.session.keyline}
       durationSeconds={next.session.duration_seconds}
       continueSession={nextInProgress}
+      startWithOverview={startWithOverview}
       completed={nextCompleted}
       total={nextTotal}
       justFinished={justFinished}
@@ -170,7 +183,6 @@ export default async function FatherHomePage({
         weeks={streak.currentWeeks}
         longestWeeks={streak.longestWeeks}
         freezesRemaining={streak.freezesRemaining}
-        grid={streak.grid}
         justFinished={justFinished}
       />
 
