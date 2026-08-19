@@ -28,6 +28,20 @@ export function hasStartedTrainingWork(
   );
 }
 
+/** Catalog card: overview only before the first session is started. */
+export function shouldShowCatalogOverview(input: {
+  enabled?: boolean;
+  gated?: boolean;
+  completed?: number | null;
+  progress?: SessionProgress | null;
+}) {
+  return (
+    Boolean(input.enabled) &&
+    !input.gated &&
+    !hasStartedTrainingWork(input.completed, input.progress)
+  );
+}
+
 export function trainingDoorHref(input: {
   training: Pick<Training, "id" | "overview_video_url">;
   next?: Session | null;

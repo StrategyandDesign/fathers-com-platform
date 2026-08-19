@@ -4,6 +4,7 @@ import { CoverPhoto } from "@/components/brand/cover";
 import { FilmRuntime } from "@/components/father/film-runtime";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
+import { shouldShowCatalogOverview } from "@/lib/father/training-door";
 import { sessionFilmPath, type Session, type SessionProgress } from "@/lib/father/types";
 import type { Translate } from "@/lib/i18n/translate";
 import {
@@ -98,7 +99,12 @@ export function FatherTrainingCatalogCard({
     ? t("father.trainings.sessionLabel", { n: next.session_number, title: next.title })
     : title;
   const overviewLink = overviewHref ?? null;
-  const listOverview = Boolean(showOverviewSlot) && !gated;
+  const listOverview = shouldShowCatalogOverview({
+    enabled: showOverviewSlot,
+    gated,
+    completed,
+    progress: nextProgress,
+  });
 
   return (
     <article

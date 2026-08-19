@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { trainingContinueHref, trainingDoorHref } from "../lib/father/training-door";
+import {
+  shouldShowCatalogOverview,
+  trainingContinueHref,
+  trainingDoorHref,
+} from "../lib/father/training-door";
 import {
   hostedVideoEmbed,
   parseHostedVideo,
@@ -116,6 +120,48 @@ describe("hosted overview video", () => {
         completed: 0,
       }),
       "/father/sessions/s1/checkin"
+    );
+  });
+
+  it("shows the catalog overview only before a session is started", () => {
+    const progress = {
+      id: "p1",
+      father_id: "f1",
+      session_id: "s1",
+      film_completed: true,
+      checkin_completed: false,
+      action_completed: false,
+      checkin_answers: {},
+      action_note: null,
+      session_note: null,
+      film_seconds: 12,
+      status: "in_progress" as const,
+      completed_at: null,
+    };
+
+    assert.equal(
+      shouldShowCatalogOverview({
+        enabled: true,
+        completed: 0,
+        progress: null,
+      }),
+      true
+    );
+    assert.equal(
+      shouldShowCatalogOverview({
+        enabled: true,
+        completed: 0,
+        progress,
+      }),
+      false
+    );
+    assert.equal(
+      shouldShowCatalogOverview({
+        enabled: true,
+        completed: 1,
+        progress: null,
+      }),
+      false
     );
   });
 });
