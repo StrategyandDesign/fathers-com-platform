@@ -2,7 +2,7 @@ import { FatherTrainingCatalogCard, isTrainingInProgress } from "@/components/fa
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { loadFatherHome } from "@/lib/father/data";
-import { hasTrainingOverview } from "@/lib/father/training-door";
+import { hasStartedTrainingWork, hasTrainingOverview } from "@/lib/father/training-door";
 import { sessionFilmPath, trainingOverviewPath, type Session, type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
@@ -63,6 +63,13 @@ export default async function FatherTrainingsPage() {
               inProgressCount > 0
                 ? inProgress && inProgressCount === 1
                 : openCount === 1 && Boolean(card.next);
+            const showOverview =
+              hasTrainingOverview(card.training) &&
+              !hasStartedTrainingWork(
+                card.completed,
+                card.nextProgress,
+                card.sessionDots
+              );
 
             return (
               <div
@@ -93,13 +100,11 @@ export default async function FatherTrainingsPage() {
                   gated={false}
                   gatedLabel={null}
                   hrefOverride={card.next ? sessionFilmPath(card.next.id) : null}
-                  hasOverview={hasTrainingOverview(card.training)}
+                  hasOverview={showOverview}
                   overviewHref={
-                    hasTrainingOverview(card.training)
-                      ? trainingOverviewPath(card.training.id)
-                      : null
+                    showOverview ? trainingOverviewPath(card.training.id) : null
                   }
-                  showOverviewSlot
+                  showOverviewSlot={showOverview}
                   t={t}
                 />
               </div>
