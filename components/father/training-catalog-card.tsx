@@ -4,7 +4,7 @@ import { CoverPhoto } from "@/components/brand/cover";
 import { FilmRuntime } from "@/components/father/film-runtime";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
-import { continueHref, type Session, type SessionProgress } from "@/lib/father/types";
+import { sessionFilmPath, type Session, type SessionProgress } from "@/lib/father/types";
 import type { Translate } from "@/lib/i18n/translate";
 import {
   homePrimaryCtaClassName,
@@ -57,6 +57,9 @@ export function FatherTrainingCatalogCard({
   gatedLabel,
   hrefOverride,
   sessionHref,
+  hasOverview,
+  overviewHref,
+  showOverviewSlot,
   t,
 }: {
   title: string;
@@ -75,11 +78,14 @@ export function FatherTrainingCatalogCard({
   gatedLabel?: string | null;
   hrefOverride?: string | null;
   sessionHref?: (sessionId: string) => string;
+  hasOverview?: boolean;
+  overviewHref?: string | null;
+  showOverviewSlot?: boolean;
   t: Translate;
 }) {
   const href = gated
     ? null
-    : hrefOverride ?? (next ? continueHref(next.id, nextProgress) : null);
+    : hrefOverride ?? (next ? sessionFilmPath(next.id) : null);
   const started = completed > 0 || sessionInProgress(nextProgress);
   const complete = !next && total > 0 && completed >= total;
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
@@ -91,6 +97,8 @@ export function FatherTrainingCatalogCard({
   const openLabel = next
     ? t("father.trainings.sessionLabel", { n: next.session_number, title: next.title })
     : title;
+  const overviewLink = overviewHref ?? null;
+  const listOverview = Boolean(showOverviewSlot) && !gated;
 
   return (
     <article
@@ -105,7 +113,7 @@ export function FatherTrainingCatalogCard({
           href={href}
           aria-label={openLabel}
           className={cn(
-            "block overflow-hidden bg-[#101510]",
+            "relative block overflow-hidden bg-[#101510]",
             featured
               ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]"
               : quiet
@@ -119,7 +127,7 @@ export function FatherTrainingCatalogCard({
       ) : (
         <div
           className={cn(
-            "overflow-hidden bg-[#101510]",
+            "relative overflow-hidden bg-[#101510]",
             featured ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]" : "h-32 sm:h-36"
           )}
         >
@@ -156,6 +164,41 @@ export function FatherTrainingCatalogCard({
             <p className="text-sm text-muted-foreground">{t("father.home.sessionsReady")}</p>
           ) : null}
         </div>
+
+        {listOverview ? (
+          <div
+            className={cn(
+              "rounded-lg px-3 py-3",
+              overviewLink
+                ? "border border-primary/30 bg-primary/5"
+                : "border border-dashed border-border bg-black/10"
+            )}
+          >
+            <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+              {t("father.trainings.overviewEyebrow")}
+            </p>
+            {overviewLink && hasOverview ? (
+              <>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {t("father.trainings.overviewSlotBody")}
+                </p>
+                <Link
+                  href={overviewLink}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "mt-3 min-h-10 w-full sm:w-auto"
+                  )}
+                >
+                  {t("father.trainings.watchOverview")}
+                </Link>
+              </>
+            ) : (
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t("father.trainings.overviewMissing")}
+              </p>
+            )}
+          </div>
+        ) : null}
 
         {gated ? null : next ? (
           <div className="space-y-1">

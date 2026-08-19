@@ -1,0 +1,43 @@
+name: Shared marks
+
+on:
+  schedule:
+    - cron: "*/2 * * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/shared-sync.yml"
+      - "shared-source.json"
+      - "scripts/shared-sync-from-internal.mjs"
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  publish:
+    if: github.repository == 'StrategyandDesign/fathers-com-clean-pilot'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout review
+        uses: actions/checkout@v4
+        with:
+          ref: review
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Use the internal sync script
+        run: |
+          set -euo pipefail
+          SOURCE_REPO=$(node -p "require('./shared-source.json').repo")
+          SOURCE_BRANCH=$(node -p "require('./shared-source.json').branch")
+          rm -rf /tmp/fathers-shared-script
+          git clone --depth 1 --branch "$SOURCE_BRANCH" "https://github.com/${SOURCE_REPO}.git" /tmp/fathers-shared-script
+          cp /tmp/fathers-shared-script/scripts/shared-sync-from-internal.mjs scripts/shared-sync-from-internal.mjs
+
+      - name: Publish the next Shared mark
+        run: node scripts/shared-sync-from-internal.mjs

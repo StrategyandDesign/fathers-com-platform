@@ -53,6 +53,8 @@ const EXACT: Record<string, string> = {
     "flash.assessmentNoQuestions",
   "Use a YouTube video link. Playlists and other sites will not play.":
     "flash.youtubeUrlInvalid",
+  "Use a YouTube or Vimeo video link. Playlists and other sites will not play.":
+    "flash.hostedVideoUrlInvalid",
   "That question was not found.": "flash.questionNotFound",
   "Your answer didn’t save. Try again.": "flash.answerSaveFailed",
   "Answer every question to finish.": "flash.answerEveryQuestion",

@@ -1,57 +1,42 @@
-# Fathers.com Platform
+# Fathers.com clean-pilot
 
-Static HTML on Vercel. Postgres, Auth, and secrets on Supabase.
-The browser reports. The server decides. Row-level security is the boundary.
+This **is** the Next.js 15 / React 19 app.
 
-Live: https://fathers-com-platform.vercel.app
-Repo: this tree is the app. `python3 tools/check_release.py` fails if a referenced file is missing.
+You are already on the current tree. There is no extra branch to check out.
 
-## How a change becomes the site
+The product is `app/`, `components/`, `lib/`, and `supabase/`. Root HTML is gone on purpose. Those old static pages live in `archive/static-site/` and are not what this app is.
 
-1. Edit sources, not generated HTML.
-   - Pages: `build_pages.py`
-   - Dashboards: `build_dashboards.py`
-   - Short courses: `build_short_courses.py`
-   - Emails: `build_emails.py`
-   - Course JSON: `content/*.json` via `tools/import_content.py`
-2. Rebuild: `python3 build_pages.py && python3 build_dashboards.py && python3 build_short_courses.py`
-3. Gate: `python3 tools/check_release.py` (determinism, claim bans, asset manifest)
-4. PR to `main`. Vercel serves the committed HTML. Hobby plan: weekday production window 9:15 CT.
+Yes, it is React. `package.json` lists `react` `19.1.0` and `next` `15.5.23`. UI is `.tsx`. Interactive files start with `"use client"`.
 
-Doctrine: `POSITIONING.md`. Process: `CONTRIBUTING.md`. System: `ARCHITECTURE.md`. Roles: `ROLES.md`. Launch: `LAUNCH.md`. Deferred: `docs/DEFERRED.md`.
+## Open these
 
-## Hidden infrastructure
+| This is the product | This is history — skip it |
+|---|---|
+| `app/` pages and routes | `archive/static-site/` old HTML + Python builders |
+| `components/` React UI | `docs/product/` discovery notes |
+| `lib/` server and domain logic | `docs/archive/` outdated architecture writeups |
+| `supabase/` schema and RLS | `handoff/` reviewer packet |
+| `tests/` | `partner-kit/` field PDFs |
+| `CONTRIBUTING.md` | `assets/` leftover CSS/JS from the old HTML site |
 
-| Layer | Where | Rule |
-|---|---|---|
-| Pages | generated `*.html` | never hand-edit; CI fails drift |
-| Client | `assets/js/` | UX only; no prices, no eligibility, no secrets |
-| Public config | `assets/js/config.js` | anon key is public by design; never put a service role here |
-| Schema | `supabase/migrations/` | `supabase db push`. No dashboard SQL without a file |
-| Historical SQL | `supabase/sql-archive/` | record of hand-applied SQL. Do not run again |
-| Secrets / money / grades | `supabase/functions/` | service role, explicit auth. Browser never holds the token |
-| Release | `tools/check_release.py` | repo is the whole app |
-
-Edge functions in play: `checkout`, `checkout-hook`, `checkpoint_submit`, `progress_beat`, `submit_award`, `review_award`, `issue-certificate`, `send-email`, `esign-bridge`, `verify_serial`. Deploy with `supabase functions deploy`.
-
-Auth is email + password. Magic link is retired. `SHOW_MILITARY` and `SHOW_MANHOOD_COURSE` ship surfaces dark.
-
-## Local
+Pilot login if you run it: password `12345` · `father@nwa` · `manager@nwa` · `reviewer@nwa` · `admin@fathers`. Seats and hosts: `docs/engineering/PILOT.md`.
 
 ```bash
-python3 build_pages.py && python3 build_dashboards.py && python3 build_short_courses.py
-python3 tools/check_release.py
-for f in assets/js/*.js; do node --check "$f"; done
+cp .env.example .env.local
+npm install
+npm run dev
 ```
 
-Fresh database: `SUPABASE_DB_URL=... bash tools/bootstrap_db.sh`, then `supabase db push` and `supabase functions deploy`.
+http://127.0.0.1:3000/login
 
-Upload zips (`fathers-com_NN.zip`) are diffs of a release, not the tree. Auditing a zip alone will report missing files by design.
+```bash
+npm run lint
+npx tsx --test tests/*.test.ts
+npx tsc --noEmit
+```
 
-## What a Friday reader should hold
+## Numbering
 
-- RLS is security. Client checks are UX.
-- A father never pays. Claims gate certificates, not the Profile or the films.
-- Facilitators see progress Y/N and counts, never answers or scores.
-- Practices must not require a child visit.
-- Previews currently read production `config.js`. Do not use a preview to mutate prod data.
+This default tree is the shared drop. Snapshots are tagged `shared/N` in `SHARED.md`. `submit/2` is a frozen official stamp — leave it alone.
+
+Do not use https://fathers-com-platform.vercel.app to judge this line.

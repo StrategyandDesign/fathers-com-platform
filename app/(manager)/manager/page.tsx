@@ -70,6 +70,15 @@ export default async function ManagerHomePage({
         groupId: item.review.group_id,
         groupName: item.groupName,
       })),
+    declined: reviews.history
+      .filter((item) => item.review.status === "declined")
+      .map((item) => ({
+        training: item.training,
+        sessionCount: item.sessionCount,
+        groupId: item.review.group_id,
+        groupName: item.groupName,
+      })),
+    defaultGroupId: groups[0]?.id,
     showGroupName: groups.length > 1,
   });
   const quietIds = participants
@@ -133,29 +142,6 @@ export default async function ManagerHomePage({
       </div>
       <Flash error={params.error} notice={params.notice} />
       <CohortNoteDesk groups={cohortNotes} />
-      <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">
-          {t("manager.dashboard.practiceTitle")}
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t("manager.dashboard.practiceLead")}
-        </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t("manager.dashboard.practiceNoCertificate")}
-        </p>
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <Link href="/manager/practice" className={cn(buttonVariants(), "w-full sm:w-auto")}>
-            {t("manager.dashboard.practiceTraining")}
-          </Link>
-          <Link
-            href="/manager/practice#assessments"
-            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
-          >
-            {t("manager.dashboard.practiceAssessment")}
-          </Link>
-        </div>
-      </section>
-      <NudgePanel panel={nudgePanel} />
       <CompanionPanel briefing={companion} t={t} />
 
       {reviews.pending.length > 0 || reviews.unread.length > 0 ? (
@@ -317,6 +303,31 @@ export default async function ManagerHomePage({
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
             {t("manager.dashboard.viewParticipants")}
+          </Link>
+        </div>
+      </section>
+
+      <NudgePanel panel={nudgePanel} />
+
+      <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
+        <h2 className="font-heading text-lg font-semibold">
+          {t("manager.dashboard.practiceTitle")}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t("manager.dashboard.practiceLead")}
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t("manager.dashboard.practiceNoCertificate")}
+        </p>
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Link href="/manager/practice" className={cn(buttonVariants(), "w-full sm:w-auto")}>
+            {t("manager.dashboard.practiceTraining")}
+          </Link>
+          <Link
+            href="/manager/practice#assessments"
+            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+          >
+            {t("manager.dashboard.practiceAssessment")}
           </Link>
         </div>
       </section>

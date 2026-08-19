@@ -52,12 +52,16 @@ Open **https://fathers-com-pilot.vercel.app/login**
 
 Login and signup are **English / LTR** on the current PR. **Live** still shows an English / עברית toggle on login. After sign-in, Unit 8200 seats resolve to **Hebrew + RTL**. Other orgs stay English.
 
-**Shared pilot password (all four seats below): `12345`**
+**Shared pilot password (all seats below): `12345`**
 
-These are weak, shared, pilot-only credentials. They are not production. Rotate them if this file leaves the working group.
+These are weak, shared, pilot-only credentials. They are not production. Rotate them if this file leaves the working group. Local (`npm run dev`) and Vercel use the same Pilot database, so the same emails work in both places.
 
 | Email | Role you will see | Lands on |
 |---|---|---|
+| `father@nwa` | Father in **Returning Home NWA** (English) | `/father` |
+| `father2@nwa` | Second NWA father | `/father` |
+| `manager@nwa` | Leader for Returning Home NWA (Brenda) | `/manager` |
+| `reviewer@nwa` | Reviewer scoped to NWA | `/reviewer` |
 | `father1@il` | Father in **Unit 8200** (Hebrew) | `/father` |
 | `father2@il` | Second Unit 8200 father | `/father` |
 | `manager@il` | Leader for Unit 8200 | `/manager` |
@@ -381,7 +385,7 @@ No assigned training has more than 6 sessions. Later parts stay gated until the 
 
 | Name | Code | Default language |
 |---|---|---|
-| Returning Home NWA | — | English |
+| Returning Home NWA | `NWA` | English |
 | TatoNet | — | English |
 | Singapore Father Center | — | English |
 | Unit 8200 | `IL` | Hebrew |

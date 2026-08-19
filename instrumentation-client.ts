@@ -8,3 +8,5 @@ Sentry.init({
   tracesSampleRate: 0,
   sendDefaultPii: false,
 });
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

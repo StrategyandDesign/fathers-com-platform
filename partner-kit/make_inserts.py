@@ -14,7 +14,7 @@ from reportlab.graphics import renderPDF
 from reportlab.lib.utils import ImageReader
 
 REPO = Path(__file__).resolve().parents[1]
-SITE_URL = re.search(r'SITE_URL\s*=\s*"([^"]+)"', (REPO / "build_pages.py").read_text()).group(1)
+SITE_URL = re.search(r'SITE_URL\s*=\s*"([^"]+)"', (REPO / "archive/static-site/build_pages.py").read_text()).group(1)
 HOST = SITE_URL.replace("https://", "").replace("http://", "")
 PROFILE_URL, VERIFY_URL = SITE_URL + "/profile.html", SITE_URL + "/verify.html"
 PROFILE_DISP, VERIFY_DISP = HOST + "/profile.html", HOST + "/verify.html"

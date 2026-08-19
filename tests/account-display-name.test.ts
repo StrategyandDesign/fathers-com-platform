@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { parseDisplayName } from "../lib/account/display-name";
+import { managerDisplayTitleLabel } from "../lib/account/display-title";
+import { createTranslator } from "../lib/i18n/translate";
 
 describe("parseDisplayName", () => {
   it("trims and collapses whitespace", () => {
@@ -20,5 +22,13 @@ describe("parseDisplayName", () => {
   it("rejects names over 80 characters", () => {
     assert.deepEqual(parseDisplayName("A".repeat(81)), { error: "tooLong" });
     assert.deepEqual(parseDisplayName("A".repeat(80)), { name: "A".repeat(80) });
+  });
+});
+
+describe("manager display title", () => {
+  it("names Leader and Manager as different designations", () => {
+    const t = createTranslator("en");
+    assert.equal(managerDisplayTitleLabel("leader", t), "Leader");
+    assert.equal(managerDisplayTitleLabel("manager", t), "Manager");
   });
 });

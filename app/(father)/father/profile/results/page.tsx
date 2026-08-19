@@ -19,7 +19,7 @@ export default async function FatherProfileResultsPage() {
   const profile = await loadLatestProfile(user.id);
 
   if (!profile) {
-    redirect("/father/profile");
+    redirect("/father/assessments");
   }
 
   const scores = readStoredDimensionScores(profile.raw_scores, profile.full_results);
@@ -96,7 +96,7 @@ export default async function FatherProfileResultsPage() {
             {t("father.profile.goHome")}
           </Link>
           <Link
-            href="/father/profile"
+            href="/father/assessments"
             className={cn(
               buttonVariants({ variant: "ghost" }),
               "w-full min-h-11 text-sm text-muted-foreground"

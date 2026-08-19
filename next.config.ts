@@ -19,7 +19,7 @@ const securityHeaders = [
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io",
-      "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
+      "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
       "worker-src 'self' blob:",
       "frame-ancestors 'none'",
       "object-src 'none'",
@@ -30,6 +30,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   serverExternalPackages: ["pdfkit", "web-push"],
   turbopack: {
     root: path.join(__dirname),
@@ -52,13 +53,22 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
+const sentryOptions = {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   silent: true,
   sourcemaps: {
     disable: !process.env.SENTRY_AUTH_TOKEN,
   },
-  disableLogger: true,
-  automaticVercelMonitors: false,
-});
+  webpack: {
+    treeshake: { removeDebugLogging: true },
+    automaticVercelMonitors: false,
+  },
+};
+
+const sentryOn =
+  Boolean(process.env.SENTRY_AUTH_TOKEN) ||
+  Boolean(process.env.SENTRY_DSN) ||
+  Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN);
+
+export default sentryOn ? withSentryConfig(nextConfig, sentryOptions) : nextConfig;

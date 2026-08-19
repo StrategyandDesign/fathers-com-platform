@@ -2,7 +2,8 @@ import { FatherTrainingCatalogCard, isTrainingInProgress } from "@/components/fa
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { loadFatherHome } from "@/lib/father/data";
-import type { Session, SessionProgress } from "@/lib/father/types";
+import { hasTrainingOverview } from "@/lib/father/training-door";
+import { sessionFilmPath, trainingOverviewPath, type Session, type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
 import { trainingCoverSlug } from "@/lib/trainings/series";
@@ -91,6 +92,14 @@ export default async function FatherTrainingsPage() {
                   quiet={inProgressCount > 0 && !inProgress}
                   gated={false}
                   gatedLabel={null}
+                  hrefOverride={card.next ? sessionFilmPath(card.next.id) : null}
+                  hasOverview={hasTrainingOverview(card.training)}
+                  overviewHref={
+                    hasTrainingOverview(card.training)
+                      ? trainingOverviewPath(card.training.id)
+                      : null
+                  }
+                  showOverviewSlot
                   t={t}
                 />
               </div>
