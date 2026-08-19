@@ -8,6 +8,7 @@ export type Group = {
   created_at: string;
   code?: string | null;
   locale?: string | null;
+  participation_mode?: string | null;
 };
 
 export type GroupMember = {

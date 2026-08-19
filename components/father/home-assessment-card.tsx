@@ -67,7 +67,7 @@ function copyFor(assessment: HomeAssessment, t: Translate) {
     };
   }
   return {
-    href: "/father/profile/results",
+    href: "/father/assessments",
     title: t("father.profile.keystone"),
     detail: null,
     action: t("father.home.viewProfile"),

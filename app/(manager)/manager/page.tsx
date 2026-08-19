@@ -1,10 +1,12 @@
 import Link from "next/link";
 
 import { OrganizationMark } from "@/components/brand/organization-mark";
+import { AssignmentStatusStrip } from "@/components/manager/assignment-status-strip";
 import { CompanionPanel } from "@/components/manager/companion-panel";
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
 import { NudgePanel } from "@/components/manager/nudge-panel";
+import { ParticipationModeCard } from "@/components/manager/participation-mode-card";
 import { ReviewStatusBadge } from "@/components/manager/review-decision-forms";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -21,6 +23,10 @@ import {
 import { loadManagerAssessments } from "@/lib/assessments/data";
 import { CohortNoteDesk } from "@/components/manager/cohort-note-desk";
 import { loadManagerCohortNotes } from "@/lib/cohort-note/data";
+import {
+  listAssignableTrainings,
+  summarizeAssignmentStatus,
+} from "@/lib/manager/assignment-status";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadManagerOrganizationMarks } from "@/lib/org-photos/data";
 import { buildManagerCatalog } from "@/lib/manager/catalog";
@@ -28,6 +34,7 @@ import { loadNudgePanel } from "@/lib/manager/nudge-panel-data";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
 import { needsNudge } from "@/lib/manager/nudges";
 import { loadReviewQueue } from "@/lib/manager/reviews";
+import { participationCopyKey, participationModeFromGroups } from "@/lib/participation";
 import { cn } from "@/lib/utils";
 
 export default async function ManagerHomePage({
@@ -52,8 +59,20 @@ export default async function ManagerHomePage({
     workspace,
     t,
   });
-  const { groups, summary, needsAttention, participants, trainingProgressFor, certificates } =
+  const { groups, summary, needsAttention, participants, trainingProgressFor, certificates, reviews: orgReviews } =
     workspace;
+  const assignmentStatus = listAssignableTrainings({
+    trainings: workspace.trainings,
+    groups,
+    reviews: orgReviews,
+  }).map((training) =>
+    summarizeAssignmentStatus({
+      training,
+      participants,
+      reviews: orgReviews,
+      progressFor: trainingProgressFor,
+    })
+  );
   const catalog = buildManagerCatalog({
     trainings: workspace.trainings,
     pending: reviews.pending.map((item) => ({
@@ -70,6 +89,15 @@ export default async function ManagerHomePage({
         groupId: item.review.group_id,
         groupName: item.groupName,
       })),
+    declined: reviews.history
+      .filter((item) => item.review.status === "declined")
+      .map((item) => ({
+        training: item.training,
+        sessionCount: item.sessionCount,
+        groupId: item.review.group_id,
+        groupName: item.groupName,
+      })),
+    defaultGroupId: groups[0]?.id,
     showGroupName: groups.length > 1,
   });
   const quietIds = participants
@@ -92,6 +120,7 @@ export default async function ManagerHomePage({
     historyUnavailable,
     limit: 4,
   });
+  const participationMode = participationModeFromGroups(groups);
 
   const stats = [
     { label: t("manager.dashboard.active"), value: summary.activeParticipants },
@@ -127,36 +156,20 @@ export default async function ManagerHomePage({
           ) : null}
           <h1 className="font-heading text-2xl font-semibold tracking-tight">{t("manager.dashboard.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.dashboard.lead")}
+            {t(participationCopyKey(participationMode, "manager.dashboard.lead"))}
           </p>
         </div>
       </div>
       <Flash error={params.error} notice={params.notice} />
+      <AssignmentStatusStrip
+        items={assignmentStatus}
+        emptyHref="/manager/trainings#catalog"
+        returnTo="dashboard"
+        t={t}
+        mode={participationMode}
+      />
       <CohortNoteDesk groups={cohortNotes} />
-      <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">
-          {t("manager.dashboard.practiceTitle")}
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t("manager.dashboard.practiceLead")}
-        </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {t("manager.dashboard.practiceNoCertificate")}
-        </p>
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <Link href="/manager/practice" className={cn(buttonVariants(), "w-full sm:w-auto")}>
-            {t("manager.dashboard.practiceTraining")}
-          </Link>
-          <Link
-            href="/manager/practice#assessments"
-            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
-          >
-            {t("manager.dashboard.practiceAssessment")}
-          </Link>
-        </div>
-      </section>
-      <NudgePanel panel={nudgePanel} />
-      <CompanionPanel briefing={companion} t={t} />
+      <CompanionPanel briefing={companion} t={t} mode={participationMode} />
 
       {reviews.pending.length > 0 || reviews.unread.length > 0 ? (
         <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
@@ -313,10 +326,37 @@ export default async function ManagerHomePage({
             )}
           </div>
           <Link
-            href="/manager/participants"
+            href="/manager/participants#status"
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
           >
             {t("manager.dashboard.viewParticipants")}
+          </Link>
+        </div>
+      </section>
+
+      <ParticipationModeCard groups={groups} t={t} />
+
+      <NudgePanel panel={nudgePanel} mode={participationMode} />
+
+      <section className="rounded-xl border border-primary/40 bg-card p-4 sm:p-6">
+        <h2 className="font-heading text-lg font-semibold">
+          {t("manager.dashboard.practiceTitle")}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t("manager.dashboard.practiceLead")}
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t("manager.dashboard.practiceNoCertificate")}
+        </p>
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Link href="/manager/practice" className={cn(buttonVariants(), "w-full sm:w-auto")}>
+            {t("manager.dashboard.practiceTraining")}
+          </Link>
+          <Link
+            href="/manager/practice#assessments"
+            className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+          >
+            {t("manager.dashboard.practiceAssessment")}
           </Link>
         </div>
       </section>

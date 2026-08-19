@@ -83,7 +83,7 @@ export default async function AdminNewTrainingPage({
             value="true"
             className="size-4 accent-primary"
           />
-          <span>Published (catalog flag only — still not released to Leaders)</span>
+          <span>Published (catalog flag only, still not released to Leaders)</span>
         </label>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button type="submit" className="w-full sm:w-auto">

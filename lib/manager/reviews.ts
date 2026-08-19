@@ -293,13 +293,21 @@ async function loadCatalogTrainingDetail(groups: Group[], trainingId: string) {
   } satisfies ReviewDetail & { otherGroups: ReviewQueueItem[] };
 }
 
-export async function loadAcceptedTrainingIds() {
+async function loadReviewIdSet(rpc: "my_accepted_training_ids" | "my_declined_training_ids") {
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("my_accepted_training_ids");
+  const { data, error } = await supabase.rpc(rpc);
   if (error) {
-    console.error("[reviews] accepted ids failed", error.message);
+    console.error(`[reviews] ${rpc} failed`, error.message);
     return { ids: new Set<string>(), unavailable: true };
   }
   const list = Array.isArray(data) ? data.filter((id): id is string => typeof id === "string") : [];
   return { ids: new Set(list), unavailable: false };
+}
+
+export async function loadAcceptedTrainingIds() {
+  return loadReviewIdSet("my_accepted_training_ids");
+}
+
+export async function loadDeclinedTrainingIds() {
+  return loadReviewIdSet("my_declined_training_ids");
 }

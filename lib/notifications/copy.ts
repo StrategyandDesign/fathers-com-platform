@@ -1,3 +1,4 @@
+import { isParticipationMode, parseParticipationMode } from "@/lib/participation";
 import type {
   NotificationCopy,
   NotificationLocale,
@@ -56,45 +57,73 @@ function encouragementCopy(payload: NotificationPayload, locale: NotificationLoc
 
   if (locale === "he") {
     const title = `הערה מאת ${leader}`;
+    const mode = parseParticipationMode(payload.participationMode);
     if (tier === "A") {
+      const open =
+        mode === "expected"
+          ? "המפגש הראשון שהוקצה פתוח."
+          : mode === "open"
+            ? "המפגש הראשון פתוח כשתהיה מוכן."
+            : "המפגש הראשון פתוח.";
       return {
         title,
-        body: minutes
-          ? `המפגש הראשון פתוח כשתהיה מוכן. הוא ${minutes} דקות.`
-          : "המפגש הראשון פתוח כשתהיה מוכן.",
+        body: minutes ? `${open} הוא ${minutes} דקות.` : open,
       };
     }
     if (tier === "B") {
+      const next =
+        mode === "expected"
+          ? "המפגש הבא עדיין שלך להשלמה."
+          : mode === "open"
+            ? "אפשר לחזור אליו כשיתאים."
+            : "אפשר להמשיך כשיתאים.";
       return {
         title,
-        body: `אתה ב-${completed} מתוך ${total} ב־${training}. אפשר לחזור אליו כשיתאים.`,
+        body: `אתה ב-${completed} מתוך ${total} ב־${training}. ${next}`,
       };
     }
-    return {
-      title,
-      body: "עבר זמן. ההכשרה עדיין כאן כשתרצה.",
-    };
+    if (mode === "expected") {
+      return { title, body: "ההכשרה שהוקצתה עדיין פתוחה." };
+    }
+    if (mode === "open") {
+      return { title, body: "עבר זמן. ההכשרה עדיין כאן כשתרצה." };
+    }
+    return { title, body: "ההכשרה עדיין פתוחה." };
   }
 
   const title = `A note from ${leader}`;
+  const mode = parseParticipationMode(payload.participationMode);
   if (tier === "A") {
+    const open =
+      mode === "expected"
+        ? "Your assigned first session is open."
+        : mode === "open"
+          ? "Your first session is open when you are ready."
+          : "Your first session is open.";
     return {
       title,
-      body: minutes
-        ? `Your first session is open when you are ready. It is ${minutes} minutes.`
-        : "Your first session is open when you are ready.",
+      body: minutes ? `${open} It is ${minutes} minutes.` : open,
     };
   }
   if (tier === "B") {
+    const next =
+      mode === "expected"
+        ? "The next session is still yours to finish."
+        : mode === "open"
+          ? "Pick it back up when you can."
+          : "Continue when you can.";
     return {
       title,
-      body: `You are ${completed} of ${total} through ${training}. Pick it back up when you can.`,
+      body: `You are ${completed} of ${total} through ${training}. ${next}`,
     };
   }
-  return {
-    title,
-    body: "It has been a while. Your training is still here whenever you want it.",
-  };
+  if (mode === "expected") {
+    return { title, body: "Your assigned training is still open." };
+  }
+  if (mode === "open") {
+    return { title, body: "It has been a while. Your training is still here whenever you want it." };
+  }
+  return { title, body: "Your training is still open." };
 }
 
 export function notificationCopy(
@@ -113,11 +142,18 @@ export function notificationCopy(
       : null;
   const leader = leaderLabel(payload.leaderName);
   const summary = catalogText(payload.actionSummary, locale === "he" ? "התרגול" : "this week's practice");
+  const mode = parseParticipationMode(payload.participationMode);
 
   if (locale === "he") {
     if (type === "weekly_session") {
+      const ready =
+        mode === "expected"
+          ? "המפגש שהוקצה מוכן."
+          : mode === "open"
+            ? "המפגש הבא מוכן כשתרצה."
+            : "המפגש הבא מוכן.";
       return {
-        title: "המפגש הבא מוכן",
+        title: ready,
         body: minutes
           ? `${training}. ${minutes} דק׳. זו התזכורת השבועית שלך.`
           : `${training}. זו התזכורת השבועית שלך.`,
@@ -130,8 +166,14 @@ export function notificationCopy(
       };
     }
     if (type === "new_assignment") {
+      const title =
+        mode === "expected"
+          ? `${leader} הקצה את ההכשרה הזו`
+          : mode === "open"
+            ? `${leader} פתח הכשרה עבורך`
+            : `הכשרה חדשה מאת ${leader}`;
       return {
-        title: `הכשרה חדשה מאת ${leader}`,
+        title,
         body: sessions ? `${training}. ${sessions} מפגשים.` : `${training}.`,
       };
     }
@@ -152,13 +194,24 @@ export function notificationCopy(
     }
     return {
       title: "הערה מהמנהיג",
-      body: "יש מפגש שמחכה כשיהיו לך כמה דקות.",
+      body:
+        mode === "expected"
+          ? "יש מפגש שהוקצה ועדיין פתוח."
+          : mode === "open"
+            ? "יש מפגש שמחכה כשיהיו לך כמה דקות."
+            : "יש מפגש שעדיין פתוח.",
     };
   }
 
   if (type === "weekly_session") {
+    const title =
+      mode === "expected"
+        ? "Your assigned session is ready"
+        : mode === "open"
+          ? "Your next session is ready when you want it"
+          : "Your next session is ready";
     return {
-      title: "Your next session is ready",
+      title,
       body: minutes
         ? `${training}. ${minutes} min. This is your weekly reminder.`
         : `${training}. This is your weekly reminder.`,
@@ -171,8 +224,14 @@ export function notificationCopy(
     };
   }
   if (type === "new_assignment") {
+    const title =
+      mode === "expected"
+        ? `${leader} assigned this training`
+        : mode === "open"
+          ? `${leader} opened a training for you`
+          : `New training from ${leader}`;
     return {
-      title: `New training from ${leader}`,
+      title,
       body: sessions === 1 ? `${training}. 1 session.` : `${training}. ${sessions ?? 1} sessions.`,
     };
   }
@@ -193,7 +252,12 @@ export function notificationCopy(
   }
   return {
     title: "A note from your leader",
-    body: "There is a session waiting when you have a few minutes.",
+    body:
+      mode === "expected"
+        ? "There is an assigned session still open."
+        : mode === "open"
+          ? "There is a session waiting when you have a few minutes."
+          : "There is a session still open.",
   };
 }
 
@@ -224,6 +288,9 @@ export function safePayload(raw: unknown): NotificationPayload {
   }
   if (source.cohortNote === true) {
     payload.cohortNote = true;
+  }
+  if (isParticipationMode(source.participationMode)) {
+    payload.participationMode = source.participationMode;
   }
   for (const key of ["sessionId", "trainingId", "certificateId"] as const) {
     if (typeof source[key] === "string" && source[key].trim()) {

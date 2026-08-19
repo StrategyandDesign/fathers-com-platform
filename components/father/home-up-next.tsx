@@ -18,6 +18,7 @@ export function HomeUpNextCard({
   subtitle,
   durationSeconds,
   continueSession,
+  startWithOverview,
   completed,
   total,
   justFinished,
@@ -31,6 +32,7 @@ export function HomeUpNextCard({
   subtitle?: string | null;
   durationSeconds?: number | null;
   continueSession: boolean;
+  startWithOverview?: boolean;
   completed: number;
   total: number;
   justFinished?: boolean;
@@ -68,7 +70,11 @@ export function HomeUpNextCard({
               "mt-auto"
             )}
           >
-            {continueSession ? t("father.home.continueSession") : t("father.home.start")}
+            {startWithOverview
+              ? t("father.trainings.watchOverview")
+              : continueSession
+                ? t("father.home.continueSession")
+                : t("father.home.start")}
           </Link>
         </div>
         {total > 0 ? (

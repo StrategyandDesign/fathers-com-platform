@@ -17,7 +17,12 @@ export type Training = {
   last_edited_by?: string | null;
   previewed_at?: string | null;
   attribution?: string | null;
+  overview_video_url?: string | null;
 };
+
+export function trainingOverviewPath(trainingId: string) {
+  return `/father/trainings/${trainingId}`;
+}
 
 export function isTrainingPublished(training: { published?: boolean | null }) {
   return training.published !== false;
@@ -46,7 +51,7 @@ export function isTrainingAssignable(
 ) {
   if (!isTrainingPublished(training)) return false;
   if (training.released_at) return reviewStatus === "accepted";
-  return isLegacyCatalogTraining(training);
+  return isLegacyCatalogTraining(training) && reviewStatus !== "declined";
 }
 
 export function isTrainingVisibleInCatalog(
@@ -61,11 +66,13 @@ export function isTrainingVisibleInCatalog(
     assigned: boolean;
     hasProgress: boolean;
     hasCertificate: boolean;
+    declined?: boolean;
   }
 ) {
   if (access.assigned || access.hasProgress || access.hasCertificate) return true;
   if (!isTrainingPublished(training)) return false;
   if (training.released_at) return access.accepted;
+  if (access.declined) return false;
   return isLegacyCatalogTraining(training);
 }
 
@@ -153,6 +160,11 @@ export function isSessionComplete(
   );
 }
 
+export function sessionFilmPath(sessionId: string, options?: { root?: string }) {
+  const root = options?.root ?? "/father";
+  return `${root}/sessions/${sessionId}`;
+}
+
 export function continueHref(
   sessionId: string,
   progress: Pick<
@@ -162,7 +174,7 @@ export function continueHref(
   options?: { root?: string }
 ) {
   const root = options?.root ?? "/father";
-  if (!progress?.film_completed) return `${root}/sessions/${sessionId}`;
+  if (!progress?.film_completed) return sessionFilmPath(sessionId, { root });
   if (!progress.checkin_completed) {
     return `${root}/sessions/${sessionId}/checkin`;
   }

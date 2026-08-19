@@ -88,11 +88,7 @@ function CohortNoteEditor({
             {t("manager.dashboard.noteOneAtATime")}
           </p>
         </div>
-      ) : (
-        <p className="rounded-lg border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
-          {t("manager.dashboard.notePreviewEmpty")}
-        </p>
-      )}
+      ) : null}
 
       <form action={publishCohortNote} className="space-y-3">
         <input type="hidden" name="group_id" value={group.groupId} />
@@ -123,14 +119,10 @@ function CohortNoteEditor({
               ? t("father.home.noteEyebrow")
               : t("manager.dashboard.notePreview")}
           </p>
-          <div className="mt-2">
+          <div className="mt-2 min-h-12">
             {preview ? (
               <CohortNoteMessage body={preview} stamp={previewStamp} />
-            ) : (
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {t("manager.dashboard.notePreviewEmpty")}
-              </p>
-            )}
+            ) : null}
           </div>
         </div>
         <Button type="submit" className="w-full sm:w-auto">

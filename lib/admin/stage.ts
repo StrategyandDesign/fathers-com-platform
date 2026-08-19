@@ -20,6 +20,7 @@ export type StageStep = "film" | "checkin" | "action";
 export type StagePaths = {
   hub: string;
   edit: string;
+  overview: string;
   session: (sessionId: string) => string;
   checkin: (sessionId: string) => string;
   action: (sessionId: string) => string;
@@ -38,6 +39,7 @@ export function stagePaths(trainingId: string): StagePaths {
   return {
     hub,
     edit: `/admin/trainings/${trainingId}`,
+    overview: `${hub}/overview`,
     session: (sessionId) => `${hub}/sessions/${sessionId}`,
     checkin: (sessionId) => `${hub}/sessions/${sessionId}/checkin`,
     action: (sessionId) => `${hub}/sessions/${sessionId}/action`,

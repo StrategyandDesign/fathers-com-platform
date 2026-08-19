@@ -26,6 +26,7 @@ import {
   type NotificationType,
   type ReminderCandidate,
 } from "@/lib/notifications/types";
+import { parseParticipationMode, type ParticipationMode } from "@/lib/participation";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 type AdminClient = NonNullable<ReturnType<typeof createAdminClient>>;
@@ -147,6 +148,14 @@ export async function dispatchDueReminders(now = new Date()) {
     (row) => row.user_id
   );
 
+  const fatherIds = [
+    ...new Set([
+      ...assignments.map((row) => row.father_id),
+      ...((outboxRes.data ?? []) as OutboxRow[]).map((row) => row.user_id),
+    ]),
+  ];
+  const participationByFather = await loadParticipationByFather(admin, fatherIds);
+
   const weekly = buildWeeklyCandidates({
     now,
     prefsByUser,
@@ -227,7 +236,15 @@ export async function dispatchDueReminders(now = new Date()) {
     const subscriptions = pushByUser.get(userId) ?? [];
 
     for (const candidate of chosen) {
-      const copy = notificationCopy(candidate.type, candidate.payload, prefs.locale);
+      const copy = notificationCopy(
+        candidate.type,
+        {
+          ...candidate.payload,
+          participationMode:
+            candidate.payload.participationMode ?? participationByFather.get(userId) ?? "unset",
+        },
+        prefs.locale
+      );
       const href = normalizeDeepLink(candidate.href);
       const result = await deliverOne({
         prefs,
@@ -449,6 +466,30 @@ async function loadEmail(admin: AdminClient, userId: string) {
   const { data, error } = await admin.auth.admin.getUserById(userId);
   if (error || !data.user?.email) return null;
   return data.user.email;
+}
+
+async function loadParticipationByFather(admin: AdminClient, fatherIds: string[]) {
+  const modes = new Map<string, ParticipationMode>();
+  const ids = [...new Set(fatherIds.filter(Boolean))];
+  if (ids.length === 0) return modes;
+  const { data, error } = await admin
+    .from("group_members")
+    .select("father_id, groups(participation_mode)")
+    .in("father_id", ids);
+  if (error) {
+    if (!/participation_mode/i.test(error.message)) {
+      console.error("[notifications] participation mode lookup failed", error.message);
+    }
+    return modes;
+  }
+  for (const row of (data ?? []) as Array<{
+    father_id: string;
+    groups: { participation_mode?: string | null } | { participation_mode?: string | null }[] | null;
+  }>) {
+    const group = Array.isArray(row.groups) ? row.groups[0] : row.groups;
+    modes.set(row.father_id, parseParticipationMode(group?.participation_mode));
+  }
+  return modes;
 }
 
 function groupBy<T>(rows: T[], key: (row: T) => string) {

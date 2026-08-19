@@ -240,6 +240,8 @@ export const en = {
       "This assessment has no questions yet. Check back after your leader adds some.",
     youtubeUrlInvalid:
       "Use a YouTube video link. Playlists and other sites will not play.",
+    hostedVideoUrlInvalid:
+      "Use a YouTube or Vimeo video link. Playlists and other sites will not play.",
     questionNotFound: "That question was not found.",
     answerSaveFailed: "Your answer didn’t save. Try again.",
     answerEveryQuestion: "Answer every question to finish.",
@@ -299,6 +301,8 @@ export const en = {
     chooseTraining: "Choose a training.",
     groupSaveFailed: "The group didn’t save. Try again.",
     groupCreated: "Group created. Share the invite code with fathers.",
+    participationSaved: "Participation setting saved.",
+    participationSaveFailed: "The setting didn’t save. Try again.",
     chooseTrainingAssign: "Choose a training to assign.",
     trainingAlreadyAssigned: "That training is already assigned.",
     trainingAssigned: "Training assigned.",
@@ -359,12 +363,14 @@ export const en = {
     displayTitleTitle: "How you are named",
     displayTitleLead:
       "Choose Leader or Manager. Fathers still see your displayed name. This does not change what you can do.",
+    displayTitleManager: "Manager",
+    displayTitleLeader: "Leader",
     displayTitleManagerHint: "The usual designation.",
     displayTitleLeaderHint: "For informal groups, or when that is how you are known.",
     displayTitleSave: "Save designation",
     logoTitle: "Organization mark",
     logoLead:
-      "Fathers in {name} see this as the left mark on Home. It identifies this group — the same group as the invite code.",
+      "Fathers in {name} see this as the left mark on Home. It identifies this group, the same group as the invite code.",
     logoPreview: "What he sees",
     logoEmpty: "No logo yet. The name still appears.",
     logoUpload: "Upload logo",
@@ -376,7 +382,7 @@ export const en = {
     logoRemoved: "Logo removed. Fathers will see the organization name only.",
     shareTitle: "Anonymous sharing",
     shareLeadFather:
-      "Release anonymous training progress to Fathers.com. Super-admins see counts only — not your name, email, written answers, or notes. Off until you turn it on.",
+      "Release anonymous training progress to Fathers.com. Super-admins see counts only, not your name, email, written answers, or notes. Off until you turn it on.",
     shareLeadManager:
       "Release anonymous counts of assignments, reviews, and certificates you issue. Super-admins do not see names or which organization.",
     shareLeadReviewer:
@@ -542,7 +548,6 @@ export const en = {
       streakClose: "Close",
       longestStreak: "Longest week count",
       freezesRemaining: "Freezes remaining",
-      streakGrid: "Last twelve weeks",
       freezeConsumed: "Last week used a freeze. You have {n} left.",
       freezeReplenished: "A freeze was restored. You have {n}.",
       streakReset:
@@ -554,6 +559,10 @@ export const en = {
       nothingAssigned: "Nothing assigned yet.",
       nothingAssignedBody:
         "Your leader will open your first training. We will let you know.",
+      nothingAssignedBodyExpected:
+        "Your leader will assign the training this program uses. It will appear here.",
+      nothingAssignedBodyOpen:
+        "When your leader opens a training, it will show up here.",
       viewCertificates: "View certificates",
       sessionsReady: "Sessions will appear when this training is ready.",
       sessionsCount: "{completed} of {total} complete",
@@ -565,6 +574,10 @@ export const en = {
       emptyTitle: "No training assigned",
       emptyBody:
         "Your leader has not assigned a training yet. It will appear here when they do.",
+      emptyBodyExpected:
+        "Your leader will assign the training this program uses. It will appear here.",
+      emptyBodyOpen:
+        "When your leader opens a training, it will show up here.",
       backHome: "Back to Home",
       startTitle: "Start {title}",
       continueTitle: "Continue {title}",
@@ -582,6 +595,19 @@ export const en = {
       openSession: "Open Session {n}",
       startSessionN: "Start Session {n}",
       seeSessions: "See sessions",
+      watchOverview: "Watch overview",
+      overviewEyebrow: "Training overview",
+      overviewBadge: "Overview",
+      overviewNotSession: "Not a session",
+      overviewTitle: "Overview: {title}",
+      overviewLead:
+        "A conversation that introduces this training. It is not one of the sessions.",
+      overviewCardLine: "Starts with the overview film",
+      overviewSlotBody:
+        "A short film that introduces this training. It is not one of the sessions.",
+      overviewMissing: "The overview film will appear here.",
+      overviewThen: "Then the first open session",
+      backToTrainings: "Back to Trainings",
       trainingComplete: "This training is complete.",
       sessionDone: "Done",
       downloadCertificate: "Download certificate",
@@ -684,6 +710,8 @@ export const en = {
       lead: "Your assessments.",
       emptyTitle: "No assigned assessments yet",
       emptyBody: "When your leader shares an assessment, it will appear here.",
+      futureTitle: "More assessments",
+      futureBody: "This is where future assessments will be available.",
       unavailable: "Your leader has not shared this assessment.",
       answered: "{answered}/{total} answered",
       notStarted: "Not started",
@@ -714,6 +742,8 @@ export const en = {
       sessionN: "Session {n}",
       sessionDetail: "Session {n} · {detail}",
       sessionsCount: "{completed} of {total} sessions",
+      sessionOfTotal: "Session {n} of {total}",
+      programLength: "{total} sessions",
       crumb: "Film, then one question, then one skill.",
       steps: "In this session",
       watched: "Watched",
@@ -794,6 +824,10 @@ export const en = {
       reminderTitle: "Want a weekly session reminder?",
       reminderBody:
         "If your next session is open and you have not started it, we can send one reminder that week. Skip it if you do not want one. You can change this later in Account.",
+      reminderBodyExpected:
+        "If your next assigned session is open and you have not started it, we can send one reminder that week. You can change this later in Account.",
+      reminderBodyOpen:
+        "If you want a weekly reminder when a session is open, set one. Skip it if you do not want one.",
       reminderTime: "Time",
       setReminder: "Set reminder",
       skipReminder: "Skip",
@@ -805,7 +839,11 @@ export const en = {
       dayFri: "Friday",
       daySat: "Saturday",
       holdTitle: "Your leader has not assigned a training yet.",
+      holdTitleExpected: "Your leader will assign the training this program uses.",
+      holdTitleOpen: "No training is open yet.",
       holdBody: "You will get a reminder when your first one is ready.",
+      holdBodyExpected: "It will appear here, and we can remind you when it is ready.",
+      holdBodyOpen: "You will hear when your leader opens one. No rush.",
       completeTitle: "Session 1 done.",
       completeBody:
         "You have one skill to work on this week. We will remind you when the next session opens.",
@@ -816,7 +854,9 @@ export const en = {
   manager: {
     dashboard: {
       title: "Dashboard",
-      lead: "Your group’s progress. Fathers join with the invite code.",
+      lead: "Assign work and see who has it. Fathers join with the invite code.",
+      leadExpected: "Assign the training you expect them to complete. Fathers join with the invite code.",
+      leadOpen: "Offer a training. Men set the pace. Fathers join with the invite code.",
       impact: "Impact Snapshot",
       compare: "Compare",
       newTrainings: "Trainings",
@@ -881,7 +921,6 @@ export const en = {
       noteReplaceLabel: "New message",
       noteCount: "{n} of {max} characters",
       notePreview: "What they see",
-      notePreviewEmpty: "Nothing is showing. Home has no update.",
       noteNowShowing: "Now showing",
       noteStampPreview: "The date and time of posting",
       noteOneAtATime:
@@ -897,6 +936,38 @@ export const en = {
       noteNotYours: "That group is not yours.",
       noteSaveFailed: "The update didn’t post. Try again.",
       noteClearFailed: "The update didn’t clear. Try again.",
+      participationTitle: "How men take assigned training",
+      participationLead:
+        "This only changes notes, reminders, and how status is described. It does not change who you can assign.",
+      participationUnset: "Not set",
+      participationUnsetHint: "Plain language. Neither required nor invitational.",
+      participationExpected: "Expected",
+      participationExpectedHint: "Rehab, unit, or any program where completion is expected.",
+      participationOpen: "Open",
+      participationOpenHint: "Church or voluntary. Men set the pace.",
+      participationSave: "Save",
+    },
+    status: {
+      title: "Assignment status",
+      lead: "Who has which training. Assign the rest without leaving this page.",
+      leadExpected: "Assigned work and who has not started it. Assign the rest without leaving this page.",
+      leadOpen: "Who has been offered which training. Men set the pace.",
+      openBoard: "Open names",
+      emptyTitle: "Nothing to assign yet",
+      emptyBody: "Include a training for this organization, then assign it from here.",
+      emptyAction: "Open trainings",
+      assignedOf: "{assigned} of {total} assigned",
+      notStartedCount: "{n} not started",
+      inProgressCount: "{n} in progress",
+      doneCount: "{n} done",
+      boardTitle: "Who has what",
+      boardLead: "Each cell is one man and one training. Assign stays on this page.",
+      assign: "Assign",
+      notStarted: "Not started",
+      done: "Done",
+      sessionsShort: "{completed}/{total}",
+      allHaveIt: "All assigned",
+      assignRemainingLead: "Give a training to everyone who does not have it yet.",
     },
     practice: {
       title: "Your training and assessments",
@@ -917,6 +988,8 @@ export const en = {
     nudgePanel: {
       title: "Quiet participants",
       lead: "These men have been quiet. Send a short note.",
+      leadExpected: "Assigned training with no recent activity. Send a short note.",
+      leadOpen: "No recent activity. A short note is optional.",
       empty: "No one is quiet right now.",
       sendNote: "Send a note",
       sendToAll: "Send to all {count}",
@@ -944,7 +1017,7 @@ export const en = {
       readyCert: "Ready for certificate: {title}",
     },
     companion: {
-      eyebrow: "Assistant",
+      eyebrow: "Agent",
       title: "Assistant",
       lead: "A short summary of your group. Nothing sends or assigns until you confirm.",
       collapse: "Hide assistant",
@@ -962,8 +1035,14 @@ export const en = {
       fundingEmpty:
         "When fathers begin, completion and certificates become a short record of participation. Nothing extra to assemble.",
       savingsTitle: "Quiet seats",
+      savingsTitleExpected: "Assigned, no recent activity",
+      savingsTitleOpen: "No recent activity",
       savingsBody:
         "{quiet} assigned seats have no recent activity. A confirmed note takes a moment.",
+      savingsBodyExpected:
+        "{quiet} men have assigned training and no recent activity. A confirmed note takes a moment.",
+      savingsBodyOpen:
+        "{quiet} men have no recent activity. A note is optional.",
       savingsClear:
         "Assigned seats have recent activity.",
       timeTitle: "What to do next",
@@ -992,6 +1071,8 @@ export const en = {
       reasonQuietOne: "No activity in 1 day",
       reasonNoActivity: "No activity yet",
       reasonStalledTitle: "Stalled on Session {n}: {title}",
+      reasonStalledTitleExpected: "Still on Session {n}: {title}",
+      reasonStalledTitleOpen: "Last opened Session {n}: {title}",
       whyContinue: "The next session is still open.",
       whyEncouragement: "He already started. The next session is still open.",
       whyWelcomeBack: "The training is still here.",
@@ -1015,7 +1096,7 @@ export const en = {
     },
     participants: {
       title: "Participants",
-      lead: "Fathers in your group. Send a Certificate of Completion from the section below, or open anyone.",
+      lead: "Who has which training. Assign from the board, or open anyone.",
       goneQuiet: "Gone quiet",
       goneQuietLead:
         "No activity in 14 days, and training is still open. A note emails only if he left session reminders on.",
@@ -1078,7 +1159,7 @@ export const en = {
       noAssignedTitle: "No training assigned",
       noContinueBody: "An admin needs to add a training to the catalog first.",
       allCompleteBody: "Every session in the catalog is complete. You can send a certificate below.",
-      noAssignedBody: "Assign a training below so he has a next session.",
+      noAssignedBody: "Assign a training on a card so he has a next session.",
       assignLead: "Adds this training to his path.",
       noneAssignable:
         "No trainings are available to assign yet. Review new releases from the dashboard, or wait for an admin to publish one.",
@@ -1106,7 +1187,7 @@ export const en = {
       issuedMany: "{count} already issued",
       emptyReady:
         "No one is ready yet. A name appears here when every session in a training is done.",
-      how: "Open a name to preview and send, or use Bulk actions below and choose Issue certificates.",
+      how: "Open a name to preview and send, or use Bulk actions above and choose Issue certificates.",
     },
     nudge: {
       note: "Note",
@@ -1114,11 +1195,17 @@ export const en = {
       sendNudge: "Send note",
       continue: "Continue",
       continuePreview: "The next session is still open.",
+      continuePreviewExpected: "The assigned session is still open.",
+      continuePreviewOpen: "The next session is still here when he wants it.",
       encouragement: "Progress note",
       encouragementPreview:
         "He started. The next session is still open.",
+      encouragementPreviewExpected: "He started. The next assigned session is still his to finish.",
+      encouragementPreviewOpen: "He started. Invite him back when it fits.",
       welcomeBack: "Still open",
       welcomeBackPreview: "The training is still here.",
+      welcomeBackPreviewExpected: "The assigned training is still open.",
+      welcomeBackPreviewOpen: "The training is still here when he wants it.",
       sent: "Sent",
       skipped: "Not sent. Reminders off",
       failed: "Didn’t send",
@@ -1410,7 +1497,8 @@ export const en = {
     },
     bulk: {
       title: "Bulk actions",
-      lead: "Select participants below, then review before anything is saved. No deletions or role changes.",
+      lead: "Assign saves now. Mark complete and certificates still open a review first. No deletions or role changes.",
+      assignNow: "Assign now",
       action: "Action",
       assign: "Assign training",
       complete: "Mark complete",
@@ -1563,20 +1651,23 @@ export const en = {
       lead: "A Super-admin shares trainings with you. Accept a release, then assign it when you want fathers in {org} to receive it.",
       catalogTitle: "Available trainings",
       catalogLead:
-        "Every training this organization can use. Open one to preview it, then accept or assign it below.",
+        "Every training this organization can use. Include it to assign later, or decline to keep it hidden from your cohort. You can decide here without opening the training.",
       catalogEmptyTitle: "No trainings available",
       catalogEmptyBody:
         "When a Super-admin releases a training to this organization, it will appear here.",
-      catalogPending: "Waiting on you",
-      catalogReady: "Ready to assign",
+      catalogPending: "Not decided",
+      catalogReady: "Included",
+      catalogDeclined: "Declined",
+      include: "Include",
+      decline: "Decline",
       waitingTitle: "Waiting on you",
       waitingLead:
-        "Preview, then accept to make it available to assign, or decline to keep it hidden.",
+        "New releases still land here. You can also include or decline them in Available trainings without opening them.",
       waitingEmptyTitle: "Nothing waiting",
       waitingEmptyBody: "No new trainings are waiting.",
       cohortTitle: "In your cohort",
       cohortLead:
-        "Open a training to watch the sessions, then assign to the group or choose fathers.",
+        "Assigned, not started, in progress, and done. Assign remaining from this row.",
       cohortEmptyTitle: "No trainings in the cohort yet",
       cohortEmptyBody: "Accept a release above, or request a training.",
       assignedOf: "{assigned} of {total} assigned",
@@ -1587,17 +1678,18 @@ export const en = {
       preview: "Preview",
       viewTraining: "View training",
       removeLead: "Removing hides it from new assignment. Fathers who already have it keep it.",
-      catalogItem: "In the catalog",
+      catalogItem: "Included",
       fromSource: "From {name}",
-      hiddenTitle: "Hidden",
-      hiddenLead: "Declined for your organization. You can accept again if it is still released.",
-      hiddenEmpty: "No hidden trainings.",
+      hiddenTitle: "Hidden from your cohort",
+      hiddenLead:
+        "Declined trainings stay in Available trainings. Your cohort does not get them until you include them.",
+      hiddenEmpty: "Nothing is hidden from your cohort.",
     },
     photos: {
       title: "Organization Photos",
       backDashboard: "Back to Dashboard",
       logoAndCode:
-        "The logo is the group mark fathers see on the left of Home. It belongs to this invite-code group — a rehab, a unit, or any other organization.",
+        "The logo is the group mark fathers see on the left of Home. It belongs to this invite-code group: a rehab, a unit, or any other organization.",
       inviteCode: "Invite code {code}",
       leadOne:
         "Replace the photos {name} participants see on Home, Assessment, and Trainings. Any photo works. We fit it to the card.",

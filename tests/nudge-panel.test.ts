@@ -300,7 +300,7 @@ describe("message copy", () => {
       trainingTitle: "Fathering Fundamentals",
     });
     assert.equal(a.title, "A note from Maya");
-    assert.equal(a.body, "Your first session is open when you are ready. It is 8 minutes.");
+    assert.equal(a.body, "Your first session is open. It is 8 minutes.");
 
     const b = nudgeMessage({
       tier: "B",
@@ -313,7 +313,7 @@ describe("message copy", () => {
     });
     assert.equal(
       b.body,
-      "You are 3 of 5 through Fathering Fundamentals. Pick it back up when you can."
+      "You are 3 of 5 through Fathering Fundamentals. Continue when you can."
     );
 
     const c = nudgeMessage({
@@ -325,7 +325,7 @@ describe("message copy", () => {
       total: 5,
       trainingTitle: "Fathering Fundamentals",
     });
-    assert.equal(c.body, "It has been a while. Your training is still here whenever you want it.");
+    assert.equal(c.body, "Your training is still open.");
 
     for (const copy of [a, b, c]) {
       assertSafeCopy(copy.title, copy.body);
@@ -342,7 +342,7 @@ describe("message copy", () => {
       total: 5,
       trainingTitle: "Fathering Fundamentals",
     });
-    assert.equal(copy.body, "Your first session is open when you are ready.");
+    assert.equal(copy.body, "Your first session is open.");
     assert.equal(copy.body.includes("minutes"), false);
   });
 

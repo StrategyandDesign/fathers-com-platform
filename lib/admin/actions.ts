@@ -35,6 +35,7 @@ import { hasHardcodedSkillPack } from "@/lib/father/session-questions";
 import { isAppRole, ROLE_HOME } from "@/lib/auth/roles";
 import { getAuthContext, requireRole } from "@/lib/auth/session";
 import { youtubeVideoId } from "@/lib/father/types";
+import { hasHostedVideo } from "@/lib/media/hosted-video";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -52,6 +53,8 @@ import { sourcedReleaseBlocker } from "@/lib/admin/sourcing";
 
 const YOUTUBE_URL_ERROR =
   "Use a YouTube video link. Playlists and other sites will not play.";
+const HOSTED_VIDEO_URL_ERROR =
+  "Use a YouTube or Vimeo video link. Playlists and other sites will not play.";
 
 const RELEASE_WRITE_ERROR = "Unable to update release status. Please try again.";
 const RELEASE_NOTIFY_WARNING =
@@ -439,9 +442,11 @@ export async function updateTraining(formData: FormData) {
     "Development notes"
   );
   const attribution = readCappedText(formData, "attribution", ATTRIBUTION_MAX, path, "Credit");
+  const overviewVideoUrl = String(formData.get("overview_video_url") ?? "").trim();
 
   if (!trainingId) fail("/admin/trainings", "Choose a training.");
   if (!title) fail(path, "Title is required.");
+  if (overviewVideoUrl && !hasHostedVideo(overviewVideoUrl)) fail(path, HOSTED_VIDEO_URL_ERROR);
 
   const supabase = await createClient();
   const { data: current, error: currentError } = await supabase
@@ -481,12 +486,14 @@ export async function updateTraining(formData: FormData) {
       working_title: workingTitle || null,
       development_notes: developmentNotes || null,
       attribution: attribution || null,
+      overview_video_url: overviewVideoUrl || null,
     })
     .eq("id", trainingId);
 
   if (error) failDb(path, error, error.message);
 
   revalidateAdmin(path);
+  revalidatePath(`/father/trainings/${trainingId}`);
   ok(path, published ? "Training saved and published." : "Training saved. It is hidden from new assignment.");
 }
 

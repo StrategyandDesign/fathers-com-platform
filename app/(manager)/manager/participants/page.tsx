@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AssignmentBoard } from "@/components/manager/assignment-board";
 import { CertificateDesk } from "@/components/manager/certificate-desk";
 import { CompanionNudgeSuggest } from "@/components/manager/companion-nudge-suggest";
 import { Flash } from "@/components/manager/flash";
@@ -8,12 +9,14 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
 import { buildCertificateDesk } from "@/lib/manager/certificates-desk";
+import { buildAssignmentBoard } from "@/lib/manager/assignment-status";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
 import { buildQuietSuggestion } from "@/lib/manager/companion";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
 import { latestSentAt, needsNudge } from "@/lib/manager/nudges";
 import { formatShortDate } from "@/lib/manager/types";
+import { participationModeFromGroups } from "@/lib/participation";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +30,13 @@ export default async function ManagerParticipantsPage({
   const { t } = await getI18n();
   const { participants, trainings, sessions, groups, reviews, trainingProgressFor } =
     await loadManagerWorkspace(user.id);
+  const assignmentBoard = buildAssignmentBoard({
+    trainings,
+    participants,
+    reviews,
+    groups,
+    progressFor: trainingProgressFor,
+  });
   const certificateDesk = buildCertificateDesk({
     participants,
     trainingProgressFor,
@@ -37,6 +47,7 @@ export default async function ManagerParticipantsPage({
   const quietIds = quiet.map((row) => row.fatherId);
   const [{ byFather: historyByFather, unavailable: historyUnavailable }, reminderPrefs] =
     await Promise.all([loadNudgeHistory(quietIds), loadReminderPrefs(quietIds)]);
+  const participationMode = participationModeFromGroups(groups);
 
   return (
     <div className="space-y-6">
@@ -49,6 +60,15 @@ export default async function ManagerParticipantsPage({
         </p>
       </div>
       <Flash error={params.error} notice={params.notice} />
+
+      {participants.length > 0 ? (
+        <AssignmentBoard
+          board={assignmentBoard}
+          showGroupName={groups.length > 1}
+          highlightTrainingId={params.training}
+          t={t}
+        />
+      ) : null}
 
       {quiet.length > 0 ? (
         <section className="rounded-xl border border-primary/35 bg-card p-4 sm:p-6">
@@ -101,6 +121,7 @@ export default async function ManagerParticipantsPage({
                       cooldownDays={suggestion.cooldownDays}
                       returnTo="list"
                       compact
+                      mode={participationMode}
                     />
                   </div>
                 </li>
@@ -109,12 +130,6 @@ export default async function ManagerParticipantsPage({
           </ul>
         </section>
       ) : null}
-
-      <CertificateDesk
-        ready={certificateDesk.ready}
-        issued={certificateDesk.issued}
-        t={t}
-      />
 
       {participants.length === 0 ? (
         <EmptyState
@@ -166,6 +181,12 @@ export default async function ManagerParticipantsPage({
           />
         </div>
       )}
+
+      <CertificateDesk
+        ready={certificateDesk.ready}
+        issued={certificateDesk.issued}
+        t={t}
+      />
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import type { ParticipationMode } from "@/lib/participation";
+
 export const NOTIFICATION_TYPES = [
   "weekly_session",
   "action",
@@ -50,6 +52,7 @@ export type NotificationPayload = {
   trainingId?: string;
   certificateId?: string;
   cohortNote?: boolean;
+  participationMode?: ParticipationMode;
 };
 
 export type ReminderCandidate = {

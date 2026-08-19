@@ -31,6 +31,7 @@ import {
   translateThemeLabel,
 } from "@/lib/i18n/flash";
 import { formatShortDate, formatShortDateTime } from "@/lib/i18n/server";
+import { loadFatherParticipationMode } from "@/lib/participation-data";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import {
   fieldClassName,
@@ -74,12 +75,14 @@ export default async function ManagerParticipantDetailPage({
   }
 
   const { participant, progress, reviews } = detail;
-  const [customAssignments, historyByFather, remindersAllowed, notes] = await Promise.all([
-    loadParticipantCustomAssignments(user.id, id),
-    loadNudgeHistory([id]),
-    loadReminderPrefAllowed(id),
-    loadParticipantNotes(id),
-  ]);
+  const [customAssignments, historyByFather, remindersAllowed, notes, participationMode] =
+    await Promise.all([
+      loadParticipantCustomAssignments(user.id, id),
+      loadNudgeHistory([id]),
+      loadReminderPrefAllowed(id),
+      loadParticipantNotes(id),
+      loadFatherParticipationMode(id),
+    ]);
   const nudgeHistory = historyByFather.byFather.get(id) ?? [];
   const historyUnavailable = historyByFather.unavailable;
   const quiet = needsNudge(participant.lastActivity, progress);
@@ -135,6 +138,131 @@ export default async function ManagerParticipantDetailPage({
             {quiet ? ` · ${translateQuietLabel(participant.lastActivity, t)}` : ""}
           </p>
         </div>
+      </section>
+
+      {progress.length === 0 ? (
+        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">{t("manager.participants.trainings")}</h2>
+          <EmptyState
+            framed={false}
+            className="mt-2 p-0"
+            title={t("manager.participants.noCatalogTitle")}
+          >
+            {t("manager.participants.noCatalogBody")}
+          </EmptyState>
+        </section>
+      ) : (
+        <section className="grid gap-4 md:grid-cols-3">
+          {progress.map((card) => {
+            const percent =
+              card.total === 0 ? 0 : Math.round((card.completed / card.total) * 100);
+            const canAssign = unassigned.some((row) => row.training.id === card.training.id);
+            return (
+              <article key={card.training.id} className="rounded-xl border border-border bg-card p-4 sm:p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="font-heading font-semibold">{card.training.title}</h3>
+                  <span className="shrink-0 text-sm tabular-nums text-muted-foreground">{percent}%</span>
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {t("manager.participants.sessionsOf", {
+                    completed: card.completed,
+                    total: card.total,
+                  })}
+                  {card.assigned ? ` · ${t("manager.participants.assigned")}` : ""}
+                  {card.certificate ? ` · ${t("manager.participants.certified")}` : ""}
+                </p>
+                <ProgressBar value={percent} className="mt-4" />
+                {canAssign ? (
+                  <form action={assignTraining} className="mt-4">
+                    <input type="hidden" name="father_id" value={participant.fatherId} />
+                    <input type="hidden" name="training_id" value={card.training.id} />
+                    <input type="hidden" name="return_to" value="detail" />
+                    <Button type="submit" className="w-full">
+                      {t("manager.status.assign")}
+                    </Button>
+                  </form>
+                ) : null}
+                {card.certificate ? (
+                  <div className="mt-4 space-y-3">
+                    <p className="font-mono text-xs text-muted-foreground">
+                      {card.certificate.serial_number}
+                    </p>
+                    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                      <CertificateDownloadLink
+                        certificateId={card.certificate.id}
+                        className="w-full sm:w-auto"
+                      />
+                      <Link
+                        href={`/manager/participants/${participant.fatherId}/certificates/${card.training.id}`}
+                        className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full sm:w-auto")}
+                      >
+                        {t("manager.participants.view")}
+                      </Link>
+                    </div>
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
+        </section>
+      )}
+
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <h2 className="font-heading text-lg font-semibold">{t("manager.participants.currentSession")}</h2>
+        {current ? (
+          <>
+            <p className="mt-2 text-muted-foreground">
+              {current.session.title} · {t("manager.participants.sessionN", { n: current.session.session_number })}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 sm:gap-5">
+              <Step
+                done={current.progress?.film_completed ?? false}
+                label={t(
+                  current.progress?.film_completed
+                    ? "manager.participants.stepDone"
+                    : "manager.participants.stepPending",
+                  { label: t("father.session.film") }
+                )}
+              />
+              <Step
+                done={current.progress?.checkin_completed ?? false}
+                label={t(
+                  current.progress?.checkin_completed
+                    ? "manager.participants.stepDone"
+                    : "manager.participants.stepPending",
+                  { label: t("father.session.checkin") }
+                )}
+              />
+              <Step
+                done={current.progress?.action_completed ?? false}
+                label={t(
+                  current.progress?.action_completed
+                    ? "manager.participants.stepDone"
+                    : "manager.participants.stepPending",
+                  { label: t("father.session.action") }
+                )}
+              />
+            </div>
+          </>
+        ) : (
+          <EmptyState
+            framed={false}
+            className="mt-2 p-0"
+            title={
+              progress.length === 0
+                ? t("manager.participants.noContinueTitle")
+                : progress.some((card) => card.assigned)
+                  ? t("manager.participants.allCompleteTitle")
+                  : t("manager.participants.noAssignedTitle")
+            }
+          >
+            {progress.length === 0
+              ? t("manager.participants.noContinueBody")
+              : progress.some((card) => card.assigned)
+                ? t("manager.participants.allCompleteBody")
+                : t("manager.participants.noAssignedBody")}
+          </EmptyState>
+        )}
       </section>
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
@@ -225,6 +353,7 @@ export default async function ManagerParticipantDetailPage({
                 cooldownDays={companionSuggestion.cooldownDays}
                 returnTo="detail"
                 defaultOpen
+                mode={participationMode}
               />
             </div>
           ) : null}
@@ -265,7 +394,7 @@ export default async function ManagerParticipantDetailPage({
             />
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               {(["continue", "encouragement", "welcome_back"] as const).map((key) => {
-                const template = translateNudgeTemplate(key, t);
+                const template = translateNudgeTemplate(key, t, participationMode);
                 return (
                   <li key={key}>
                     <span className="font-medium text-foreground">{template.label}.</span>{" "}
@@ -356,120 +485,6 @@ export default async function ManagerParticipantDetailPage({
         </section>
       ) : null}
 
-      {progress.length === 0 ? (
-        <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">{t("manager.participants.trainings")}</h2>
-          <EmptyState
-            framed={false}
-            className="mt-2 p-0"
-            title={t("manager.participants.noCatalogTitle")}
-          >
-            {t("manager.participants.noCatalogBody")}
-          </EmptyState>
-        </section>
-      ) : (
-      <section className="grid gap-4 md:grid-cols-3">
-        {progress.map((card) => {
-          const percent =
-            card.total === 0 ? 0 : Math.round((card.completed / card.total) * 100);
-          return (
-            <article key={card.training.id} className="rounded-xl border border-border bg-card p-4 sm:p-5">
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="font-heading font-semibold">{card.training.title}</h3>
-                <span className="shrink-0 text-sm tabular-nums text-muted-foreground">{percent}%</span>
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {t("manager.participants.sessionsOf", {
-                  completed: card.completed,
-                  total: card.total,
-                })}
-                {card.assigned ? ` · ${t("manager.participants.assigned")}` : ""}
-                {card.certificate ? ` · ${t("manager.participants.certified")}` : ""}
-              </p>
-              <ProgressBar value={percent} className="mt-4" />
-              {card.certificate ? (
-                <div className="mt-4 space-y-3">
-                  <p className="font-mono text-xs text-muted-foreground">
-                    {card.certificate.serial_number}
-                  </p>
-                  <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                    <CertificateDownloadLink
-                      certificateId={card.certificate.id}
-                      className="w-full sm:w-auto"
-                    />
-                    <Link
-                      href={`/manager/participants/${participant.fatherId}/certificates/${card.training.id}`}
-                      className={cn(buttonVariants({ variant: "outline", size: "sm" }), "w-full sm:w-auto")}
-                    >
-                      {t("manager.participants.view")}
-                    </Link>
-                  </div>
-                </div>
-              ) : null}
-            </article>
-          );
-        })}
-      </section>
-      )}
-
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">{t("manager.participants.currentSession")}</h2>
-        {current ? (
-          <>
-            <p className="mt-2 text-muted-foreground">
-              {current.session.title} · {t("manager.participants.sessionN", { n: current.session.session_number })}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 sm:gap-5">
-              <Step
-                done={current.progress?.film_completed ?? false}
-                label={t(
-                  current.progress?.film_completed
-                    ? "manager.participants.stepDone"
-                    : "manager.participants.stepPending",
-                  { label: t("father.session.film") }
-                )}
-              />
-              <Step
-                done={current.progress?.checkin_completed ?? false}
-                label={t(
-                  current.progress?.checkin_completed
-                    ? "manager.participants.stepDone"
-                    : "manager.participants.stepPending",
-                  { label: t("father.session.checkin") }
-                )}
-              />
-              <Step
-                done={current.progress?.action_completed ?? false}
-                label={t(
-                  current.progress?.action_completed
-                    ? "manager.participants.stepDone"
-                    : "manager.participants.stepPending",
-                  { label: t("father.session.action") }
-                )}
-              />
-            </div>
-          </>
-        ) : (
-          <EmptyState
-            framed={false}
-            className="mt-2 p-0"
-            title={
-              progress.length === 0
-                ? t("manager.participants.noContinueTitle")
-                : progress.some((card) => card.assigned)
-                  ? t("manager.participants.allCompleteTitle")
-                  : t("manager.participants.noAssignedTitle")
-            }
-          >
-            {progress.length === 0
-              ? t("manager.participants.noContinueBody")
-              : progress.some((card) => card.assigned)
-                ? t("manager.participants.allCompleteBody")
-                : t("manager.participants.noAssignedBody")}
-          </EmptyState>
-        )}
-      </section>
-
       <section
         id="certificates"
         className="rounded-xl border border-border bg-card p-4 sm:p-6"
@@ -518,42 +533,7 @@ export default async function ManagerParticipantDetailPage({
         </form>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <form action={assignTraining} className="rounded-xl border border-border bg-card p-4 sm:p-5">
-          <h2 className="font-heading font-semibold">{t("manager.participants.assignTraining")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("manager.participants.assignLead")}</p>
-          <input type="hidden" name="father_id" value={participant.fatherId} />
-          <div className="mt-4">
-            {assignable.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                {t("manager.participants.noneAssignable")}
-              </p>
-            ) : unassigned.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                {t("manager.participants.allAssigned")}
-              </p>
-            ) : (
-              <select
-                className={fieldClassName}
-                name="training_id"
-                required
-                aria-invalid={Boolean(flash.error) || undefined}
-              >
-                {unassigned.map((card) => (
-                  <option key={card.training.id} value={card.training.id}>
-                    {card.training.title}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-          {unassigned.length > 0 ? (
-            <Button type="submit" className="mt-4 w-full">
-              {t("manager.participants.assignTraining")}
-            </Button>
-          ) : null}
-        </form>
-
+      <section>
         <form action={markTrainingComplete} className="rounded-xl border border-border bg-card p-4 sm:p-5">
           <h2 className="font-heading font-semibold">{t("manager.participants.markComplete")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">

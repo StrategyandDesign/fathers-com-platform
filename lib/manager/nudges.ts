@@ -29,32 +29,32 @@ export type NudgeLogRow = {
 export const NUDGE_TEMPLATE_COPY: Record<NudgeTemplateKey, NudgeTemplate> = {
   continue: {
     key: "continue",
-    label: "Gentle continue",
-    preview: "A calm note that the next session is still here. No rush.",
-    subject: "Your next session is still here",
-    title: "Whenever you’re ready.",
+    label: "Continue",
+    preview: "The next session is still open.",
+    subject: "Your next session is still open",
+    title: "Your next session is still open.",
     body: (organizationName) =>
-      `There’s a session waiting when you have a few minutes.\nYour place in the ${organizationName} training is saved. Pick it up where you left off. Nothing expired.`,
+      `There’s a session still open in the ${organizationName} training.\nYour place is saved. Continue where you left off.`,
     ctaLabel: "Continue training",
   },
   encouragement: {
     key: "encouragement",
     label: "Encouragement",
-    preview: "Acknowledge the work already started. Invite him back when it fits.",
+    preview: "He started. The next session is still open.",
     subject: "A note on your training",
     title: "You’re already in motion.",
     body: (organizationName) =>
-      `The work you’ve started with ${organizationName} is still here.\nWhen you have a quiet stretch, open the next session and keep going. No catch-up required.`,
+      `The work you’ve started with ${organizationName} is still here.\nOpen the next session and keep going.`,
     ctaLabel: "Open training",
   },
   welcome_back: {
     key: "welcome_back",
     label: "Welcome back",
-    preview: "A light check-in after some time away. Adult and unhurried.",
+    preview: "The training is still here.",
     subject: "Your training is still open",
-    title: "Welcome back whenever it fits.",
+    title: "Your training is still open.",
     body: (organizationName) =>
-      `It’s been a little while. Your ${organizationName} training is still open, and your progress is intact.\nSign in when you’re ready.`,
+      `Your ${organizationName} training is still open, and your progress is intact.\nSign in to continue.`,
     ctaLabel: "Sign in",
   },
 };
