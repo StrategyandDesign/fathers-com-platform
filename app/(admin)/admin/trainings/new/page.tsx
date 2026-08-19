@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { createTraining } from "@/lib/admin/actions";
+import { LEADER_SUMMARY_MAX } from "@/lib/admin/development";
 import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -62,6 +63,23 @@ export default async function AdminNewTrainingPage({
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Description</span>
           <textarea className={textareaClassName} name="description" />
+          <span className="block text-sm text-muted-foreground">
+            Short catalog blurb. Leaders see this on the training card.
+          </span>
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">Training Summary</span>
+          <textarea
+            className={textareaClassName}
+            name="leader_summary"
+            maxLength={LEADER_SUMMARY_MAX}
+            rows={8}
+            placeholder="The complete summary the leader reads first."
+          />
+          <span className="block text-sm text-muted-foreground">
+            This is what the leader (Org Manager) reads before the session
+            information or films.
+          </span>
         </label>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Development notes</span>

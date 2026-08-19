@@ -105,11 +105,22 @@ export default async function ManagerTrainingReviewPage({
           </div>
           {review ? <ReviewStatusBadge status={review.status} /> : null}
         </div>
-        {training.description ? (
-          <p className="mt-4 text-sm text-muted-foreground">{training.description}</p>
-        ) : null}
+        <div className="mt-6 border-t border-border pt-6">
+          <h2 className="font-heading text-lg font-semibold">
+            {t("manager.reviewDetail.summary")}
+          </h2>
+          {training.leader_summary ? (
+            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+              {training.leader_summary}
+            </p>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground">
+              {t("manager.reviewDetail.summaryEmpty")}
+            </p>
+          )}
+        </div>
         {review?.decided_at ? (
-          <p className="mt-4 text-sm text-muted-foreground">
+          <p className="mt-6 text-sm text-muted-foreground">
             {review.status === "accepted" ? t("manager.reviews.accepted") : t("manager.reviews.declined")}{" "}
             {formatShortDate(review.decided_at, locale)}
             {review.status === "declined" && review.decline_reason
