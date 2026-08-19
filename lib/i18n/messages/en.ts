@@ -361,6 +361,8 @@ export const en = {
     displayTitleTitle: "How you are named",
     displayTitleLead:
       "Choose Leader or Manager. Fathers still see your displayed name. This does not change what you can do.",
+    displayTitleManager: "Manager",
+    displayTitleLeader: "Leader",
     displayTitleManagerHint: "The usual designation.",
     displayTitleLeaderHint: "For informal groups, or when that is how you are known.",
     displayTitleSave: "Save designation",

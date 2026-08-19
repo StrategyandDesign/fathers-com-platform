@@ -349,6 +349,8 @@ export const he = {
     displayTitleTitle: "איך קוראים לך כאן",
     displayTitleLead:
       "בחר מנהיג או מנהל. אבות עדיין רואים את השם המוצג. זה לא משנה מה אתה יכול לעשות.",
+    displayTitleManager: "מנהל",
+    displayTitleLeader: "מנהיג",
     displayTitleManagerHint: "הכינוי הרגיל.",
     displayTitleLeaderHint: "לקבוצות לא פורמליות, או כשכך מכירים אותך.",
     displayTitleSave: "שמירת כינוי",
