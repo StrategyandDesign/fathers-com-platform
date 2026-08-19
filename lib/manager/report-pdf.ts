@@ -61,7 +61,9 @@ function cellValues(row: ReportRow, locale: Locale, t: Translate) {
     return {
       name: row.name,
       status: COMPLETION_STATUS_LABEL[row.completionStatus],
-      assignments: row.assignmentTitles.join("; ") || "None assigned",
+      assignments:
+        (row.assignmentTitles.join("; ") || "None assigned") +
+        (row.skillsUsed > 0 ? ` · ${row.skillsUsed} used` : ""),
       serials: row.certificateSerials || "—",
       activity: formatShortDate(row.lastActivity),
     };
@@ -70,7 +72,9 @@ function cellValues(row: ReportRow, locale: Locale, t: Translate) {
   return {
     name: row.name,
     status: statusCopy(row.completionStatus, locale, t),
-    assignments: row.assignmentTitles.join("; ") || t("manager.reports.noneAssigned"),
+    assignments:
+        (row.assignmentTitles.join("; ") || t("manager.reports.noneAssigned")) +
+        (row.skillsUsed > 0 ? ` · ${t("manager.reports.skillsUsedCount", { n: row.skillsUsed })}` : ""),
     serials: row.certificateSerials || t("common.emDash"),
     activity: row.lastActivity
       ? new Date(row.lastActivity).toLocaleDateString(dateLocale(locale), {

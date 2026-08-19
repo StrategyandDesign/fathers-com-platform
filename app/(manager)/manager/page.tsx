@@ -100,6 +100,7 @@ export default async function ManagerHomePage({
       value: assessments.reduce((count, item) => count + item.completedCount, 0),
     },
     { label: t("manager.dashboard.sessions"), value: summary.sessionsCompleted },
+    { label: t("manager.dashboard.skillsUsed"), value: summary.skillsUsed },
     { label: t("manager.dashboard.trainings"), value: summary.trainingsCompleted },
     { label: t("manager.dashboard.pending"), value: summary.pendingActions },
   ];
@@ -226,7 +227,7 @@ export default async function ManagerHomePage({
         </section>
       ) : null}
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat) => (
           <div key={stat.label} className="rounded-xl border border-border bg-card p-4 sm:p-5">
             <p className="text-sm text-muted-foreground">{stat.label}</p>
