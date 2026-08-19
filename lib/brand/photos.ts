@@ -7,6 +7,10 @@ export const BRAND_PHOTOS = {
   park: "/brand/photos/knowing-park.png",
   bike: "/brand/photos/protecting-bike.png",
   profile: "/brand/photos/profile-placeholder.png",
+  houseThatKeptGoing: "/brand/photos/house-that-kept-going.jpg",
+  doorwayGrowthMarks: "/brand/photos/doorway-growth-marks.jpg",
+  smallAndOftenCalendar: "/brand/photos/small-and-often-calendar.jpg",
+  screenIsARoom: "/brand/photos/screen-is-a-room.jpg",
 } as const;
 
 /** Landscape placeholders for Unit 8200 (code IL) only. Managers can replace them. */
@@ -66,8 +70,10 @@ export function trainingCover(slug: string, pack: PhotoPack = "default"): string
     if (root === "reentry") return IL_PHOTOS.hills;
     return IL_PHOTOS.grove;
   }
-  if (root === "fundamentals") return BRAND_PHOTOS.running;
-  return "";
+  if (root === "fundamentals") return BRAND_PHOTOS.houseThatKeptGoing;
+  if (root === "anger") return BRAND_PHOTOS.smallAndOftenCalendar;
+  if (root === "reentry") return BRAND_PHOTOS.doorwayGrowthMarks;
+  return BRAND_PHOTOS.screenIsARoom;
 }
 
 export function profileCover(pack: PhotoPack = "default"): string {

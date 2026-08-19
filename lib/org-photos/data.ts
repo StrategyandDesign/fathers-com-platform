@@ -55,8 +55,8 @@ export type OrganizationMark = {
 
 /**
  * Trainings already have distinct covers via trainingCover(slug).
- * Only Fathering Fundamentals ships a platform photo. Other catalog covers
- * fall back to SceneArt. Internal slugs are never shown to fathers.
+ * Catalog cards use Stor room stills. An empty slug falls back to
+ * screen-is-a-room, not SceneArt. Internal slugs are never shown to fathers.
  * Store one override per training slug so each card can be customized.
  * Home hero is a single org slot (the Up Next card), not per-session.
  * Fathers in more than one group use the earliest membership for overrides.
