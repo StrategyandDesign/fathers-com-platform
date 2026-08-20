@@ -42,8 +42,7 @@ export default async function AdminTrainingSourcesPage({
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             This does not pull films from the open web. They send a YouTube
-            link. You write Check-in and Action here. An outline can hold up
-            to 15 short sessions.
+            link. You write Check-in and Action here.
           </p>
         </div>
         <Link

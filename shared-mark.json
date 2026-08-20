@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 43,
-  "label": "Shared 1-1.43",
+  "patch": 44,
+  "label": "Shared 1-1.44",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Make web addresses in the Home update clickable.",
+  "title": "Show the Bring-in queue and cap outlines at 15 sessions.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -309,6 +309,13 @@
       "label": "Shared 1-1.43",
       "at": "2026-08-20",
       "title": "Make web addresses in the Home update clickable."
+    },
+    {
+      "patch": 44,
+      "revision": "1.44",
+      "label": "Shared 1-1.44",
+      "at": "2026-08-20",
+      "title": "Show the Bring-in queue and cap outlines at 15 sessions."
     }
   ]
 }

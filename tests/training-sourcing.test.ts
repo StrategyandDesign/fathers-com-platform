@@ -44,14 +44,17 @@ describe("training sourcing outline", () => {
     assert.equal(sessions[0].title, "First skill");
   });
 
-  it("keeps sourced outlines to 15 short sessions and warns past that", () => {
-    const lines = Array.from({ length: 18 }, (_, index) => `Session ${index + 1}`);
-    const outline = lines.join("\n");
-    assert.equal(OUTLINE_SESSION_MAX, 15);
-    assert.equal(countSessionOutline(outline), 18);
-    assert.equal(parseSessionOutline(outline).length, 15);
-    assert.match(outlineSessionWarning(18) ?? "", /18 sessions/);
-    assert.equal(outlineSessionWarning(15), null);
+  it("accepts twenty sessions and only warns when the outline is longer", () => {
+    const twenty = Array.from({ length: 20 }, (_, index) => `Session ${index + 1}`).join("\n");
+    const twentyOne = Array.from({ length: 21 }, (_, index) => `Session ${index + 1}`).join("\n");
+    assert.equal(OUTLINE_SESSION_MAX, 20);
+    assert.equal(countSessionOutline(twenty), 20);
+    assert.equal(parseSessionOutline(twenty).length, 20);
+    assert.equal(outlineSessionWarning(20), null);
+    assert.equal(countSessionOutline(twentyOne), 21);
+    assert.equal(parseSessionOutline(twentyOne).length, 20);
+    assert.match(outlineSessionWarning(21) ?? "", /split the rest/i);
+    assert.doesNotMatch(outlineSessionWarning(21) ?? "", /\b20\b|twenty/i);
   });
 
   it("does not treat a non-YouTube link as a film", () => {
@@ -99,6 +102,19 @@ describe("bring-in queue", () => {
       "utf8"
     );
     assert.match(page, /intakeQueueLine/);
-    assert.match(page, /15 short sessions/);
+    assert.doesNotMatch(page, /15 short sessions|20 sessions|up to \d+/i);
+  });
+
+  it("does not advertise the outline session allowance", () => {
+    const field = readFileSync(
+      fileURLToPath(new URL("../components/admin/session-outline-field.tsx", import.meta.url)),
+      "utf8"
+    );
+    const intake = readFileSync(
+      fileURLToPath(new URL("../app/(admin)/admin/trainings/intakes/[id]/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.doesNotMatch(field, /of \{OUTLINE_SESSION_MAX\}|short sessions/);
+    assert.doesNotMatch(intake, /of \$\{OUTLINE_SESSION_MAX\}/);
   });
 });

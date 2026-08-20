@@ -10,7 +10,6 @@ import { SessionOutlineField } from "@/components/admin/session-outline-field";
 import {
   INTAKE_STATUSES,
   INTAKE_STATUS_LABEL,
-  OUTLINE_SESSION_MAX,
   RIGHTS_STATUSES,
   RIGHTS_STATUS_LABEL,
   countSessionOutline,
@@ -121,7 +120,7 @@ export default async function AdminTrainingIntakePage({
           <p className="mt-1 text-sm text-muted-foreground">
             {sessions.length === 1
               ? "1 session will be created from this outline."
-              : `${sessions.length} of ${OUTLINE_SESSION_MAX} sessions will be created from this outline.`}
+              : `${sessions.length} sessions will be created from this outline.`}
           </p>
           {outlineWarning ? (
             <p className="mt-2 text-sm text-destructive">{outlineWarning}</p>

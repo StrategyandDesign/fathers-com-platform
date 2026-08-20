@@ -10,7 +10,7 @@ export const INTAKE_AUDIENCE_MAX = 200;
 export const INTAKE_OUTLINE_MAX = 8000;
 export const INTAKE_RIGHTS_NOTES_MAX = 2000;
 export const ATTRIBUTION_MAX = 120;
-export const OUTLINE_SESSION_MAX = 15;
+export const OUTLINE_SESSION_MAX = 20;
 
 export const RIGHTS_STATUSES = ["inquiry", "pending", "cleared", "declined"] as const;
 export type RightsStatus = (typeof RIGHTS_STATUSES)[number];
@@ -160,7 +160,7 @@ export function countSessionOutline(text: string) {
 
 export function outlineSessionWarning(count: number) {
   if (count <= OUTLINE_SESSION_MAX) return null;
-  return `This outline has ${count} sessions. Only the first ${OUTLINE_SESSION_MAX} will be used. Split the rest into another intake.`;
+  return "This outline is longer than one training should be. Split the rest into another intake.";
 }
 
 export function intakeQueueCounts(

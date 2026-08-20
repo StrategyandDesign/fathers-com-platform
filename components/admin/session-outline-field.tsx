@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import {
-  OUTLINE_SESSION_MAX,
   countSessionOutline,
   outlineSessionWarning,
 } from "@/lib/admin/sourcing";
@@ -33,9 +32,8 @@ export function SessionOutlineField({
         onChange={(event) => setValue(event.target.value)}
       />
       <span className="block text-sm text-muted-foreground">
-        {count} of {OUTLINE_SESSION_MAX} short sessions. YouTube links only.
-        Check-in and Action are written after the draft opens. A film still
-        cannot be published over 6:00.
+        YouTube links only. Check-in and Action are written after the draft
+        opens. A film still cannot be published over 6:00.
       </span>
       {warning ? <p className="text-sm text-destructive">{warning}</p> : null}
     </label>
