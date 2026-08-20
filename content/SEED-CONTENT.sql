@@ -912,14 +912,14 @@ begin
     insert into quiz_questions (video_id, ord, prompt, choices, correct_index) values (vid, 1, 'What does flooded mean in this session?', '["Being sad", "Your body so activated that judgment is gone; continuing makes it worse", "Disagreeing strongly"]'::jsonb, 1);
   end if;
   if exists (select 1 from quiz_questions where video_id = vid and ord = 2) then
-    update quiz_questions set prompt = 'What is the rule when you notice you are flooded?', choices = '["Push through to resolution", "Pause, about twenty minutes, then resume", "End all contact for the week"]'::jsonb, correct_index = 1 where video_id = vid and ord = 2;
+    update quiz_questions set prompt = 'What is the rule when you notice you are flooded?', choices = '["Push through to resolution", "Pause, then come back", "End all contact for the week"]'::jsonb, correct_index = 1 where video_id = vid and ord = 2;
   else
-    insert into quiz_questions (video_id, ord, prompt, choices, correct_index) values (vid, 2, 'What is the rule when you notice you are flooded?', '["Push through to resolution", "Pause, about twenty minutes, then resume", "End all contact for the week"]'::jsonb, 1);
+    insert into quiz_questions (video_id, ord, prompt, choices, correct_index) values (vid, 2, 'What is the rule when you notice you are flooded?', '["Push through to resolution", "Pause, then come back", "End all contact for the week"]'::jsonb, 1);
   end if;
   if exists (select 1 from quiz_questions where video_id = vid and ord = 3) then
-    update quiz_questions set prompt = 'Why twenty minutes, roughly?', choices = '["It is how long the body needs to actually come down; five minutes of silent rehearsing does not count", "It is a rule of the platform", "It gives you time to build your case"]'::jsonb, correct_index = 0 where video_id = vid and ord = 3;
+    update quiz_questions set prompt = 'What does the pause require?', choices = '["You actually come down before you resume; rehearsing the fight in silence does not count", "It is a rule of the platform", "It gives you time to build your case"]'::jsonb, correct_index = 0 where video_id = vid and ord = 3;
   else
-    insert into quiz_questions (video_id, ord, prompt, choices, correct_index) values (vid, 3, 'Why twenty minutes, roughly?', '["It is how long the body needs to actually come down; five minutes of silent rehearsing does not count", "It is a rule of the platform", "It gives you time to build your case"]'::jsonb, 0);
+    insert into quiz_questions (video_id, ord, prompt, choices, correct_index) values (vid, 3, 'What does the pause require?', '["You actually come down before you resume; rehearsing the fight in silence does not count", "It is a rule of the platform", "It gives you time to build your case"]'::jsonb, 0);
   end if;
 
   -- session 4: Break Clean
