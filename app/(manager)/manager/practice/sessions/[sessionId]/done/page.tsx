@@ -6,7 +6,7 @@ import { requireRole } from "@/lib/auth/session";
 import { actionSkillText } from "@/lib/father/action-commitment";
 import { loadSessionContext } from "@/lib/father/data";
 import { buildSessionCloseout } from "@/lib/father/session-closeout";
-import { parseSkillUse } from "@/lib/father/skill-use";
+import { formatSkillUseStatement, parseSkillUse } from "@/lib/father/skill-use";
 import { continueHref, isSessionComplete } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { PRACTICE_ROOT, PRACTICE_WALK } from "@/lib/practice/paths";
@@ -48,7 +48,7 @@ export default async function LeaderPracticeDonePage({
         closeout={closeout}
         homeHref={`${PRACTICE_WALK.home}?done=${encodeURIComponent(sessionId)}`}
         sessionId={sessionId}
-        skill={actionSkillText(context.session, context.session.title)}
+        skill={formatSkillUseStatement(actionSkillText(context.session, context.session.title))}
         skillUse={parseSkillUse(context.progress?.skill_use)}
         t={t}
       />

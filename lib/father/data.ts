@@ -13,7 +13,7 @@ import {
 import { loadAcceptedTrainingIds, loadDeclinedTrainingIds } from "@/lib/manager/reviews";
 import type { Certificate } from "@/lib/manager/types";
 import { actionSkillText } from "@/lib/father/action-commitment";
-import { parseSkillUse, pickSkillUseFollowUp } from "@/lib/father/skill-use";
+import { formatSkillUseStatement, parseSkillUse, pickSkillUseFollowUp } from "@/lib/father/skill-use";
 import { parseTimeZone } from "@/lib/notifications/schedule";
 
 function asProgress(row: SessionProgress): SessionProgress {
@@ -195,7 +195,7 @@ export async function loadFatherHome(fatherId: string) {
         return {
           sessionId: session.id,
           sessionTitle: session.title,
-          skill: actionSkillText(session, session.title),
+          skill: formatSkillUseStatement(actionSkillText(session, session.title)),
           completedAt: progress?.completed_at ?? null,
           skillUse: parseSkillUse(progress?.skill_use),
         };

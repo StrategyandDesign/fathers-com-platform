@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   countSkillsUsed,
+  formatSkillUseStatement,
   nextSkillUse,
   parseSkillUse,
   pickSkillUseFollowUp,
@@ -112,6 +113,27 @@ describe("skills used count", () => {
         { skillUse: "used" },
       ]),
       2
+    );
+  });
+});
+
+describe("skill use statement", () => {
+  it("keeps a question as the card header and turns a topic fragment into a statement", () => {
+    assert.equal(
+      formatSkillUseStatement("Physical, emotional, and spiritual safety and provision."),
+      "Practice physical, emotional, and spiritual safety and provision."
+    );
+    assert.equal(
+      formatSkillUseStatement("Speak life into your child with words that land."),
+      "Speak life into your child with words that land."
+    );
+    assert.equal(
+      formatSkillUseStatement("The surge is a signal, not an order."),
+      "The surge is a signal, not an order."
+    );
+    assert.equal(
+      formatSkillUseStatement("Practice one calm check-in tonight"),
+      "Practice one calm check-in tonight."
     );
   });
 });

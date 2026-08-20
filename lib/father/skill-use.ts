@@ -65,6 +65,37 @@ export function pickSkillUseFollowUp(
   };
 }
 
+const IMPERATIVE_START =
+  /^(practice|keep|name|show|stay|protect|use|be|listen|ask|notice|pause|correct|speak|give|hold|return|watch|try|catch|say|step|meet|own|go|stack|train|plan|live)\b/i;
+const HAS_CLAUSE_VERB =
+  /\b(is|are|was|were|be|builds?|keeps?|opens?|beats?|buy|stands?|did|does|can|will)\b/i;
+const ALREADY_SENTENCE_START =
+  /^(welcome|this|that|there|here|if|when|your|one|few|same|small|short|the|rupture|steadiness|frequency)\b/i;
+
+function tidySkillLine(raw: string) {
+  return raw.replace(/\s+/g, " ").trim().replace(/[.?!]+$/g, "");
+}
+
+export function isSkillUseStatementReady(raw: string) {
+  const text = tidySkillLine(raw);
+  if (!text) return false;
+  return (
+    IMPERATIVE_START.test(text) ||
+    HAS_CLAUSE_VERB.test(text) ||
+    ALREADY_SENTENCE_START.test(text)
+  );
+}
+
+/** Turn a catalog keyline into a statement under “Did you use this skill?” */
+export function formatSkillUseStatement(raw: string) {
+  const text = tidySkillLine(raw);
+  if (!text) return "";
+  if (isSkillUseStatementReady(text)) {
+    return `${text.charAt(0).toUpperCase()}${text.slice(1)}.`;
+  }
+  return `Practice ${text.charAt(0).toLowerCase()}${text.slice(1)}.`;
+}
+
 export function countSkillsUsed(
   rows: Array<{ skill_use?: string | null; skillUse?: SkillUse | null }>
 ) {

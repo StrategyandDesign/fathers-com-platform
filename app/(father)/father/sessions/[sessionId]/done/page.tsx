@@ -8,7 +8,7 @@ import { loadSessionContext } from "@/lib/father/data";
 import { isOnboardingActive } from "@/lib/father/onboarding";
 import { loadOnboardingState } from "@/lib/father/onboarding-data";
 import { buildSessionCloseout } from "@/lib/father/session-closeout";
-import { parseSkillUse } from "@/lib/father/skill-use";
+import { formatSkillUseStatement, parseSkillUse } from "@/lib/father/skill-use";
 import { continueHref, isSessionComplete } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 
@@ -52,7 +52,7 @@ export default async function SessionDonePage({
         closeout={closeout}
         homeHref={funnel ? "/father/start" : `/father?done=${encodeURIComponent(sessionId)}`}
         sessionId={sessionId}
-        skill={actionSkillText(context.session, context.session.title)}
+        skill={formatSkillUseStatement(actionSkillText(context.session, context.session.title))}
         skillUse={parseSkillUse(context.progress?.skill_use)}
         t={t}
       />
