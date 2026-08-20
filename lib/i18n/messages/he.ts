@@ -929,7 +929,7 @@ export const he = {
       participationExpectedHint:
         "שיקום, יחידה צבאית, או קבוצה לשיפור ביצועים שמצפה להשלמה.",
       participationOpen: "פתוח",
-      participationOpenHint: "השתתפות וולונטרית. המשתתפים קובעים את הקצב.",
+      participationOpenHint: "קבוצות אימון ומועדונים וולונטריים שבהם הם קובעים את הקצב.",
       participationSave: "שמירה",
     },
     status: {

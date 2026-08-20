@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 38,
-  "label": "Shared 1-1.38",
+  "patch": 39,
+  "label": "Shared 1-1.39",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Put the leader name on Issued by.",
+  "title": "Put the mobile account avatar on the right.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -274,6 +274,13 @@
       "label": "Shared 1-1.38",
       "at": "2026-08-20",
       "title": "Put the leader name on Issued by."
+    },
+    {
+      "patch": 39,
+      "revision": "1.39",
+      "label": "Shared 1-1.39",
+      "at": "2026-08-20",
+      "title": "Put the mobile account avatar on the right."
     }
   ]
 }

@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.38**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.39**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -55,3 +55,4 @@ The badge on this checkout is **Shared 1-1.38**. It ticks on each push of the Sh
 | **1.36** | undefined | Put completed training covers on the left. |
 | **1.37** | undefined | Let fathers watch a completed training again. |
 | **1.38** | undefined | Put the leader name on Issued by. |
+| **1.39** | undefined | Put the mobile account avatar on the right. |

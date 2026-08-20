@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import { translateNudgeTemplate } from "../lib/i18n/flash";
 import { createTranslator } from "../lib/i18n/translate";
@@ -37,6 +39,16 @@ describe("participation mode", () => {
       participationCopyKey("expected", "father.home.nothingAssignedBody"),
       "father.home.nothingAssignedBodyExpected"
     );
+  });
+
+  it("names who Open is for the same way Expected names rooms", () => {
+    const en = readFileSync(fileURLToPath(new URL("../lib/i18n/messages/en.ts", import.meta.url)), "utf8");
+    assert.match(
+      en,
+      /Rehab, Armed Forces Unit, or Performance Optimization Group where completion is expected/
+    );
+    assert.match(en, /Workout groups and other voluntary clubs where men set the pace/);
+    assert.doesNotMatch(en, /Voluntary participation\. Participants set their pace/);
   });
 });
 

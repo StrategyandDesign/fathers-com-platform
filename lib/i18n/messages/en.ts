@@ -979,7 +979,8 @@ export const en = {
       participationExpectedHint:
         "Rehab, Armed Forces Unit, or Performance Optimization Group where completion is expected.",
       participationOpen: "Open",
-      participationOpenHint: "Voluntary participation. Participants set their pace.",
+      participationOpenHint:
+        "Workout groups and other voluntary clubs where men set the pace.",
       participationSave: "Save",
     },
     status: {
