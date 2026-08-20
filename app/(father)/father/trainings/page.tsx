@@ -2,14 +2,21 @@ import { FatherTrainingCatalogCard, isTrainingInProgress } from "@/components/fa
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { loadFatherHome } from "@/lib/father/data";
+import { isHomeTrainingComplete } from "@/lib/father/home";
 import { hasStartedTrainingWork, hasTrainingOverview } from "@/lib/father/training-door";
 import { sessionFilmPath, trainingOverviewPath, type Session, type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
+import type { Translate } from "@/lib/i18n/translate";
 import { loadFatherParticipationMode } from "@/lib/participation-data";
 import { participationCopyKey } from "@/lib/participation";
-import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
+import { loadFatherOrgPhotoCovers, resolveTrainingCardCover, type FatherOrgPhotoCovers } from "@/lib/org-photos/data";
 import { trainingCoverSlug } from "@/lib/trainings/series";
 import { cn } from "@/lib/utils";
+
+const eyebrowClassName =
+  "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
+
+type TrainingCard = Awaited<ReturnType<typeof loadFatherHome>>["trainingCards"][number];
 
 function cardRank(card: {
   completed: number;
@@ -21,6 +28,104 @@ function cardRank(card: {
   return 2;
 }
 
+function CatalogCard({
+  card,
+  featured,
+  quiet,
+  orgPhotos,
+  t,
+}: {
+  card: TrainingCard;
+  featured: boolean;
+  quiet: boolean;
+  orgPhotos: FatherOrgPhotoCovers;
+  t: Translate;
+}) {
+  const showOverview =
+    hasTrainingOverview(card.training) &&
+    !hasStartedTrainingWork(card.completed, card.nextProgress, card.sessionDots);
+
+  return (
+    <FatherTrainingCatalogCard
+      title={card.training.title}
+      description={card.training.description}
+      subtitle={
+        card.total === 1
+          ? t("father.home.sessionOne")
+          : t("father.home.sessionMany", { n: card.total })
+      }
+      coverSrc={resolveTrainingCardCover(
+        trainingCoverSlug(card.training),
+        orgPhotos.trainingUrls[trainingCoverSlug(card.training)],
+        orgPhotos.photoPack
+      )}
+      completed={card.completed}
+      total={card.total}
+      next={card.next}
+      nextProgress={card.nextProgress}
+      sessionDots={card.sessionDots}
+      certificateId={card.certificate?.id ?? null}
+      featured={featured}
+      quiet={quiet}
+      gated={false}
+      gatedLabel={null}
+      hrefOverride={card.next ? sessionFilmPath(card.next.id) : null}
+      hasOverview={showOverview}
+      overviewHref={showOverview ? trainingOverviewPath(card.training.id) : null}
+      showOverviewSlot={showOverview}
+      t={t}
+    />
+  );
+}
+
+function CatalogGroup({
+  title,
+  cards,
+  featuredId,
+  inProgressCount = 0,
+  orgPhotos,
+  t,
+}: {
+  title: string;
+  cards: TrainingCard[];
+  featuredId?: string | null;
+  inProgressCount?: number;
+  orgPhotos: FatherOrgPhotoCovers;
+  t: Translate;
+}) {
+  if (cards.length === 0) return null;
+
+  return (
+    <section className="space-y-4 p-4 sm:p-5">
+      <p className={eyebrowClassName}>{title}</p>
+      <div className="grid gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-6">
+        {cards.map((card) => {
+          const inProgress = isTrainingInProgress(
+            card.completed,
+            card.next,
+            card.nextProgress
+          );
+          const featured = featuredId === card.training.id;
+          return (
+            <div
+              key={card.training.id}
+              className={cn((featured || cards.length === 1) && "lg:col-span-2")}
+            >
+              <CatalogCard
+                card={card}
+                featured={featured}
+                quiet={inProgressCount > 0 && !inProgress}
+                orgPhotos={orgPhotos}
+                t={t}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 export default async function FatherTrainingsPage() {
   const { user } = await requireRole("father");
   const { t } = await getI18n();
@@ -30,10 +135,17 @@ export default async function FatherTrainingsPage() {
     loadFatherParticipationMode(user.id),
   ]);
   const cards = [...trainingCards].sort((left, right) => cardRank(left) - cardRank(right));
-  const inProgressCount = cards.filter((card) =>
+  const available = cards.filter((card) => !isHomeTrainingComplete(card));
+  const completed = cards.filter((card) => isHomeTrainingComplete(card));
+  const inProgress = available.filter((card) =>
     isTrainingInProgress(card.completed, card.next, card.nextProgress)
-  ).length;
-  const openCount = cards.filter((card) => card.next).length;
+  );
+  const featuredId =
+    inProgress.length === 1
+      ? inProgress[0]?.training.id
+      : inProgress.length === 0 && available.length === 1
+        ? available[0]?.training.id
+        : null;
 
   return (
     <div className="space-y-6">
@@ -55,64 +167,26 @@ export default async function FatherTrainingsPage() {
           {t(participationCopyKey(participationMode, "father.trainings.emptyBody"))}
         </EmptyState>
       ) : (
-        <div className="grid gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-6">
-          {cards.map((card) => {
-            const inProgress = isTrainingInProgress(
-              card.completed,
-              card.next,
-              card.nextProgress
-            );
-            const featured =
-              inProgressCount > 0
-                ? inProgress && inProgressCount === 1
-                : openCount === 1 && Boolean(card.next);
-            const showOverview =
-              hasTrainingOverview(card.training) &&
-              !hasStartedTrainingWork(
-                card.completed,
-                card.nextProgress,
-                card.sessionDots
-              );
-
-            return (
-              <div
-                key={card.training.id}
-                className={cn((featured || cards.length === 1) && "lg:col-span-2")}
-              >
-                <FatherTrainingCatalogCard
-                  title={card.training.title}
-                  description={card.training.description}
-                  subtitle={
-                    card.total === 1
-                      ? t("father.home.sessionOne")
-                      : t("father.home.sessionMany", { n: card.total })
-                  }
-                  coverSrc={resolveTrainingCardCover(
-                    trainingCoverSlug(card.training),
-                    orgPhotos.trainingUrls[trainingCoverSlug(card.training)],
-                    orgPhotos.photoPack
-                  )}
-                  completed={card.completed}
-                  total={card.total}
-                  next={card.next}
-                  nextProgress={card.nextProgress}
-                  sessionDots={card.sessionDots}
-                  certificateId={card.certificate?.id ?? null}
-                  featured={featured}
-                  quiet={inProgressCount > 0 && !inProgress}
-                  gated={false}
-                  gatedLabel={null}
-                  hrefOverride={card.next ? sessionFilmPath(card.next.id) : null}
-                  hasOverview={showOverview}
-                  overviewHref={
-                    showOverview ? trainingOverviewPath(card.training.id) : null
-                  }
-                  showOverviewSlot={showOverview}
-                  t={t}
-                />
-              </div>
-            );
-          })}
+        <div
+          className={cn(
+            "overflow-hidden rounded-xl border border-border",
+            available.length > 0 && completed.length > 0 && "divide-y divide-border"
+          )}
+        >
+          <CatalogGroup
+            title={t("father.trainings.available")}
+            cards={available}
+            featuredId={featuredId}
+            inProgressCount={inProgress.length}
+            orgPhotos={orgPhotos}
+            t={t}
+          />
+          <CatalogGroup
+            title={t("father.trainings.completedGroup")}
+            cards={completed}
+            orgPhotos={orgPhotos}
+            t={t}
+          />
         </div>
       )}
     </div>

@@ -590,6 +590,8 @@ export const he = {
       overviewThen: "ואז המפגש הפתוח הראשון",
       backToTrainings: "חזרה להכשרות",
       trainingComplete: "ההכשרה הזו הושלמה.",
+      available: "הכשרות זמינות",
+      completedGroup: "הכשרות שהושלמו",
       sessionDone: "הושלם",
       downloadCertificate: "הורדת תעודה",
     },

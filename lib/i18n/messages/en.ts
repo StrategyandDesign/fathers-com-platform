@@ -624,6 +624,8 @@ export const en = {
       overviewThen: "Then the first open session",
       backToTrainings: "Back to Trainings",
       trainingComplete: "This training is complete.",
+      available: "Available trainings",
+      completedGroup: "Completed trainings",
       sessionDone: "Done",
       downloadCertificate: "Download certificate",
     },

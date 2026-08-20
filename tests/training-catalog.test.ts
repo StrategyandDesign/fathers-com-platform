@@ -29,6 +29,15 @@ describe("training catalog decisions", () => {
     assert.match(styles, /scrollbar-width:\s*thin/);
   });
 
+  it("separates available and completed trainings on the father desk", () => {
+    const page = readRepo("app/(father)/father/trainings/page.tsx");
+    assert.match(page, /isHomeTrainingComplete/);
+    assert.match(page, /father\.trainings\.available/);
+    assert.match(page, /father\.trainings\.completedGroup/);
+    assert.match(page, /rounded-xl border border-border/);
+    assert.match(page, /divide-y divide-border/);
+  });
+
   it("shows Included in green and Declined in red on the selected button", () => {
     const buttons = readRepo("components/manager/catalog-decision-buttons.tsx");
     assert.match(buttons, /manager\.trainings\.included/);

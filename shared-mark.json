@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 32,
-  "label": "Shared 1-1.32",
+  "patch": 33,
+  "label": "Shared 1-1.33",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Show the session count under each Home training title.",
+  "title": "Compact extra completed trainings and certificates to titles.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -232,6 +232,13 @@
       "label": "Shared 1-1.32",
       "at": "2026-08-20",
       "title": "Show the session count under each Home training title."
+    },
+    {
+      "patch": 33,
+      "revision": "1.33",
+      "label": "Shared 1-1.33",
+      "at": "2026-08-20",
+      "title": "Compact extra completed trainings and certificates to titles."
     }
   ]
 }
