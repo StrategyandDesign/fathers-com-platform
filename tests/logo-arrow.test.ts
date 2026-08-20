@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -8,11 +8,17 @@ function readRepo(relativePath: string) {
 }
 
 describe("trainings ribbon arrow", () => {
-  it("fills with currentColor so light palette inverts the mark", () => {
+  it("uses the official Arrow logo file, not a drawn variation", () => {
     const mark = readRepo("components/brand/logo-arrow.tsx");
-    assert.match(mark, /fill="currentColor"/);
+    const arrowPath = fileURLToPath(new URL("../public/brand/fathers-com-arrow.png", import.meta.url));
+    assert.equal(existsSync(arrowPath), true);
+    assert.deepEqual(Array.from(readFileSync(arrowPath).subarray(0, 8)), [137, 80, 78, 71, 13, 10, 26, 10]);
+    assert.match(mark, /fathers-com-arrow\.png/);
+    assert.match(mark, /bg-current/);
+    assert.match(mark, /maskImage/);
     assert.doesNotMatch(mark, /#fff|#ffffff|#000|#141414/i);
-    assert.doesNotMatch(mark, /stroke="currentColor"/);
+    assert.doesNotMatch(mark, /<path/);
+    assert.doesNotMatch(mark, /chevron stack/i);
   });
 
   it("uses the same side-ribbon size as Home", () => {

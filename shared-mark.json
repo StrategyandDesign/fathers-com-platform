@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 54,
-  "label": "Shared 1-1.54",
+  "patch": 55,
+  "label": "Shared 1-1.55",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Sit the org mark in the header beside the lockup.",
+  "title": "Use the filled chevron stack for Trainings in the ribbon.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -386,6 +386,13 @@
       "label": "Shared 1-1.54",
       "at": "2026-08-20",
       "title": "Sit the org mark in the header beside the lockup."
+    },
+    {
+      "patch": 55,
+      "revision": "1.55",
+      "label": "Shared 1-1.55",
+      "at": "2026-08-20",
+      "title": "Use the filled chevron stack for Trainings in the ribbon."
     }
   ]
 }
