@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 29,
-  "label": "Shared 1-1.29",
+  "patch": 30,
+  "label": "Shared 1-1.30",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Center the certificate snapshot and enlarge the lockup.",
+  "title": "Give the training overview slot a green keyline.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -211,6 +211,13 @@
       "label": "Shared 1-1.29",
       "at": "2026-08-20",
       "title": "Center the certificate snapshot and enlarge the lockup."
+    },
+    {
+      "patch": 30,
+      "revision": "1.30",
+      "label": "Shared 1-1.30",
+      "at": "2026-08-20",
+      "title": "Give the training overview slot a green keyline."
     }
   ]
 }

@@ -3,10 +3,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export const CERTIFICATES_BUCKET = "certificates";
 export const AVATARS_BUCKET = "avatars";
 export const ORG_PHOTOS_BUCKET = "org-photos";
+export const PLATFORM_PHOTOS_BUCKET = "platform-photos";
 export const SUPPORT_SCREENSHOTS_BUCKET = "support-screenshots";
 export const SIGNED_URL_TTL_SECONDS = 60 * 60;
 export const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
 export const ORG_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+export const LOGIN_BACKGROUND_MAX_BYTES = 8 * 1024 * 1024;
 export const SUPPORT_SCREENSHOT_MAX_BYTES = 2 * 1024 * 1024;
 export const AVATAR_MIME_TYPES = [
   "image/jpeg",
@@ -15,6 +17,7 @@ export const AVATAR_MIME_TYPES = [
   "image/gif",
 ] as const;
 export const ORG_PHOTO_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+export const LOGIN_BACKGROUND_MIME_TYPES = ORG_PHOTO_MIME_TYPES;
 export const SUPPORT_SCREENSHOT_MIME_TYPES = [
   "image/jpeg",
   "image/png",

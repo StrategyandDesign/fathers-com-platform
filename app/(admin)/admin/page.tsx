@@ -157,6 +157,18 @@ export default async function AdminHomePage({
             </Link>
           </div>
         </div>
+        <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">Login background</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Put a panoramic photo behind the sign-in window for everyone.
+          </p>
+          <Link
+            href="/admin/appearance"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
+            Change login photo
+          </Link>
+        </div>
       </section>
     </div>
   );

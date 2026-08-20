@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { getI18n } from "@/lib/i18n/server";
-import { interactiveUnderlineClassName } from "@/lib/ui";
+import { interactiveControlClassName, interactiveUnderlineClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 const linkClassName = cn(
@@ -14,13 +14,23 @@ export async function LegalLinks({
   align = "start",
   copyright = false,
   helpHref,
+  onPhoto = false,
 }: {
   className?: string;
   align?: "start" | "center";
   copyright?: boolean;
   helpHref?: string;
+  onPhoto?: boolean;
 }) {
   const { t } = await getI18n();
+  const links = onPhoto
+    ? cn(
+        "inline-flex min-h-11 items-center text-sm text-white/90 underline underline-offset-4",
+        interactiveControlClassName,
+        "hover:text-white"
+      )
+    : linkClassName;
+  const mute = onPhoto ? "text-white/50" : "text-muted-foreground";
   const nav = (
     <nav
       aria-label={helpHref ? t("legal.legalAndHelp") : t("legal.legal")}
@@ -30,21 +40,21 @@ export async function LegalLinks({
         !copyright && className
       )}
     >
-      <Link href="/privacy" className={linkClassName}>
+      <Link href="/privacy" className={links}>
         {t("legal.privacy")}
       </Link>
-      <span className="text-muted-foreground" aria-hidden>
+      <span className={mute} aria-hidden>
         ·
       </span>
-      <Link href="/terms" className={linkClassName}>
+      <Link href="/terms" className={links}>
         {t("legal.terms")}
       </Link>
       {helpHref ? (
         <>
-          <span className="text-muted-foreground" aria-hidden>
+          <span className={mute} aria-hidden>
             ·
           </span>
-          <Link href={helpHref} className={linkClassName}>
+          <Link href={helpHref} className={links}>
             {t("legal.help")}
           </Link>
         </>
@@ -65,7 +75,9 @@ export async function LegalLinks({
       )}
     >
       {nav}
-      <p className="text-xs text-muted-foreground">{t("legal.copyright")}</p>
+      <p className={cn("text-xs", onPhoto ? "text-white/65" : "text-muted-foreground")}>
+        {t("legal.copyright")}
+      </p>
     </div>
   );
 }

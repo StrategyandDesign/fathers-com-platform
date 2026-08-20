@@ -22,6 +22,7 @@ export const he = {
     users: "משתמשים",
     inbox: "תיבת דואר",
     gathering: "איסוף",
+    appearance: "כניסה",
     openMenu: "פתיחת תפריט",
     closeMenu: "סגירת תפריט",
   },
@@ -1865,6 +1866,28 @@ export const he = {
       narrativeTrendProfiles:
         "השלמות הערכה עברו מ־{left} בחלון המוקדם ל־{right} בחלון המאוחר.",
       narrativeClose: "אלה ספירות תוכנית מעומעמות. בלי שמות, אימיילים או מספרי תעודה.",
+    },
+  },
+  admin: {
+    appearance: {
+      title: "רקע הכניסה",
+      backDashboard: "חזרה ללוח הבקרה",
+      lead:
+        "תמונת הנוף הזו ממלאת את המסך מאחורי חלון ההתחברות. מנהיגים, מנהלי־על ומשתתפים רואים אותה.",
+      surface: "חלון ההתחברות",
+      where: "כולם רואים את זה מאחורי חלון ההתחברות.",
+      windowLabel: "התחברות",
+      anyPhoto: "נוף רחב עובד הכי טוב. אנחנו ממלאים איתו את המסך.",
+      fileHint: "JPEG, PNG או WebP. עד 8 MB.",
+      custom: "מותאם לכולם",
+      platformDefault: "ברירת המחדל של הפלטפורמה",
+      replace: "החלפת תמונה",
+      choosingSaves: "בחירת תמונה שומרת אותה לכולם.",
+      reset: "חזרה לברירת המחדל",
+      resetConfirm: "לאפס את רקע הכניסה לברירת המחדל של הפלטפורמה לכולם?",
+      photoSaved: "התמונה נשמרה. כולם יראו אותה בכניסה הבאה.",
+      photoReset: "חזרה לברירת המחדל של הפלטפורמה.",
+      photoFailed: "התמונה לא נשמרה. נסה JPEG, PNG או WebP עד 8 MB.",
     },
   },
   help: {

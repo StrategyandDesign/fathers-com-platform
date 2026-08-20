@@ -20,6 +20,7 @@ export const en = {
     users: "Users",
     inbox: "Inbox",
     gathering: "Gathering",
+    appearance: "Login",
     openMenu: "Open menu",
     closeMenu: "Close menu",
   },
@@ -1964,6 +1965,28 @@ export const en = {
         "Assessment completions moved from {left} in the earlier window to {right} in the later window.",
       narrativeClose:
         "These are anonymized program counts. No names, emails, or certificate serials.",
+    },
+  },
+  admin: {
+    appearance: {
+      title: "Login background",
+      backDashboard: "Back to Dashboard",
+      lead:
+        "This panoramic photo fills the screen behind the sign-in window. Leaders, Super-admins, and participants all see it.",
+      surface: "Sign-in window",
+      where: "Everyone sees this behind the sign-in window.",
+      windowLabel: "Sign-in",
+      anyPhoto: "A wide landscape works best. We scale it to fill the screen.",
+      fileHint: "JPEG, PNG, or WebP. 8 MB max.",
+      custom: "Custom for everyone",
+      platformDefault: "Platform default",
+      replace: "Replace Photo",
+      choosingSaves: "Choosing a photo saves it for everyone.",
+      reset: "Reset to Default",
+      resetConfirm: "Reset the login background to the platform default for everyone?",
+      photoSaved: "Photo saved. Everyone will see it on the next login.",
+      photoReset: "Reset to the platform default.",
+      photoFailed: "The photo didn’t save. Try a JPEG, PNG, or WebP under 8 MB.",
     },
   },
   help: {
