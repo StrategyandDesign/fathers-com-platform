@@ -43,6 +43,19 @@ export async function loadLatestProfile(fatherId: string) {
   return (data as FatherProfileResult | null) ?? null;
 }
 
+export async function loadProfileHistory(fatherId: string, limit = 2) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("father_profiles")
+    .select("id, taken_at, primary_edge, primary_determination, raw_scores, full_results")
+    .eq("father_id", fatherId)
+    .order("taken_at", { ascending: false })
+    .limit(Math.max(1, limit));
+
+  if (error) throw error;
+  return (data as FatherProfileResult[] | null) ?? [];
+}
+
 export async function loadProfileDraft(fatherId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase

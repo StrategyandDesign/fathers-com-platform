@@ -7,7 +7,11 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { startLeaderAssessment } from "@/lib/assessments/actions";
 import { requireRole } from "@/lib/auth/session";
 import { startProfile } from "@/lib/father/profile-actions";
-import { PROFILE_QUESTION_COUNT, answeredCount, firstUnanswered } from "@/lib/father/questions";
+import {
+  PROFILE_SECTION_COUNT,
+  firstUnanswered,
+  profileSectionForQuestion,
+} from "@/lib/father/questions";
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
 import { loadManagerOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
 import { loadLeaderPractice } from "@/lib/practice/data";
@@ -31,7 +35,6 @@ export default async function LeaderPracticePage({
   ]);
   const { trainingCards, profile, draft, canStartKeystone, customAssessments } = practice;
   const resumeAt = draft ? firstUnanswered(draft.answers) : 1;
-  const answered = draft ? answeredCount(draft.answers) : 0;
   const keystoneHref = profile
     ? `${PRACTICE_ROOT}/profile/results`
     : draft
@@ -41,9 +44,8 @@ export default async function LeaderPracticePage({
     ? t("father.assessments.completedOn", { date: formatLongDate(profile.taken_at, locale) })
     : draft
       ? t("father.profile.progress", {
-          n: resumeAt,
-          total: PROFILE_QUESTION_COUNT,
-          answered,
+          n: profileSectionForQuestion(resumeAt).index,
+          total: PROFILE_SECTION_COUNT,
         })
       : t("father.profile.takeHint");
   const showKeystone = Boolean(profile || draft || canStartKeystone);
@@ -158,7 +160,7 @@ export default async function LeaderPracticePage({
                       <span className={cn(buttonVariants(), "pointer-events-none w-full sm:w-auto")}>
                         {profile
                           ? t("father.assessments.view")
-                          : t("father.assessments.continue")}
+                          : t("father.profile.continuePart")}
                       </span>
                     </Link>
                   ) : (
@@ -171,7 +173,7 @@ export default async function LeaderPracticePage({
                         <p className="text-sm text-muted-foreground">{keystoneStatus}</p>
                       </div>
                       <button type="submit" className={cn(buttonVariants(), "w-full sm:w-auto")}>
-                        {t("father.assessments.take")}
+                        {t("father.profile.takeCta")}
                       </button>
                     </form>
                   )}

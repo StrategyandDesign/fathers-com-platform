@@ -69,7 +69,7 @@ export async function POST(request: Request) {
   }
 
   await deleteProfileDraft(user.id);
-  redirect(resultsPath);
+  redirect(`${resultsPath}?arrive=1`);
 }
 
 export async function GET() {
