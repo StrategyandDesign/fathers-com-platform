@@ -1,7 +1,6 @@
 import { AssessmentHomeCard } from "@/components/assessments/home-card";
 import { CohortNoteCard } from "@/components/father/cohort-note-card";
 import { HomeAssessmentCard } from "@/components/father/home-assessment-card";
-import { HomeEarnedRow } from "@/components/father/home-earned";
 import { HomePathRow } from "@/components/father/home-path";
 import { HomeStreakRow } from "@/components/father/home-streak";
 import { SkillUseCard } from "@/components/father/skill-use-card";
@@ -167,9 +166,12 @@ export default async function FatherHomePage({
   return (
     <div
       className={cn(
-        "mx-auto w-full space-y-4 sm:space-y-5",
-        pair || (path.length > 0 && available.length > 0) || completed.length > 0
-          ? "max-w-4xl"
+        "mx-auto w-full space-y-6 sm:space-y-8",
+        pair ||
+          (path.length > 0 && available.length > 0) ||
+          ((path.length > 0 || available.length > 0) &&
+            (completed.length > 0 || earned.length > 0))
+          ? "max-w-5xl"
           : "max-w-xl"
       )}
     >
@@ -213,8 +215,13 @@ export default async function FatherHomePage({
           {assessmentCard}
         </>
       )}
-      <HomePathRow path={path} trainings={available} completed={completed} t={t} />
-      <HomeEarnedRow marks={earned} t={t} />
+      <HomePathRow
+        path={path}
+        trainings={available}
+        completed={completed}
+        earned={earned}
+        t={t}
+      />
     </div>
   );
 }

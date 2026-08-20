@@ -11,22 +11,24 @@ const eyebrowClassName =
 export function HomeEarnedRow({
   marks,
   t,
+  rail = false,
 }: {
   marks: Array<{ id: string; title: string }>;
   t: Translate;
+  rail?: boolean;
 }) {
   if (marks.length === 0) return null;
 
   return (
-    <section className="min-w-0 space-y-3">
+    <section className="min-w-0 space-y-3.5">
       <p className={eyebrowClassName}>{t("father.home.earned")}</p>
-      <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className={cn("grid gap-3", rail ? "grid-cols-2 lg:grid-cols-1" : "grid-cols-2")}>
         {marks.map((mark) => (
           <Link
             key={mark.id}
             href={certificateDownloadPath(mark.id)}
             className={cn(
-              "w-[8.5rem] shrink-0 rounded-xl border-x border-b border-border border-t-2 border-t-primary bg-card px-3 py-3",
+              "min-h-[5.5rem] rounded-xl border-x border-b border-border border-t-2 border-t-primary bg-card px-3.5 py-3.5",
               interactiveSurfaceClassName
             )}
           >

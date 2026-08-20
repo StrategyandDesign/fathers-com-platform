@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import { pickHomeAssessment, sortHomePath, splitHomeRows } from "../lib/father/home";
 import { fatherWeekStreak } from "../lib/father/streak";
 import type { FatherAssignmentCard } from "../lib/assessments/types";
@@ -178,6 +181,23 @@ describe("home shelves", () => {
     assert.equal(rows.path.length, 0);
     assert.equal(rows.trainings.length, 0);
     assert.equal(rows.completed[0]?.training.id, "fundamentals");
+  });
+});
+
+describe("home board layout", () => {
+  it("puts completed trainings and certificates beside Your Path on desktop", () => {
+    const path = readFileSync(
+      fileURLToPath(new URL("../components/father/home-path.tsx", import.meta.url)),
+      "utf8"
+    );
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/(father)/father/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(path, /lg:grid-cols-\[minmax\(0,1\.4fr\)_minmax\(16\.5rem,1fr\)\]/);
+    assert.match(path, /HomeEarnedRow/);
+    assert.match(page, /earned=\{earned\}/);
+    assert.doesNotMatch(page, /<HomeEarnedRow/);
   });
 });
 

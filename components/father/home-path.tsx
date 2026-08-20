@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CoverPhoto } from "@/components/brand/cover";
+import { HomeEarnedRow } from "@/components/father/home-earned";
 import { homeTrainingLabel } from "@/lib/father/home";
 import type { Translate } from "@/lib/i18n/translate";
 import { trainingContinueHref } from "@/lib/father/training-door";
@@ -26,19 +27,21 @@ function HomeShelfRow({
   title,
   cards,
   variant,
+  rail,
   t,
 }: {
   title: string;
   cards: HomeShelfItem[];
   variant: "path" | "available" | "completed";
+  rail?: boolean;
   t: Translate;
 }) {
   if (cards.length === 0) return null;
 
   return (
-    <section className="min-w-0 space-y-3">
+    <section className="min-w-0 space-y-3.5">
       <p className={eyebrowClassName}>{title}</p>
-      <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className={cn("grid gap-3", rail ? "grid-cols-2 lg:grid-cols-1" : "grid-cols-2")}>
         {cards.map((card) => {
           const meta =
             variant === "completed"
@@ -55,14 +58,14 @@ function HomeShelfRow({
               key={card.training.id}
               href={trainingContinueHref(card)}
               className={cn(
-                "w-[9.75rem] shrink-0 overflow-hidden rounded-xl border border-border bg-card",
+                "min-w-0 overflow-hidden rounded-xl border border-border bg-card",
                 interactiveSurfaceClassName
               )}
             >
-              <div className="h-20 overflow-hidden bg-[#101510]">
+              <div className="h-24 overflow-hidden bg-[#101510]">
                 <CoverPhoto src={card.coverSrc} />
               </div>
-              <div className="space-y-1.5 p-3">
+              <div className="space-y-1.5 p-3.5">
                 <p className="line-clamp-2 font-heading text-sm font-semibold leading-snug">
                   {homeTrainingLabel(card.training)}
                 </p>
@@ -80,36 +83,54 @@ export function HomePathRow({
   path,
   trainings,
   completed,
+  earned,
   t,
 }: {
   path: HomeShelfItem[];
   trainings?: HomeShelfItem[];
   completed?: HomeShelfItem[];
+  earned?: Array<{ id: string; title: string }>;
   t: Translate;
 }) {
   const available = trainings ?? [];
   const finished = completed ?? [];
-  if (path.length === 0 && available.length === 0 && finished.length === 0) return null;
+  const marks = earned ?? [];
+  const open = path.length > 0 || available.length > 0;
+  const done = finished.length > 0 || marks.length > 0;
+  if (!open && !done) return null;
 
-  const both = path.length > 0 && available.length > 0;
+  const split = open && done;
 
   return (
-    <div className="space-y-5">
-      <div className={cn(both && "grid items-start gap-5 lg:grid-cols-2")}>
-        <HomeShelfRow title={t("father.home.yourPath")} cards={path} variant="path" t={t} />
-        <HomeShelfRow
-          title={t("father.home.yourTrainings")}
-          cards={available}
-          variant="available"
-          t={t}
-        />
-      </div>
-      <HomeShelfRow
-        title={t("father.home.completedTrainings")}
-        cards={finished}
-        variant="completed"
-        t={t}
-      />
+    <div
+      className={cn(
+        "grid gap-8 sm:gap-10",
+        split && "lg:grid-cols-[minmax(0,1.4fr)_minmax(16.5rem,1fr)] lg:items-start"
+      )}
+    >
+      {open ? (
+        <div className="space-y-8 sm:space-y-10">
+          <HomeShelfRow title={t("father.home.yourPath")} cards={path} variant="path" t={t} />
+          <HomeShelfRow
+            title={t("father.home.yourTrainings")}
+            cards={available}
+            variant="available"
+            t={t}
+          />
+        </div>
+      ) : null}
+      {done ? (
+        <div className="space-y-8 sm:space-y-10">
+          <HomeShelfRow
+            title={t("father.home.completedTrainings")}
+            cards={finished}
+            variant="completed"
+            rail={split}
+            t={t}
+          />
+          <HomeEarnedRow marks={marks} t={t} rail={split} />
+        </div>
+      ) : null}
     </div>
   );
 }
