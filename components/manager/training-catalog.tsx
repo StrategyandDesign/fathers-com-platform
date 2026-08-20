@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CatalogDecisionButtons } from "@/components/manager/catalog-decision-buttons";
+import { CatalogScrollList } from "@/components/manager/catalog-scroll-list";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { ManagerCatalogItem } from "@/lib/manager/catalog";
@@ -31,7 +32,7 @@ export function TrainingCatalog({
           {t("manager.trainings.catalogEmptyBody")}
         </EmptyState>
       ) : (
-        <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+        <CatalogScrollList count={items.length} label={t("manager.trainings.catalogTitle")}>
           {items.map((item) => (
             <li key={item.key} className="px-4 py-5 sm:px-6">
               <div className="min-w-0">
@@ -71,7 +72,7 @@ export function TrainingCatalog({
               </div>
             </li>
           ))}
-        </ul>
+        </CatalogScrollList>
       )}
     </section>
   );

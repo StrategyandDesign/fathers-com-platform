@@ -16,6 +16,19 @@ describe("training catalog decisions", () => {
     assert.doesNotMatch(catalog, /StatusMark/);
   });
 
+  it("scrolls available trainings after three cards", () => {
+    const catalog = readRepo("components/manager/training-catalog.tsx");
+    const scroller = readRepo("components/manager/catalog-scroll-list.tsx");
+    const styles = readRepo("app/globals.css");
+
+    assert.match(catalog, /CatalogScrollList/);
+    assert.match(scroller, /brand-scroll/);
+    assert.match(scroller, /overflow-y-auto/);
+    assert.match(scroller, /CATALOG_VISIBLE_ROWS/);
+    assert.match(styles, /\.brand-scroll\s*\{/);
+    assert.match(styles, /scrollbar-width:\s*thin/);
+  });
+
   it("shows Included in green and Declined in red on the selected button", () => {
     const buttons = readRepo("components/manager/catalog-decision-buttons.tsx");
     assert.match(buttons, /manager\.trainings\.included/);

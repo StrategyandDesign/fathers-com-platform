@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 17,
-  "label": "Shared 1-1.17",
+  "patch": 18,
+  "label": "Shared 1-1.18",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Put finished trainings in their own Home row.",
+  "title": "Keep everyone-has-this off the cohort action row.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -127,6 +127,13 @@
       "label": "Shared 1-1.17",
       "at": "2026-08-20",
       "title": "Put finished trainings in their own Home row."
+    },
+    {
+      "patch": 18,
+      "revision": "1.18",
+      "label": "Shared 1-1.18",
+      "at": "2026-08-20",
+      "title": "Keep everyone-has-this off the cohort action row."
     }
   ]
 }
