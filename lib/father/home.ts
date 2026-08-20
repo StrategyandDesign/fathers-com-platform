@@ -25,6 +25,10 @@ export function homeTrainingLabel(training: {
   return training.title;
 }
 
+export function homeTrainingSessionCount(total: number) {
+  return total > 0 ? total : null;
+}
+
 export function isHomeTrainingComplete(card: HomePathCard) {
   return card.total > 0 && card.completed >= card.total;
 }

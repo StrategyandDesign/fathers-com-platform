@@ -4,7 +4,12 @@ import { describe, it } from "node:test";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { pickHomeAssessment, sortHomePath, splitHomeRows } from "../lib/father/home";
+import {
+  homeTrainingSessionCount,
+  pickHomeAssessment,
+  sortHomePath,
+  splitHomeRows,
+} from "../lib/father/home";
 import { fatherWeekStreak } from "../lib/father/streak";
 import type { FatherAssignmentCard } from "../lib/assessments/types";
 
@@ -117,6 +122,14 @@ describe("home path order", () => {
   });
 });
 
+describe("home training session count", () => {
+  it("returns the session total for a card with sessions", () => {
+    assert.equal(homeTrainingSessionCount(8), 8);
+    assert.equal(homeTrainingSessionCount(1), 1);
+    assert.equal(homeTrainingSessionCount(0), null);
+  });
+});
+
 describe("home shelves", () => {
   it("puts open trainings on one Your Trainings shelf, current first", () => {
     const rows = splitHomeRows(
@@ -196,6 +209,8 @@ describe("home board layout", () => {
     assert.match(path, /divide-y divide-border/);
     assert.match(path, /lg:divide-x/);
     assert.match(path, /father\.home\.yourTrainings/);
+    assert.match(path, /homeTrainingSessionCount/);
+    assert.match(path, /father\.home\.trainingSessions/);
     assert.doesNotMatch(path, /father\.home\.yourPath/);
     assert.match(path, /HomeEarnedRow/);
     assert.match(page, /earned=\{earned\}/);

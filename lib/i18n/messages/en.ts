@@ -548,6 +548,8 @@ export const en = {
       completedTrainings: "Completed trainings",
       trainingNotStarted: "Not started",
       trainingComplete: "Complete",
+      trainingSessionOne: "1 session",
+      trainingSessions: "{n} sessions",
       earned: "Certificates",
       leaderLabel: "Leader: {name}",
       noteEyebrow: "From your leader",

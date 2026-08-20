@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { CoverPhoto } from "@/components/brand/cover";
 import { HomeEarnedRow, type HomeEarnedMark } from "@/components/father/home-earned";
-import { homeTrainingLabel } from "@/lib/father/home";
+import { homeTrainingLabel, homeTrainingSessionCount } from "@/lib/father/home";
 import type { Translate } from "@/lib/i18n/translate";
 import { trainingContinueHref } from "@/lib/father/training-door";
 import { type Session, type SessionProgress, type Training } from "@/lib/father/types";
@@ -69,6 +69,13 @@ function HomeShelfRow({
                 <p className="line-clamp-2 font-heading text-sm font-semibold leading-snug">
                   {homeTrainingLabel(card.training)}
                 </p>
+                {homeTrainingSessionCount(card.total) != null ? (
+                  <p className="text-xs text-muted-foreground">
+                    {card.total === 1
+                      ? t("father.home.trainingSessionOne")
+                      : t("father.home.trainingSessions", { n: card.total })}
+                  </p>
+                ) : null}
                 <p className="text-xs text-muted-foreground">{meta}</p>
               </div>
             </Link>

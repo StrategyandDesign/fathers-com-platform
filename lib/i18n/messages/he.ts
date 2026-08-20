@@ -522,6 +522,8 @@ export const he = {
       completedTrainings: "הכשרות שהושלמו",
       trainingComplete: "הושלם",
       trainingNotStarted: "לא התחיל",
+      trainingSessionOne: "מפגש אחד",
+      trainingSessions: "{n} מפגשים",
       earned: "תעודות",
       leaderLabel: "מנהיג: {name}",
       noteEyebrow: "מהמנהיג",
