@@ -14,9 +14,7 @@ import {
 } from "@/lib/father/profile";
 import {
   PROFILE_QUESTION_COUNT,
-  isProfileSectionEnd,
   parseAnswers,
-  profileSectionForQuestion,
 } from "@/lib/father/questions";
 import { walkPathsFor } from "@/lib/practice/paths";
 
@@ -132,21 +130,11 @@ async function persistProfileProgress(formData: FormData, intent: ProfileIntent)
   revalidatePath(paths.profileTake);
 
   if (intent === "exit") {
-    const exitPath = paths.assessments.replace(/#.*$/, "");
     redirect(
-      `${exitPath}?notice=${encodeURIComponent(
-        "Your Assessment progress is saved. You can continue from Assessments."
+      `${paths.home}?notice=${encodeURIComponent(
+        "Your Assessment progress is saved. You can continue from this page."
       )}`
     );
-  }
-
-  if (
-    intent === "next" &&
-    isProfileSectionEnd(questionId) &&
-    questionId < PROFILE_QUESTION_COUNT
-  ) {
-    const section = profileSectionForQuestion(questionId);
-    redirect(`${paths.profilePart}?n=${section.index}`);
   }
 
   redirect(`${paths.profileTake}?q=${nextIndex}`);

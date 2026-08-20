@@ -17,7 +17,6 @@ describe("leader practice paths", () => {
     assert.equal(paths.checkin("s1"), `${PRACTICE_ROOT}/sessions/s1/checkin`);
     assert.equal(paths.action("s1"), `${PRACTICE_ROOT}/sessions/s1/action`);
     assert.equal(paths.profileTake, `${PRACTICE_ROOT}/profile/take`);
-    assert.equal(paths.profilePart, `${PRACTICE_ROOT}/profile/part`);
     assert.equal(paths.assessment("a1", 2), `${PRACTICE_ROOT}/assessments/a1?q=2`);
   });
 

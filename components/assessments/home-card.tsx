@@ -4,11 +4,7 @@ import { AssessmentPhotoPlate } from "@/components/assessments/photo-plate";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { startProfile } from "@/lib/father/profile-actions";
 import type { ProfileDraft } from "@/lib/father/profile";
-import {
-  PROFILE_SECTION_COUNT,
-  firstUnanswered,
-  profileSectionForQuestion,
-} from "@/lib/father/questions";
+import { PROFILE_QUESTION_COUNT, firstUnanswered } from "@/lib/father/questions";
 import type { FatherProfileSummary } from "@/lib/father/types";
 import { translateThemeLabel } from "@/lib/i18n/flash";
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
@@ -76,11 +72,12 @@ export async function AssessmentHomeCard({
                 {t("father.home.inProgress")}
               </h2>
               <p className="mt-1 text-sm text-white/80">
-                {t("father.profile.progress", {
-                  n: profileSectionForQuestion(firstUnanswered(draft.answers)).index,
-                  total: PROFILE_SECTION_COUNT,
+                {t("father.home.questionOf", {
+                  n: firstUnanswered(draft.answers),
+                  total: PROFILE_QUESTION_COUNT,
                 })}
               </p>
+              <p className="mt-2 text-sm text-white/65">{t("father.profile.takeHint")}</p>
               {hideActions ? null : (
                 <div className="mt-auto pt-5">
                   <Link href={continueHref} className={actionClassName}>

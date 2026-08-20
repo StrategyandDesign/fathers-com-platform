@@ -16,7 +16,6 @@ export function ProfileSaveExitButton({
   const { pending } = useFormStatus();
   const [saving, setSaving] = useState(false);
   const busy = pending && saving;
-  const label = t("father.profile.saveExit");
 
   return (
     <button
@@ -33,7 +32,7 @@ export function ProfileSaveExitButton({
         interactiveLinkClassName
       )}
     >
-      {busy ? t("common.saving") : label}
+      {busy ? t("common.saving") : t("common.saveAndExit")}
     </button>
   );
 }

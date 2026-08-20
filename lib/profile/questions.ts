@@ -206,11 +206,3 @@ export function profileSectionPosition(questionId: number, section: ProfileSecti
 export function isProfileSectionStart(questionId: number, section = profileSectionForQuestion(questionId)) {
   return questionId === section.startId;
 }
-
-export function isProfileSectionEnd(questionId: number, section = profileSectionForQuestion(questionId)) {
-  return questionId === section.endId;
-}
-
-export function partsLeftAfterSection(sectionIndex: number, sectionCount = PROFILE_SECTION_COUNT) {
-  return Math.max(0, sectionCount - sectionIndex);
-}

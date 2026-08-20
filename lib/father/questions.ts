@@ -16,8 +16,6 @@ export {
   profileSectionForQuestion,
   profileSectionPosition,
   isProfileSectionStart,
-  isProfileSectionEnd,
-  partsLeftAfterSection,
   type ProfileProgressMilestone,
   type ProfileSection,
   type ProfileTheme,

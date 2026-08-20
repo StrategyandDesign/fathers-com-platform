@@ -3,19 +3,13 @@ import Link from "next/link";
 import { FutureAssessmentsPanel } from "@/components/assessments/future-panel";
 import { Flash } from "@/components/manager/flash";
 import { KeystoneCompletedView } from "@/components/profile/keystone-completed-view";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { loadFatherAssessmentAccess, loadFatherAssignments } from "@/lib/assessments/data";
 import { requireRole } from "@/lib/auth/session";
-import { loadFatherHome } from "@/lib/father/data";
-import { startProfile } from "@/lib/father/profile-actions";
-import { loadProfileHistory, loadProfileState } from "@/lib/father/profile";
-import {
-  PROFILE_SECTION_COUNT,
-  firstUnanswered,
-  profileSectionForQuestion,
-} from "@/lib/father/questions";
+import { loadProfileState } from "@/lib/father/profile";
+import { PROFILE_QUESTION_COUNT, answeredCount, firstUnanswered } from "@/lib/father/questions";
 import { getI18n } from "@/lib/i18n/server";
-import { suggestKeystoneTraining } from "@/lib/profile/suggest-training";
+import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
 export default async function FatherAssessmentsPage({
@@ -26,20 +20,12 @@ export default async function FatherAssessmentsPage({
   const flash = await searchParams;
   const { user } = await requireRole("father");
   const { t } = await getI18n();
-  const [assignments, { profile, draft }, history, access, home] = await Promise.all([
+  const [assignments, { profile, draft }, access] = await Promise.all([
     loadFatherAssignments(user.id),
     loadProfileState(user.id),
-    loadProfileHistory(user.id, 2),
     loadFatherAssessmentAccess(user.id),
-    loadFatherHome(user.id),
   ]);
   const banner = <Flash error={flash.error} notice={flash.notice} />;
-  const suggested = profile
-    ? suggestKeystoneTraining(
-        profile.primary_determination,
-        home.trainingCards.map((card) => card.training)
-      )
-    : null;
 
   if (profile) {
     return (
@@ -53,11 +39,8 @@ export default async function FatherAssessmentsPage({
         {banner}
         <KeystoneCompletedView
           profile={profile}
-          previousTakenAt={history[1]?.taken_at}
           draft={draft}
           canStartKeystone={access.canStartKeystone}
-          suggestedTraining={suggested}
-          trainingHref={suggested ? `/father/trainings/${suggested.id}` : null}
         />
         <FutureAssessmentsPanel assignments={assignments} />
       </div>
@@ -66,13 +49,16 @@ export default async function FatherAssessmentsPage({
 
   const showKeystone = Boolean(draft || access.canStartKeystone);
   const resumeAt = draft ? firstUnanswered(draft.answers) : 1;
-  const part = profileSectionForQuestion(resumeAt).index;
+  const answered = draft ? answeredCount(draft.answers) : 0;
+  const keystoneHref = draft ? `/father/profile/take?q=${resumeAt}` : "/father/profile";
   const keystoneStatus = draft
-    ? t("father.profile.progress", { n: part, total: PROFILE_SECTION_COUNT })
+    ? t("father.profile.progress", {
+        n: resumeAt,
+        total: PROFILE_QUESTION_COUNT,
+        answered,
+      })
     : t("father.profile.takeHint");
-  const keystoneAction = draft
-    ? t("father.profile.continuePart")
-    : t("father.profile.takeCta");
+  const keystoneAction = draft ? t("father.assessments.continue") : t("father.assessments.take");
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
@@ -85,24 +71,22 @@ export default async function FatherAssessmentsPage({
       {banner}
 
       {showKeystone ? (
-        <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
-          <p className="font-medium">{t("father.profile.keystone")}</p>
-          <p className="mt-2 text-sm text-muted-foreground">{t("father.profile.lead")}</p>
-          <p className="mt-2 text-sm text-muted-foreground">{keystoneStatus}</p>
-          {draft ? (
-            <Link
-              href={`/father/profile/take?q=${resumeAt}`}
-              className={cn(buttonVariants(), "mt-5 w-full min-h-11 sm:w-auto")}
-            >
+        <section className="overflow-hidden rounded-xl border border-border bg-card">
+          <Link
+            href={keystoneHref}
+            className={cn(
+              "flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between",
+              interactiveSurfaceClassName
+            )}
+          >
+            <div className="min-w-0">
+              <p className="font-medium">{t("father.profile.keystone")}</p>
+              <p className="text-sm text-muted-foreground">{keystoneStatus}</p>
+            </div>
+            <span className={cn(buttonVariants(), "pointer-events-none w-full sm:w-auto")}>
               {keystoneAction}
-            </Link>
-          ) : (
-            <form action={startProfile} className="mt-5">
-              <Button type="submit" className="w-full min-h-11 sm:w-auto">
-                {keystoneAction}
-              </Button>
-            </form>
-          )}
+            </span>
+          </Link>
         </section>
       ) : null}
 

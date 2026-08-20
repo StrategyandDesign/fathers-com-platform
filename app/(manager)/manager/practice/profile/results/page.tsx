@@ -1,64 +1,103 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { KeystoneArrival } from "@/components/profile/keystone-arrival";
-import { KeystoneResultCard } from "@/components/profile/keystone-result-card";
+import { DimensionScores } from "@/components/profile/dimension-scores";
 import { buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
-import { loadProfileHistory } from "@/lib/father/profile";
-import { getI18n } from "@/lib/i18n/server";
-import { loadLeaderPractice } from "@/lib/practice/data";
+import { loadLatestProfile } from "@/lib/father/profile";
+import { translateThemeLabel, translateThemeMeaning } from "@/lib/i18n/flash";
+import { formatLongDate, getI18n } from "@/lib/i18n/server";
 import { PRACTICE_ROOT } from "@/lib/practice/paths";
-import { suggestKeystoneTraining } from "@/lib/profile/suggest-training";
+import { readStoredDimensionScores } from "@/lib/profile/score";
 import { cn } from "@/lib/utils";
 
-export default async function LeaderPracticeProfileResultsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ arrive?: string }>;
-}) {
-  const params = await searchParams;
+const eyebrowClassName =
+  "text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]";
+
+export default async function LeaderPracticeProfileResultsPage() {
   const { user } = await requireRole("manager");
   const { t, locale } = await getI18n();
-  const [history, practice] = await Promise.all([
-    loadProfileHistory(user.id, 2),
-    loadLeaderPractice(user.id),
-  ]);
-  const profile = history[0] ?? null;
+  const profile = await loadLatestProfile(user.id);
 
   if (!profile) {
     redirect(PRACTICE_ROOT);
   }
 
-  const suggested = suggestKeystoneTraining(
-    profile.primary_determination,
-    practice.trainingCards.map((card) => card.training)
-  );
+  const scores = readStoredDimensionScores(profile.raw_scores, profile.full_results);
+  const determinationLabel = translateThemeLabel(profile.primary_determination, t);
+  const edgeLabel = translateThemeLabel(profile.primary_edge, t);
+  const determinationMeaning = translateThemeMeaning(profile.primary_determination, t);
+  const edgeMeaning = translateThemeMeaning(profile.primary_edge, t);
 
   return (
-    <KeystoneArrival hold={params.arrive === "1"}>
-      <div className="mx-auto w-full">
-        <KeystoneResultCard
-          profile={profile}
-          previousTakenAt={history[1]?.taken_at}
-          suggestedTraining={suggested}
-          trainingHref={suggested ? PRACTICE_ROOT : null}
-          showMeanings
-          t={t}
-          locale={locale}
-        />
-        <div className="mt-6 print:hidden">
+    <div className="mx-auto max-w-2xl">
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-5 lg:p-6">
+        <p className="text-sm font-medium text-foreground">
+          {t("father.profile.resultsComplete")}
+        </p>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
+          {t("father.profile.resultsLead")}
+        </p>
+
+        <div className="mt-8 space-y-3">
+          <p className={eyebrowClassName}>{t("father.profile.primaryDetermination")}</p>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight uppercase lg:text-3xl">
+            {determinationLabel}
+          </h1>
+          <p className="text-sm leading-6 text-muted-foreground sm:text-base">
+            {t("father.profile.determinationWhat")}
+          </p>
+          {determinationMeaning ? (
+            <p className="text-sm leading-6 text-foreground sm:text-base">{determinationMeaning}</p>
+          ) : null}
+        </div>
+
+        <div className="mt-8 space-y-3">
+          <p className={eyebrowClassName}>{t("father.home.primaryEdge")}</p>
+          <h2 className="font-heading text-xl font-semibold tracking-tight uppercase sm:text-2xl">
+            {edgeLabel}
+          </h2>
+          <p className="text-sm leading-6 text-muted-foreground sm:text-base">
+            {t("father.profile.edgeWhat")}
+          </p>
+          {edgeMeaning ? (
+            <p className="text-sm leading-6 text-foreground sm:text-base">{edgeMeaning}</p>
+          ) : null}
+        </div>
+
+        <div className="mt-8 space-y-3">
+          <p className="text-sm font-medium">{t("father.profile.useThisTitle")}</p>
+          <p className="text-sm leading-6 text-muted-foreground sm:text-base">
+            {t("father.profile.useThis1")}
+          </p>
+          <p className="text-sm leading-6 text-muted-foreground sm:text-base">
+            {t("father.profile.useThis2")}
+          </p>
+        </div>
+
+        {scores ? (
+          <div className="mt-8">
+            <p className="text-sm leading-6 text-muted-foreground">
+              {t("father.profile.scoresLead")}
+            </p>
+            <DimensionScores scores={scores} className="mt-5 space-y-6" />
+          </div>
+        ) : null}
+
+        <p className="mt-8 text-sm text-muted-foreground">
+          {t("father.profile.resultsCompleted", {
+            date: formatLongDate(profile.taken_at, locale),
+          })}
+        </p>
+        <div className="mt-8 space-y-4">
           <Link
             href={PRACTICE_ROOT}
-            className={cn(
-              buttonVariants({ variant: "ghost" }),
-              "w-full min-h-11 text-sm text-muted-foreground"
-            )}
+            className={cn(buttonVariants({ size: "lg" }), "w-full min-h-12")}
           >
             {t("manager.practice.backToPath")}
           </Link>
         </div>
-      </div>
-    </KeystoneArrival>
+      </section>
+    </div>
   );
 }

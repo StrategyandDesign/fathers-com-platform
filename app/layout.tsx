@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Geist_Mono, Heebo, IBM_Plex_Serif, Inter } from "next/font/google";
+import { Geist_Mono, Heebo, Inter, Source_Serif_4 } from "next/font/google";
 
 import { ClearStaleServiceWorkers } from "@/components/dev/clear-stale-service-workers";
 import { DevLiveReload } from "@/components/dev/live-reload";
@@ -30,7 +30,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const ibmPlexSerif = IBM_Plex_Serif({
+const sourceSerif = Source_Serif_4({
   variable: "--font-display-family",
   subsets: ["latin"],
   weight: ["400", "600"],
@@ -64,7 +64,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={dir}
-      className={`${paletteClassName(palette)} ${inter.variable} ${heebo.variable} ${geistMono.variable} ${ibmPlexSerif.variable}`}
+      className={`${paletteClassName(palette)} ${inter.variable} ${heebo.variable} ${geistMono.variable} ${sourceSerif.variable}`}
       data-palette={palette}
       suppressHydrationWarning
     >

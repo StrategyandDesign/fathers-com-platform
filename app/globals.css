@@ -333,10 +333,4 @@ html:not(.dark) body::after {
   body::after {
     display: none;
   }
-
-  .keystone-print-root {
-    border: none;
-    box-shadow: none;
-    break-inside: avoid;
-  }
 }
