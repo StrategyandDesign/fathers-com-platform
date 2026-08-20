@@ -136,11 +136,14 @@ export async function dismissCohortNote(formData: FormData) {
   if (!groupId) fail(path, "father.home.noteDismissFailed");
 
   const supabase = await createClient();
-  const { error } = await supabase.from("organization_cohort_note_dismissals").upsert({
-    group_id: groupId,
-    father_id: user.id,
-    dismissed_at: new Date().toISOString(),
-  });
+  const { error } = await supabase.from("organization_cohort_note_dismissals").upsert(
+    {
+      group_id: groupId,
+      father_id: user.id,
+      dismissed_at: new Date().toISOString(),
+    },
+    { onConflict: "group_id,father_id" }
+  );
   if (error) fail(path, "father.home.noteDismissFailed");
 
   revalidatePath("/father");

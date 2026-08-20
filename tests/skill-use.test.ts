@@ -207,6 +207,20 @@ describe("skill use on Home", () => {
     );
     assert.match(signOut, /clearHomeDeskCookie/);
   });
+
+  it("lets Dismiss save as dismissed", () => {
+    const migration = readFileSync(
+      fileURLToPath(new URL("../supabase/migrations/20260820010000_session_skill_use_dismissed.sql", import.meta.url)),
+      "utf8"
+    );
+    const actions = readFileSync(
+      fileURLToPath(new URL("../lib/father/actions.ts", import.meta.url)),
+      "utf8"
+    );
+    assert.match(migration, /'used', 'later', 'dismissed'/);
+    assert.match(actions, /writeSkillUse/);
+    assert.match(actions, /next !== "dismissed"/);
+  });
 });
 
 describe("skill use card", () => {

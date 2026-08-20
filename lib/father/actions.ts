@@ -377,14 +377,7 @@ export async function reportSkillUse(formData: FormData) {
 
   const next = nextSkillUse(parseSkillUse(context.progress?.skill_use), report);
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("session_progress")
-    .update({
-      skill_use: next,
-      skill_use_at: new Date().toISOString(),
-    })
-    .eq("father_id", user.id)
-    .eq("session_id", sessionId);
+  const error = await writeSkillUse(supabase, user.id, sessionId, next);
 
   if (error) {
     redirect(`${dest}${dest.includes("?") ? "&" : "?"}error=${encodeURIComponent("That didn’t save. Try again.")}`);
@@ -400,6 +393,37 @@ export async function reportSkillUse(formData: FormData) {
   revalidatePath(`${paths.done(sessionId)}`);
 
   redirect(dest);
+}
+
+async function writeSkillUse(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  fatherId: string,
+  sessionId: string,
+  next: NonNullable<ReturnType<typeof parseSkillUse>>
+) {
+  const stamp = new Date().toISOString();
+  const first = await supabase
+    .from("session_progress")
+    .update({
+      skill_use: next,
+      skill_use_at: stamp,
+    })
+    .eq("father_id", fatherId)
+    .eq("session_id", sessionId);
+  if (!first.error) return null;
+  if (next !== "dismissed" || !/skill_use/i.test(first.error.message)) {
+    return first.error;
+  }
+  // Older databases only allowed used/later. Still put the card away.
+  const retry = await supabase
+    .from("session_progress")
+    .update({
+      skill_use: "later",
+      skill_use_at: stamp,
+    })
+    .eq("father_id", fatherId)
+    .eq("session_id", sessionId);
+  return retry.error;
 }
 
 export async function saveFilmPosition(sessionId: string, seconds: number) {
