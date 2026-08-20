@@ -20,7 +20,7 @@ export const en = {
     users: "Users",
     inbox: "Inbox",
     gathering: "Gathering",
-    appearance: "Login",
+    appearance: "Visuals",
     openMenu: "Open menu",
     closeMenu: "Close menu",
   },

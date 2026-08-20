@@ -22,7 +22,7 @@ export const he = {
     users: "משתמשים",
     inbox: "תיבת דואר",
     gathering: "איסוף",
-    appearance: "כניסה",
+    appearance: "חזות",
     openMenu: "פתיחת תפריט",
     closeMenu: "סגירת תפריט",
   },

@@ -69,6 +69,8 @@ describe("login background desk", () => {
     assert.match(home, /black until you add a panoramic photo/);
     assert.match(nav, /nav\.appearance/);
     assert.match(nav, /\/admin\/appearance/);
+    assert.match(copy, /appearance: "Visuals"/);
+    assert.ok(nav.lastIndexOf("/admin/support") < nav.lastIndexOf("/admin/appearance"));
     assert.match(actions, /requireRole\("admin"\)/);
     assert.match(actions, /uploadLoginBackground/);
     assert.match(actions, /resetLoginBackground/);
