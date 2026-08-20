@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.53**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.54**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -70,3 +70,4 @@ The badge on this checkout is **Shared 1-1.53**. It ticks on each push of the Sh
 | **1.51** | undefined | Add a Shared 1-1.49 status export for audit. |
 | **1.52** | undefined | Finish Keystone as a part-scoped tool a man can own. |
 | **1.53** | undefined | Widen Assessments on desktop into two columns. |
+| **1.54** | undefined | Sit the org mark in the header beside the lockup. |
