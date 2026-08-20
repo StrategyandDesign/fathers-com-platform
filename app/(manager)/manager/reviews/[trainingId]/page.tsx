@@ -7,13 +7,11 @@ import {
   ReviewStatusBadge,
 } from "@/components/manager/review-decision-forms";
 import { ReviewSessionList } from "@/components/manager/review-session-list";
-import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { loadReviewDetail } from "@/lib/manager/reviews";
 import { interactiveLinkClassName } from "@/lib/ui";
-import { cn } from "@/lib/utils";
 
 export default async function ManagerTrainingReviewPage({
   params,
@@ -137,16 +135,7 @@ export default async function ManagerTrainingReviewPage({
               declineReason={review.decline_reason}
             />
           </div>
-        ) : (
-          <div className="mt-6 border-t border-border pt-6">
-            <Link
-              href="/manager/trainings#cohort"
-              className={cn(buttonVariants(), "w-full sm:w-auto")}
-            >
-              {t("manager.reviewDetail.assignFromTrainings")}
-            </Link>
-          </div>
-        )}
+        ) : null}
       </section>
 
       <section className="space-y-4">

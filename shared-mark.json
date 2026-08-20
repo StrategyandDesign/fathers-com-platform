@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 20,
-  "label": "Shared 1-1.20",
+  "patch": 21,
+  "label": "Shared 1-1.21",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Name Rehab, Armed Forces Unit, and Performance Optimization Group.",
+  "title": "Invite leaders by email and show a first-run desk.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -148,6 +148,13 @@
       "label": "Shared 1-1.20",
       "at": "2026-08-20",
       "title": "Name Rehab, Armed Forces Unit, and Performance Optimization Group."
+    },
+    {
+      "patch": 21,
+      "revision": "1.21",
+      "label": "Shared 1-1.21",
+      "at": "2026-08-20",
+      "title": "Invite leaders by email and show a first-run desk."
     }
   ]
 }

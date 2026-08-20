@@ -49,6 +49,7 @@ describe("training summary", () => {
     assert.ok(summary > title);
     assert.ok(sessions > summary);
     assert.match(page, /training\.leader_summary/);
+    assert.doesNotMatch(page, /assignFromTrainings/);
   });
 
   it("does not put the summary on father catalog cards", () => {
