@@ -49,6 +49,10 @@ describe("login background desk", () => {
     assert.match(layout, /object-cover/);
     assert.match(layout, /data-login-background/);
     assert.match(layout, /max-w-\[24rem\]/);
+    assert.match(layout, /size="display"/);
+    assert.match(layout, /gap-2/);
+    assert.doesNotMatch(layout, /mb-8/);
+    assert.match(readRepo("components/brand/logo.tsx"), /size === "display" \? "h-12"/);
     assert.match(login, /<Card>/);
     assert.doesNotMatch(login, /loadLoginBackground/);
     assert.match(appearance, /requireRole\("admin"\)/);

@@ -60,7 +60,7 @@ export function BrandLogo({
   const mark = (
     <BrandMark
       alt="Fathers.com"
-      className={cn(size === "display" ? "h-10" : "h-7", className)}
+      className={cn(size === "display" ? "h-12" : "h-7", className)}
     />
   );
 

@@ -27,12 +27,12 @@ export default async function AuthLayout({
         <div className="absolute inset-0 bg-[#0a0f0a]/45" />
       </div>
       <div className="relative z-10 flex min-h-svh flex-col items-center justify-center px-4 py-5 sm:px-5 sm:py-10 md:px-6 md:py-16 lg:px-8">
-        <div className="mb-8">
-          <BrandLogo href="/" />
+        <div className="mb-6 flex flex-col items-center gap-2">
+          <BrandLogo href="/" size="display" />
+          <p className="max-w-[24rem] text-center text-sm text-white/85 drop-shadow-sm">
+            {t("auth.pilotNotice")}
+          </p>
         </div>
-        <p className="mb-6 max-w-[24rem] text-center text-sm text-white/85 drop-shadow-sm">
-          {t("auth.pilotNotice")}
-        </p>
         <div className="w-full max-w-[24rem] rounded-xl shadow-2xl">{children}</div>
         <LegalLinks align="center" copyright onPhoto className="mt-6" />
       </div>
