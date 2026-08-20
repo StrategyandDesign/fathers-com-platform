@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 51,
-  "label": "Shared 1-1.51",
+  "patch": 52,
+  "label": "Shared 1-1.52",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Add a Shared 1-1.49 status export for audit.",
+  "title": "Finish Keystone as a part-scoped tool a man can own.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -365,6 +365,13 @@
       "label": "Shared 1-1.51",
       "at": "2026-08-20",
       "title": "Add a Shared 1-1.49 status export for audit."
+    },
+    {
+      "patch": 52,
+      "revision": "1.52",
+      "label": "Shared 1-1.52",
+      "at": "2026-08-20",
+      "title": "Finish Keystone as a part-scoped tool a man can own."
     }
   ]
 }
