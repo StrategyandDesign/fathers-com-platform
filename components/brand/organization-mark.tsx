@@ -11,23 +11,30 @@ export function OrganizationMark({
 }: {
   name?: string | null;
   logoUrl?: string | null;
-  size?: "default" | "large" | "icon";
+  size?: "default" | "large" | "icon" | "header";
 }) {
   const label = name?.trim() || null;
   const logo = logoUrl?.trim() || null;
   if (!label && !logo) return null;
 
-  // Icon chrome is reserved for an uploaded mark in the side ribbon.
-  // Initials placeholders steal space from the Home icon.
-  if (size === "icon") {
+  // Compact chrome is reserved for an uploaded mark. Initials steal space.
+  if (size === "icon" || size === "header") {
     if (!logo) return null;
+    const header = size === "header";
     return (
       <span
-        className="inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/10"
+        className={cn(
+          "inline-flex shrink-0 items-center justify-center overflow-hidden bg-white/10",
+          header ? "size-8 rounded-md" : "size-10 rounded-lg"
+        )}
         title={label ?? undefined}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={logo} alt="" className="h-10 max-w-10 object-contain" />
+        <img
+          src={logo}
+          alt=""
+          className={header ? "h-8 max-w-8 object-contain" : "h-10 max-w-10 object-contain"}
+        />
       </span>
     );
   }

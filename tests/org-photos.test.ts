@@ -32,10 +32,19 @@ describe("organization photo slots", () => {
     assert.equal(orgPhotoObjectPath("group-1", HOME_HERO_SLOT), "group-1/home_hero");
   });
 
-  it("hides the father chrome mark until a group logo is uploaded for the side ribbon", () => {
+  it("hides the father chrome mark until a group logo is uploaded", () => {
     assert.equal(hasOrganizationLogo(null), false);
     assert.equal(hasOrganizationLogo("   "), false);
     assert.equal(hasOrganizationLogo("/brand/group.png"), true);
+  });
+
+  it("sits the uploaded group mark in the header beside the lockup, not in the side ribbon", () => {
+    const shell = readRepo("components/layout/role-shell.tsx");
+    const aside = shell.slice(shell.indexOf("<aside"), shell.indexOf("</aside>"));
+    assert.match(shell, /size="header"/);
+    assert.match(shell, /bg-white\/20/);
+    assert.match(shell, /BrandLogo[\s\S]*OrganizationMark[\s\S]*groupName/);
+    assert.doesNotMatch(aside, /OrganizationMark/);
   });
 });
 
