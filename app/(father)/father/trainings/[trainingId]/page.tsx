@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
+import { TrainingHandoutLinks } from "@/components/father/training-handout-links";
 import { TrainingOverviewFilm } from "@/components/father/training-overview-film";
 import { buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
@@ -10,6 +11,7 @@ import { hasStartedTrainingWork, hasTrainingOverview } from "@/lib/father/traini
 import { continueHref, sessionFilmPath } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { loadFatherOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
+import { loadTrainingHandouts } from "@/lib/training-handouts/data";
 import { trainingCoverSlug } from "@/lib/trainings/series";
 import { homePrimaryCtaClassName, interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -22,9 +24,10 @@ export default async function FatherTrainingOverviewPage({
   const { trainingId } = await params;
   const { user } = await requireRole("father");
   const { t, locale } = await getI18n();
-  const [{ trainingCards }, orgPhotos] = await Promise.all([
+  const [{ trainingCards }, orgPhotos, handouts] = await Promise.all([
     loadFatherHome(user.id),
     loadFatherOrgPhotoCovers(user.id),
+    loadTrainingHandouts(trainingId),
   ]);
   const card = trainingCards.find((row) => row.training.id === trainingId);
 
@@ -80,6 +83,8 @@ export default async function FatherTrainingOverviewPage({
         badge={t("father.trainings.overviewBadge")}
         notSession={t("father.trainings.overviewNotSession")}
       />
+
+      <TrainingHandoutLinks handouts={handouts} t={t} layout="card" />
 
       {card.training.description ? (
         <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">

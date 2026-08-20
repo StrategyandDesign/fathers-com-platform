@@ -5,6 +5,7 @@ import {
 import { SessionContinueLink } from "@/components/father/session-continue-link";
 import { SessionFilmPlayer } from "@/components/father/session-film-player";
 import { SessionHeader } from "@/components/father/session-header";
+import { TrainingHandoutLinks } from "@/components/father/training-handout-links";
 import {
   requireAdminStageSession,
   stageCatalogTotal,
@@ -12,6 +13,7 @@ import {
 } from "@/lib/admin/stage";
 import { sessionCover } from "@/lib/brand/photos";
 import { getI18n } from "@/lib/i18n/server";
+import { loadTrainingHandouts } from "@/lib/training-handouts/data";
 
 export default async function AdminTrainingStageFilmPage({
   params,
@@ -21,6 +23,7 @@ export default async function AdminTrainingStageFilmPage({
   const { id, sessionId } = await params;
   const { training, session } = await requireAdminStageSession(id, sessionId);
   const { t } = await getI18n();
+  const handouts = await loadTrainingHandouts(training.id);
   const paths = stagePaths(training.id);
   const header = stageHeaderPaths(training.id, session.id);
 
@@ -36,6 +39,7 @@ export default async function AdminTrainingStageFilmPage({
           backHref={paths.hub}
           {...header}
         />
+        <TrainingHandoutLinks handouts={handouts} t={t} />
         <SessionFilmPlayer
           session={session}
           coverSrc={sessionCover(session.session_number, "default")}

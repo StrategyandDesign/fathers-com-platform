@@ -2,11 +2,13 @@ import Link from "next/link";
 
 import { CoverPhoto } from "@/components/brand/cover";
 import { FilmRuntime } from "@/components/father/film-runtime";
+import { TrainingHandoutLinks } from "@/components/father/training-handout-links";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { shouldShowCatalogOverview } from "@/lib/father/training-door";
 import { sessionFilmPath, type Session, type SessionProgress } from "@/lib/father/types";
 import type { Translate } from "@/lib/i18n/translate";
+import type { TrainingHandout } from "@/lib/training-handouts/data";
 import {
   homePrimaryCtaClassName,
   interactiveControlClassName,
@@ -61,6 +63,7 @@ export function FatherTrainingCatalogCard({
   hasOverview,
   overviewHref,
   showOverviewSlot,
+  handouts,
   t,
 }: {
   title: string;
@@ -82,6 +85,7 @@ export function FatherTrainingCatalogCard({
   hasOverview?: boolean;
   overviewHref?: string | null;
   showOverviewSlot?: boolean;
+  handouts?: TrainingHandout[];
   t: Translate;
 }) {
   const href = gated
@@ -267,6 +271,7 @@ export function FatherTrainingCatalogCard({
           {!gated && sessionDots.length > 0 ? (
             <SessionList dots={sessionDots} nextId={next?.id} sessionHref={sessionHref} t={t} />
           ) : null}
+          <TrainingHandoutLinks handouts={handouts ?? []} t={t} />
         </div>
       </div>
     </article>

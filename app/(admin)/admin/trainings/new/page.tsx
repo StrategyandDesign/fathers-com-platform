@@ -80,6 +80,10 @@ export default async function AdminNewTrainingPage({
             This is what the leader (Org Manager) reads before the session
             information or films.
           </span>
+          <span className="block text-sm text-muted-foreground">
+            After you create the training, attach PDFs on the edit page. PDF
+            only, 5 MB each, up to 3.
+          </span>
         </label>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Development notes</span>

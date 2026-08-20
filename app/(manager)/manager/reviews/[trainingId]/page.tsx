@@ -11,6 +11,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { loadReviewDetail } from "@/lib/manager/reviews";
+import { loadTrainingHandouts } from "@/lib/training-handouts/data";
+import { TrainingHandoutLinks } from "@/components/father/training-handout-links";
 import { interactiveLinkClassName } from "@/lib/ui";
 
 export default async function ManagerTrainingReviewPage({
@@ -25,6 +27,7 @@ export default async function ManagerTrainingReviewPage({
   const { user } = await requireRole("manager");
   const { t, locale } = await getI18n();
   const detail = await loadReviewDetail(user.id, trainingId, flash.group);
+  const handouts = detail ? await loadTrainingHandouts(detail.training.id) : [];
 
   if (!detail) {
     notFound();
@@ -117,6 +120,16 @@ export default async function ManagerTrainingReviewPage({
             </p>
           )}
         </div>
+        {handouts.length > 0 ? (
+          <div className="mt-6 border-t border-border pt-6">
+            <h2 className="font-heading text-lg font-semibold">
+              {t("manager.reviewDetail.handouts")}
+            </h2>
+            <div className="mt-3">
+              <TrainingHandoutLinks handouts={handouts} t={t} />
+            </div>
+          </div>
+        ) : null}
         {review?.decided_at ? (
           <p className="mt-6 text-sm text-muted-foreground">
             {review.status === "accepted" ? t("manager.reviews.accepted") : t("manager.reviews.declined")}{" "}

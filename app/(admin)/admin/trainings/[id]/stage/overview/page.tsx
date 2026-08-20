@@ -3,12 +3,14 @@ import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
 import { TrainingStageBanner } from "@/components/admin/training-stage-banner";
+import { TrainingHandoutLinks } from "@/components/father/training-handout-links";
 import { TrainingOverviewFilm } from "@/components/father/training-overview-film";
 import { buttonVariants } from "@/components/ui/button";
 import { hasTrainingOverview } from "@/lib/father/training-door";
 import { requireAdminStageTraining, stagePaths } from "@/lib/admin/stage";
 import { getI18n } from "@/lib/i18n/server";
 import { resolveTrainingCardCover } from "@/lib/org-photos/data";
+import { loadTrainingHandouts } from "@/lib/training-handouts/data";
 import { trainingCoverSlug } from "@/lib/trainings/series";
 import { homePrimaryCtaClassName, interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -21,6 +23,7 @@ export default async function AdminTrainingStageOverviewPage({
   const { id } = await params;
   const training = await requireAdminStageTraining(id);
   const { t, locale } = await getI18n();
+  const handouts = await loadTrainingHandouts(training.id);
   const paths = stagePaths(training.id);
   const first = training.sessions[0] ?? null;
 
@@ -70,6 +73,8 @@ export default async function AdminTrainingStageOverviewPage({
           badge={t("father.trainings.overviewBadge")}
           notSession={t("father.trainings.overviewNotSession")}
         />
+
+        <TrainingHandoutLinks handouts={handouts} t={t} layout="card" />
 
         {training.description ? (
           <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">

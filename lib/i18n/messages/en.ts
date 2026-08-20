@@ -626,6 +626,9 @@ export const en = {
       trainingComplete: "This training is complete.",
       available: "Available trainings",
       completedGroup: "Completed trainings",
+      handout: "Handout",
+      handouts: "Handouts",
+      openPdf: "Open PDF",
       sessionDone: "Done",
       downloadCertificate: "Download certificate",
     },
@@ -1673,6 +1676,8 @@ export const en = {
         "Watch each session the way a father would. Nothing here assigns or marks work complete.",
       summary: "Training Summary",
       summaryEmpty: "No summary yet. Super-admin can add it when they edit this training.",
+      handouts: "PDF attachments",
+      openPdf: "Open PDF",
       sessions: "Sessions",
       sessionsLead:
         "Open a session to watch the film and read the check-in. Nothing here can be edited or marked complete.",

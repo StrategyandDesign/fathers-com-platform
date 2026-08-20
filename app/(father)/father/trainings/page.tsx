@@ -10,6 +10,7 @@ import type { Translate } from "@/lib/i18n/translate";
 import { loadFatherParticipationMode } from "@/lib/participation-data";
 import { participationCopyKey } from "@/lib/participation";
 import { loadFatherOrgPhotoCovers, resolveTrainingCardCover, type FatherOrgPhotoCovers } from "@/lib/org-photos/data";
+import { loadTrainingHandoutsByIds, type TrainingHandout } from "@/lib/training-handouts/data";
 import { trainingCoverSlug } from "@/lib/trainings/series";
 import { cn } from "@/lib/utils";
 
@@ -33,12 +34,14 @@ function CatalogCard({
   featured,
   quiet,
   orgPhotos,
+  handouts,
   t,
 }: {
   card: TrainingCard;
   featured: boolean;
   quiet: boolean;
   orgPhotos: FatherOrgPhotoCovers;
+  handouts: TrainingHandout[];
   t: Translate;
 }) {
   const showOverview =
@@ -73,6 +76,7 @@ function CatalogCard({
       hasOverview={showOverview}
       overviewHref={showOverview ? trainingOverviewPath(card.training.id) : null}
       showOverviewSlot={showOverview}
+      handouts={handouts}
       t={t}
     />
   );
@@ -84,6 +88,7 @@ function CatalogGroup({
   featuredId,
   inProgressCount = 0,
   orgPhotos,
+  handoutsByTraining,
   t,
 }: {
   title: string;
@@ -91,6 +96,7 @@ function CatalogGroup({
   featuredId?: string | null;
   inProgressCount?: number;
   orgPhotos: FatherOrgPhotoCovers;
+  handoutsByTraining: Map<string, TrainingHandout[]>;
   t: Translate;
 }) {
   if (cards.length === 0) return null;
@@ -116,6 +122,7 @@ function CatalogGroup({
                 featured={featured}
                 quiet={inProgressCount > 0 && !inProgress}
                 orgPhotos={orgPhotos}
+                handouts={handoutsByTraining.get(card.training.id) ?? []}
                 t={t}
               />
             </div>
@@ -134,6 +141,9 @@ export default async function FatherTrainingsPage() {
     loadFatherOrgPhotoCovers(user.id),
     loadFatherParticipationMode(user.id),
   ]);
+  const handoutsByTraining = await loadTrainingHandoutsByIds(
+    trainingCards.map((card) => card.training.id)
+  );
   const cards = [...trainingCards].sort((left, right) => cardRank(left) - cardRank(right));
   const available = cards.filter((card) => !isHomeTrainingComplete(card));
   const completed = cards.filter((card) => isHomeTrainingComplete(card));
@@ -179,12 +189,14 @@ export default async function FatherTrainingsPage() {
             featuredId={featuredId}
             inProgressCount={inProgress.length}
             orgPhotos={orgPhotos}
+            handoutsByTraining={handoutsByTraining}
             t={t}
           />
           <CatalogGroup
             title={t("father.trainings.completedGroup")}
             cards={completed}
             orgPhotos={orgPhotos}
+            handoutsByTraining={handoutsByTraining}
             t={t}
           />
         </div>
