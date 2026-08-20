@@ -55,6 +55,7 @@ export function FatherTrainingCatalogCard({
   sessionDots,
   certificateId,
   featured,
+  sideBySide,
   quiet,
   gated,
   gatedLabel,
@@ -77,6 +78,7 @@ export function FatherTrainingCatalogCard({
   sessionDots: TrainingCatalogDot[];
   certificateId?: string | null;
   featured?: boolean;
+  sideBySide?: boolean;
   quiet?: boolean;
   gated?: boolean;
   gatedLabel?: string | null;
@@ -113,13 +115,14 @@ export function FatherTrainingCatalogCard({
     progress: nextProgress,
     sessionDots,
   });
+  const landscape = Boolean(featured || sideBySide);
 
   return (
     <article
       className={cn(
         "overflow-hidden rounded-xl border bg-card",
         featured ? "border-primary/35" : "border-border",
-        featured && "lg:grid lg:grid-cols-2 lg:items-stretch"
+        landscape && "lg:grid lg:grid-cols-2 lg:items-stretch"
       )}
     >
       {href ? (
@@ -128,7 +131,7 @@ export function FatherTrainingCatalogCard({
           aria-label={openLabel}
           className={cn(
             "relative block overflow-hidden bg-[#101510]",
-            featured
+            landscape
               ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]"
               : quiet
                 ? "h-32 sm:h-36"
@@ -142,7 +145,7 @@ export function FatherTrainingCatalogCard({
         <div
           className={cn(
             "relative overflow-hidden bg-[#101510]",
-            featured ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]" : "h-32 sm:h-36"
+            landscape ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]" : "h-32 sm:h-36"
           )}
         >
           <CoverPhoto src={coverSrc} />
@@ -169,7 +172,7 @@ export function FatherTrainingCatalogCard({
             <p
               className={cn(
                 "text-sm text-muted-foreground",
-                featured ? "line-clamp-3" : "line-clamp-2"
+                landscape ? "line-clamp-3" : "line-clamp-2"
               )}
             >
               {description}

@@ -32,6 +32,7 @@ function cardRank(card: {
 function CatalogCard({
   card,
   featured,
+  sideBySide,
   quiet,
   orgPhotos,
   handouts,
@@ -39,6 +40,7 @@ function CatalogCard({
 }: {
   card: TrainingCard;
   featured: boolean;
+  sideBySide?: boolean;
   quiet: boolean;
   orgPhotos: FatherOrgPhotoCovers;
   handouts: TrainingHandout[];
@@ -69,6 +71,7 @@ function CatalogCard({
       sessionDots={card.sessionDots}
       certificateId={card.certificate?.id ?? null}
       featured={featured}
+      sideBySide={sideBySide}
       quiet={quiet}
       gated={false}
       gatedLabel={null}
@@ -87,6 +90,7 @@ function CatalogGroup({
   cards,
   featuredId,
   inProgressCount = 0,
+  sideBySide = false,
   orgPhotos,
   handoutsByTraining,
   t,
@@ -95,6 +99,7 @@ function CatalogGroup({
   cards: TrainingCard[];
   featuredId?: string | null;
   inProgressCount?: number;
+  sideBySide?: boolean;
   orgPhotos: FatherOrgPhotoCovers;
   handoutsByTraining: Map<string, TrainingHandout[]>;
   t: Translate;
@@ -104,7 +109,12 @@ function CatalogGroup({
   return (
     <section className="space-y-4 p-4 sm:p-5">
       <p className={eyebrowClassName}>{title}</p>
-      <div className="grid gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-6">
+      <div
+        className={cn(
+          "grid gap-4 sm:gap-5",
+          !sideBySide && "lg:grid-cols-2 lg:gap-6"
+        )}
+      >
         {cards.map((card) => {
           const inProgress = isTrainingInProgress(
             card.completed,
@@ -115,11 +125,14 @@ function CatalogGroup({
           return (
             <div
               key={card.training.id}
-              className={cn((featured || cards.length === 1) && "lg:col-span-2")}
+              className={cn(
+                (featured || cards.length === 1 || sideBySide) && "lg:col-span-2"
+              )}
             >
               <CatalogCard
                 card={card}
                 featured={featured}
+                sideBySide={sideBySide}
                 quiet={inProgressCount > 0 && !inProgress}
                 orgPhotos={orgPhotos}
                 handouts={handoutsByTraining.get(card.training.id) ?? []}
@@ -195,6 +208,7 @@ export default async function FatherTrainingsPage() {
           <CatalogGroup
             title={t("father.trainings.completedGroup")}
             cards={completed}
+            sideBySide
             orgPhotos={orgPhotos}
             handoutsByTraining={handoutsByTraining}
             t={t}

@@ -31,11 +31,15 @@ describe("training catalog decisions", () => {
 
   it("separates available and completed trainings on the father desk", () => {
     const page = readRepo("app/(father)/father/trainings/page.tsx");
+    const card = readRepo("components/father/training-catalog-card.tsx");
     assert.match(page, /isHomeTrainingComplete/);
     assert.match(page, /father\.trainings\.available/);
     assert.match(page, /father\.trainings\.completedGroup/);
     assert.match(page, /rounded-xl border border-border/);
     assert.match(page, /divide-y divide-border/);
+    assert.match(page, /completedGroup[\s\S]*sideBySide/s);
+    assert.match(card, /featured \|\| sideBySide/);
+    assert.match(card, /lg:grid lg:grid-cols-2 lg:items-stretch/);
   });
 
   it("shows Included in green and Declined in red on the selected button", () => {
