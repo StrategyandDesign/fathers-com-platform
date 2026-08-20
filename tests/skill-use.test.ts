@@ -4,6 +4,11 @@ import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import {
+  parseHomeDeskVisit,
+  shouldOfferSkillUseOnHome,
+  SKILL_USE_HOME_AWAY_MS,
+} from "../lib/father/home-desk";
+import {
   countSkillsUsed,
   formatSkillUseStatement,
   nextSkillUse,
@@ -135,6 +140,72 @@ describe("skill use statement", () => {
       formatSkillUseStatement("Practice one calm check-in tonight"),
       "Practice one calm check-in tonight."
     );
+  });
+});
+
+describe("skill use on Home", () => {
+  const now = new Date("2026-08-20T12:00:00.000Z");
+  const loginAt = "2026-08-20T08:00:00.000Z";
+
+  it("offers the card on first login or after a long stretch away", () => {
+    assert.equal(shouldOfferSkillUseOnHome(null, loginAt, now), true);
+    assert.equal(
+      shouldOfferSkillUseOnHome(
+        { loginAt, seenAt: "2026-08-20T11:50:00.000Z" },
+        loginAt,
+        now
+      ),
+      false
+    );
+    assert.equal(
+      shouldOfferSkillUseOnHome(
+        {
+          loginAt,
+          seenAt: new Date(now.getTime() - SKILL_USE_HOME_AWAY_MS).toISOString(),
+        },
+        loginAt,
+        now
+      ),
+      true
+    );
+    assert.equal(
+      shouldOfferSkillUseOnHome(
+        { loginAt: "2026-08-19T08:00:00.000Z", seenAt: "2026-08-20T11:50:00.000Z" },
+        loginAt,
+        now
+      ),
+      true
+    );
+  });
+
+  it("reads the dashboard visit cookie", () => {
+    assert.deepEqual(
+      parseHomeDeskVisit(encodeURIComponent(JSON.stringify({ loginAt, seenAt: now.toISOString() }))),
+      { loginAt, seenAt: now.toISOString() }
+    );
+    assert.equal(parseHomeDeskVisit(""), null);
+    assert.equal(parseHomeDeskVisit("nope"), null);
+  });
+
+  it("gates the Home card and still asks on session closeout", () => {
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/(father)/father/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    const closeout = readFileSync(
+      fileURLToPath(new URL("../components/father/session-closeout.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(page, /shouldOfferSkillUseOnHome/);
+    assert.match(page, /HomeDeskStamp/);
+    assert.match(page, /showSkillUse && skillUsePrompt/);
+    assert.match(closeout, /SkillUseCard/);
+    assert.doesNotMatch(closeout, /shouldOfferSkillUseOnHome/);
+    const signOut = readFileSync(
+      fileURLToPath(new URL("../lib/auth/actions.ts", import.meta.url)),
+      "utf8"
+    );
+    assert.match(signOut, /clearHomeDeskCookie/);
   });
 });
 

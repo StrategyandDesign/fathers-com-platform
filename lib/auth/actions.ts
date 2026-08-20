@@ -154,7 +154,9 @@ export async function signOut() {
   await supabase.auth.signOut();
   try {
     const { clearLocaleCookie } = await import("@/lib/i18n/cookie");
+    const { clearHomeDeskCookie } = await import("@/lib/father/home-desk-cookie");
     await clearLocaleCookie();
+    await clearHomeDeskCookie();
   } catch {
     // Cookie clear is best-effort; sign-out still proceeds.
   }

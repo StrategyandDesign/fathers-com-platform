@@ -3,6 +3,7 @@ import { CohortNoteCard } from "@/components/father/cohort-note-card";
 import { HomeAssessmentCard } from "@/components/father/home-assessment-card";
 import { HomePathRow } from "@/components/father/home-path";
 import { HomeStreakRow } from "@/components/father/home-streak";
+import { HomeDeskStamp } from "@/components/father/home-desk-stamp";
 import { SkillUseCard } from "@/components/father/skill-use-card";
 import { HomeUpNextCard } from "@/components/father/home-up-next";
 import { LeaderMeta } from "@/components/father/leader-meta";
@@ -12,6 +13,8 @@ import { loadFatherAssignments } from "@/lib/assessments/data";
 import { loadFatherLeader, loadVisibleCohortNote } from "@/lib/cohort-note/data";
 import { requireRole } from "@/lib/auth/session";
 import { formatCertificateDate } from "@/lib/certificates/types";
+import { readHomeDeskVisit } from "@/lib/father/home-desk-cookie";
+import { shouldOfferSkillUseOnHome } from "@/lib/father/home-desk";
 import { pickHomeAssessment, splitHomeRows } from "@/lib/father/home";
 import { loadFatherHome } from "@/lib/father/data";
 import { loadFatherStreakHome } from "@/lib/father/streak-store";
@@ -51,6 +54,7 @@ export default async function FatherHomePage({
   const { done, error, notice } = await searchParams;
   const { user } = await requireRole("father");
   const { t, locale } = await getI18n();
+  const loginAt = user.last_sign_in_at ?? "";
   scheduleDueReminderFlush();
   const [
     { pathCards, trainingCards, next, profile, draft, certificates, skillUsePrompt },
@@ -60,6 +64,7 @@ export default async function FatherHomePage({
     leader,
     cohortNote,
     participationMode,
+    homeDesk,
   ] = await Promise.all([
     loadFatherHome(user.id),
     loadFatherAssignments(user.id),
@@ -68,7 +73,10 @@ export default async function FatherHomePage({
     loadFatherLeader(user.id),
     loadVisibleCohortNote(user.id),
     loadFatherParticipationMode(user.id),
+    readHomeDeskVisit(),
   ]);
+  const showSkillUse =
+    Boolean(skillUsePrompt) && shouldOfferSkillUseOnHome(homeDesk, loginAt);
 
   const nextCard = next
     ? pathCards.find((card) => card.training.id === next.training.id)
@@ -198,7 +206,8 @@ export default async function FatherHomePage({
         freezesRemaining={streak.freezesRemaining}
         justFinished={justFinished}
       />
-      {skillUsePrompt ? (
+      <HomeDeskStamp loginAt={loginAt} />
+      {showSkillUse && skillUsePrompt ? (
         <SkillUseCard
           sessionId={skillUsePrompt.sessionId}
           skill={skillUsePrompt.skill}
