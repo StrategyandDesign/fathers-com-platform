@@ -96,6 +96,7 @@ export default async function FatherHomePage({
     }));
   const path = withCover(shelves.path);
   const available = withCover(shelves.trainings);
+  const completed = withCover(shelves.completed);
   const earned = certificates.map((row) => ({
     id: row.id,
     title:
@@ -167,7 +168,9 @@ export default async function FatherHomePage({
     <div
       className={cn(
         "mx-auto w-full space-y-4 sm:space-y-5",
-        pair || (path.length > 0 && available.length > 0) ? "max-w-4xl" : "max-w-xl"
+        pair || (path.length > 0 && available.length > 0) || completed.length > 0
+          ? "max-w-4xl"
+          : "max-w-xl"
       )}
     >
       {leader ? (
@@ -210,7 +213,7 @@ export default async function FatherHomePage({
           {assessmentCard}
         </>
       )}
-      <HomePathRow path={path} trainings={available} t={t} />
+      <HomePathRow path={path} trainings={available} completed={completed} t={t} />
       <HomeEarnedRow marks={earned} t={t} />
     </div>
   );

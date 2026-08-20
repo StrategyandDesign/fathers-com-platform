@@ -511,6 +511,8 @@ export const he = {
       assessmentWaiting: "היא תופיע כאן כשהמנהיג יקצה אחת.",
       yourTrainings: "ההכשרות שלך",
       yourPath: "המסלול שלך",
+      completedTrainings: "הכשרות שהושלמו",
+      trainingComplete: "הושלם",
       trainingNotStarted: "לא התחיל",
       earned: "תעודות",
       leaderLabel: "מנהיג: {name}",

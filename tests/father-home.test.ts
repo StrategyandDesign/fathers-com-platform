@@ -145,6 +145,7 @@ describe("home shelves", () => {
       rows.trainings.map((card) => card.training.id),
       ["anger"]
     );
+    assert.deepEqual(rows.completed, []);
   });
 
   it("does not list a finished training as available", () => {
@@ -157,12 +158,26 @@ describe("home shelves", () => {
     );
     assert.deepEqual(
       rows.path.map((card) => card.training.id),
+      []
+    );
+    assert.deepEqual(
+      rows.completed.map((card) => card.training.id),
       ["fundamentals"]
     );
     assert.deepEqual(
       rows.trainings.map((card) => card.training.id),
       ["anger"]
     );
+  });
+
+  it("keeps finished trainings off Your Path", () => {
+    const rows = splitHomeRows(
+      [{ training: { id: "fundamentals" }, completed: 9, total: 9, gated: false }],
+      null
+    );
+    assert.equal(rows.path.length, 0);
+    assert.equal(rows.trainings.length, 0);
+    assert.equal(rows.completed[0]?.training.id, "fundamentals");
   });
 });
 

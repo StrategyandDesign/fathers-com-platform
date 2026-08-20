@@ -30,7 +30,7 @@ function HomeShelfRow({
 }: {
   title: string;
   cards: HomeShelfItem[];
-  variant: "path" | "available";
+  variant: "path" | "available" | "completed";
   t: Translate;
 }) {
   if (cards.length === 0) return null;
@@ -41,12 +41,14 @@ function HomeShelfRow({
       <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {cards.map((card) => {
           const meta =
-            variant === "available" && card.completed === 0
-              ? t("father.home.trainingNotStarted")
-              : t("father.home.sessionsComplete", {
-                  completed: card.completed,
-                  total: card.total,
-                });
+            variant === "completed"
+              ? t("father.home.trainingComplete")
+              : variant === "available" && card.completed === 0
+                ? t("father.home.trainingNotStarted")
+                : t("father.home.sessionsComplete", {
+                    completed: card.completed,
+                    total: card.total,
+                  });
 
           return (
             <Link
@@ -77,24 +79,35 @@ function HomeShelfRow({
 export function HomePathRow({
   path,
   trainings,
+  completed,
   t,
 }: {
   path: HomeShelfItem[];
   trainings?: HomeShelfItem[];
+  completed?: HomeShelfItem[];
   t: Translate;
 }) {
   const available = trainings ?? [];
-  if (path.length === 0 && available.length === 0) return null;
+  const finished = completed ?? [];
+  if (path.length === 0 && available.length === 0 && finished.length === 0) return null;
 
   const both = path.length > 0 && available.length > 0;
 
   return (
-    <div className={cn(both && "grid items-start gap-5 lg:grid-cols-2")}>
-      <HomeShelfRow title={t("father.home.yourPath")} cards={path} variant="path" t={t} />
+    <div className="space-y-5">
+      <div className={cn(both && "grid items-start gap-5 lg:grid-cols-2")}>
+        <HomeShelfRow title={t("father.home.yourPath")} cards={path} variant="path" t={t} />
+        <HomeShelfRow
+          title={t("father.home.yourTrainings")}
+          cards={available}
+          variant="available"
+          t={t}
+        />
+      </div>
       <HomeShelfRow
-        title={t("father.home.yourTrainings")}
-        cards={available}
-        variant="available"
+        title={t("father.home.completedTrainings")}
+        cards={finished}
+        variant="completed"
         t={t}
       />
     </div>
