@@ -19,6 +19,8 @@ govern every word in here.
 | org-admin-quickstart.md | Org admins | Seats, cohort funding, where incentive money goes, the Efficacy Report |
 | engine-license-outline.md | Counsel | Governance skeleton for licensing the engine to an outside authority. COUNSEL REVIEW REQUIRED |
 | funding-map.md | Org admins, development staff | Federal, reentry, and settlement funding streams, what they pay for, budget-line mapping |
+| fundraising-one-pager.md | Donors, foundations | One-page founding-gift leave-behind. Sources 2018–2026 only |
+| fundraising-brief.md | Donors, development staff | Market brief, $260k split, ten-minute talk track, numbered sources |
 | facilitator-triage-and-referral.md | Certified Facilitators | Distress signs, the same-day warm handoff, the education-line boundary, and the court-order rule for rebuilding trust |
 
 ## Regenerate
