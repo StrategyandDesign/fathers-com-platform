@@ -158,7 +158,7 @@ async function drawFathersLockup(
   try {
     const source = await readFile(path.join(process.cwd(), BRAND_LOCKUP_FILE));
     const image = await doc.embedPng(tintPngRgba(source, FATHERS_FOREST));
-    const height = 36;
+    const height = 46;
     const width = (image.width / image.height) * height;
     page.drawImage(image, {
       x: cx - width / 2,

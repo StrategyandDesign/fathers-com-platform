@@ -50,14 +50,14 @@ export function CertificateFace({
       <div
         className={cn(
           "flex h-full flex-col border border-[#326638]",
-          snapshot ? "px-2.5 py-2" : "px-4 py-5 sm:px-8 sm:py-8"
+          snapshot ? "justify-center px-2.5 py-2" : "px-4 py-5 sm:px-8 sm:py-8"
         )}
       >
-        <div className={cn("flex justify-center", snapshot ? "mb-1" : "mb-3 sm:mb-4")}>
+        <div className={cn("flex justify-center", snapshot ? "mb-1.5" : "mb-3 sm:mb-4")}>
           <BrandMark
             alt="Fathers.com"
             tone="forest"
-            className={snapshot ? "h-3.5" : "h-7 sm:h-8"}
+            className={snapshot ? "h-5" : "h-9 sm:h-10"}
           />
         </div>
         <p
@@ -116,8 +116,8 @@ export function CertificateFace({
         />
         <dl
           className={cn(
-            "mt-auto grid grid-cols-3",
-            snapshot ? "mt-1.5 gap-1 text-[5px]" : "mt-5 gap-3 text-sm sm:mt-7 sm:gap-5"
+            "grid grid-cols-3",
+            snapshot ? "mt-1.5 gap-1 text-[5px]" : "mt-auto mt-5 gap-3 text-sm sm:mt-7 sm:gap-5"
           )}
         >
           <Meta

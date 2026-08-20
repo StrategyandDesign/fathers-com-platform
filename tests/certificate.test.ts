@@ -74,5 +74,8 @@ describe("certificate preview", () => {
     const face = readRepo("components/certificates/certificate-face.tsx");
     assert.match(face, /tone="forest"/);
     assert.match(face, /BrandMark/);
+    assert.match(face, /justify-center/);
+    assert.match(face, /h-5/);
+    assert.match(face, /h-9 sm:h-10/);
   });
 });
