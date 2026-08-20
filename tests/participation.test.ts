@@ -51,7 +51,7 @@ describe("participation mode", () => {
     assert.doesNotMatch(en, /Voluntary participation\. Participants set their pace/);
     assert.match(
       en,
-      /how fathers hear assigned training — as expected work, as an offer, or in plain language/
+      /how fathers hear assigned training: as expected work, as an offer, or in plain language/
     );
     assert.match(en, /Who you can assign stays the same/);
   });
