@@ -201,6 +201,11 @@ export const en = {
     inviteHint: "Enter the code provided by your leader.",
     languageHint: "Language for this browser",
     pilotNotice: "The Fathers Performance Platform",
+    leaderJoinTitle: "Join as a Leader",
+    leaderJoinLead: "{org} is ready for you. Set your name and password.",
+    leaderJoinName: "Your name",
+    leaderJoinCta: "Create Leader account",
+    leaderJoinClosed: "That invite is no longer open. Ask a Super-admin to send it again.",
   },
   flash: {
     deactivated: "This account has been deactivated.",
@@ -1033,6 +1038,15 @@ export const en = {
       noTraining: "No training assigned",
       sessionInProgress: "Session in progress: {title}",
       readyCert: "Ready for certificate: {title}",
+    },
+    start: {
+      title: "This is the Leader desk.",
+      body: "You run this group. Fathers join with your invite code. Include a training, then assign it.",
+      stepInclude: "1. Include a training from Available trainings.",
+      stepAssign: "2. Assign it to the men in your group.",
+      stepInvite: "3. Share the invite code so they can join.",
+      stepPhotos: "4. Put the group mark on Org Photos when you have one.",
+      openDesk: "Open the desk",
     },
     companion: {
       eyebrow: "Agent",

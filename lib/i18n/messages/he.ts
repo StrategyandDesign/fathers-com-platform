@@ -200,6 +200,11 @@ export const he = {
     inviteHint: "הזן את הקוד שקיבלת מהמנהיג.",
     languageHint: "שפה בדפדפן זה",
     pilotNotice: "The Fathers Performance Platform",
+    leaderJoinTitle: "הצטרפות כמנהיג",
+    leaderJoinLead: "{org} מוכן בשבילך. הגדר שם וסיסמה.",
+    leaderJoinName: "השם שלך",
+    leaderJoinCta: "יצירת חשבון מנהיג",
+    leaderJoinClosed: "ההזמנה הזו כבר לא פתוחה. בקש ממנהל־על לשלוח אותה שוב.",
   },
   flash: {
     deactivated: "החשבון הזה הושבת.",
@@ -982,6 +987,15 @@ export const he = {
       noTraining: "לא הוקצתה הכשרה",
       sessionInProgress: "מפגש בתהליך: {title}",
       readyCert: "מוכן לתעודה: {title}",
+    },
+    start: {
+      title: "זה שולחן המנהיג.",
+      body: "אתה מנהל את הקבוצה. אבות מצטרפים עם קוד ההזמנה. כלול הכשרה, ואז הקצה אותה.",
+      stepInclude: "1. כלול הכשרה מההכשרות הזמינות.",
+      stepAssign: "2. הקצה אותה לאבות בקבוצה.",
+      stepInvite: "3. שתף את קוד ההזמנה כדי שיוכלו להצטרף.",
+      stepPhotos: "4. שים את סימן הקבוצה בתמונות הארגון כשיש לך אחד.",
+      openDesk: "פתיחת השולחן",
     },
     companion: {
       eyebrow: "סוכן",

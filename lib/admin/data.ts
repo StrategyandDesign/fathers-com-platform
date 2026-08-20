@@ -1,4 +1,5 @@
 import { isAppRole } from "@/lib/auth/roles";
+import { asManagerInvite, type ManagerInviteRow } from "@/lib/manager/invite";
 import { isTrainingPublished, type Session, type Training } from "@/lib/father/types";
 import { displayName, type Group, type GroupMember, type ManagedProfile } from "@/lib/manager/types";
 import { createClient } from "@/lib/supabase/server";
@@ -63,6 +64,20 @@ export async function loadAdminDashboard(): Promise<AdminDashboard> {
     trainingCount: trainings.length,
     unpublishedCount: trainings.filter((row) => !isTrainingPublished(row)).length,
   };
+}
+
+export async function loadManagerInvites(): Promise<ManagerInviteRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("manager_invites")
+    .select(
+      "id, email, full_name, organization_name, group_id, accepted_at, expires_at, created_at"
+    )
+    .order("created_at", { ascending: false });
+  if (error) return [];
+  return ((data ?? []) as Record<string, unknown>[])
+    .map(asManagerInvite)
+    .filter((row): row is ManagerInviteRow => Boolean(row));
 }
 
 export async function loadAdminOrganizations(): Promise<AdminGroupRow[]> {

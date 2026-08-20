@@ -3,7 +3,8 @@ import Link from "next/link";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { loadAdminOrganizations } from "@/lib/admin/data";
+import { loadAdminOrganizations, loadManagerInvites } from "@/lib/admin/data";
+import { isManagerInviteOpen } from "@/lib/manager/invite";
 import { requireRole } from "@/lib/auth/session";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,11 @@ export default async function AdminOrganizationsPage({
 }) {
   const flash = await searchParams;
   await requireRole("admin");
-  const organizations = await loadAdminOrganizations();
+  const [organizations, invites] = await Promise.all([
+    loadAdminOrganizations(),
+    loadManagerInvites(),
+  ]);
+  const pendingInvites = invites.filter((invite) => isManagerInviteOpen(invite));
 
   return (
     <div className="space-y-6">
@@ -33,6 +38,25 @@ export default async function AdminOrganizationsPage({
         </Link>
       </div>
       <Flash error={flash.error} notice={flash.notice} />
+
+      {pendingInvites.length > 0 ? (
+        <section className="rounded-xl border border-border bg-card px-4 py-5 sm:px-6">
+          <p className="font-heading font-semibold">Waiting on a leader</p>
+          <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+            {pendingInvites.map((invite) => (
+              <li key={invite.id}>
+                {invite.organizationName} · {invite.email}
+              </li>
+            ))}
+          </ul>
+          <Link
+            href="/admin/support/leaders"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-4 w-full sm:w-auto")}
+          >
+            Open invites
+          </Link>
+        </section>
+      ) : null}
 
       <div className="overflow-hidden rounded-xl border border-border bg-card">
         {organizations.length === 0 ? (

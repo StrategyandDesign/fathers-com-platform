@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 export const RATE_LIMITS = {
   "auth.signin": { limit: 10, windowMs: 15 * 60 * 1000 },
   "auth.signup": { limit: 5, windowMs: 60 * 60 * 1000 },
+  "auth.leader_join": { limit: 5, windowMs: 60 * 60 * 1000 },
   "certificates.download": { limit: 30, windowMs: 5 * 60 * 1000 },
   "account.avatar": { limit: 8, windowMs: 15 * 60 * 1000 },
   "account.org_photo": { limit: 20, windowMs: 15 * 60 * 1000 },

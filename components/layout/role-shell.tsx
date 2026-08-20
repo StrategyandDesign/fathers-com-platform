@@ -9,6 +9,7 @@ import { UserAvatar } from "@/components/layout/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import { ROLE_ACCOUNT, ROLE_HOME, type AppRole } from "@/lib/auth/roles";
 import { isFatherStartPath } from "@/lib/father/onboarding";
+import { isManagerStartPath } from "@/lib/manager/onboarding";
 import { requestPathname } from "@/lib/http/pathname";
 import { getI18n } from "@/lib/i18n/server";
 import { interactiveIconClassName } from "@/lib/ui";
@@ -35,10 +36,15 @@ export async function RoleShell({
 }) {
   const { t } = await getI18n();
   const pathname = await requestPathname();
-  const startFlow = role === "father" && isFatherStartPath(pathname);
-  const funnel = startFlow || (role === "father" && onboardingActive);
+  const startFlow =
+    (role === "father" && isFatherStartPath(pathname)) ||
+    (role === "manager" && isManagerStartPath(pathname));
+  const funnel =
+    startFlow ||
+    (role === "father" && onboardingActive) ||
+    (role === "manager" && onboardingActive);
   const fatherMobile = role === "father" && !funnel;
-  const managerMobileNav = role === "manager";
+  const managerMobileNav = role === "manager" && !funnel;
   const chromeLabel = role === "father" ? null : roleLabel?.trim() || t(`role.${role}`);
   const groupName = role === "father" && !startFlow ? organizationName?.trim() || null : null;
   const groupLogo = role === "father" && !startFlow ? organizationLogoUrl ?? null : null;
@@ -48,7 +54,15 @@ export async function RoleShell({
       <header className="fixed inset-x-0 top-0 z-30 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-3 border-b border-header-border bg-header px-3 pt-[env(safe-area-inset-top)] text-header-foreground print:hidden lg:px-5">
         <div className="flex min-w-0 shrink-0 items-center gap-1.5 lg:gap-3">
           {role !== "father" && role !== "manager" ? <StaffMenu role={role} /> : null}
-          <BrandLogo href={funnel ? "/father/start" : ROLE_HOME[role]} />
+          <BrandLogo
+            href={
+              funnel
+                ? role === "manager"
+                  ? "/manager/start"
+                  : "/father/start"
+                : ROLE_HOME[role]
+            }
+          />
           {groupName ? (
             <p className="hidden min-w-0 max-w-[12rem] truncate text-sm text-muted-foreground sm:block">
               {groupName}

@@ -22,7 +22,16 @@ import {
   isAuthoringStatus,
 } from "@/lib/admin/development";
 import { slugify } from "@/lib/admin/slug";
-import { loadSessionUsage, loadTrainingUsage } from "@/lib/admin/data";
+import { loadAdminUsers, loadSessionUsage, loadTrainingUsage } from "@/lib/admin/data";
+import { notifyLeaderInvite, notifyOrganizationReady } from "@/lib/email/events";
+import { getAppUrl } from "@/lib/email/send";
+import {
+  createManagerInviteToken,
+  isInviteEmail,
+  managerInviteExpiresAt,
+  managerJoinHref,
+  normalizeInviteEmail,
+} from "@/lib/manager/invite";
 import {
   isLegacyCatalogTraining,
   RELEASE_CONFIRM,
@@ -298,8 +307,131 @@ export async function createOrganization(formData: FormData) {
     await seedGroupAssessmentReviews(supabase, data.id);
   }
 
+  const users = await loadAdminUsers();
+  const email = users.find((row) => row.id === managerId)?.email;
+  if (email) {
+    await notifyOrganizationReady({ email, organizationName: name });
+  }
+
   revalidateAdmin();
-  ok("/admin/organizations", "Organization created.");
+  ok("/admin/organizations", "Organization created. We emailed the leader.");
+}
+
+export async function provisionOrganization(formData: FormData) {
+  const { user } = await requireRole("admin");
+  const path = "/admin/organizations/new";
+  const name = String(formData.get("name") ?? "").trim();
+  const email = normalizeInviteEmail(formData.get("email"));
+  const fullName = String(formData.get("full_name") ?? "").trim() || null;
+  const managerId = String(formData.get("manager_id") ?? "").trim();
+
+  if (!name) fail(path, "Name is required.");
+  if (fullName && fullName.length > 80) fail(path, "Keep the name under 80 characters.");
+
+  const users = await loadAdminUsers();
+  const chosen = managerId ? users.find((row) => row.id === managerId) : null;
+  const matched = email ? users.find((row) => row.email?.toLowerCase() === email) : null;
+  const existing = chosen ?? matched ?? null;
+
+  if (existing) {
+    if (existing.role !== "manager") {
+      fail(path, "That email already belongs to another role. Use a different email.");
+    }
+    if (existing.deactivated_at) {
+      fail(path, "That leader is deactivated.");
+    }
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("groups")
+      .insert({ name, manager_id: existing.id })
+      .select("id")
+      .single();
+    if (error) fail(path, error.message);
+    if (data?.id) {
+      await seedGroupTrainingReviews(supabase, data.id);
+      await seedGroupAssessmentReviews(supabase, data.id);
+    }
+    if (existing.email) {
+      await notifyOrganizationReady({ email: existing.email, organizationName: name });
+    }
+    revalidateAdmin();
+    revalidatePath("/admin/support/leaders");
+    ok("/admin/organizations", "Organization created. We emailed the leader.");
+  }
+
+  if (!isInviteEmail(email)) {
+    fail(path, "Enter the leader’s email, or choose an existing leader.");
+  }
+
+  const supabase = await createClient();
+  const token = createManagerInviteToken();
+  const { error } = await supabase.from("manager_invites").insert({
+    token_hash: token.hash,
+    email,
+    full_name: fullName,
+    organization_name: name,
+    invited_by: user.id,
+    expires_at: managerInviteExpiresAt().toISOString(),
+  });
+
+  if (error) {
+    if (error.code === "23505") {
+      fail(path, "An invite is already open for that email.");
+    }
+    fail(path, error.message);
+  }
+
+  const mailed = await notifyLeaderInvite({
+    email,
+    organizationName: name,
+    joinHref: managerJoinHref(token.token, getAppUrl()),
+  });
+  revalidateAdmin();
+  revalidatePath("/admin/support/leaders");
+  ok(
+    "/admin/organizations",
+    mailed.sent
+      ? "Invite sent to their inbox. It also appears in Inbox."
+      : "Invite saved. Email did not send. Open Inbox to send it again."
+  );
+}
+
+export async function resendLeaderInvite(formData: FormData) {
+  await requireRole("admin");
+  const inviteId = String(formData.get("invite_id") ?? "").trim();
+  const path = "/admin/support/leaders";
+  if (!inviteId) fail(path, "Choose an invite.");
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("manager_invites")
+    .select("id, email, organization_name, accepted_at, expires_at")
+    .eq("id", inviteId)
+    .maybeSingle();
+  if (error) fail(path, error.message);
+  if (!data || data.accepted_at) fail(path, "That invite is no longer open.");
+
+  const token = createManagerInviteToken();
+  const { error: updateError } = await supabase
+    .from("manager_invites")
+    .update({
+      token_hash: token.hash,
+      expires_at: managerInviteExpiresAt().toISOString(),
+    })
+    .eq("id", inviteId)
+    .is("accepted_at", null);
+  if (updateError) fail(path, updateError.message);
+
+  const mailed = await notifyLeaderInvite({
+    email: String(data.email),
+    organizationName: String(data.organization_name),
+    joinHref: managerJoinHref(token.token, getAppUrl()),
+  });
+  revalidatePath(path);
+  ok(
+    path,
+    mailed.sent ? "Invite sent again." : "Invite refreshed. Email did not send."
+  );
 }
 
 export async function updateOrganization(formData: FormData) {
