@@ -11,6 +11,7 @@ import { Flash } from "@/components/manager/flash";
 import { loadFatherAssignments } from "@/lib/assessments/data";
 import { loadFatherLeader, loadVisibleCohortNote } from "@/lib/cohort-note/data";
 import { requireRole } from "@/lib/auth/session";
+import { formatCertificateDate } from "@/lib/certificates/types";
 import { pickHomeAssessment, splitHomeRows } from "@/lib/father/home";
 import { loadFatherHome } from "@/lib/father/data";
 import { loadFatherStreakHome } from "@/lib/father/streak-store";
@@ -101,6 +102,8 @@ export default async function FatherHomePage({
     title:
       trainingCards.find((card) => card.training.id === row.training_id)?.training.title ??
       t("account.certificates"),
+    completedOn: formatCertificateDate(row.issued_at),
+    serialNumber: row.serial_number,
   }));
   const heroCover = next
     ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl, orgPhotos.photoPack)

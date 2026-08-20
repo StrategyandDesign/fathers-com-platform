@@ -22,6 +22,10 @@ export function formatCertificateDate(value: string) {
   });
 }
 
+export function certificatePreviewPath(certificateId: string) {
+  return `/father/certificates/${certificateId}`;
+}
+
 export function certificateDownloadPath(certificateId: string) {
   return `/api/certificates/${certificateId}/download`;
 }

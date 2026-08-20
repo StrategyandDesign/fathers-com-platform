@@ -422,7 +422,9 @@ export const en = {
     helpLead: "Something not working, or a question? Send a short note.",
     reportProblem: "Report a Problem",
     certificates: "Certificates",
-    certificatesLead: "Issued by your leader. Download the official PDF.",
+    certificatesLead: "Issued by your leader. Preview it, then download the official PDF.",
+    certificatePreviewLead: "This is your certificate. Download the official PDF when you need the file.",
+    backToCertificates: "Back to certificates",
     certificatesEmpty:
       "Certificates appear after your leader issues one for a completed training.",
     certificatesEmptyTitle: "No certificates yet",

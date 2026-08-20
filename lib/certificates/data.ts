@@ -115,19 +115,19 @@ export async function loadCertificatePdfBytes(certificateId: string): Promise<{
   const loaded = await loadCertificatePayload(certificateId);
   if (!loaded) return null;
 
-  const supabase = await createClient();
-  if (loaded.storagePath) {
+  try {
+    return {
+      bytes: await renderCertificatePdf(loaded.payload),
+      serialNumber: loaded.serialNumber,
+    };
+  } catch {
+    if (!loaded.storagePath) return null;
+    const supabase = await createClient();
     const { data } = await supabase.storage.from(CERTIFICATES_BUCKET).download(loaded.storagePath);
-    if (data) {
-      return {
-        bytes: new Uint8Array(await data.arrayBuffer()),
-        serialNumber: loaded.serialNumber,
-      };
-    }
+    if (!data) return null;
+    return {
+      bytes: new Uint8Array(await data.arrayBuffer()),
+      serialNumber: loaded.serialNumber,
+    };
   }
-
-  return {
-    bytes: await renderCertificatePdf(loaded.payload),
-    serialNumber: loaded.serialNumber,
-  };
 }

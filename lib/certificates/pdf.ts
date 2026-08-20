@@ -1,5 +1,9 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage, type RGB } from "pdf-lib";
 
+import { BRAND_LOCKUP_FILE, FATHERS_FOREST, tintPngRgba } from "@/lib/brand/lockup-png";
 import type { CertificatePayload } from "@/lib/certificates/types";
 import { embedExportFonts, shapePdfText } from "@/lib/pdf/fonts";
 
@@ -73,13 +77,14 @@ export async function renderCertificatePdf(input: CertificatePayload): Promise<U
   });
 
   const contentWidth = PAGE_WIDTH - 160;
-  let y = PAGE_HEIGHT - 92;
+  let y = PAGE_HEIGHT - 78;
 
-  drawBrandMark(page, PAGE_WIDTH / 2, y + 8, FOREST);
-  y -= 36;
-
-  drawTrackedCenter(page, "FATHERS.COM", y, sansBold, 13, FOREST, 2.4);
-  y -= 28;
+  const lockupDrawn = await drawFathersLockup(doc, page, PAGE_WIDTH / 2, y);
+  y -= lockupDrawn ? 58 : 20;
+  if (!lockupDrawn) {
+    drawTrackedCenter(page, "FATHERS.COM", y, sansBold, 13, FOREST, 2.4);
+    y -= 28;
+  }
   drawTrackedCenter(page, "CERTIFICATE OF COMPLETION", y, sans, 11, MUTED, 2.1);
   y -= 16;
   drawCentered(page, "National Center for Fathering", y, serifItalic, 11, MUTED);
@@ -144,28 +149,27 @@ export async function renderCertificatePdf(input: CertificatePayload): Promise<U
   return doc.save();
 }
 
-function drawBrandMark(page: PDFPage, cx: number, top: number, color: RGB) {
-  const scale = 0.72;
-  page.drawSvgPath(
-    "M 20 41.2 L 36.2 31.8 V 15 C 36.2 8.4 29.3 3.2 20 0.4 C 10.7 3.2 3.8 8.4 3.8 15 V 31.8 L 20 41.2 Z",
-    {
-      x: cx - 20 * scale,
-      y: top - 44 * scale,
-      scale,
-      borderColor: color,
-      borderWidth: 2.2,
-    }
-  );
-  page.drawSvgPath(
-    "M 12.5 15 L 23.3 24.2 L 33.5 15 M 12.5 21.2 L 23.3 30.4 L 33.5 21.2 M 16.2 27.8 L 23.3 34.6 L 30.2 27.8",
-    {
-      x: cx - 20 * scale,
-      y: top - 44 * scale,
-      scale,
-      borderColor: color,
-      borderWidth: 2,
-    }
-  );
+async function drawFathersLockup(
+  doc: PDFDocument,
+  page: PDFPage,
+  cx: number,
+  top: number
+) {
+  try {
+    const source = await readFile(path.join(process.cwd(), BRAND_LOCKUP_FILE));
+    const image = await doc.embedPng(tintPngRgba(source, FATHERS_FOREST));
+    const height = 36;
+    const width = (image.width / image.height) * height;
+    page.drawImage(image, {
+      x: cx - width / 2,
+      y: top - height,
+      width,
+      height,
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function fitSize(text: string, font: PDFFont, maxWidth: number, max: number, min: number) {

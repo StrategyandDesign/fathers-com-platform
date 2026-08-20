@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { CoverPhoto } from "@/components/brand/cover";
-import { HomeEarnedRow } from "@/components/father/home-earned";
+import { HomeEarnedRow, type HomeEarnedMark } from "@/components/father/home-earned";
 import { homeTrainingLabel } from "@/lib/father/home";
 import type { Translate } from "@/lib/i18n/translate";
 import { trainingContinueHref } from "@/lib/father/training-door";
@@ -89,7 +89,7 @@ export function HomePathRow({
   path: HomeShelfItem[];
   trainings?: HomeShelfItem[];
   completed?: HomeShelfItem[];
-  earned?: Array<{ id: string; title: string }>;
+  earned?: HomeEarnedMark[];
   t: Translate;
 }) {
   const available = trainings ?? [];

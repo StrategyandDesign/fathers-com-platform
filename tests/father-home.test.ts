@@ -201,6 +201,13 @@ describe("home board layout", () => {
     assert.match(path, /HomeEarnedRow/);
     assert.match(page, /earned=\{earned\}/);
     assert.doesNotMatch(page, /<HomeEarnedRow/);
+    const earned = readFileSync(
+      fileURLToPath(new URL("../components/father/home-earned.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(earned, /certificatePreviewPath/);
+    assert.match(earned, /CertificateFace/);
+    assert.doesNotMatch(earned, /certificateDownloadPath/);
   });
 });
 
