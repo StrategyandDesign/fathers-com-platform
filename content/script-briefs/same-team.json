@@ -141,13 +141,13 @@
       "number": 3,
       "id": "c3",
       "title": "Flooded Means Pause",
-      "keyline": "Flooded means pause. Twenty minutes, then resume.",
+      "keyline": "Flooded means pause. Then come back.",
       "length": "~12 min",
       "one_scene": "The message thread heats up and he can feel his heartbeat in his ears. He names the pause, puts the phone face down, and walks. Later he comes back, and the conversation works.",
-      "in_the_room": "When your heart is racing, the thinking brain goes offline. You train recognizing flood and pausing about twenty minutes before you resume.",
+      "in_the_room": "When your heart is racing, the thinking brain goes offline. You train recognizing flood, pausing, then coming back.",
       "what_you_leave_with": "You can recognize flooding in yourself and pause before you make it worse.",
       "practice": "Rehearse the pause rule once. Use it on any heated exchange this week and log both ends.",
-      "science_or_note": "Past a racing heartbeat nobody absorbs a word; the body needs about twenty minutes to come down.",
+      "science_or_note": "Past a racing heartbeat nobody absorbs a word. Pause. Come back when you can think.",
       "checkpoint_questions": [
         {
           "prompt": "What does flooded mean in this session?",
@@ -162,15 +162,15 @@
           "prompt": "What is the rule when you notice you are flooded?",
           "choices": [
             "Push through to resolution",
-            "Pause, about twenty minutes, then resume",
+            "Pause, then come back",
             "End all contact for the week"
           ],
           "correct_index": 1
         },
         {
-          "prompt": "Why twenty minutes, roughly?",
+          "prompt": "What does the pause require?",
           "choices": [
-            "It is how long the body needs to actually come down; five minutes of silent rehearsing does not count",
+            "You actually come down before you resume; rehearsing the fight in silence does not count",
             "It is a rule of the platform",
             "It gives you time to build your case"
           ],
@@ -179,13 +179,13 @@
       ],
       "script_aids": {
         "purpose": "Install a body-aware pause when flooded so heat does not destroy the goal.",
-        "practical_insight": "Flooded means pause. Twenty minutes, then resume.",
+        "practical_insight": "Flooded means pause. Then come back.",
         "emotional_beat": "Self-control without shutdown: he can leave the heat and still return.",
         "shape_motifs": [
-          "heartbeat bars rising then a twenty-minute cool arc",
+          "heartbeat bars rising then draining as he steps away",
           "phone face-down mark",
           "flood fill draining from a message thread",
-          "pause timer ring"
+          "return path after the pause"
         ],
         "do_not": [
           "No faces, bodies, photographic people, or culture-specific dress",

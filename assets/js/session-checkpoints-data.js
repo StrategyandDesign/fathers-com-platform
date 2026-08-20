@@ -1254,7 +1254,7 @@ window.FC_SESSION_CHECKPOINTS = {
       "3": {
         "ord": 3,
         "title": "Flooded Means Pause",
-        "keyline": "Flooded means pause. Twenty minutes, then resume.",
+        "keyline": "Flooded means pause. Then come back.",
         "still": "assets/img/session-stills/same-team/s03.png",
         "video_url": null,
         "questions": [
@@ -1271,15 +1271,15 @@ window.FC_SESSION_CHECKPOINTS = {
             "prompt": "What is the rule when you notice you are flooded?",
             "choices": [
               "Push through to resolution",
-              "Pause, about twenty minutes, then resume",
+              "Pause, then come back",
               "End all contact for the week"
             ],
             "feedback": ""
           },
           {
-            "prompt": "Why twenty minutes, roughly?",
+            "prompt": "What does the pause require?",
             "choices": [
-              "It is how long the body needs to actually come down; five minutes of silent rehearsing does not count",
+              "You actually come down before you resume; rehearsing the fight in silence does not count",
               "It is a rule of the platform",
               "It gives you time to build your case"
             ],
