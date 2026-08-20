@@ -113,7 +113,7 @@ export const en = {
       sharingProviders:
         "We share data with service providers who help us run the platform (for example, hosting, file storage, email delivery, and error monitoring), under agreements that require them to protect it.",
       sharingOrg:
-        "If you join through an invite code, your organization administrator (Leader) can see your name, training progress, assessment responses, and certificates. Reviewers see cohort totals only, not your name or individual answers. Super-admins operate the platform catalog and organizations; they are not a substitute for your organization administrator. If you turn on anonymous sharing in Account, super-admins can see counts of progress and activity without your name, email, notes, or answers.",
+        "If you join through an invite code, your organization administrator (Leader) can see your name, training progress, assessment responses, and certificates. Reviewers see cohort totals only, not your name or individual answers. Super-admins operate the platform catalog and organizations; they are not a substitute for your organization administrator. Anonymous sharing is on for fathers and leaders unless they turn it off in Account. Super-admins then see counts of progress and activity without your name, email, notes, or answers.",
       sharingLegal:
         "If we receive a subpoena or court order, we are required to respond. We will tell you before we do unless the law forbids it. If you would rather not write something down, do not write it down; completion never depends on what you disclose in a free-text note.",
       choices: "Your choices",
@@ -389,11 +389,11 @@ export const en = {
     logoRemoved: "Logo removed. Fathers will see the organization name only.",
     shareTitle: "Anonymous sharing",
     shareLeadFather:
-      "Release anonymous training progress to Fathers.com. Super-admins see counts only, not your name, email, written answers, or notes. Off until you turn it on.",
+      "On for you. Super-admins see anonymous training counts only, not your name, email, written answers, or notes.",
     shareLeadManager:
-      "Release anonymous counts of assignments, reviews, and certificates you issue. Super-admins do not see names or which organization.",
+      "On for you. Super-admins see anonymous counts of assignments, reviews, and certificates you issue. They do not see names or which organization.",
     shareLeadReviewer:
-      "Release anonymous counts of how you use Insights. Super-admins do not see your name or which organizations you watch.",
+      "Release anonymous counts of how you use Insights. Super-admins do not see your name or which organizations you watch. Off until you turn it on.",
     shareToggle: "Share anonymous data with super-admin",
     shareOn: "Sharing",
     shareOff: "Not sharing",

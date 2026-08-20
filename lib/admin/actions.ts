@@ -103,6 +103,7 @@ async function requireSuperAdmin() {
 
 function revalidateAdmin(extra?: string) {
   revalidatePath("/admin");
+  revalidatePath("/admin/gathering");
   revalidatePath("/admin/organizations");
   revalidatePath("/admin/trainings");
   revalidatePath("/admin/assessments");

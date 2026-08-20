@@ -41,7 +41,7 @@ function Waiting({ role, optedIn, needed }: { role: string; optedIn: number; nee
   return (
     <p className="text-sm text-muted-foreground">
       {optedIn === 0
-        ? `No ${role} have turned sharing on yet. Counts stay hidden until at least ${needed} share.`
+        ? `No ${role} are sharing yet. Counts stay hidden until at least ${needed} share.`
         : `${optedIn} ${role} sharing. Counts stay hidden until at least ${needed} share, so one person cannot be read from the totals.`}
     </p>
   );
@@ -62,7 +62,7 @@ export default async function AdminGatheringPage() {
         <div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight">Gathering</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Anonymous participation from people who chose to share it.
+            Anonymous participation from fathers and leaders, plus reviewers who choose to share.
           </p>
         </div>
         <EmptyState title="Gathering unavailable">
@@ -78,10 +78,10 @@ export default async function AdminGatheringPage() {
       <div>
         <h1 className="font-heading text-2xl font-semibold tracking-tight">Gathering</h1>
         <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-          Anonymous participation from people who chose to share it. No names,
-          emails, notes, answers, or certificate serials. Each person turns this
-          on in Account. Totals that would describe fewer than {minCohort}{" "}
-          people stay hidden.
+          Anonymous participation from fathers and leaders (on unless they turn
+          it off) and from reviewers who choose to share. No names, emails,
+          notes, answers, or certificate serials. Totals that would describe
+          fewer than {minCohort} people stay hidden.
         </p>
       </div>
 
@@ -105,7 +105,7 @@ export default async function AdminGatheringPage() {
           <h2 className="font-heading text-lg font-semibold">Father participants</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Training, session, assessment, and certificate counts from fathers
-            who opted in.
+            who are sharing.
           </p>
         </div>
         {fathers.ready ? (
@@ -185,7 +185,7 @@ export default async function AdminGatheringPage() {
           <h2 className="font-heading text-lg font-semibold">Leaders</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Assignments, certificates issued, and review decisions from leaders
-            who opted in. Organizations stay unnamed.
+            who are sharing. Organizations stay unnamed.
           </p>
         </div>
         {managers.ready ? (
@@ -205,8 +205,9 @@ export default async function AdminGatheringPage() {
         <div>
           <h2 className="font-heading text-lg font-semibold">Reviewers</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Whether opted-in reviewers watch the whole network or one
-            organization. No organization names.
+            Whether sharing reviewers watch the whole network or one
+            organization. Reviewers stay off until they turn this on. No
+            organization names.
           </p>
         </div>
         {reviewers.ready ? (
@@ -220,16 +221,16 @@ export default async function AdminGatheringPage() {
       </section>
 
       {fathers.optedIn + managers.optedIn + reviewers.optedIn === 0 ? (
-        <EmptyState title="Waiting on consent">
-          Gathering stays empty until a father, leader, or reviewer turns on
-          anonymous sharing in Account. Super-admins do not turn it on for them.
+        <EmptyState title="No one is sharing">
+          Fathers and leaders start on. If this is empty, they turned sharing
+          off, or no one has an account yet.
         </EmptyState>
       ) : null}
 
       <p className="text-sm text-muted-foreground">
-        Fathers, leaders, and reviewers turn sharing on from their own Account.
-        Super-admin Account does not share, because this tab is the receiving
-        side.
+        Fathers and leaders can turn sharing off from their own Account.
+        Reviewers turn it on there. Super-admin Account does not share, because
+        this tab is the receiving side.
       </p>
     </div>
   );

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { loadAdminDashboard } from "@/lib/admin/data";
+import { gatheringHomePreview, loadAdminGathering } from "@/lib/admin/gathering";
 import { requireRole } from "@/lib/auth/session";
 import { loadOpenSupportCount } from "@/lib/support/data";
 import { loadOpenTrainingRequestCount } from "@/lib/training-requests/data";
@@ -16,11 +17,13 @@ export default async function AdminHomePage({
 }) {
   const params = await searchParams;
   await requireRole("admin");
-  const [summary, openSupportCount, openRequestCount] = await Promise.all([
+  const [summary, openSupportCount, openRequestCount, gathering] = await Promise.all([
     loadAdminDashboard(),
     loadOpenSupportCount(),
     loadOpenTrainingRequestCount(),
+    loadAdminGathering(),
   ]);
+  const gatheringPreview = gathering.unavailable ? null : gatheringHomePreview(gathering);
 
   const stats = [
     { label: "Organizations", value: summary.organizationCount, href: "/admin/organizations" },
@@ -98,9 +101,37 @@ export default async function AdminHomePage({
         <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Gathering</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Anonymous participation from people who turned sharing on in
-            Account. Counts only.
+            Anonymous counts from fathers and leaders. On unless they turn it
+            off. Reviewers choose.
           </p>
+          {gatheringPreview ? (
+            <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <dt className="text-muted-foreground">Fathers sharing</dt>
+                <dd className="font-heading text-xl font-semibold tabular-nums">
+                  {gatheringPreview.fathersSharing}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Leaders sharing</dt>
+                <dd className="font-heading text-xl font-semibold tabular-nums">
+                  {gatheringPreview.leadersSharing}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Sessions completed</dt>
+                <dd className="font-heading text-xl font-semibold tabular-nums">
+                  {gatheringPreview.sessionsCompleted ?? "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Assignments</dt>
+                <dd className="font-heading text-xl font-semibold tabular-nums">
+                  {gatheringPreview.assignments ?? "—"}
+                </dd>
+              </div>
+            </dl>
+          ) : null}
           <Link
             href="/admin/gathering"
             className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
