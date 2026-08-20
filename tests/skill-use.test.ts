@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   countSkillsUsed,
@@ -10,17 +12,21 @@ import {
 } from "../lib/father/skill-use";
 
 describe("skill use parse", () => {
-  it("accepts only used and later", () => {
+  it("accepts used, later, and dismissed", () => {
     assert.equal(parseSkillUse("used"), "used");
     assert.equal(parseSkillUse("later"), "later");
+    assert.equal(parseSkillUse("dismissed"), "dismissed");
     assert.equal(parseSkillUse("completed"), null);
     assert.equal(parseSkillUse(null), null);
   });
 
-  it("does not let used fall back to later", () => {
+  it("does not let used fall back to later or dismissed", () => {
     assert.equal(nextSkillUse("used", "later"), "used");
+    assert.equal(nextSkillUse("used", "dismissed"), "used");
     assert.equal(nextSkillUse("later", "used"), "used");
+    assert.equal(nextSkillUse("dismissed", "used"), "used");
     assert.equal(nextSkillUse(null, "later"), "later");
+    assert.equal(nextSkillUse(null, "dismissed"), "dismissed");
   });
 });
 
@@ -81,6 +87,13 @@ describe("skill use follow-up", () => {
           completedAt: "2026-08-17T12:00:00.000Z",
           skillUse: "later",
         },
+        {
+          sessionId: "dismissed",
+          sessionTitle: "Session 3",
+          skill: "Show up",
+          completedAt: "2026-08-16T12:00:00.000Z",
+          skillUse: "dismissed",
+        },
       ],
       now
     );
@@ -89,15 +102,33 @@ describe("skill use follow-up", () => {
 });
 
 describe("skills used count", () => {
-  it("counts only used, never later or blank", () => {
+  it("counts only used, never later, dismissed, or blank", () => {
     assert.equal(
       countSkillsUsed([
         { skill_use: "used" },
         { skill_use: "later" },
+        { skill_use: "dismissed" },
         { skill_use: null },
         { skillUse: "used" },
       ]),
       2
     );
+  });
+});
+
+describe("skill use card", () => {
+  it("offers Completed, Not yet, and Dismiss on one unselected row", () => {
+    const source = readFileSync(
+      fileURLToPath(new URL("../components/father/skill-use-card.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(source, /skillUseCompleted/);
+    assert.match(source, /skillUseLater/);
+    assert.match(source, /skillUseDismiss/);
+    assert.match(source, /flex flex-row flex-wrap items-center gap-2/);
+    assert.match(source, /variant="outline"/);
+    assert.match(source, /setHidden\(true\)/);
+    assert.doesNotMatch(source, /skillUseMarked/);
+    assert.doesNotMatch(source, /showLater/);
   });
 });

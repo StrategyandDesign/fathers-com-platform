@@ -52,8 +52,6 @@ export function SessionCloseoutView({
           skill={skill ?? ""}
           reported={skillUse ?? null}
           returnTo="done"
-          showLater={false}
-          t={t}
         />
       ) : null}
 

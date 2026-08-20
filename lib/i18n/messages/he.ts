@@ -756,8 +756,10 @@ export const he = {
       closeoutHome: "בית",
       closeoutTrainingDone: "ההכשרה הזו הושלמה.",
       skillUseTitle: "השתמשת במיומנות הזו?",
-      skillUseUsed: "השתמשתי",
+      skillUseUsed: "הושלם",
+      skillUseCompleted: "הושלם",
       skillUseLater: "עדיין לא",
+      skillUseDismiss: "סגירה",
       skillUseMarked: "סימנת שהשתמשת בזה.",
     },
     intro: {

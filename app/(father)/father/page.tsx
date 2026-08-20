@@ -196,8 +196,6 @@ export default async function FatherHomePage({
           skill={skillUsePrompt.skill}
           reported={null}
           returnTo="home"
-          showLater
-          t={t}
         />
       ) : null}
 

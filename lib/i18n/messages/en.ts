@@ -799,8 +799,10 @@ export const en = {
       closeoutHome: "Home",
       closeoutTrainingDone: "This training is complete.",
       skillUseTitle: "Did you use this skill?",
-      skillUseUsed: "I used it",
+      skillUseUsed: "Completed",
+      skillUseCompleted: "Completed",
       skillUseLater: "Not yet",
+      skillUseDismiss: "Dismiss",
       skillUseMarked: "You marked that you used this.",
     },
     intro: {

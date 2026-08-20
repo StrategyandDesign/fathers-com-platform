@@ -1,4 +1,4 @@
-export const SKILL_USES = ["used", "later"] as const;
+export const SKILL_USES = ["used", "later", "dismissed"] as const;
 
 export type SkillUse = (typeof SKILL_USES)[number];
 
@@ -19,7 +19,7 @@ export type SkillUsePrompt = {
 };
 
 export function isSkillUse(value: unknown): value is SkillUse {
-  return value === "used" || value === "later";
+  return value === "used" || value === "later" || value === "dismissed";
 }
 
 export function parseSkillUse(value: unknown): SkillUse | null {
