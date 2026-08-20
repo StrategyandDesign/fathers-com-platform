@@ -29,6 +29,11 @@ export function homeTrainingSessionCount(total: number) {
   return total > 0 ? total : null;
 }
 
+/** More than one item in Completed or Certificates becomes a title list. */
+export function shouldCompactHomeDoneShelf(count: number) {
+  return count > 1;
+}
+
 export function isHomeTrainingComplete(card: HomePathCard) {
   return card.total > 0 && card.completed >= card.total;
 }

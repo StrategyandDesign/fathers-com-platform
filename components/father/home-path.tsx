@@ -2,7 +2,11 @@ import Link from "next/link";
 
 import { CoverPhoto } from "@/components/brand/cover";
 import { HomeEarnedRow, type HomeEarnedMark } from "@/components/father/home-earned";
-import { homeTrainingLabel, homeTrainingSessionCount } from "@/lib/father/home";
+import {
+  homeTrainingLabel,
+  homeTrainingSessionCount,
+  shouldCompactHomeDoneShelf,
+} from "@/lib/father/home";
 import type { Translate } from "@/lib/i18n/translate";
 import { trainingContinueHref } from "@/lib/father/training-door";
 import { type Session, type SessionProgress, type Training } from "@/lib/father/types";
@@ -37,51 +41,71 @@ function HomeShelfRow({
   t: Translate;
 }) {
   if (cards.length === 0) return null;
+  const compact = variant === "completed" && shouldCompactHomeDoneShelf(cards.length);
 
   return (
     <section className="min-w-0 space-y-3.5">
       <p className={eyebrowClassName}>{title}</p>
-      <div className={cn("grid gap-3", rail ? "grid-cols-2 lg:grid-cols-1" : "grid-cols-2")}>
-        {cards.map((card) => {
-          const meta =
-            variant === "completed"
-              ? t("father.home.trainingComplete")
-              : variant === "available" && card.completed === 0
-                ? t("father.home.trainingNotStarted")
-                : t("father.home.sessionsComplete", {
-                    completed: card.completed,
-                    total: card.total,
-                  });
-
-          return (
+      {compact ? (
+        <div className="overflow-hidden rounded-xl border border-border">
+          {cards.map((card) => (
             <Link
               key={card.training.id}
               href={trainingContinueHref(card)}
               className={cn(
-                "min-w-0 overflow-hidden rounded-xl border border-border bg-card",
+                "block min-w-0 border-t border-border px-3.5 py-3 first:border-t-0",
                 interactiveSurfaceClassName
               )}
             >
-              <div className="h-24 overflow-hidden bg-[#101510]">
-                <CoverPhoto src={card.coverSrc} />
-              </div>
-              <div className="space-y-1.5 p-3.5">
-                <p className="line-clamp-2 font-heading text-sm font-semibold leading-snug">
-                  {homeTrainingLabel(card.training)}
-                </p>
-                {homeTrainingSessionCount(card.total) != null ? (
-                  <p className="text-xs text-muted-foreground">
-                    {card.total === 1
-                      ? t("father.home.trainingSessionOne")
-                      : t("father.home.trainingSessions", { n: card.total })}
-                  </p>
-                ) : null}
-                <p className="text-xs text-muted-foreground">{meta}</p>
-              </div>
+              <p className="line-clamp-2 font-heading text-sm font-semibold leading-snug">
+                {homeTrainingLabel(card.training)}
+              </p>
             </Link>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className={cn("grid gap-3", rail ? "grid-cols-2 lg:grid-cols-1" : "grid-cols-2")}>
+          {cards.map((card) => {
+            const meta =
+              variant === "completed"
+                ? t("father.home.trainingComplete")
+                : variant === "available" && card.completed === 0
+                  ? t("father.home.trainingNotStarted")
+                  : t("father.home.sessionsComplete", {
+                      completed: card.completed,
+                      total: card.total,
+                    });
+
+            return (
+              <Link
+                key={card.training.id}
+                href={trainingContinueHref(card)}
+                className={cn(
+                  "min-w-0 overflow-hidden rounded-xl border border-border bg-card",
+                  interactiveSurfaceClassName
+                )}
+              >
+                <div className="h-24 overflow-hidden bg-[#101510]">
+                  <CoverPhoto src={card.coverSrc} />
+                </div>
+                <div className="space-y-1.5 p-3.5">
+                  <p className="line-clamp-2 font-heading text-sm font-semibold leading-snug">
+                    {homeTrainingLabel(card.training)}
+                  </p>
+                  {homeTrainingSessionCount(card.total) != null ? (
+                    <p className="text-xs text-muted-foreground">
+                      {card.total === 1
+                        ? t("father.home.trainingSessionOne")
+                        : t("father.home.trainingSessions", { n: card.total })}
+                    </p>
+                  ) : null}
+                  <p className="text-xs text-muted-foreground">{meta}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

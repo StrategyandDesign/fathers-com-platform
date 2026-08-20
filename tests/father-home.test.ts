@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import {
   homeTrainingSessionCount,
   pickHomeAssessment,
+  shouldCompactHomeDoneShelf,
   sortHomePath,
   splitHomeRows,
 } from "../lib/father/home";
@@ -211,6 +212,7 @@ describe("home board layout", () => {
     assert.match(path, /father\.home\.yourTrainings/);
     assert.match(path, /homeTrainingSessionCount/);
     assert.match(path, /father\.home\.trainingSessions/);
+    assert.match(path, /shouldCompactHomeDoneShelf/);
     assert.doesNotMatch(path, /father\.home\.yourPath/);
     assert.match(path, /HomeEarnedRow/);
     assert.match(page, /earned=\{earned\}/);
@@ -221,7 +223,28 @@ describe("home board layout", () => {
     );
     assert.match(earned, /certificatePreviewPath/);
     assert.match(earned, /CertificateFace/);
+    assert.match(earned, /shouldCompactHomeDoneShelf/);
     assert.doesNotMatch(earned, /certificateDownloadPath/);
+  });
+});
+
+describe("home done shelf compact", () => {
+  it("keeps a single completed item as a full card and compacts a list", () => {
+    assert.equal(shouldCompactHomeDoneShelf(1), false);
+    assert.equal(shouldCompactHomeDoneShelf(2), true);
+    assert.equal(shouldCompactHomeDoneShelf(0), false);
+    const path = readFileSync(
+      fileURLToPath(new URL("../components/father/home-path.tsx", import.meta.url)),
+      "utf8"
+    );
+    const earned = readFileSync(
+      fileURLToPath(new URL("../components/father/home-earned.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(path, /variant === "completed" && shouldCompactHomeDoneShelf/);
+    assert.match(path, /homeTrainingLabel\(card\.training\)/);
+    assert.match(earned, /shouldCompactHomeDoneShelf\(marks\.length\)/);
+    assert.match(earned, /certificatePreviewPath\(mark\.id\)/);
   });
 });
 
