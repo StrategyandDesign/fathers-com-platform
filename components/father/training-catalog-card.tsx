@@ -180,7 +180,7 @@ export function FatherTrainingCatalogCard({
             className={cn(
               "rounded-lg px-3 py-3",
               overviewLink
-                ? "border border-primary/30 bg-primary/5"
+                ? "border-2 border-primary bg-primary/5"
                 : "border border-dashed border-border bg-black/10"
             )}
           >
