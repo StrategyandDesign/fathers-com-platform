@@ -5,7 +5,6 @@ import { Flash } from "@/components/manager/flash";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
 import { loadLoginBackground } from "@/lib/platform-photos/data";
-import { DEFAULT_LOGIN_BACKGROUND } from "@/lib/platform-photos/slots";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -35,8 +34,7 @@ export default async function AdminAppearancePage({
       </div>
       <Flash error={flash.error} notice={flash.notice} />
       <LoginBackgroundSlot
-        previewUrl={background.isCustom ? background.url : null}
-        defaultUrl={DEFAULT_LOGIN_BACKGROUND}
+        previewUrl={background.url}
         isCustom={background.isCustom}
       />
     </div>

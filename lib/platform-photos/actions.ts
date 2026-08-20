@@ -118,5 +118,5 @@ export async function resetLoginBackground(
     .remove([LOGIN_BACKGROUND_OBJECT_PATH]);
 
   revalidateLoginBackground();
-  return { notice: "Reset to the platform default." };
+  return { notice: "Sign-in is black again for everyone." };
 }

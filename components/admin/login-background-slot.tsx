@@ -15,11 +15,9 @@ import { LOGIN_BACKGROUND_SLOT } from "@/lib/platform-photos/slots";
 
 export function LoginBackgroundSlot({
   previewUrl,
-  defaultUrl,
   isCustom,
 }: {
   previewUrl: string | null;
-  defaultUrl: string;
   isCustom: boolean;
 }) {
   const t = useT();
@@ -29,7 +27,7 @@ export function LoginBackgroundSlot({
   const [fitError, setFitError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
-  const preview = localPreview || previewUrl || defaultUrl;
+  const preview = localPreview || previewUrl;
   const custom = Boolean(localPreview) || isCustom;
 
   useEffect(() => {
@@ -54,14 +52,18 @@ export function LoginBackgroundSlot({
         <p className="text-xs text-muted-foreground">
           {custom ? t("admin.appearance.custom") : t("admin.appearance.platformDefault")}
         </p>
-        <div className="relative aspect-[21/9] overflow-hidden rounded-lg bg-[#101510]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={preview}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-[#0a0f0a]/40" />
+        <div className="relative aspect-[21/9] overflow-hidden rounded-lg bg-black">
+          {preview ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={preview}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/40" />
+            </>
+          ) : null}
           <div className="absolute inset-0 flex items-center justify-center p-4">
             <div className="w-28 rounded-md border border-white/20 bg-card px-3 py-4 text-center shadow-lg sm:w-36">
               <p className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
@@ -125,7 +127,11 @@ export function LoginBackgroundSlot({
             className="w-full sm:w-auto"
             onClick={() => inputRef.current?.click()}
           >
-            {pending ? t("common.saving") : t("admin.appearance.replace")}
+            {pending
+              ? t("common.saving")
+              : custom
+                ? t("admin.appearance.replace")
+                : t("admin.appearance.add")}
           </Button>
         </form>
         <p className="text-xs text-muted-foreground">{t("admin.appearance.choosingSaves")}</p>

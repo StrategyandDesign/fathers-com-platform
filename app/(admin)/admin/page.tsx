@@ -160,7 +160,8 @@ export default async function AdminHomePage({
         <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Login background</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Put a panoramic photo behind the sign-in window for everyone.
+            Sign-in is black until you add a panoramic photo. Everyone sees
+            the same background.
           </p>
           <Link
             href="/admin/appearance"

@@ -1,18 +1,15 @@
-import {
-  DEFAULT_LOGIN_BACKGROUND,
-  LOGIN_BACKGROUND_SLOT,
-} from "@/lib/platform-photos/slots";
+import { LOGIN_BACKGROUND_SLOT } from "@/lib/platform-photos/slots";
 import { PLATFORM_PHOTOS_BUCKET } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 
 export type LoginBackground = {
-  url: string;
+  url: string | null;
   isCustom: boolean;
   updatedAt: string | null;
 };
 
 const defaultBackground: LoginBackground = {
-  url: DEFAULT_LOGIN_BACKGROUND,
+  url: null,
   isCustom: false,
   updatedAt: null,
 };
