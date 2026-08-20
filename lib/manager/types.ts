@@ -38,6 +38,7 @@ export type Certificate = {
   serial_number: string;
   issued_at: string;
   issued_by: string | null;
+  issuer_name?: string | null;
   pdf_url?: string | null;
   pdf_storage_path?: string | null;
 };

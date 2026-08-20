@@ -112,6 +112,7 @@ export default async function FatherHomePage({
       t("account.certificates"),
     completedOn: formatCertificateDate(row.issued_at),
     serialNumber: row.serial_number,
+    issuerName: row.issuer_name?.trim() || undefined,
   }));
   const heroCover = next
     ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl, orgPhotos.photoPack)

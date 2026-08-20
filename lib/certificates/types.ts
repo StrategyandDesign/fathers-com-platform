@@ -14,6 +14,20 @@ export type IssuedCertificate = {
   issuerName: string;
 };
 
+export function resolveCertificateIssuerName(input: {
+  storedName?: string | null;
+  profileName?: string | null;
+  leaderName?: string | null;
+}) {
+  const stored = input.storedName?.trim();
+  if (stored) return stored.slice(0, 80);
+  const profile = input.profileName?.trim();
+  if (profile) return profile.slice(0, 80);
+  const leader = input.leaderName?.trim();
+  if (leader) return leader.slice(0, 80);
+  return "";
+}
+
 export function formatCertificateDate(value: string) {
   return new Date(value).toLocaleDateString("en-US", {
     year: "numeric",

@@ -5,7 +5,11 @@ import { fileURLToPath } from "node:url";
 
 import { decodePngRgba, FATHERS_FOREST, tintPngRgba } from "../lib/brand/lockup-png";
 import { renderCertificatePdf } from "../lib/certificates/pdf";
-import { certificateDownloadPath, certificatePreviewPath } from "../lib/certificates/types";
+import {
+  certificateDownloadPath,
+  certificatePreviewPath,
+  resolveCertificateIssuerName,
+} from "../lib/certificates/types";
 
 function readRepo(relativePath: string) {
   return readFileSync(fileURLToPath(new URL(`../${relativePath}`, import.meta.url)), "utf8");
@@ -48,6 +52,37 @@ describe("certificate lockup", () => {
     });
     assert.equal(Buffer.from(bytes.subarray(0, 4)).toString(), "%PDF");
     assert.ok(bytes.length > 2000);
+  });
+});
+
+describe("certificate issuer name", () => {
+  it("uses the stored leader name instead of a generic designation", () => {
+    assert.equal(
+      resolveCertificateIssuerName({
+        storedName: "Brenda Cole",
+        profileName: null,
+        leaderName: "Fathers.com Leader",
+      }),
+      "Brenda Cole"
+    );
+    assert.equal(
+      resolveCertificateIssuerName({
+        storedName: null,
+        profileName: null,
+        leaderName: "James Hale",
+      }),
+      "James Hale"
+    );
+    assert.equal(resolveCertificateIssuerName({}), "");
+
+    const data = readRepo("lib/certificates/data.ts");
+    const issue = readRepo("lib/manager/mutations.ts");
+    const migration = readRepo("supabase/migrations/20260820060000_certificate_issuer_name.sql");
+    assert.match(data, /issuer_name/);
+    assert.match(data, /resolveCertificateIssuerName/);
+    assert.doesNotMatch(data, /Fathers\.com Leader/);
+    assert.match(issue, /issuer_name: managerName/);
+    assert.match(migration, /issuer_name/);
   });
 });
 
