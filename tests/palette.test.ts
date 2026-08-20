@@ -61,4 +61,11 @@ describe("palette", () => {
     assert.match(shell, /lg:text-card-foreground/);
     assert.match(menu, /headerChipClassName/);
   });
+
+  it("puts the account avatar on the trailing edge on mobile", () => {
+    const shell = readRepo("components/layout/role-shell.tsx");
+    assert.match(shell, /ms-auto flex shrink-0 justify-end/);
+    assert.match(shell, /min-w-0 flex-1 md:hidden/);
+    assert.doesNotMatch(shell, /hidden flex-1 md:block/);
+  });
 });

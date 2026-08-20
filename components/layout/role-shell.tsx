@@ -75,18 +75,21 @@ export async function RoleShell({
           ) : null}
         </div>
         {role === "manager" ? (
-          <div className="hidden min-w-0 flex-1 justify-end overflow-x-auto md:flex [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <div className="shrink-0">
-              <ManagerHeaderMenu />
+          <>
+            <div className="min-w-0 flex-1 md:hidden" />
+            <div className="hidden min-w-0 flex-1 justify-end overflow-x-auto md:flex [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="shrink-0">
+                <ManagerHeaderMenu />
+              </div>
             </div>
-          </div>
+          </>
         ) : (
-          <div className="hidden flex-1 md:block" />
+          <div className="min-w-0 flex-1" />
         )}
         {funnel ? (
           <div className="flex-1" />
         ) : (
-          <div className="flex shrink-0 justify-end">
+          <div className="ms-auto flex shrink-0 justify-end">
             <Link
               href={ROLE_ACCOUNT[role]}
               className={cn(
