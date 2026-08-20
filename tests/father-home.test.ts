@@ -118,7 +118,7 @@ describe("home path order", () => {
 });
 
 describe("home shelves", () => {
-  it("keeps the started training on Path and other open trainings beside it", () => {
+  it("puts open trainings on one Your Trainings shelf, current first", () => {
     const rows = splitHomeRows(
       [
         {
@@ -140,13 +140,10 @@ describe("home shelves", () => {
       ],
       "fundamentals"
     );
-    assert.deepEqual(
-      rows.path.map((card) => card.training.id),
-      ["fundamentals"]
-    );
+    assert.deepEqual(rows.path, []);
     assert.deepEqual(
       rows.trainings.map((card) => card.training.id),
-      ["anger"]
+      ["fundamentals", "anger"]
     );
     assert.deepEqual(rows.completed, []);
   });
@@ -198,6 +195,8 @@ describe("home board layout", () => {
     assert.match(path, /rounded-xl border border-border/);
     assert.match(path, /divide-y divide-border/);
     assert.match(path, /lg:divide-x/);
+    assert.match(path, /father\.home\.yourTrainings/);
+    assert.doesNotMatch(path, /father\.home\.yourPath/);
     assert.match(path, /HomeEarnedRow/);
     assert.match(page, /earned=\{earned\}/);
     assert.doesNotMatch(page, /<HomeEarnedRow/);

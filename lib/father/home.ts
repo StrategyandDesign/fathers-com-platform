@@ -49,25 +49,11 @@ export function splitHomeRows<T extends HomeShelfCard>(
   const open = cards.filter((card) => !card.gated);
   const completed = open.filter((card) => isHomeTrainingComplete(card));
   const completedIds = new Set(completed.map((card) => card.training.id));
-  const started = open.filter(
-    (card) => isHomeTrainingStarted(card) && !completedIds.has(card.training.id)
+  const trainings = sortHomePath(
+    open.filter((card) => !completedIds.has(card.training.id) && card.completed < card.total),
+    currentTrainingId
   );
-  const path =
-    started.length > 0
-      ? sortHomePath(started, currentTrainingId)
-      : open.filter(
-          (card) =>
-            Boolean(currentTrainingId && card.training.id === currentTrainingId) &&
-            !completedIds.has(card.training.id)
-        );
-  const pathIds = new Set(path.map((card) => card.training.id));
-  const trainings = open.filter(
-    (card) =>
-      !pathIds.has(card.training.id) &&
-      !completedIds.has(card.training.id) &&
-      card.completed < card.total
-  );
-  return { path, trainings, completed };
+  return { path: [] as T[], trainings, completed };
 }
 
 export type HomeAssessment =

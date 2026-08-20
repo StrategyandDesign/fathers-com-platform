@@ -92,10 +92,10 @@ export function HomePathRow({
   earned?: HomeEarnedMark[];
   t: Translate;
 }) {
-  const available = trainings ?? [];
+  const available = [...path, ...(trainings ?? [])];
   const finished = completed ?? [];
   const marks = earned ?? [];
-  const open = path.length > 0 || available.length > 0;
+  const open = available.length > 0;
   const done = finished.length > 0 || marks.length > 0;
   if (!open && !done) return null;
 
@@ -110,22 +110,13 @@ export function HomePathRow({
       )}
     >
       {open ? (
-        <div className="divide-y divide-border">
-          {path.length > 0 ? (
-            <div className="p-4 sm:p-5">
-              <HomeShelfRow title={t("father.home.yourPath")} cards={path} variant="path" t={t} />
-            </div>
-          ) : null}
-          {available.length > 0 ? (
-            <div className="p-4 sm:p-5">
-              <HomeShelfRow
-                title={t("father.home.yourTrainings")}
-                cards={available}
-                variant="available"
-                t={t}
-              />
-            </div>
-          ) : null}
+        <div className="p-4 sm:p-5">
+          <HomeShelfRow
+            title={t("father.home.yourTrainings")}
+            cards={available}
+            variant="available"
+            t={t}
+          />
         </div>
       ) : null}
       {done ? (

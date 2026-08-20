@@ -179,7 +179,6 @@ export default async function FatherHomePage({
       className={cn(
         "mx-auto w-full space-y-6 sm:space-y-8",
         pair ||
-          (path.length > 0 && available.length > 0) ||
           ((path.length > 0 || available.length > 0) &&
             (completed.length > 0 || earned.length > 0))
           ? "max-w-5xl"
