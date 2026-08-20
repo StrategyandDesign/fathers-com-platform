@@ -125,7 +125,6 @@ export default async function ManagerHomePage({
       value: assessments.reduce((count, item) => count + item.completedCount, 0),
     },
     { label: t("manager.dashboard.sessions"), value: summary.sessionsCompleted },
-    { label: t("manager.dashboard.skillsUsed"), value: summary.skillsUsed },
     { label: t("manager.dashboard.trainings"), value: summary.trainingsCompleted },
     { label: t("manager.dashboard.pending"), value: summary.pendingActions },
   ];

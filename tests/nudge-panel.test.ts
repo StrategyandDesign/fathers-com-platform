@@ -90,7 +90,6 @@ function card(input: Partial<TrainingProgress> & { completed: number; total?: nu
     total: input.total ?? 5,
     assigned: true,
     gated: false,
-    skillsUsed: 0,
     certificate: null,
     current: {
       session: sessions[input.completed] ?? sessions[0]!,

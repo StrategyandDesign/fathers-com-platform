@@ -386,9 +386,6 @@ export default async function ManagerParticipantDetailPage({
                   completed: card.completed,
                   total: card.total,
                 })}
-                {card.completed > 0
-                  ? ` · ${t("manager.participants.skillsUsed", { n: card.skillsUsed ?? 0 })}`
-                  : ""}
                 {card.assigned ? ` · ${t("manager.participants.assigned")}` : ""}
                 {card.certificate ? ` · ${t("manager.participants.certified")}` : ""}
               </p>

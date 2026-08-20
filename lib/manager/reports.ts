@@ -1,4 +1,3 @@
-import { countSkillsUsed } from "@/lib/father/skill-use";
 import { isSessionComplete, type SessionProgress, type Training } from "@/lib/father/types";
 import { dateLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { createTranslator, type Translate } from "@/lib/i18n/translate";
@@ -33,7 +32,6 @@ export type ReportRow = {
   completionStatus: CompletionStatus;
   sessionsCompleted: number;
   sessionsTotal: number;
-  skillsUsed: number;
   assignedAt: string | null;
   completedAt: string | null;
   certificateSerial: string;
@@ -275,9 +273,6 @@ function toAssignmentRow(
     completionStatus: status,
     sessionsCompleted: card?.completed ?? 0,
     sessionsTotal: card?.total ?? 0,
-    skillsUsed: card
-      ? countSkillsUsed(progress.filter((row) => card.sessions.some((session) => session.id === row.session_id)))
-      : 0,
     assignedAt: assignment?.assigned_at ?? null,
     completedAt: status === "completed" ? latestTimestamp(completedDates) : null,
     certificateSerial: card?.certificate?.serial_number ?? "",
@@ -446,7 +441,6 @@ export function rowsToCsv(
           t("manager.reports.csvCompletion"),
           t("manager.reports.csvSessionsCompleted"),
           t("manager.reports.csvSessionsTotal"),
-          t("manager.reports.csvSkillsUsed"),
           t("manager.reports.csvAssignedOn"),
           t("manager.reports.csvCompletedOn"),
           t("manager.reports.csvSerials"),
@@ -463,7 +457,6 @@ export function rowsToCsv(
           "Status",
           "Sessions completed",
           "Sessions total",
-          "Skills used",
           "Assigned on",
           "Completed on",
           "Certificate serial",
@@ -487,7 +480,6 @@ export function rowsToCsv(
         locale === "he" ? statusLabel(row.completionStatus, t) : COMPLETION_STATUS_LABEL[row.completionStatus],
         String(row.sessionsCompleted),
         String(row.sessionsTotal),
-        String(row.skillsUsed),
         formatReportDate(row.assignedAt, locale),
         formatReportDate(row.completedAt, locale),
         row.certificateSerial,

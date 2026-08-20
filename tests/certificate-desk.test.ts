@@ -26,7 +26,6 @@ function card(overrides: Partial<TrainingProgress> & Pick<TrainingProgress, "tra
     total: 2,
     assigned: true,
     gated: false,
-    skillsUsed: 0,
     certificate: null,
     current: null,
     ...overrides,

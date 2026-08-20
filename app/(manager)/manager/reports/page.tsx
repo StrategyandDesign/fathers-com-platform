@@ -243,10 +243,6 @@ export default async function ManagerReportsPage({
                       </span>
                     </p>
                     <p className="flex justify-between gap-3 text-sm">
-                      <span className="text-muted-foreground">{t("manager.reports.skillsUsed")}</span>
-                      <span>{row.skillsUsed}</span>
-                    </p>
-                    <p className="flex justify-between gap-3 text-sm">
                       <span className="text-muted-foreground">{t("manager.reports.csvCompletedOn")}</span>
                       <span>{formatShortDate(row.completedAt, locale)}</span>
                     </p>
@@ -268,7 +264,6 @@ export default async function ManagerReportsPage({
                     <th className="px-4 py-3 font-medium">{t("manager.reports.trainingCol")}</th>
                     <th className="px-4 py-3 font-medium">{t("manager.reports.statusCol")}</th>
                     <th className="px-4 py-3 font-medium">{t("manager.reports.sessionsCol")}</th>
-                    <th className="px-4 py-3 font-medium">{t("manager.reports.skillsUsed")}</th>
                     <th className="px-4 py-3 font-medium">{t("manager.reports.csvCompletedOn")}</th>
                     <th className="px-6 py-3 font-medium">{t("manager.reports.serials")}</th>
                   </tr>
@@ -299,7 +294,6 @@ export default async function ManagerReportsPage({
                       <td className="px-4 py-3 text-muted-foreground">
                         {row.sessionsCompleted}/{row.sessionsTotal}
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">{row.skillsUsed}</td>
                       <td className="px-4 py-3 text-muted-foreground">
                         {formatShortDate(row.completedAt, locale)}
                       </td>

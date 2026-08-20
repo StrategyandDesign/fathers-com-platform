@@ -223,6 +223,31 @@ describe("skill use on Home", () => {
   });
 });
 
+describe("skill use on Leader desks", () => {
+  it("does not show a Skills used count on Home, reports, or a participant card", () => {
+    const home = readFileSync(
+      fileURLToPath(new URL("../app/(manager)/manager/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    const reports = readFileSync(
+      fileURLToPath(new URL("../app/(manager)/manager/reports/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    const participant = readFileSync(
+      fileURLToPath(new URL("../app/(manager)/manager/participants/[id]/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    const csv = readFileSync(
+      fileURLToPath(new URL("../lib/manager/reports.ts", import.meta.url)),
+      "utf8"
+    );
+    for (const source of [home, reports, participant, csv]) {
+      assert.doesNotMatch(source, /skillsUsed/);
+      assert.doesNotMatch(source, /Skills used/);
+    }
+  });
+});
+
 describe("skill use card", () => {
   it("offers Completed, Not yet, and Dismiss on one unselected row", () => {
     const source = readFileSync(

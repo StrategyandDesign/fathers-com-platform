@@ -88,7 +88,6 @@ function card(overrides: Partial<TrainingProgress> & Pick<TrainingProgress, "tra
     total: 2,
     assigned: true,
     gated: false,
-    skillsUsed: 0,
     certificate: null,
     current: null,
     ...overrides,
@@ -260,8 +259,8 @@ describe("manager reports", () => {
     assert.match(csv, /Participant ID/);
     assert.match(csv, /Assigned on/);
     assert.match(csv, /Completed on/);
-    assert.match(csv, /Skills used/);
     assert.match(csv, /Join date is not counted/);
+    assert.doesNotMatch(csv, /Skills used/);
     assert.match(csv, /father-1/);
     assert.match(csv, /Fathering Fundamentals/);
     assert.equal(summarizeReport(buildManagerReport(input()).rows).notStarted, 1);
@@ -279,28 +278,4 @@ describe("manager reports", () => {
     assert.equal(parsed.error, undefined);
   });
 
-  it("counts only used skill taps on the assignment row", () => {
-    const fundamentals = training("fundamentals", "Fathering Fundamentals");
-    const report = buildManagerReport(
-      input({
-        progress: [
-          progressRow({ session_id: "s1", skill_use: "used" }),
-          progressRow({
-            id: "sp-2",
-            session_id: "s2",
-            skill_use: "later",
-          }),
-        ],
-        trainingProgressFor: () => [
-          card({
-            training: fundamentals,
-            completed: 2,
-            total: 2,
-          }),
-        ],
-      })
-    );
-
-    assert.equal(report.rows[0]?.skillsUsed, 1);
-  });
 });

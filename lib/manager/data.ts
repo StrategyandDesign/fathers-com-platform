@@ -5,7 +5,6 @@ import {
   type SessionProgress,
   type Training,
 } from "@/lib/father/types";
-import { countSkillsUsed } from "@/lib/father/skill-use";
 import { loadOrganizationReviews } from "@/lib/manager/reviews";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrls } from "@/lib/storage";
@@ -145,18 +144,12 @@ export async function loadManagerWorkspace(managerId: string) {
       const currentSession = trainingSessions.find(
         (session) => !isSessionComplete(fatherProgress.get(session.id) ?? null)
       );
-      const skillsUsed = countSkillsUsed(
-        trainingSessions
-          .map((session) => fatherProgress.get(session.id))
-          .filter((row): row is SessionProgress => Boolean(row))
-      );
 
       return {
         training,
         sessions: trainingSessions,
         completed,
         total: trainingSessions.length,
-        skillsUsed,
         assigned: assignedIds.has(training.id),
         gated: false,
         certificate:
@@ -279,7 +272,6 @@ export async function loadManagerWorkspace(managerId: string) {
       activeParticipants: fatherIds.length,
       profilesCompleted: latestProfile.size,
       sessionsCompleted,
-      skillsUsed: countSkillsUsed(progress),
       trainingsCompleted,
       pendingActions: needsAttention.length,
     },
