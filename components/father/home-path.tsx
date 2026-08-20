@@ -104,31 +104,48 @@ export function HomePathRow({
   return (
     <div
       className={cn(
-        "grid gap-8 sm:gap-10",
-        split && "lg:grid-cols-[minmax(0,1.4fr)_minmax(16.5rem,1fr)] lg:items-start"
+        "overflow-hidden rounded-xl border border-border",
+        split &&
+          "grid divide-y divide-border lg:grid-cols-[minmax(0,1.4fr)_minmax(16.5rem,1fr)] lg:items-start lg:divide-x lg:divide-y-0"
       )}
     >
       {open ? (
-        <div className="space-y-8 sm:space-y-10">
-          <HomeShelfRow title={t("father.home.yourPath")} cards={path} variant="path" t={t} />
-          <HomeShelfRow
-            title={t("father.home.yourTrainings")}
-            cards={available}
-            variant="available"
-            t={t}
-          />
+        <div className="divide-y divide-border">
+          {path.length > 0 ? (
+            <div className="p-4 sm:p-5">
+              <HomeShelfRow title={t("father.home.yourPath")} cards={path} variant="path" t={t} />
+            </div>
+          ) : null}
+          {available.length > 0 ? (
+            <div className="p-4 sm:p-5">
+              <HomeShelfRow
+                title={t("father.home.yourTrainings")}
+                cards={available}
+                variant="available"
+                t={t}
+              />
+            </div>
+          ) : null}
         </div>
       ) : null}
       {done ? (
-        <div className="space-y-8 sm:space-y-10">
-          <HomeShelfRow
-            title={t("father.home.completedTrainings")}
-            cards={finished}
-            variant="completed"
-            rail={split}
-            t={t}
-          />
-          <HomeEarnedRow marks={marks} t={t} rail={split} />
+        <div className="divide-y divide-border">
+          {finished.length > 0 ? (
+            <div className="p-4 sm:p-5">
+              <HomeShelfRow
+                title={t("father.home.completedTrainings")}
+                cards={finished}
+                variant="completed"
+                rail={split}
+                t={t}
+              />
+            </div>
+          ) : null}
+          {marks.length > 0 ? (
+            <div className="p-4 sm:p-5">
+              <HomeEarnedRow marks={marks} t={t} rail={split} />
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

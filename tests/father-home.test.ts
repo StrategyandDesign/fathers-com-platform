@@ -195,6 +195,9 @@ describe("home board layout", () => {
       "utf8"
     );
     assert.match(path, /lg:grid-cols-\[minmax\(0,1\.4fr\)_minmax\(16\.5rem,1fr\)\]/);
+    assert.match(path, /rounded-xl border border-border/);
+    assert.match(path, /divide-y divide-border/);
+    assert.match(path, /lg:divide-x/);
     assert.match(path, /HomeEarnedRow/);
     assert.match(page, /earned=\{earned\}/);
     assert.doesNotMatch(page, /<HomeEarnedRow/);
