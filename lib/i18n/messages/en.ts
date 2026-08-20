@@ -960,7 +960,7 @@ export const en = {
       participationUnsetHint: "Plain language. Neither required nor invitational.",
       participationExpected: "Expected",
       participationExpectedHint:
-        "Rehab, armed forces unit, or any performance optimization program where completion is expected.",
+        "Rehab, Armed Forces Unit, or Performance Optimization Group where completion is expected.",
       participationOpen: "Open",
       participationOpenHint: "Voluntary participation. Participants set their pace.",
       participationSave: "Save",
@@ -1750,7 +1750,7 @@ export const en = {
       title: "Organization Photos",
       backDashboard: "Back to Dashboard",
       logoAndCode:
-        "The logo is the group mark fathers see on the left of Home. It belongs to this invite-code group: a rehab, a unit, or any other organization.",
+        "The logo is the group mark fathers see on the left of Home. It belongs to this invite-code group: Rehab, Armed Forces Unit, or Performance Optimization Group.",
       inviteCode: "Invite code {code}",
       leadOne:
         "Replace the photos {name} participants see on Home, Assessment, and Trainings. Any photo works. We fit it to the card.",
