@@ -948,9 +948,9 @@ export const en = {
       noteEyebrow: "Update",
       noteTitle: "One update",
       noteLead:
-        "Fathers in your group see this on Home. Only one update can be shown at a time. To change it, write a new message and swap it in. The date and time become part of the message.",
+        "Fathers in your group see this on Home. A web address becomes a link they can open. Only one update can be shown at a time. To change it, write a new message and swap it in. The date and time become part of the message.",
       noteLeadMany:
-        "Each group has one update. Fathers in that group see it on Home. Only one update can be shown at a time. To change it, write a new message and swap it in. The date and time become part of the message.",
+        "Each group has one update. Fathers in that group see it on Home. A web address becomes a link they can open. Only one update can be shown at a time. To change it, write a new message and swap it in. The date and time become part of the message.",
       noteLabel: "Message",
       noteReplaceLabel: "New message",
       noteCount: "{n} of {max} characters",

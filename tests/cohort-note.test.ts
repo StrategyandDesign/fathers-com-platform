@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { cohortNoteSegments, safeCohortNoteHref } from "../lib/cohort-note/links";
 import { composeCohortNoteParts, isCohortNoteVisible, normalizeCohortNote } from "../lib/cohort-note/types";
 import { formatShortDateTime } from "../lib/i18n/dates";
 import { notificationCopy, safePayload } from "../lib/notifications/copy";
@@ -74,6 +75,34 @@ describe("cohort note notifications", () => {
 });
 
 describe("home update desk", () => {
+  it("turns a web address into a clickable http or https link", () => {
+    const segments = cohortNoteSegments("Meet at https://maps.example/place. Bring water.");
+    assert.deepEqual(segments, [
+      { type: "text", value: "Meet at " },
+      { type: "link", href: "https://maps.example/place", value: "https://maps.example/place" },
+      { type: "text", value: ". Bring water." },
+    ]);
+    assert.equal(safeCohortNoteHref("www.fathers.com"), "https://www.fathers.com/");
+    assert.equal(safeCohortNoteHref("javascript:alert(1)"), null);
+    assert.equal(safeCohortNoteHref("https://evil:pass@example.com"), null);
+    assert.equal(safeCohortNoteHref("https://ok.example/path)"), "https://ok.example/path");
+    assert.equal(
+      safeCohortNoteHref("https://en.wikipedia.org/wiki/Father_(title)"),
+      "https://en.wikipedia.org/wiki/Father_(title)"
+    );
+  });
+
+  it("renders the update body as a real link, not raw HTML", () => {
+    const message = readFileSync(
+      fileURLToPath(new URL("../components/cohort-note/message.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(message, /cohortNoteSegments/);
+    assert.match(message, /target="_blank"/);
+    assert.match(message, /rel="noopener noreferrer"/);
+    assert.doesNotMatch(message, /dangerouslySetInnerHTML/);
+  });
+
   it("does not keep a What they see preview on the composer", () => {
     const desk = readFileSync(
       fileURLToPath(new URL("../components/manager/cohort-note-desk.tsx", import.meta.url)),
@@ -82,6 +111,11 @@ describe("home update desk", () => {
     assert.doesNotMatch(desk, /notePreview/);
     assert.doesNotMatch(desk, /noteStampPreview/);
     assert.match(desk, /noteNowShowing/);
+    const messages = readFileSync(
+      fileURLToPath(new URL("../lib/i18n/messages/en.ts", import.meta.url)),
+      "utf8"
+    );
+    assert.match(messages, /A web address becomes a link they can open/);
   });
 });
 
