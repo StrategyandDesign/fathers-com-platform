@@ -972,7 +972,7 @@ export const en = {
       noteClearFailed: "The update didn’t clear. Try again.",
       participationTitle: "How men take assigned training",
       participationLead:
-        "This only changes notes, reminders, and how status is described. It does not change who you can assign.",
+        "This picks how fathers hear assigned training — as expected work, as an offer, or in plain language. It changes reminders, Home, and status wording only. Who you can assign stays the same.",
       participationUnset: "Not set",
       participationUnsetHint: "Plain language. Neither required nor invitational.",
       participationExpected: "Expected",
