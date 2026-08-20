@@ -241,11 +241,7 @@ export default async function ManagerTrainingsPage({
                           {t("manager.trainings.assignRemaining", { n: remaining })}
                         </Button>
                       </form>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        {t("manager.trainings.allAssigned")}
-                      </p>
-                    )}
+                    ) : null}
                     <Link
                       href={`/manager/participants?training=${item.training.id}#assign`}
                       className={cn(
@@ -319,11 +315,7 @@ export default async function ManagerTrainingsPage({
                           {t("manager.trainings.assignRemaining", { n: remaining })}
                         </Button>
                       </form>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        {t("manager.trainings.allAssigned")}
-                      </p>
-                    )}
+                    ) : null}
                     <Link
                       href={`/manager/participants?training=${training.id}#assign`}
                       className={cn(

@@ -192,4 +192,15 @@ describe("hidden assignment surfaces", () => {
     assert.doesNotMatch(page, /AssignmentBoard/);
     assert.doesNotMatch(page, /buildAssignmentBoard/);
   });
+
+  it("keeps everyone-has-this out of the cohort action row", () => {
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/(manager)/manager/trainings/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(page, /manager\.trainings\.viewTraining/);
+    assert.match(page, /manager\.trainings\.chooseFathers/);
+    assert.match(page, /assignTrainingToUnassigned/);
+    assert.doesNotMatch(page, /manager\.trainings\.allAssigned/);
+  });
 });

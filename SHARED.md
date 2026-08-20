@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.16**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.17**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -33,3 +33,4 @@ The badge on this checkout is **Shared 1-1.16**. It ticks on each push of the Sh
 | **1.14** | undefined | Offer Completed, Not yet, and Dismiss on the skill-use card. |
 | **1.15** | undefined | Show Completed and Dismiss on the skill-use buttons. |
 | **1.16** | undefined | Write the skill-use line as a statement, not a topic fragment. |
+| **1.17** | undefined | Put finished trainings in their own Home row. |
