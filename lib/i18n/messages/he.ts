@@ -590,6 +590,8 @@ export const he = {
       overviewThen: "ואז המפגש הפתוח הראשון",
       backToTrainings: "חזרה להכשרות",
       trainingComplete: "ההכשרה הזו הושלמה.",
+      watchAgain: "צפייה שוב",
+      watchAgainHint: "אפשר לפתוח כל מפגש שוב. ההשלמה נשארת.",
       available: "הכשרות זמינות",
       completedGroup: "הכשרות שהושלמו",
       handout: "דף עבודה",

@@ -127,7 +127,10 @@ export async function markFilmWatched(formData: FormData) {
     redirect(paths.home);
   }
 
-  await requireReachableSession(user.id, sessionId, paths);
+  const context = await requireReachableSession(user.id, sessionId, paths);
+  if (isSessionComplete(context.progress)) {
+    redirect(paths.session(sessionId));
+  }
 
   try {
     await saveProgress(user.id, sessionId, { film_completed: true });
@@ -149,7 +152,10 @@ export async function submitCheckin(formData: FormData) {
     redirect(paths.home);
   }
 
-  await requireReachableSession(user.id, sessionId, paths);
+  const context = await requireReachableSession(user.id, sessionId, paths);
+  if (context.progress?.checkin_completed) {
+    redirect(paths.action(sessionId));
+  }
 
   const choice = String(formData.get(CHECKIN_CHOICE_KEY) ?? "").trim();
   if (!choice) {

@@ -16,7 +16,7 @@ export function hasTrainingOverview(training: Pick<Training, "overview_video_url
 export function hasStartedTrainingWork(
   completed: number | null | undefined,
   progress: SessionProgress | null | undefined,
-  sessionDots?: Array<{ done?: boolean }> | null
+  sessionDots?: Array<{ id?: string; done?: boolean }> | null
 ) {
   if ((completed ?? 0) > 0) return true;
   if (sessionDots?.some((dot) => Boolean(dot.done))) return true;
@@ -34,12 +34,20 @@ function shouldOpenOverview(
   training: Pick<Training, "overview_video_url">,
   completed?: number | null,
   progress?: SessionProgress | null,
-  sessionDots?: Array<{ done?: boolean }> | null
+  sessionDots?: Array<{ id?: string; done?: boolean }> | null
 ) {
   return (
     hasTrainingOverview(training) &&
     !hasStartedTrainingWork(completed, progress, sessionDots)
   );
+}
+
+/** First session film. Used after the training is complete so a father can watch again. */
+export function reviewSessionHref(
+  sessionDots?: Array<{ id?: string; done?: boolean }> | null
+) {
+  const first = (sessionDots ?? []).find((dot) => Boolean(dot.id));
+  return first?.id ? sessionFilmPath(first.id) : null;
 }
 
 /** Catalog card: overview only before the first session is started. */
@@ -48,7 +56,7 @@ export function shouldShowCatalogOverview(input: {
   gated?: boolean;
   completed?: number | null;
   progress?: SessionProgress | null;
-  sessionDots?: Array<{ done?: boolean }> | null;
+  sessionDots?: Array<{ id?: string; done?: boolean }> | null;
 }) {
   return (
     Boolean(input.enabled) &&
@@ -62,7 +70,7 @@ export function trainingDoorHref(input: {
   next?: Session | null;
   nextProgress?: SessionProgress | null;
   completed?: number | null;
-  sessionDots?: Array<{ done?: boolean }> | null;
+  sessionDots?: Array<{ id?: string; done?: boolean }> | null;
 }) {
   if (shouldOpenOverview(input.training, input.completed, input.nextProgress, input.sessionDots)) {
     return trainingOverviewPath(input.training.id);
@@ -70,7 +78,7 @@ export function trainingDoorHref(input: {
   if (input.next) {
     return sessionFilmPath(input.next.id);
   }
-  return "/father/trainings";
+  return reviewSessionHref(input.sessionDots) ?? "/father/trainings";
 }
 
 /** Home Start / onboarding: overview first, then the open session. */
@@ -79,7 +87,7 @@ export function trainingContinueHref(input: {
   next?: Session | null;
   nextProgress?: SessionProgress | null;
   completed?: number | null;
-  sessionDots?: Array<{ done?: boolean }> | null;
+  sessionDots?: Array<{ id?: string; done?: boolean }> | null;
 }) {
   if (shouldOpenOverview(input.training, input.completed, input.nextProgress, input.sessionDots)) {
     return trainingOverviewPath(input.training.id);
@@ -87,5 +95,5 @@ export function trainingContinueHref(input: {
   if (input.next) {
     return continueHref(input.next.id, input.nextProgress ?? null);
   }
-  return "/father/trainings";
+  return reviewSessionHref(input.sessionDots) ?? "/father/trainings";
 }

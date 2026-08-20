@@ -624,6 +624,8 @@ export const en = {
       overviewThen: "Then the first open session",
       backToTrainings: "Back to Trainings",
       trainingComplete: "This training is complete.",
+      watchAgain: "Watch again",
+      watchAgainHint: "You can open any session again. Your completion stays.",
       available: "Available trainings",
       completedGroup: "Completed trainings",
       handout: "Handout",

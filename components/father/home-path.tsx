@@ -23,7 +23,7 @@ export type HomeShelfItem = {
   gated: boolean;
   next?: Session;
   nextProgress: SessionProgress | null;
-  sessionDots?: Array<{ done?: boolean }>;
+  sessionDots?: Array<{ id?: string; done?: boolean }>;
   coverSrc?: string | null;
 };
 

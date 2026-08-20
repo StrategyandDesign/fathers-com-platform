@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
+  reviewSessionHref,
   shouldShowCatalogOverview,
   trainingContinueHref,
   trainingDoorHref,
@@ -129,6 +130,27 @@ describe("hosted overview video", () => {
       trainingContinueHref({ training, next, nextProgress: null, completed: 8 }),
       "/father/sessions/s1"
     );
+    assert.equal(
+      trainingContinueHref({
+        training: { id: "t1", overview_video_url: null },
+        next: null,
+        nextProgress: null,
+        completed: 8,
+        sessionDots: [
+          { id: "s1", done: true },
+          { id: "s2", done: true },
+        ],
+      }),
+      "/father/sessions/s1"
+    );
+    assert.equal(
+      reviewSessionHref([
+        { id: "s1", done: true },
+        { id: "s2", done: true },
+      ]),
+      "/father/sessions/s1"
+    );
+    assert.equal(reviewSessionHref([]), null);
   });
 
   it("shows the catalog overview only before a session is started", () => {

@@ -90,23 +90,30 @@ export function FatherTrainingCatalogCard({
   handouts?: TrainingHandout[];
   t: Translate;
 }) {
+  const complete = !next && total > 0 && completed >= total;
+  const firstSessionId = sessionDots[0]?.id;
+  const watchAgainHref =
+    complete && firstSessionId
+      ? sessionHref?.(firstSessionId) ?? sessionFilmPath(firstSessionId)
+      : null;
   const href = gated
     ? null
-    : hrefOverride ?? (next ? sessionFilmPath(next.id) : null);
+    : hrefOverride ?? (next ? sessionFilmPath(next.id) : watchAgainHref);
   const started =
     completed > 0 ||
     sessionInProgress(nextProgress) ||
     sessionDots.some((dot) => dot.done);
-  const complete = !next && total > 0 && completed >= total;
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
   const ctaLabel = next
     ? started
       ? t("father.trainings.openSession", { n: next.session_number })
       : t("father.trainings.startSessionN", { n: next.session_number })
-    : null;
+    : href
+      ? t("father.trainings.watchAgain")
+      : null;
   const openLabel = next
     ? t("father.trainings.sessionLabel", { n: next.session_number, title: next.title })
-    : title;
+    : ctaLabel ?? title;
   const overviewLink = overviewHref ?? null;
   const listOverview = shouldShowCatalogOverview({
     enabled: showOverviewSlot,
@@ -230,7 +237,14 @@ export function FatherTrainingCatalogCard({
             <FilmRuntime seconds={next.duration_seconds} t={t} />
           </div>
         ) : complete ? (
-          <p className="text-sm text-muted-foreground">{t("father.trainings.trainingComplete")}</p>
+          <div className="space-y-1">
+            <p className="text-sm text-muted-foreground">{t("father.trainings.trainingComplete")}</p>
+            {href ? (
+              <p className="text-sm text-muted-foreground">
+                {t("father.trainings.watchAgainHint")}
+              </p>
+            ) : null}
+          </div>
         ) : null}
 
         {!gated && total > 0 ? (

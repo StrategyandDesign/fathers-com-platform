@@ -40,6 +40,25 @@ describe("training catalog decisions", () => {
     assert.match(page, /completedGroup[\s\S]*sideBySide/s);
     assert.match(card, /featured \|\| sideBySide/);
     assert.match(card, /lg:grid lg:grid-cols-2 lg:items-stretch/);
+    assert.match(card, /father\.trainings\.watchAgain/);
+    assert.match(card, /watchAgainHref/);
+  });
+
+  it("lets a father watch a completed training again without issuing a certificate", () => {
+    const card = readRepo("components/father/training-catalog-card.tsx");
+    const door = readRepo("lib/father/training-door.ts");
+    const actions = readRepo("lib/father/actions.ts");
+    const film = readRepo("app/(father)/father/sessions/[sessionId]/page.tsx");
+    const issue = readRepo("lib/manager/mutations.ts");
+
+    assert.match(card, /Watch again|watchAgain/);
+    assert.match(door, /reviewSessionHref/);
+    assert.match(door, /reviewSessionHref\(input\.sessionDots\)/);
+    assert.match(actions, /isSessionComplete\(context\.progress\)/);
+    assert.match(actions, /existing\?\.completed_at/);
+    assert.doesNotMatch(actions, /issueCertificateToFather/);
+    assert.match(film, /father\.trainings\.watchAgainHint/);
+    assert.match(issue, /A certificate is already on file/);
   });
 
   it("shows Included in green and Declined in red on the selected button", () => {

@@ -16,7 +16,7 @@ import { loadOnboardingState } from "@/lib/father/onboarding-data";
 import { isOnboardingActive } from "@/lib/father/onboarding";
 import { loadFatherOrgPhotoCovers } from "@/lib/org-photos/data";
 import { loadTrainingHandouts } from "@/lib/training-handouts/data";
-import { youtubeEmbedUrl } from "@/lib/father/types";
+import { isSessionComplete, youtubeEmbedUrl } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { sessionCtaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -79,6 +79,10 @@ export default async function SessionViewerPage({
         filmCompleted={filmDone}
         checkinCompleted={checkinDone}
       />
+
+      {isSessionComplete(progress) ? (
+        <p className="text-sm text-muted-foreground">{t("father.trainings.watchAgainHint")}</p>
+      ) : null}
 
       <TrainingHandoutLinks handouts={handouts} t={t} />
 
