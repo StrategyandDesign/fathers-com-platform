@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.49**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.50**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -66,3 +66,4 @@ The badge on this checkout is **Shared 1-1.49**. It ticks on each push of the Sh
 | **1.47** | undefined | Default the login screen to black until Super-admin adds a photo. |
 | **1.48** | undefined | Drop the em dash from the participation lead. |
 | **1.49** | undefined | Remove the Skills used count from Leader desks. |
+| **1.50** | undefined | Turn anonymous sharing on by default for fathers and leaders. |
