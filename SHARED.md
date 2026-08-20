@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.13**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.14**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -30,3 +30,4 @@ The badge on this checkout is **Shared 1-1.13**. It ticks on each push of the Sh
 | **1.11** | undefined | Put include, decline, and view on one catalog row. |
 | **1.12** | undefined | Show each session subtitle under the title on the audit list. |
 | **1.13** | undefined | Clarify Expected and Open participation hints. |
+| **1.14** | undefined | Offer Completed, Not yet, and Dismiss on the skill-use card. |

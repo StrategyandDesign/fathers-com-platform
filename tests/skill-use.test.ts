@@ -122,12 +122,14 @@ describe("skill use card", () => {
       fileURLToPath(new URL("../components/father/skill-use-card.tsx", import.meta.url)),
       "utf8"
     );
-    assert.match(source, /skillUseCompleted/);
-    assert.match(source, /skillUseLater/);
-    assert.match(source, /skillUseDismiss/);
+    assert.match(source, /Completed/);
+    assert.match(source, /Not yet/);
+    assert.match(source, /Dismiss/);
     assert.match(source, /flex flex-row flex-wrap items-center gap-2/);
     assert.match(source, /variant="outline"/);
     assert.match(source, /setHidden\(true\)/);
+    assert.doesNotMatch(source, /father\.session\.skillUseCompleted/);
+    assert.doesNotMatch(source, /father\.session\.skillUseDismiss/);
     assert.doesNotMatch(source, /skillUseMarked/);
     assert.doesNotMatch(source, /showLater/);
   });
