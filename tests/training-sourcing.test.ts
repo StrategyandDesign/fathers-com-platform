@@ -1,9 +1,16 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
+  OUTLINE_SESSION_MAX,
   RIGHTS_DECLINED_ERROR,
   RIGHTS_REQUIRED_ERROR,
+  countSessionOutline,
+  intakeQueueCounts,
+  intakeQueueLine,
+  outlineSessionWarning,
   parseSessionOutline,
   sourcedReleaseBlocker,
   splitOutlineLine,
@@ -37,6 +44,16 @@ describe("training sourcing outline", () => {
     assert.equal(sessions[0].title, "First skill");
   });
 
+  it("keeps sourced outlines to 15 short sessions and warns past that", () => {
+    const lines = Array.from({ length: 18 }, (_, index) => `Session ${index + 1}`);
+    const outline = lines.join("\n");
+    assert.equal(OUTLINE_SESSION_MAX, 15);
+    assert.equal(countSessionOutline(outline), 18);
+    assert.equal(parseSessionOutline(outline).length, 15);
+    assert.match(outlineSessionWarning(18) ?? "", /18 sessions/);
+    assert.equal(outlineSessionWarning(15), null);
+  });
+
   it("does not treat a non-YouTube link as a film", () => {
     const parsed = splitOutlineLine("Talk https://example.com/talk");
     assert.equal(parsed.videoUrl, null);
@@ -54,5 +71,34 @@ describe("sourced release rights", () => {
     assert.equal(sourcedReleaseBlocker({ rights_status: "pending" }), RIGHTS_REQUIRED_ERROR);
     assert.equal(sourcedReleaseBlocker({ rights_status: "declined" }), RIGHTS_DECLINED_ERROR);
     assert.equal(sourcedReleaseBlocker({ rights_status: "cleared" }), null);
+  });
+});
+
+describe("bring-in queue", () => {
+  it("counts clearance, sandbox, and released on one line", () => {
+    const counts = intakeQueueCounts([
+      { status: "open", rightsStatus: "inquiry" },
+      { status: "drafting", rightsStatus: "pending" },
+      { status: "drafting", rightsStatus: "cleared" },
+      { status: "released", rightsStatus: "cleared" },
+      { status: "archived", rightsStatus: "cleared" },
+      { status: "open", rightsStatus: "declined" },
+    ]);
+    assert.deepEqual(counts, {
+      waitingOnClearance: 2,
+      inTheSandbox: 1,
+      released: 1,
+    });
+    assert.equal(intakeQueueLine(counts), "2 waiting on clearance · 1 in the sandbox · 1 released");
+    assert.equal(intakeQueueLine(intakeQueueCounts([])), "No intakes in flight.");
+  });
+
+  it("prints the queue on the Bring-in list", () => {
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/(admin)/admin/trainings/sources/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(page, /intakeQueueLine/);
+    assert.match(page, /15 short sessions/);
   });
 });

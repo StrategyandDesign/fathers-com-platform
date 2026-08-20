@@ -4,6 +4,7 @@ import { IntakeStatusBadge, RightsStatusBadge } from "@/components/admin/sourcin
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { intakeQueueCounts, intakeQueueLine } from "@/lib/admin/sourcing";
 import { loadTrainingIntakes, loadTrainingSources } from "@/lib/admin/sourcing-data";
 import { requireRole } from "@/lib/auth/session";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
@@ -17,7 +18,7 @@ export default async function AdminTrainingSourcesPage({
   const flash = await searchParams;
   await requireRole("admin");
   const [sources, intakes] = await Promise.all([loadTrainingSources(), loadTrainingIntakes()]);
-  const openCount = intakes.filter((intake) => intake.status === "open" || intake.status === "drafting").length;
+  const queue = intakeQueueLine(intakeQueueCounts(intakes));
 
   return (
     <div className="space-y-6">
@@ -41,7 +42,8 @@ export default async function AdminTrainingSourcesPage({
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
             This does not pull films from the open web. They send a YouTube
-            link. You write Check-in and Action here.
+            link. You write Check-in and Action here. An outline can hold up
+            to 15 short sessions.
           </p>
         </div>
         <Link
@@ -53,13 +55,7 @@ export default async function AdminTrainingSourcesPage({
       </div>
       <Flash error={flash.error} notice={flash.notice} />
 
-      <p className="text-sm text-muted-foreground">
-        {openCount === 0
-          ? "No open intakes."
-          : openCount === 1
-            ? "1 intake is still being prepared."
-            : `${openCount} intakes are still being prepared.`}
-      </p>
+      <p className="text-sm text-muted-foreground">{queue}</p>
 
       <section className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="border-b border-border px-4 py-4 sm:px-6">

@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 42,
-  "label": "Shared 1-1.42",
+  "patch": 43,
+  "label": "Shared 1-1.43",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Explain what the participation section chooses.",
+  "title": "Make web addresses in the Home update clickable.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -302,6 +302,13 @@
       "label": "Shared 1-1.42",
       "at": "2026-08-20",
       "title": "Explain what the participation section chooses."
+    },
+    {
+      "patch": 43,
+      "revision": "1.43",
+      "label": "Shared 1-1.43",
+      "at": "2026-08-20",
+      "title": "Make web addresses in the Home update clickable."
     }
   ]
 }

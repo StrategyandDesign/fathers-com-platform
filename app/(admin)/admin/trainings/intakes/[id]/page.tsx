@@ -6,11 +6,15 @@ import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { openIntakeDraft, updateTrainingIntake } from "@/lib/admin/sourcing-actions";
 import { loadTrainingIntake } from "@/lib/admin/sourcing-data";
+import { SessionOutlineField } from "@/components/admin/session-outline-field";
 import {
   INTAKE_STATUSES,
   INTAKE_STATUS_LABEL,
+  OUTLINE_SESSION_MAX,
   RIGHTS_STATUSES,
   RIGHTS_STATUS_LABEL,
+  countSessionOutline,
+  outlineSessionWarning,
   parseSessionOutline,
   sourcedReleaseBlocker,
 } from "@/lib/admin/sourcing";
@@ -31,7 +35,9 @@ export default async function AdminTrainingIntakePage({
   const intake = await loadTrainingIntake(id);
   if (!intake) notFound();
 
-  const sessions = parseSessionOutline(intake.outline ?? "");
+  const outline = intake.outline ?? "";
+  const sessions = parseSessionOutline(outline);
+  const outlineWarning = outlineSessionWarning(countSessionOutline(outline));
   const releaseBlocker = sourcedReleaseBlocker(intake);
 
   return (
@@ -115,8 +121,11 @@ export default async function AdminTrainingIntakePage({
           <p className="mt-1 text-sm text-muted-foreground">
             {sessions.length === 1
               ? "1 session will be created from this outline."
-              : `${sessions.length} sessions will be created from this outline.`}
+              : `${sessions.length} of ${OUTLINE_SESSION_MAX} sessions will be created from this outline.`}
           </p>
+          {outlineWarning ? (
+            <p className="mt-2 text-sm text-destructive">{outlineWarning}</p>
+          ) : null}
           <ol className="mt-4 list-decimal space-y-2 ps-5 text-sm">
             {sessions.map((session, index) => (
               <li key={`${session.title}-${index}`}>
@@ -140,14 +149,7 @@ export default async function AdminTrainingIntakePage({
           <span className="text-sm text-muted-foreground">Audience</span>
           <input className={fieldClassName} name="audience" defaultValue={intake.audience ?? ""} />
         </label>
-        <label className="block space-y-2">
-          <span className="text-sm text-muted-foreground">Session outline</span>
-          <textarea
-            className={textareaClassName}
-            name="outline"
-            defaultValue={intake.outline ?? ""}
-          />
-        </label>
+        <SessionOutlineField defaultValue={intake.outline ?? ""} />
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Rights</span>
           <select className={fieldClassName} name="rights_status" defaultValue={intake.rightsStatus}>

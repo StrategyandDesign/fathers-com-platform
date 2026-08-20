@@ -3,6 +3,7 @@ import Link from "next/link";
 import { bringInTraining } from "@/lib/admin/sourcing-actions";
 import { loadTrainingSources } from "@/lib/admin/sourcing-data";
 import { RIGHTS_STATUSES, RIGHTS_STATUS_LABEL } from "@/lib/admin/sourcing";
+import { SessionOutlineField } from "@/components/admin/session-outline-field";
 import { Flash } from "@/components/manager/flash";
 import { Button } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
@@ -139,18 +140,7 @@ export default async function AdminBringInTrainingPage({
               defaultValue={request?.description ?? ""}
             />
           </label>
-          <label className="block space-y-2">
-            <span className="text-sm text-muted-foreground">Session outline</span>
-            <textarea
-              className={textareaClassName}
-              name="outline"
-              placeholder={"One session per line.\nTitle | https://youtu.be/…"}
-            />
-            <span className="block text-sm text-muted-foreground">
-              YouTube links only. Check-in and Action are written after the
-              draft opens. A film still cannot be published over 6:00.
-            </span>
-          </label>
+          <SessionOutlineField placeholder={"One session per line.\nTitle | https://youtu.be/…"} />
         </section>
 
         <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
