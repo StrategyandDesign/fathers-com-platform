@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useT } from "@/components/i18n/locale-provider";
-import type { LedgerOutcome } from "@/lib/father/streak";
 import { interactiveControlClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -12,32 +11,15 @@ function weekLabel(t: ReturnType<typeof useT>, weeks: number) {
   return weeks === 1 ? t("father.home.streakWeek", { n: weeks }) : t("father.home.streakWeeks", { n: weeks });
 }
 
-function WeekCell({ outcome }: { outcome: LedgerOutcome | null }) {
-  return (
-    <span
-      aria-hidden
-      className={cn(
-        "aspect-square w-full rounded-sm",
-        outcome === "counted" && "bg-primary",
-        outcome === "frozen" && "border border-border bg-transparent",
-        outcome === "neutral" && "bg-muted",
-        (outcome === "missed" || outcome == null) && "border border-transparent bg-transparent"
-      )}
-    />
-  );
-}
-
 export function HomeStreakRow({
   weeks,
   longestWeeks,
   freezesRemaining,
-  grid,
   justFinished = false,
 }: {
   weeks: number;
   longestWeeks: number;
   freezesRemaining: number;
-  grid: Array<{ weekStart: string; outcome: LedgerOutcome | null }>;
   justFinished?: boolean;
 }) {
   const t = useT();
@@ -102,16 +84,6 @@ export function HomeStreakRow({
             <p className="text-sm text-muted-foreground">{t("father.home.freezesRemaining")}</p>
             <p className="text-base font-medium">{freezesRemaining}</p>
           </div>
-        </div>
-        <div
-          dir="ltr"
-          className="mt-4 grid grid-cols-12 gap-1"
-          role="img"
-          aria-label={t("father.home.streakGrid")}
-        >
-          {grid.map((cell) => (
-            <WeekCell key={cell.weekStart} outcome={cell.outcome} />
-          ))}
         </div>
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
           {t("father.home.streakRule")}

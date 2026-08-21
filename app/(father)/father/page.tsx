@@ -170,7 +170,6 @@ export default async function FatherHomePage({
         weeks={streak.currentWeeks}
         longestWeeks={streak.longestWeeks}
         freezesRemaining={streak.freezesRemaining}
-        grid={streak.grid}
         justFinished={justFinished}
       />
 

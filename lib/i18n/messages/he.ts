@@ -516,7 +516,6 @@ export const he = {
       streakClose: "סגירה",
       longestStreak: "ספירת השבועות הארוכה ביותר",
       freezesRemaining: "הקפאות שנשארו",
-      streakGrid: "שניים עשר השבועות האחרונים",
       freezeConsumed: "השבוע שעבר השתמש בהקפאה. יש לך {n}.",
       freezeReplenished: "הקפאה הוחזרה. יש לך {n}.",
       streakReset: "ספירת השבועות אופסה. הושלמו: {sessions}. תעודות: {certificates}.",
