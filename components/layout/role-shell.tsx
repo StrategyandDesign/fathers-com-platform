@@ -3,7 +3,6 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand/logo";
 import { OrganizationMark } from "@/components/brand/organization-mark";
 import { AppNav } from "@/components/layout/app-nav";
-import { ManagerHeaderMenu } from "@/components/layout/manager-header-menu";
 import { StaffMenu } from "@/components/layout/staff-menu";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -82,18 +81,7 @@ export async function RoleShell({
             </Badge>
           ) : null}
         </div>
-        {role === "manager" ? (
-          <>
-            <div className="min-w-0 flex-1 md:hidden" />
-            <div className="hidden min-w-0 flex-1 justify-end overflow-x-auto md:flex [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <div className="shrink-0">
-                <ManagerHeaderMenu />
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="min-w-0 flex-1" />
-        )}
+        <div className="min-w-0 flex-1" />
         {funnel ? (
           <div className="flex-1" />
         ) : (

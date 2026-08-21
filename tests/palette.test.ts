@@ -53,19 +53,18 @@ describe("palette", () => {
 
   it("keeps header chip text on the card color so Light does not hide the name", () => {
     const shell = readRepo("components/layout/role-shell.tsx");
-    const menu = readRepo("components/layout/manager-header-menu.tsx");
     const ui = readRepo("lib/ui.ts");
     assert.match(ui, /headerChipClassName/);
     assert.match(ui, /text-card-foreground/);
     assert.match(shell, /lg:bg-card/);
     assert.match(shell, /lg:text-card-foreground/);
-    assert.match(menu, /headerChipClassName/);
   });
 
   it("puts the account avatar on the trailing edge on mobile", () => {
     const shell = readRepo("components/layout/role-shell.tsx");
     assert.match(shell, /ms-auto flex shrink-0 justify-end/);
-    assert.match(shell, /min-w-0 flex-1 md:hidden/);
+    assert.match(shell, /min-w-0 flex-1/);
     assert.doesNotMatch(shell, /hidden flex-1 md:block/);
+    assert.doesNotMatch(shell, /ManagerHeaderMenu|\/manager\/impact/);
   });
 });

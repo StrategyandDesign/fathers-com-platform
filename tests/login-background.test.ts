@@ -45,7 +45,7 @@ describe("login background desk", () => {
     const nav = readRepo("components/layout/app-nav.tsx");
     const actions = readRepo("lib/platform-photos/actions.ts");
     const migration = readRepo("supabase/migrations/20260820040000_login_background.sql");
-    const header = readRepo("components/layout/manager-header-menu.tsx");
+    const header = readRepo("components/layout/role-shell.tsx");
     const copy = readRepo("lib/i18n/messages/en.ts");
 
     assert.match(layout, /loadLoginBackground/);
