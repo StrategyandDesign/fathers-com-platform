@@ -65,6 +65,12 @@ describe("shared desk record", () => {
     assert.match(reviews, /review_declined/);
     const nudges = readRepo("lib/manager/nudge-panel-actions.ts");
     assert.match(nudges, /nudge_sent/);
+    const assign = readRepo("lib/manager/training-actions.ts");
+    assert.match(assign, /recordOrganizationActivity/);
+    assert.match(assign, /training_assigned/);
+    const notes = readRepo("lib/cohort-note/actions.ts");
+    assert.match(notes, /note_posted/);
+    assert.match(notes, /note_cleared/);
   });
 });
 

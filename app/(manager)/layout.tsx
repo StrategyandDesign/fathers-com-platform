@@ -1,4 +1,5 @@
 import { RoleShell } from "@/components/layout/role-shell";
+import { ManagerDeskSync } from "@/components/manager/desk-sync";
 import { StaffMessageRibbon } from "@/components/staff/staff-message-ribbon";
 import { loadCurrentAvatarUrl, loadManagerDisplayTitle } from "@/lib/account/data";
 import { managerDisplayTitleLabel } from "@/lib/account/display-title";
@@ -34,6 +35,7 @@ export default async function ManagerLayout({
       onboardingActive={onboardingActive}
       banner={ribbon.length > 0 ? <StaffMessageRibbon messages={ribbon} t={t} /> : null}
     >
+      <ManagerDeskSync />
       {children}
     </RoleShell>
   );

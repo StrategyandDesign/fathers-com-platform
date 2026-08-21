@@ -10,6 +10,7 @@ import {
 } from "@/lib/cohort-note/audience";
 import { COHORT_NOTE_MAX, normalizeCohortNote } from "@/lib/cohort-note/types";
 import { requireRole } from "@/lib/auth/session";
+import { recordOrganizationActivity } from "@/lib/org-staff/activity";
 import { isManagerOfGroup } from "@/lib/org-staff/membership";
 import { enqueueNotification } from "@/lib/notifications/enqueue";
 import { flushDueReminders } from "@/lib/notifications/events";
@@ -153,6 +154,11 @@ export async function publishCohortNote(formData: FormData) {
     )
   );
   await flushDueReminders();
+  await recordOrganizationActivity(supabase, {
+    groupId,
+    actorId: user.id,
+    kind: "note_posted",
+  });
 
   revalidateCohort();
   ok(path, "manager.dashboard.notePosted");
@@ -182,6 +188,12 @@ export async function clearCohortNote(formData: FormData) {
     console.error("[cohort-note] clear failed", error.code, error.message);
     fail(path, "manager.dashboard.noteClearFailed");
   }
+
+  await recordOrganizationActivity(supabase, {
+    groupId,
+    actorId: user.id,
+    kind: "note_cleared",
+  });
 
   revalidateCohort();
   ok(path, "manager.dashboard.noteCleared");

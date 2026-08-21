@@ -7,6 +7,7 @@ import { canAssignTrainingToGroup } from "@/lib/manager/assignment-status";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { assignTrainingToFather } from "@/lib/manager/mutations";
 import { redirectManagerAssign } from "@/lib/manager/return-path";
+import { recordOrganizationActivity } from "@/lib/org-staff/activity";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
@@ -56,7 +57,14 @@ export async function assignTrainingToUnassigned(formData: FormData) {
   let assigned = 0;
   for (const participant of eligible) {
     const result = await assignTrainingToFather(supabase, user, participant.fatherId, trainingId);
-    if (result.status === "ok") assigned += 1;
+    if (result.status === "ok") {
+      assigned += 1;
+      await recordOrganizationActivity(supabase, {
+        groupId: participant.groupId,
+        actorId: user.id,
+        kind: "training_assigned",
+      });
+    }
     if (result.status === "failed") {
       redirectManagerAssign("error", result.reason ?? "The assignment didn’t save.", formData);
     }
