@@ -4,6 +4,11 @@ import {
   type AssessmentAvailabilityRow,
   type AssessmentVisibility,
 } from "@/lib/assessments/availability";
+import {
+  firstPartyAssessmentTitle,
+  isCustomAssessmentKey,
+  isFirstPartyAssessmentKey,
+} from "@/lib/assessments/first-party";
 
 export const ASSESSMENT_REVIEW_STATUSES = ["pending", "accepted", "declined"] as const;
 export type AssessmentReviewStatus = (typeof ASSESSMENT_REVIEW_STATUSES)[number];
@@ -35,11 +40,14 @@ export function isAssessmentReviewStatus(value: unknown): value is AssessmentRev
 }
 
 export function platformAssessmentTitle(assessmentKey: string) {
-  if (assessmentKey === KEYSTONE_ASSESSMENT_KEY) return "Keystone Assessment";
-  return assessmentKey;
+  return firstPartyAssessmentTitle(assessmentKey);
 }
 
-export function isLegacyCatalogAssessment(release: PlatformAssessmentRelease | null | undefined) {
+export function isLegacyCatalogAssessment(
+  release: PlatformAssessmentRelease | null | undefined,
+  assessmentKey?: string
+) {
+  if (assessmentKey && isFirstPartyAssessmentKey(assessmentKey)) return false;
   return !release?.first_released_at;
 }
 
@@ -65,8 +73,13 @@ export function organizationMayOfferAssessment(input: {
   release?: PlatformAssessmentRelease | null;
   reviewStatus?: AssessmentReviewStatus | null;
 }) {
+  if (isCustomAssessmentKey(input.assessmentKey)) return true;
+  if (isFirstPartyAssessmentKey(input.assessmentKey)) {
+    if (!isAssessmentCurrentlyReleased(input.release)) return false;
+    return input.reviewStatus === "accepted";
+  }
   if (input.assessmentKey !== KEYSTONE_ASSESSMENT_KEY) return true;
-  if (isLegacyCatalogAssessment(input.release)) return true;
+  if (isLegacyCatalogAssessment(input.release, input.assessmentKey)) return true;
   if (!isAssessmentCurrentlyReleased(input.release)) return false;
   return input.reviewStatus === "accepted";
 }
@@ -81,7 +94,11 @@ export function catalogVisibility(input: {
     (item) => item.group_id === input.groupId && item.assessment_key === input.assessmentKey
   );
   if (row) return row.status;
-  if (input.assessmentKey === KEYSTONE_ASSESSMENT_KEY && input.reviewStatus === "accepted") {
+  if (
+    (input.assessmentKey === KEYSTONE_ASSESSMENT_KEY ||
+      isFirstPartyAssessmentKey(input.assessmentKey)) &&
+    input.reviewStatus === "accepted"
+  ) {
     return "hidden";
   }
   return availabilityStatus(input.availability, input.groupId, input.assessmentKey);

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
+import { isCustomAssessmentKey, isPlatformReviewKey } from "@/lib/assessments/first-party";
 import { loadManagerAssessmentDetail } from "@/lib/assessments/data";
 import {
   loadOrganizationAssessmentReviews,
@@ -34,7 +35,7 @@ function visibilityPath(assessmentKey: string, groupId: string, returnTo: string
   if (assessmentKey === KEYSTONE_ASSESSMENT_KEY) {
     return `/manager/assessments/keystone?group=${encodeURIComponent(groupId)}`;
   }
-  return `/manager/assessments/${assessmentKey}`;
+  return `/manager/assessments/${assessmentKey}${groupId ? `?group=${encodeURIComponent(groupId)}` : ""}`;
 }
 
 function revalidateVisibility(assessmentKey: string) {
@@ -44,6 +45,7 @@ function revalidateVisibility(assessmentKey: string) {
   revalidatePath("/father");
   revalidatePath("/father/assessments");
   revalidatePath("/father/profile");
+  revalidatePath(`/father/assessments/p/${assessmentKey}`);
   if (assessmentKey !== KEYSTONE_ASSESSMENT_KEY) {
     revalidatePath(`/manager/assessments/${assessmentKey}`);
   }
@@ -59,7 +61,7 @@ async function saveVisibility(formData: FormData, status: "available" | "hidden"
   if (!UUID.test(groupId)) {
     fail("/manager/assessments", "flash.assessmentVisibilityFailed");
   }
-  if (assessmentKey !== KEYSTONE_ASSESSMENT_KEY && !UUID.test(assessmentKey)) {
+  if (!isPlatformReviewKey(assessmentKey) && !isCustomAssessmentKey(assessmentKey)) {
     fail("/manager/assessments", "flash.assessmentVisibilityFailed");
   }
   if (!(await allowActionRateLimit("manager.assessment"))) {
@@ -74,19 +76,19 @@ async function saveVisibility(formData: FormData, status: "available" | "hidden"
     fail("/manager/assessments", "flash.assessmentVisibilityFailed");
   }
 
-  if (assessmentKey !== KEYSTONE_ASSESSMENT_KEY) {
+  if (!isPlatformReviewKey(assessmentKey)) {
     const detail = await loadManagerAssessmentDetail(user.id, assessmentKey);
     if (!detail) {
       fail("/manager/assessments", "flash.assessmentNotFound");
     }
   }
 
-  if (assessmentKey === KEYSTONE_ASSESSMENT_KEY && status === "available") {
+  if (isPlatformReviewKey(assessmentKey) && status === "available") {
     const [release, reviews] = await Promise.all([
-      loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
+      loadPlatformAssessmentRelease(assessmentKey),
       loadOrganizationAssessmentReviews([groupId]),
     ]);
-    const review = reviewForGroup(reviews, groupId, KEYSTONE_ASSESSMENT_KEY);
+    const review = reviewForGroup(reviews, groupId, assessmentKey);
     if (
       !organizationMayOfferAssessment({
         assessmentKey,

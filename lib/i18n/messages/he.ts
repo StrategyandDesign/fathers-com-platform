@@ -718,6 +718,15 @@ export const he = {
       recordCount: "{n} תשובות בתיק",
       notReadyTitle: "ההערכה הזו עדיין לא מוכנה",
       notReadyBody: "להערכה הזו עדיין אין שאלות. חזור אחרי שהמנהיג יוסיף.",
+      begin: "התחלת ההערכה",
+      retake: "מילוי מחדש",
+      copyResults: "העתקת התוצאה",
+      copied: "הועתק",
+      introduction: "מבוא",
+      purpose: "מטרה",
+      goal: "יעד",
+      yourDesignation: "הדירוג שלך",
+      scoreOf: "ציון {score} מתוך {max}",
     },
     session: {
       film: "סרט",
@@ -1272,6 +1281,12 @@ export const he = {
       keystoneLead:
         "הערכת Keystone בת 128 שאלות. מנהל־על משתף אותה איתך. אתה מחליט מתי אבות בקבוצה יכולים לקחת אותה.",
       keystoneRosterLead: "כל אב בקבוצה. ל־Keystone אין הקצאה נפרדת.",
+      platformLead:
+        "מנהל־על משתף את הערכת הפלטפורמה הזו איתך. אשר אותה, ואז החלט מתי אבות בקבוצה יכולים לקחת אותה.",
+      platformRosterLead: "כל אב בקבוצה. להערכה הזו אין הקצאה נפרדת.",
+      sharePlatformLead: "אבות בקבוצה יכולים לקחת את ההערכה הזו. הם לא רואים אותה עד שתשתף.",
+      removePlatformLead:
+        "מסתיר מאבות שעדיין לא התחילו. מי שכבר התחיל או סיים שומר את הגישה.",
       completedOfRoster: "{completed}/{total} הושלמו",
       assignRemaining: "הקצאה ל־{n} הנותרים",
       assignHidden: "שתף את ההערכה עם הקבוצה לפני ההקצאה.",

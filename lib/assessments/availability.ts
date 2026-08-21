@@ -1,3 +1,5 @@
+import { isFirstPartyAssessmentKey } from "@/lib/assessments/first-party";
+
 export const KEYSTONE_ASSESSMENT_KEY = "keystone";
 
 export const ASSESSMENT_VISIBILITY = ["available", "hidden"] as const;
@@ -77,6 +79,17 @@ export function fatherCanStartAssessment(input: {
 }) {
   if (input.hasProgress) return true;
   const groupId = primaryFatherGroupId(input.groupIds, input.homeGroupId);
+
+  if (isFirstPartyAssessmentKey(input.assessmentKey)) {
+    if (!groupId) return false;
+    const currentlyReleased = Boolean(input.release?.released_at);
+    if (!currentlyReleased || input.reviewStatus !== "accepted") return false;
+    const row = input.rows.find(
+      (item) => item.group_id === groupId && item.assessment_key === input.assessmentKey
+    );
+    return row?.status === "available";
+  }
+
   if (!groupId) return true;
 
   if (input.assessmentKey === KEYSTONE_ASSESSMENT_KEY) {

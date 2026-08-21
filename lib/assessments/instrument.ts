@@ -10,13 +10,23 @@
 export const INSTRUMENT_VERSION = "1.0.0";
 export const INSTRUMENT_ITEM_MAX = 80;
 export const INSTRUMENT_PROMPT_MAX = 400;
+export const INSTRUMENT_CHOICE_LABEL_MAX = 240;
+export const INSTRUMENT_BAND_DESCRIPTION_MAX = 600;
 
 export const SCORING_METHODS = ["sum_coded", "mean_coded"] as const;
 export type ScoringMethod = (typeof SCORING_METHODS)[number];
+export const BAND_SCORE_MODES = ["percent", "raw"] as const;
+export type BandScoreMode = (typeof BAND_SCORE_MODES)[number];
 
 export type LikertScale = {
   min: number;
   max: number;
+};
+
+export type InstrumentChoice = {
+  key: string;
+  label: string;
+  value: number;
 };
 
 export type InstrumentItem = {
@@ -24,6 +34,7 @@ export type InstrumentItem = {
   prompt: string;
   dimension: string;
   coding: 1 | -1;
+  choices?: InstrumentChoice[];
 };
 
 export type InstrumentDimension = {
@@ -35,11 +46,12 @@ export type OutcomeBand = {
   min: number;
   max: number;
   label: string;
+  description?: string;
 };
 
 export type OutcomeRule =
   | { kind: "highest_dimension"; labels: Record<string, string> }
-  | { kind: "bands"; dimension: string; bands: OutcomeBand[] };
+  | { kind: "bands"; dimension: string; bands: OutcomeBand[]; score?: BandScoreMode };
 
 export type ScoringSpec = {
   method: ScoringMethod;
@@ -57,8 +69,10 @@ export type AssessmentInstrument = {
 export type InstrumentResult = {
   raw: Record<string, number>;
   scores: Record<string, number>;
+  total: number;
   outcomeKey: string;
   outcomeLabel: string;
+  outcomeDescription: string | null;
   model_id: "declarative";
   model_version: string;
 };
@@ -97,6 +111,16 @@ export function assessmentSlugFromTitle(title: string) {
 
 function isScoringMethod(value: string): value is ScoringMethod {
   return (SCORING_METHODS as readonly string[]).includes(value);
+}
+
+function isBandScoreMode(value: string): value is BandScoreMode {
+  return (BAND_SCORE_MODES as readonly string[]).includes(value);
+}
+
+export function isChoiceItem(
+  item: InstrumentItem
+): item is InstrumentItem & { choices: InstrumentChoice[] } {
+  return Array.isArray(item.choices) && item.choices.length > 0;
 }
 
 function codedValue(raw: number, coding: 1 | -1, scale: LikertScale) {
@@ -203,6 +227,7 @@ export function parseScoringSpec(
   let scale: LikertScale = { min: 1, max: 5 };
   let outcomeKind: "highest_dimension" | "bands" = "highest_dimension";
   let bandDimension = dimensionIds[0] ?? "";
+  let bandScore: BandScoreMode = "percent";
   const outcomeLabels: Record<string, string> = {};
   const bands: OutcomeBand[] = [];
 
@@ -228,6 +253,14 @@ export function parseScoringSpec(
         const parsed = parseScale(value);
         if (!parsed) return { ok: false, error: "Scale must look like 1-5." };
         scale = parsed;
+        continue;
+      }
+      if (key === "score" || key === "scoremode") {
+        const normalized = value.toLowerCase();
+        if (!isBandScoreMode(normalized)) {
+          return { ok: false, error: "Score must be percent or raw." };
+        }
+        bandScore = normalized;
         continue;
       }
       if (key === "outcome") {
@@ -270,7 +303,7 @@ export function parseScoringSpec(
 
   const outcome: OutcomeRule =
     outcomeKind === "bands"
-      ? { kind: "bands", dimension: bandDimension, bands }
+      ? { kind: "bands", dimension: bandDimension, bands, score: bandScore }
       : {
           kind: "highest_dimension",
           labels: Object.fromEntries(
@@ -347,9 +380,69 @@ export function validateInstrument(
 export function sampleAnswers(instrument: AssessmentInstrument, value: number) {
   const answers: Record<string, number> = {};
   for (const item of instrument.items) {
+    if (isChoiceItem(item)) {
+      const match =
+        item.choices.find((choice) => choice.value === value) ??
+        (value >= instrument.scoring.scale.max
+          ? item.choices.reduce((best, choice) =>
+              choice.value > best.value ? choice : best
+            )
+          : item.choices.reduce((best, choice) =>
+              choice.value < best.value ? choice : best
+            ));
+      answers[item.id] = match.value;
+      continue;
+    }
     answers[item.id] = value;
   }
   return answers;
+}
+
+const DEFAULT_LETTER_VALUES: Record<string, number> = { A: 4, B: 3, C: 2, D: 1 };
+
+export function buildChoiceSumInstrument(input: {
+  dimensionId: string;
+  dimensionLabel: string;
+  items: Array<{
+    id: string;
+    prompt: string;
+    choices: Array<{ key: string; label: string; value?: number }>;
+  }>;
+  choiceValues?: Record<string, number>;
+  bands: OutcomeBand[];
+}): AssessmentInstrument {
+  const values = input.choiceValues ?? DEFAULT_LETTER_VALUES;
+  const items: InstrumentItem[] = input.items.map((item) => ({
+    id: item.id,
+    prompt: item.prompt,
+    dimension: input.dimensionId,
+    coding: 1,
+    choices: item.choices.map((choice) => ({
+      key: choice.key,
+      label: choice.label,
+      value: choice.value ?? values[choice.key] ?? 0,
+    })),
+  }));
+  const choiceValues = items.flatMap((item) => item.choices ?? []).map((choice) => choice.value);
+  const scale = {
+    min: Math.min(...choiceValues),
+    max: Math.max(...choiceValues),
+  };
+  return {
+    version: INSTRUMENT_VERSION,
+    items,
+    scoring: {
+      method: "sum_coded",
+      scale,
+      dimensions: [{ id: input.dimensionId, label: input.dimensionLabel }],
+      outcome: {
+        kind: "bands",
+        dimension: input.dimensionId,
+        score: "raw",
+        bands: input.bands,
+      },
+    },
+  };
 }
 
 export function evaluateInstrument(
@@ -374,7 +467,12 @@ export function evaluateInstrument(
     if (typeof answer !== "number" || !Number.isFinite(answer)) {
       throw new Error("This instrument needs an answer for every question.");
     }
-    if (answer < scoring.scale.min || answer > scoring.scale.max) {
+    if (isChoiceItem(item)) {
+      const choice = item.choices.find((entry) => entry.value === answer);
+      if (!choice) {
+        throw new Error("An answer does not match a listed choice.");
+      }
+    } else if (answer < scoring.scale.min || answer > scoring.scale.max) {
       throw new Error("An answer sits outside the Likert scale.");
     }
     const coded = codedValue(answer, item.coding, scoring.scale);
@@ -400,16 +498,23 @@ export function evaluateInstrument(
     ])
   );
 
+  const total = scoring.dimensions.reduce((sum, dimension) => sum + (raw[dimension.id] ?? 0), 0);
+
   if (scoring.outcome.kind === "bands") {
-    const percent = scores[scoring.outcome.dimension] ?? 0;
+    const value =
+      scoring.outcome.score === "raw"
+        ? (raw[scoring.outcome.dimension] ?? 0)
+        : (scores[scoring.outcome.dimension] ?? 0);
     const band =
-      scoring.outcome.bands.find((entry) => percent >= entry.min && percent <= entry.max) ??
+      scoring.outcome.bands.find((entry) => value >= entry.min && value <= entry.max) ??
       scoring.outcome.bands[scoring.outcome.bands.length - 1];
     return {
       raw,
       scores,
+      total,
       outcomeKey: scoring.outcome.dimension,
       outcomeLabel: band.label,
+      outcomeDescription: band.description ?? null,
       model_id: "declarative",
       model_version: instrument.version,
     };
@@ -424,8 +529,10 @@ export function evaluateInstrument(
   return {
     raw,
     scores,
+    total,
     outcomeKey: winner.id,
     outcomeLabel: scoring.outcome.labels[winner.id] ?? winner.label,
+    outcomeDescription: null,
     model_id: "declarative",
     model_version: instrument.version,
   };

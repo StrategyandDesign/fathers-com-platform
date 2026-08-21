@@ -110,6 +110,26 @@ function missingAssessmentReviewRelation(error: { code?: string; message: string
   );
 }
 
+export async function loadPlatformAssessmentReleases(assessmentKeys: string[]) {
+  if (assessmentKeys.length === 0) return new Map<string, PlatformAssessmentRelease>();
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("platform_assessment_releases")
+    .select("assessment_key, released_at, first_released_at, released_by")
+    .in("assessment_key", assessmentKeys);
+
+  if (error) {
+    if (missingAssessmentReviewRelation(error)) return new Map<string, PlatformAssessmentRelease>();
+    throw error;
+  }
+
+  const releases = new Map<string, PlatformAssessmentRelease>();
+  for (const row of (data ?? []) as PlatformAssessmentRelease[]) {
+    releases.set(row.assessment_key, row);
+  }
+  return releases;
+}
+
 export async function loadPlatformAssessmentRelease(assessmentKey: string) {
   const supabase = await createClient();
   const { data, error } = await supabase

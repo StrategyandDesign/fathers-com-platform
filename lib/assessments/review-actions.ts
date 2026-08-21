@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
+import { isPlatformReviewKey } from "@/lib/assessments/first-party";
 import { loadPlatformAssessmentRelease } from "@/lib/assessments/data";
 import {
   ASSESSMENT_DECLINE_REASON_MAX,
@@ -36,10 +36,12 @@ function revalidateAssessmentReviews(assessmentKey: string) {
   revalidatePath("/manager");
   revalidatePath("/manager/assessments");
   revalidatePath("/manager/assessments/keystone");
+  revalidatePath(`/manager/assessments/${assessmentKey}`);
   revalidatePath(`/manager/assessment-reviews/${assessmentKey}`);
   revalidatePath("/father");
   revalidatePath("/father/assessments");
   revalidatePath("/father/profile");
+  revalidatePath(`/father/assessments/p/${assessmentKey}`);
 }
 
 async function decideReview(formData: FormData, status: "accepted" | "declined") {
@@ -53,7 +55,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
     ? reviewPath(assessmentKey, groupId, returnTo)
     : "/manager/assessments";
 
-  if (assessmentKey !== KEYSTONE_ASSESSMENT_KEY || !UUID.test(groupId)) {
+  if (!isPlatformReviewKey(assessmentKey) || !UUID.test(groupId)) {
     fail("/manager/assessments", "flash.assessmentReviewMissing");
   }
   if (!(await allowActionRateLimit("manager.assessment"))) {

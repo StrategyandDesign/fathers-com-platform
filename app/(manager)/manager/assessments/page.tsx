@@ -18,13 +18,23 @@ import {
   loadManagerAssessments,
   loadOrganizationAssessmentReviews,
   loadPlatformAssessmentRelease,
+  loadPlatformAssessmentReleases,
 } from "@/lib/assessments/data";
+import { listFirstPartyAssessments } from "@/lib/assessments/first-party";
+import { loadFirstPartyCompletedByGroup } from "@/lib/assessments/first-party-data";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadManagerNotifications } from "@/lib/manager/reviews";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
+
+function catalogTitle(
+  item: AssessmentCatalogItem,
+  t: (key: string, vars?: Record<string, string | number>) => string
+) {
+  return item.kind === "keystone" ? t("father.profile.keystone") : item.title ?? "";
+}
 
 function questionLabel(
   count: number,
@@ -55,18 +65,18 @@ function AssessmentCard({
           </Link>
           <p className="mt-1 text-sm text-muted-foreground">
             {[
-              item.kind === "keystone"
-                ? t("manager.assessments.platform")
-                : null,
+              item.kind === "custom"
+                ? null
+                : t("manager.assessments.platform"),
               questionLabel(item.questionCount, t),
-              item.kind === "keystone"
-                ? t("manager.assessments.completedOfRoster", {
-                    completed: item.completedCount,
-                    total: item.assignedCount,
-                  })
-                : t("manager.assessments.completedOf", {
+              item.kind === "custom"
+                ? t("manager.assessments.completedOf", {
                     completed: item.completedCount,
                     assigned: item.assignedCount,
+                  })
+                : t("manager.assessments.completedOfRoster", {
+                    completed: item.completedCount,
+                    total: item.assignedCount,
                   }),
               item.groupName,
               item.status === "hidden"
@@ -126,12 +136,19 @@ export default async function ManagerAssessmentsPage({
     loadManagerAssessments(user.id),
   ]);
   const groupIds = workspace.groups.map((group) => group.id);
-  const [availability, reviews, keystoneRelease, notifications] = await Promise.all([
-    loadAssessmentAvailability(groupIds),
-    loadOrganizationAssessmentReviews(groupIds),
-    loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
-    loadManagerNotifications(user.id),
-  ]);
+  const firstParty = listFirstPartyAssessments();
+  const [availability, reviews, keystoneRelease, firstPartyReleases, firstPartyCompleted, notifications] =
+    await Promise.all([
+      loadAssessmentAvailability(groupIds),
+      loadOrganizationAssessmentReviews(groupIds),
+      loadPlatformAssessmentRelease(KEYSTONE_ASSESSMENT_KEY),
+      loadPlatformAssessmentReleases(firstParty.map((assessment) => assessment.key)),
+      loadFirstPartyCompletedByGroup(
+        groupIds,
+        firstParty.map((assessment) => assessment.key)
+      ),
+      loadManagerNotifications(user.id),
+    ]);
   const unread = notifications.filter(
     (row) => !row.read_at && row.kind === "assessment_release"
   );
@@ -153,6 +170,9 @@ export default async function ManagerAssessmentsPage({
     groupSize,
     reviews,
     keystoneRelease,
+    firstParty,
+    firstPartyReleases: Object.fromEntries(firstPartyReleases),
+    firstPartyCompletedByGroup: firstPartyCompleted,
   });
   const { pending, available, hidden, declined } = partitionAssessmentCatalog(catalog);
   const orgName = workspace.groups[0]?.name ?? t("account.orgPhotosFallback");
@@ -221,7 +241,7 @@ export default async function ManagerAssessmentsPage({
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <h3 className="font-heading text-lg font-semibold">
-                      {item.kind === "keystone" ? t("father.profile.keystone") : item.title}
+                      {catalogTitle(item, t)}
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {[
@@ -274,9 +294,7 @@ export default async function ManagerAssessmentsPage({
               <AssessmentCard
                 key={item.key}
                 item={item}
-                title={
-                  item.kind === "keystone" ? t("father.profile.keystone") : item.title ?? ""
-                }
+                title={catalogTitle(item, t)}
                 remaining={remainingFor(item)}
                 t={t}
               />
@@ -300,9 +318,7 @@ export default async function ManagerAssessmentsPage({
               <AssessmentCard
                 key={item.key}
                 item={item}
-                title={
-                  item.kind === "keystone" ? t("father.profile.keystone") : item.title ?? ""
-                }
+                title={catalogTitle(item, t)}
                 remaining={0}
                 t={t}
               />
@@ -327,7 +343,7 @@ export default async function ManagerAssessmentsPage({
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <h3 className="font-heading text-lg font-semibold">
-                      {item.kind === "keystone" ? t("father.profile.keystone") : item.title}
+                      {catalogTitle(item, t)}
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {[item.groupName, t("manager.reviews.declined")].filter(Boolean).join(" · ")}

@@ -257,6 +257,46 @@ describe("assessment catalog", () => {
     assert.equal(available.length, 0);
     assert.equal(hidden.length, 1);
   });
+
+  it("hides a first-party instrument until Super-admin releases it", () => {
+    const items = buildManagerAssessmentCatalog({
+      groups: [groups[0]!],
+      custom: [],
+      availability: [],
+      keystoneCompletedByGroup: {},
+      groupSize: { g1: 4 },
+      firstParty: [
+        {
+          key: "legacy-architect",
+          slug: "legacy-architect",
+          title: "The Legacy Architect Keystone Assessment",
+          description: "Test",
+          questionCount: 30,
+          instrument: {
+            version: "1.0.0",
+            items: [],
+            scoring: {
+              method: "sum_coded",
+              scale: { min: 1, max: 4 },
+              dimensions: [{ id: "legacy", label: "Legacy" }],
+              outcome: { kind: "bands", dimension: "legacy", score: "raw", bands: [] },
+            },
+          },
+          copy: {
+            introduction: "",
+            purpose: "",
+            goal: "",
+            honestHint: "",
+          },
+        },
+      ],
+      firstPartyReleases: {},
+    });
+    assert.equal(
+      items.some((item) => item.assessmentKey === "legacy-architect"),
+      false
+    );
+  });
 });
 
 describe("leader assessment access", () => {

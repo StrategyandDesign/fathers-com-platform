@@ -7,9 +7,11 @@ import {
   assessmentEditedAt,
   assessmentEditedLabel,
   assessmentReleaseState,
+  firstPartyDeskItem,
   keystoneDeskItem,
   sourcedAssessmentDeskItem,
 } from "../lib/admin/assessment-desk";
+import { getFirstPartyAssessment } from "../lib/assessments/first-party";
 import { KEYSTONE_ASSESSMENT_KEY } from "../lib/assessments/availability";
 
 describe("admin assessment desk", () => {
@@ -112,5 +114,18 @@ describe("admin assessment desk", () => {
     assert.equal(item.kindLabel, "From Dr. Rivera");
     assert.equal(item.actionLabel, "Desk");
     assert.equal(item.href, "/admin/assessments/intakes/intake-1");
+  });
+
+  it("lists a first-party instrument with a Release action", () => {
+    const assessment = getFirstPartyAssessment("legacy-architect");
+    assert.ok(assessment);
+    const item = firstPartyDeskItem(assessment, {
+      releasedAt: null,
+      firstReleasedAt: null,
+      releaseTargets: [],
+    });
+    assert.equal(item.title, "The Legacy Architect Keystone Assessment");
+    assert.equal(item.actionLabel, "Release");
+    assert.equal(item.questionCount, 30);
   });
 });

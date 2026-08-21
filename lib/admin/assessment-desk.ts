@@ -4,6 +4,10 @@ import { asDevelopmentStatus, formatEditedAt } from "@/lib/admin/development";
 import type { TrainingReleaseState } from "@/lib/admin/release";
 import type { AdminReviewStatus } from "@/lib/admin/types";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
+import {
+  firstPartyAdminPath,
+  type FirstPartyAssessment,
+} from "@/lib/assessments/first-party";
 import { PROFILE_QUESTION_COUNT } from "@/lib/father/questions";
 
 export type AdminAssessmentDeskItem = {
@@ -87,6 +91,34 @@ export function keystoneDeskItem(keystone: {
     archived: false,
     developmentStatus: assessmentDevelopmentStatus(release),
     releaseState: assessmentReleaseState(release),
+  };
+}
+
+export function firstPartyDeskItem(
+  assessment: FirstPartyAssessment,
+  release: {
+    releasedAt: string | null;
+    firstReleasedAt: string | null;
+    releaseTargets: Array<{ reviewStatus: AdminReviewStatus | null }>;
+  }
+): AdminAssessmentDeskItem {
+  const state = {
+    releasedAt: release.releasedAt,
+    firstReleasedAt: release.firstReleasedAt,
+  };
+
+  return {
+    key: assessment.key,
+    title: assessment.title,
+    href: firstPartyAdminPath(assessment.key),
+    actionHref: `${firstPartyAdminPath(assessment.key)}#release`,
+    actionLabel: "Release",
+    questionCount: assessment.questionCount,
+    kindLabel: "Platform assessment",
+    editedAt: assessmentEditedAt(state),
+    archived: false,
+    developmentStatus: assessmentDevelopmentStatus(state),
+    releaseState: assessmentReleaseState(state),
   };
 }
 

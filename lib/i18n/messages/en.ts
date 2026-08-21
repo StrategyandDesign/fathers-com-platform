@@ -760,6 +760,15 @@ export const en = {
       notReadyTitle: "This assessment is not ready",
       notReadyBody:
         "This assessment has no questions yet. Check back after your leader adds some.",
+      begin: "Begin Assessment",
+      retake: "Retake Assessment",
+      copyResults: "Copy results",
+      copied: "Copied",
+      introduction: "Introduction",
+      purpose: "Purpose",
+      goal: "Goal",
+      yourDesignation: "Your designation",
+      scoreOf: "Score {score} of {max}",
     },
     session: {
       film: "Film",
@@ -1338,6 +1347,14 @@ export const en = {
       keystoneLead:
         "The 128-question Keystone Assessment. A Super-admin shares it with you. You decide when fathers in the group can take it.",
       keystoneRosterLead: "Every father in this group. Keystone does not need a separate assignment.",
+      platformLead:
+        "A Super-admin shares this platform assessment with you. Accept it, then decide when fathers in the group can take it.",
+      platformRosterLead:
+        "Every father in this group. This catalog assessment does not need a separate assignment.",
+      sharePlatformLead:
+        "Fathers in this group can take this assessment. They do not see it until you share it.",
+      removePlatformLead:
+        "Hides it from fathers who have not started. Those who already started or finished keep it.",
       completedOfRoster: "{completed}/{total} completed",
       assignRemaining: "Assign to {n} remaining",
       assignHidden: "Share this assessment with the group before assigning it.",

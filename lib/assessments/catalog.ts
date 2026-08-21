@@ -6,6 +6,12 @@ import {
   type AssessmentVisibility,
 } from "@/lib/assessments/availability";
 import {
+  firstPartyManagerPath,
+  firstPartyReviewPath,
+  listFirstPartyAssessments,
+  type FirstPartyAssessment,
+} from "@/lib/assessments/first-party";
+import {
   catalogVisibility,
   isAssessmentCurrentlyReleased,
   isLegacyCatalogAssessment,
@@ -16,7 +22,7 @@ import {
 } from "@/lib/assessments/reviews";
 import type { AssessmentListItem } from "@/lib/assessments/types";
 
-export type AssessmentCatalogKind = "keystone" | "custom";
+export type AssessmentCatalogKind = "keystone" | "custom" | "platform";
 export type AssessmentCatalogSection = "pending" | "available" | "hidden" | "declined";
 
 export type AssessmentCatalogItem = {
@@ -37,12 +43,16 @@ export type AssessmentCatalogItem = {
   description?: string | null;
 };
 
-function keystoneSection(input: {
+function platformSection(input: {
+  assessmentKey: string;
   release?: PlatformAssessmentRelease | null;
   reviewStatus: AssessmentReviewStatus | null;
   status: AssessmentVisibility;
 }): AssessmentCatalogSection | null {
-  if (isLegacyCatalogAssessment(input.release)) {
+  if (
+    input.assessmentKey === KEYSTONE_ASSESSMENT_KEY &&
+    isLegacyCatalogAssessment(input.release, input.assessmentKey)
+  ) {
     return input.status === "hidden" ? "hidden" : "available";
   }
   if (!isAssessmentCurrentlyReleased(input.release)) return null;
@@ -62,6 +72,9 @@ export function buildManagerAssessmentCatalog(input: {
   groupSize: Record<string, number>;
   reviews?: OrganizationAssessmentReview[];
   keystoneRelease?: PlatformAssessmentRelease | null;
+  firstParty?: FirstPartyAssessment[];
+  firstPartyReleases?: Record<string, PlatformAssessmentRelease | null>;
+  firstPartyCompletedByGroup?: Record<string, Record<string, number>>;
 }): AssessmentCatalogItem[] {
   const showGroupName = input.groups.length > 1;
   const items: AssessmentCatalogItem[] = [];
@@ -95,7 +108,8 @@ export function buildManagerAssessmentCatalog(input: {
       availability: input.availability,
       reviewStatus: review?.status ?? null,
     });
-    const section = keystoneSection({
+    const section = platformSection({
+      assessmentKey: KEYSTONE_ASSESSMENT_KEY,
       release: input.keystoneRelease,
       reviewStatus: review?.status ?? null,
       status,
@@ -119,6 +133,46 @@ export function buildManagerAssessmentCatalog(input: {
       assignedCount: input.groupSize[group.id] ?? 0,
       completedCount: input.keystoneCompletedByGroup[group.id] ?? 0,
     });
+  }
+
+  const firstParty = input.firstParty ?? listFirstPartyAssessments();
+  for (const assessment of firstParty) {
+    for (const group of groups) {
+      const review = reviewForGroup(reviews, group.id, assessment.key);
+      const status = catalogVisibility({
+        assessmentKey: assessment.key,
+        groupId: group.id,
+        availability: input.availability,
+        reviewStatus: review?.status ?? null,
+      });
+      const section = platformSection({
+        assessmentKey: assessment.key,
+        release: input.firstPartyReleases?.[assessment.key] ?? null,
+        reviewStatus: review?.status ?? null,
+        status,
+      });
+      if (!section) continue;
+
+      items.push({
+        key: `${group.id}:${assessment.key}`,
+        assessmentKey: assessment.key,
+        kind: "platform",
+        status,
+        section,
+        reviewStatus: review?.status ?? null,
+        groupId: group.id,
+        groupName: showGroupName ? group.name : undefined,
+        href:
+          section === "pending" || section === "declined"
+            ? `${firstPartyReviewPath(assessment.key)}?group=${group.id}`
+            : `${firstPartyManagerPath(assessment.key)}?group=${group.id}`,
+        questionCount: assessment.questionCount,
+        assignedCount: input.groupSize[group.id] ?? 0,
+        completedCount: input.firstPartyCompletedByGroup?.[assessment.key]?.[group.id] ?? 0,
+        title: assessment.title,
+        description: assessment.description,
+      });
+    }
   }
 
   for (const assessment of input.custom) {

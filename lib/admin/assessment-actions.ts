@@ -10,6 +10,7 @@ import {
   unreleaseAssessmentFromManagers,
 } from "@/lib/admin/assessment-release";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
+import { firstPartyAdminPath, isPlatformReviewKey } from "@/lib/assessments/first-party";
 import { ROLE_HOME } from "@/lib/auth/roles";
 import { getAuthContext } from "@/lib/auth/session";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
@@ -48,22 +49,27 @@ async function requireSuperAdmin() {
   return { user, role };
 }
 
-function revalidateAssessmentRelease() {
+function revalidateAssessmentRelease(assessmentKey: string) {
   revalidatePath("/admin");
   revalidatePath("/admin/assessments");
   revalidatePath("/admin/assessments/keystone");
+  revalidatePath(firstPartyAdminPath(assessmentKey));
   revalidatePath("/manager");
   revalidatePath("/manager/assessments");
+  revalidatePath("/manager/assessments/keystone");
+  revalidatePath(`/manager/assessments/${assessmentKey}`);
   revalidatePath("/manager/assessment-reviews/keystone");
+  revalidatePath(`/manager/assessment-reviews/${assessmentKey}`);
   revalidatePath("/father");
   revalidatePath("/father/assessments");
   revalidatePath("/father/profile");
+  revalidatePath(`/father/assessments/p/${assessmentKey}`);
 }
 
 function assessmentPath(assessmentKey: string) {
-  return assessmentKey === KEYSTONE_ASSESSMENT_KEY
-    ? "/admin/assessments/keystone"
-    : "/admin/assessments";
+  if (assessmentKey === KEYSTONE_ASSESSMENT_KEY) return "/admin/assessments/keystone";
+  if (isPlatformReviewKey(assessmentKey)) return firstPartyAdminPath(assessmentKey);
+  return "/admin/assessments";
 }
 
 export async function releaseAssessment(formData: FormData) {
@@ -72,7 +78,7 @@ export async function releaseAssessment(formData: FormData) {
   const confirm = String(formData.get("confirm") ?? "").trim();
   const path = assessmentPath(assessmentKey || KEYSTONE_ASSESSMENT_KEY);
 
-  if (assessmentKey !== KEYSTONE_ASSESSMENT_KEY) {
+  if (!isPlatformReviewKey(assessmentKey)) {
     fail("/admin/assessments", "That assessment was not found.");
   }
   if (!(await allowActionRateLimit("admin.release"))) {
@@ -137,7 +143,7 @@ export async function releaseAssessment(formData: FormData) {
             ? "Released to all organizations. Eligible Leaders were notified."
             : "Released to all organizations.";
 
-  revalidateAssessmentRelease();
+  revalidateAssessmentRelease(assessmentKey);
   finish(path, {
     notice,
     error: result.notifyFailed ? RELEASE_NOTIFY_WARNING : undefined,
@@ -150,7 +156,7 @@ export async function unreleaseAssessment(formData: FormData) {
   const confirm = String(formData.get("confirm") ?? "").trim();
   const path = assessmentPath(assessmentKey || KEYSTONE_ASSESSMENT_KEY);
 
-  if (assessmentKey !== KEYSTONE_ASSESSMENT_KEY) {
+  if (!isPlatformReviewKey(assessmentKey)) {
     fail("/admin/assessments", "That assessment was not found.");
   }
   if (!(await allowActionRateLimit("admin.release"))) {
@@ -179,7 +185,7 @@ export async function unreleaseAssessment(formData: FormData) {
     fail(path, RELEASE_WRITE_ERROR);
   }
 
-  revalidateAssessmentRelease();
+  revalidateAssessmentRelease(assessmentKey);
   redirect(
     `${path}?notice=${encodeURIComponent("Un-released. Pending reviews were withdrawn. Fathers who already started keep access.")}`
   );

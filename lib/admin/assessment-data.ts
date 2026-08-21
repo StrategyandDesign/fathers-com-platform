@@ -1,7 +1,12 @@
-import { keystoneDeskItem, sourcedAssessmentDeskItem } from "@/lib/admin/assessment-desk";
+import {
+  firstPartyDeskItem,
+  keystoneDeskItem,
+  sourcedAssessmentDeskItem,
+} from "@/lib/admin/assessment-desk";
 import { loadPlatformAssessments } from "@/lib/admin/assessment-sourcing-data";
 import { createClient } from "@/lib/supabase/server";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
+import { isFirstPartyAssessmentKey, listFirstPartyAssessments } from "@/lib/assessments/first-party";
 import type { AdminReleaseTarget, AdminReviewStatus } from "@/lib/admin/types";
 import { displayName } from "@/lib/manager/types";
 
@@ -18,18 +23,20 @@ export type AdminAssessmentRelease = {
   releaseTargets: AdminReleaseTarget[];
 };
 
-export async function loadAdminKeystoneRelease(): Promise<AdminAssessmentRelease> {
+export async function loadAdminAssessmentRelease(
+  assessmentKey: string
+): Promise<AdminAssessmentRelease> {
   const supabase = await createClient();
   const [groupsRes, reviewsRes, releaseRes] = await Promise.all([
     supabase.from("groups").select("id, name").order("name"),
     supabase
       .from("organization_assessment_reviews")
       .select("group_id, assessment_key, status")
-      .eq("assessment_key", KEYSTONE_ASSESSMENT_KEY),
+      .eq("assessment_key", assessmentKey),
     supabase
       .from("platform_assessment_releases")
       .select("assessment_key, released_at, first_released_at, released_by")
-      .eq("assessment_key", KEYSTONE_ASSESSMENT_KEY)
+      .eq("assessment_key", assessmentKey)
       .maybeSingle(),
   ]);
 
@@ -55,7 +62,7 @@ export async function loadAdminKeystoneRelease(): Promise<AdminAssessmentRelease
   }
 
   return {
-    assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+    assessmentKey,
     releasedAt: release?.released_at ?? null,
     firstReleasedAt: release?.first_released_at ?? null,
     releasedByName,
@@ -67,10 +74,29 @@ export async function loadAdminKeystoneRelease(): Promise<AdminAssessmentRelease
   };
 }
 
+export async function loadAdminKeystoneRelease(): Promise<AdminAssessmentRelease> {
+  return loadAdminAssessmentRelease(KEYSTONE_ASSESSMENT_KEY);
+}
+
 export async function loadAdminAssessmentDesk() {
-  const [keystone, sourced] = await Promise.all([
+  const firstParty = listFirstPartyAssessments();
+  const [keystone, sourced, ...firstPartyReleases] = await Promise.all([
     loadAdminKeystoneRelease(),
     loadPlatformAssessments(),
+    ...firstParty.map((assessment) => loadAdminAssessmentRelease(assessment.key)),
   ]);
-  return [keystoneDeskItem(keystone), ...sourced.map(sourcedAssessmentDeskItem)];
+  const firstPartyKeys = new Set(firstParty.map((assessment) => assessment.key));
+  return [
+    keystoneDeskItem(keystone),
+    ...firstParty.map((assessment, index) =>
+      firstPartyDeskItem(assessment, firstPartyReleases[index] ?? {
+        releasedAt: null,
+        firstReleasedAt: null,
+        releaseTargets: [],
+      })
+    ),
+    ...sourced
+      .filter((row) => !firstPartyKeys.has(row.assessmentKey) && !isFirstPartyAssessmentKey(row.assessmentKey))
+      .map(sourcedAssessmentDeskItem),
+  ];
 }
