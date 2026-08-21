@@ -1262,11 +1262,6 @@ export const he = {
       decline: "דחייה",
       declined: "נדחה",
       viewAssessment: "צפייה בהערכה",
-      waitingTitle: "ממתין לך",
-      waitingLead:
-        "שחרורים חדשים עדיין מגיעים לכאן. אפשר גם לכלול או לדחות בהערכות הזמינות בלי לפתוח אותן.",
-      waitingEmptyTitle: "אין מה שממתין",
-      waitingEmptyBody: "אין הערכות חדשות שממתינות.",
       review: "סקירה",
       declinedTitle: "נדחו",
       declinedLead: "כלול שוב אם תרצה להציע אחת מהן לארגון.",

@@ -1325,11 +1325,6 @@ export const en = {
       decline: "Decline",
       declined: "Declined",
       viewAssessment: "View assessment",
-      waitingTitle: "Waiting on you",
-      waitingLead:
-        "New releases still land here. You can also include or decline them in Available assessments without opening them.",
-      waitingEmptyTitle: "Nothing waiting",
-      waitingEmptyBody: "No new assessments are waiting.",
       review: "Review",
       declinedTitle: "Declined",
       declinedLead: "Include again if you want to offer one of these to the organization.",

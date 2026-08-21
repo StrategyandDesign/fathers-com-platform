@@ -278,7 +278,7 @@ describe("assessment catalog", () => {
     );
   });
 
-  it("puts a released Keystone in Waiting on you until the Leader accepts", () => {
+  it("marks a released Keystone as pending until the Leader includes it", () => {
     const items = buildManagerAssessmentCatalog({
       groups: [groups[0]!],
       custom: [],

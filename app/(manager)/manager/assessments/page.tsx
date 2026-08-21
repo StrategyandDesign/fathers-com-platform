@@ -82,7 +82,7 @@ export default async function ManagerAssessmentsPage({
     firstPartyReleases: Object.fromEntries(firstPartyReleases),
     firstPartyCompletedByGroup: firstPartyCompleted,
   });
-  const { pending, available, hidden, declined } = partitionAssessmentCatalog(catalog);
+  const { available, hidden, declined } = partitionAssessmentCatalog(catalog);
   const inGroup = [...available, ...hidden];
   const orgName = workspace.groups[0]?.name ?? t("account.orgPhotosFallback");
   const assignedByCustom = new Map(custom.map((row) => [row.id, row.assignedCount]));
@@ -134,26 +134,6 @@ export default async function ManagerAssessmentsPage({
           </ul>
         </section>
       ) : null}
-
-      <section id="pending" className="space-y-4">
-        <div>
-          <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.waitingTitle")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("manager.assessments.waitingLead")}</p>
-        </div>
-        {pending.length === 0 ? (
-          <EmptyState title={t("manager.assessments.waitingEmptyTitle")}>
-            {t("manager.assessments.waitingEmptyBody")}
-          </EmptyState>
-        ) : (
-          <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
-            {pending.map((item) => (
-              <li key={item.key} className="px-4 py-5 sm:px-6">
-                <AssessmentCatalogRow item={item} remaining={0} t={t} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
 
       <section id="cohort" className="space-y-4">
         <div>
