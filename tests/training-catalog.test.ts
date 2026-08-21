@@ -16,11 +16,13 @@ describe("training catalog decisions", () => {
     assert.doesNotMatch(catalog, /StatusMark/);
   });
 
-  it("does not keep a Waiting on you queue on Trainings", () => {
+  it("does not keep Waiting on you or Hidden from your cohort on Trainings", () => {
     const page = readRepo("app/(manager)/manager/trainings/page.tsx");
     assert.match(page, /TrainingCatalog/);
     assert.doesNotMatch(page, /manager\.trainings\.waitingTitle/);
     assert.doesNotMatch(page, /id="pending"/);
+    assert.doesNotMatch(page, /manager\.trainings\.hiddenTitle/);
+    assert.doesNotMatch(page, /id="hidden"/);
   });
 
   it("scrolls available trainings after three cards", () => {

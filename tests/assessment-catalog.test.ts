@@ -35,6 +35,8 @@ describe("assessment catalog decisions", () => {
     assert.match(page, /<AssessmentCatalog/);
     assert.doesNotMatch(page, /manager\.assessments\.waitingTitle/);
     assert.doesNotMatch(page, /id="pending"/);
+    assert.doesNotMatch(page, /manager\.assessments\.hiddenTitle/);
+    assert.doesNotMatch(page, /id="hidden"/);
     assert.doesNotMatch(page, /AssessmentVisibilityForms|AssessmentReviewForms/);
     assert.match(buttons, /manager\.assessments\.included/);
     assert.match(buttons, /manager\.assessments\.declined/);

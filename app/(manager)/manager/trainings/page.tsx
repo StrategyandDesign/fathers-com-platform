@@ -300,60 +300,6 @@ export default async function ManagerTrainingsPage({
           </ul>
         )}
       </section>
-
-      <section id="hidden" className="space-y-4">
-        <div>
-          <h2 className="font-heading text-lg font-semibold">{t("manager.trainings.hiddenTitle")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("manager.trainings.hiddenLead")}</p>
-        </div>
-        {declined.length === 0 ? (
-          <div className="rounded-xl border border-border bg-card px-4 py-5 sm:px-6">
-            <p className="text-sm text-muted-foreground">{t("manager.trainings.hiddenEmpty")}</p>
-          </div>
-        ) : (
-          <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
-            {declined.map((item) => {
-              const href = item.training.released_at
-                ? `/manager/reviews/${item.training.id}?group=${item.review.group_id}`
-                : null;
-              return (
-                <li key={`${item.review.group_id}-${item.training.id}`} className="px-4 py-5 sm:px-6">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0">
-                      {href ? (
-                        <Link href={href} className={cn("block font-medium", interactiveLinkClassName)}>
-                          {item.training.title}
-                        </Link>
-                      ) : (
-                        <span className="block font-medium">{item.training.title}</span>
-                      )}
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {formatShortDate(item.review.decided_at, locale)}
-                        {groups.length > 1 ? ` · ${item.groupName}` : ""}
-                      </p>
-                    </div>
-                    <ReviewStatusBadge status={item.review.status} />
-                  </div>
-                  {item.review.decline_reason ? (
-                    <p className="mt-2 text-sm text-muted-foreground">{item.review.decline_reason}</p>
-                  ) : null}
-                  {item.training.released_at ? (
-                    <div className="mt-4 border-t border-border pt-4">
-                      <ReviewDecisionForms
-                        trainingId={item.training.id}
-                        groupId={item.review.group_id}
-                        status={item.review.status}
-                        returnTo="trainings"
-                        declineReason={item.review.decline_reason}
-                      />
-                    </div>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
     </div>
   );
 }

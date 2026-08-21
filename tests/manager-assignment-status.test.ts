@@ -232,7 +232,7 @@ describe("hidden assignment surfaces", () => {
       fileURLToPath(new URL("../app/(manager)/manager/trainings/page.tsx", import.meta.url)),
       "utf8"
     );
-    const legacy = page.slice(page.indexOf("legacy.map"), page.indexOf('id="hidden"'));
+    const legacy = page.slice(page.indexOf("legacy.map"));
     assert.match(legacy, /ReviewDecisionForms/);
     assert.match(legacy, /manager\.trainings\.removeLead/);
     assert.match(legacy, /status="accepted"/);

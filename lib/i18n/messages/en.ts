@@ -1339,10 +1339,6 @@ export const en = {
         "Included assessments for this organization. Fathers can take them until you remove one, or assign a custom assessment.",
       cohortEmptyTitle: "No assessments in the group yet",
       cohortEmptyBody: "Include a release above, or create an assessment.",
-      hiddenTitle: "Hidden from your cohort",
-      hiddenLead:
-        "Declined assessments stay in Available assessments. Your cohort does not get them until you include them.",
-      hiddenEmpty: "Nothing is hidden from your cohort.",
       platform: "In the catalog",
       available: "Available",
       hidden: "Hidden",
@@ -1836,10 +1832,6 @@ export const en = {
       removeLead: "Removing hides it from new assignment. Fathers who already have it keep it.",
       catalogItem: "Included",
       fromSource: "From {name}",
-      hiddenTitle: "Hidden from your cohort",
-      hiddenLead:
-        "Declined trainings stay in Available trainings. Your cohort does not get them until you include them.",
-      hiddenEmpty: "Nothing is hidden from your cohort.",
     },
     photos: {
       title: "Organization Photos",
