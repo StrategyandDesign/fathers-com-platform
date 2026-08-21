@@ -114,3 +114,17 @@ describe("manager note previews by participation mode", () => {
     );
   });
 });
+
+describe("participation mode card", () => {
+  it("stays closed until a leader opens the arrow", () => {
+    const card = readFileSync(
+      fileURLToPath(new URL("../components/manager/participation-mode-card.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(card, /<details/);
+    assert.doesNotMatch(card, /<details[^>]*\sopen[\s>]/);
+    assert.match(card, /<summary/);
+    assert.match(card, /ChevronDown/);
+    assert.match(card, /participationLead/);
+  });
+});
