@@ -527,8 +527,8 @@ Keystone is live on this stack: 128 questions, Primary Edge, Primary Determinati
 | Gathering RPC | `supabase/migrations/20260818020000_anonymous_admin_gathering.sql` and later Gathering migrations |
 | YouTube allow-list | `lib/father/types.ts` (`youtubeVideoId`, `youtubeEmbedUrl`) |
 | Email CTAs | `lib/email/events.ts` |
-| Pilot runbook | `PILOT.md` |
-| Production (separate stack) | `docs/production-launch.md` |
+| Pilot runbook | `docs/engineering/PILOT.md` |
+| Production (separate stack) | `docs/engineering/production-launch.md` |
 
 ---
 

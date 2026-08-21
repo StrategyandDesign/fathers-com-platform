@@ -1,7 +1,7 @@
 # Fathers.com — founding gift one-pager
 
 For donors and foundations. Not a public page. Not participant copy.
-Sources are 2018–2026 only. Claims follow POSITIONING.md.
+Sources are 2018–2026 only. Claims follow docs/product/POSITIONING.md.
 
 ---
 

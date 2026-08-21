@@ -21,7 +21,7 @@ Data is Pilot Supabase `koeplcybddrvbliuepsy`. The project named `fathers-com-pl
 
 - Five unused Next.js modules with zero remaining importers.
 - README rewritten so this branch is not described as the static site.
-- PILOT.md now records the live-host facts above.
+- docs/engineering/PILOT.md now records the live-host facts above.
 - `.env.example` cron comment matches `vercel.json` (daily, not every 15 minutes).
 - Local `veterans*.html` / `employers.html` / `gatherings.html` stubs gitignored.
 
@@ -41,7 +41,7 @@ Ported from later `main`-based work so the review copy matches the product polis
 
 | Risk | Why it is still there |
 |---|---|
-| Internal `clean-pilot` branch still contains static HTML, Python builders, `assets/` | Deleting them there would make a later merge to `fathers-com-platform` `main` wipe that history. The isolated review repo omits them. |
+| Internal `clean-pilot` branch still contains static HTML, Python builders, `assets/` | They now live in `archive/static-site/`. Deleting them would make a later merge to `fathers-com-platform` `main` wipe that history. Ignore the folder for product review. |
 | Hardcoded Pilot keys in `lib/supabase/env.ts` | Stops Vercel 500s when env is empty. Public-class keys. Not a production secret pattern. |
 | Weak shared pilot passwords | Documented for auditor walkthrough. Rotate before any public launch. |
 | Pilot DB has `platform_assessments*` not used by this branch | Applied from a later sandbox migration. App does not query them. |
@@ -58,4 +58,4 @@ Ported from later `main`-based work so the review copy matches the product polis
 - Certificates are Leader-issued PDFs, not a public verify site.
 - Optional integrations (Resend, VAPID, Sentry, YouTube Data API) are unset in this environment.
 
-A PhD reviewer can read `app/`, `lib/`, `components/`, `handoff/`, and `PILOT.md` without first deleting AI scaffolding from the Next.js tree. They should ignore root HTML and `assets/` for behavior.
+A PhD reviewer can read `app/`, `lib/`, `components/`, `handoff/`, and `docs/engineering/PILOT.md` without first deleting AI scaffolding from the Next.js tree. They should ignore `archive/static-site/` for behavior.

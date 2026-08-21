@@ -117,7 +117,10 @@ Status key: **Working** = page exists, gated, linked or is an intentional deep l
 | `supabase/sql/` | `promote_pilot_role.sql`, `seed_unit_8200.sql`, `seed_returning_home_nwa.sql` |
 | `tests/*.test.ts` | Next.js unit tests |
 | `handoff/` | This package |
-| `*.html`, `assets/`, `build_*.py`, `content/`, `tools/`, `emails/`, `partner-kit/` | Leftover static site. Not served by Next. |
+| `docs/engineering/` | Runbooks. Start at `PILOT.md` |
+| `docs/product/` | Discovery notes. Skip for hardening |
+| `docs/archive/` | Outdated architecture and audits |
+| `archive/static-site/` (`*.html`, `assets/`, `build_*.py`, `content/`, `tools/`) | Leftover static site. Not served by Next. |
 
 ---
 

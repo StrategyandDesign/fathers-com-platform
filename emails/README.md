@@ -1,5 +1,7 @@
 # Fathers.com email templates (Resend)
 
+These HTML files belong to the unused `supabase/functions/send-email` kit. The Next.js mailer lives in `lib/email/`. Do not treat this folder as the live product.
+
 Nine templates on one skeleton. Bone surface, ink text, one ember button per email. Table-based with inline CSS for client compatibility. Each file carries a hidden preheader with the preview text. Subjects and previews live in `manifest.json`.
 
 ## Send discipline

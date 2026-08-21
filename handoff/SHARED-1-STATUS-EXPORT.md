@@ -409,7 +409,7 @@ Not a full 87-commit file list. These are the files an auditor should open first
 10. **Gathering page copy is hardcoded English**, not i18n.
 11. **Stripe functions remain in the repo** with a $120 default. Clean-pilot product pages do not sell seats; do not treat that as a live price.
 12. **`main` course texture (#111) is not on this line.** Do not assume desk and production Vercel (`fathers-com-platform.vercel.app` on `main`) match.
-13. **Production Vercel vs Pilot vs Submit 2** are different trees. `PILOT.md` / handoff already warn about this.
+13. **Production Vercel vs Pilot vs Submit 2** are different trees. `docs/engineering/PILOT.md` / handoff already warn about this.
 14. **Pilot passwords** (`12345`) are weak by design and documented. Not production.
 15. **Fundraising copy is markdown in `partner-kit/`**, not a public route.
 16. **Live reload / Shared stamp** are local/dev. Production hides the stamp.

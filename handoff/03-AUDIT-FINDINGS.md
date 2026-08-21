@@ -13,14 +13,14 @@ Resolutions are on `cursor/clean-pilot-handoff-audit-7c78` unless marked left as
 https://fathers-com-platform.vercel.app `/` → 307 `/login`, title “Fathers.com Pilot”, login sentence “The Fathers Performance Platform”, `/admin.html` → 404 (18 Aug 2026).  
 https://fathers-com-pilot.vercel.app login sentence is still “Official Fathers.com training pilot.” while this branch’s `lib/i18n/messages/en.ts` `auth.pilotNotice` is “The Fathers Performance Platform”.
 
-**Resolution:** Documented in `PILOT.md`, `README.md`, and `handoff/00-SUBMISSION-GUIDE.md`. This PR targets `clean-pilot` only.  
+**Resolution:** Documented in `docs/engineering/PILOT.md`, `README.md`, and `handoff/00-SUBMISSION-GUIDE.md`. This PR targets `clean-pilot` only.  
 **Not fixed in code:** we cannot change Vercel project settings from this repo.
 
 ### B2 — Do not delete leftover static HTML on this branch
 
-**Evidence:** `.vercelignore` excludes `*.html` and `assets/`. Those files are also the historical `main` static site. Removing them here would delete them if someone later merges this branch to `main`.
+**Evidence:** `.vercelignore` excludes `*.html` and `assets/`. Those files are also the historical `main` static site.
 
-**Resolution:** Left in the tree. Called out as ignore-for-review. Stubs gitignored so they are not added.
+**Resolution:** Moved to `archive/static-site/` on this line so the root is the Next.js app. A merge to `main` would relocate them, not drop history. Called out as ignore-for-review.
 
 ---
 
@@ -60,7 +60,7 @@ https://fathers-com-pilot.vercel.app login sentence is still “Official Fathers
 
 **Resolution:** Left as-is for this line. Not a production pattern. Called out in the submission guide.
 
-### H6 — Shared weak pilot passwords in `docs/CLEAN-PILOT-AUDITOR-LINK-REPORT.md`
+### H6 — Shared weak pilot passwords in `docs/archive/CLEAN-PILOT-AUDITOR-LINK-REPORT.md`
 
 **Evidence:** Password `12345` for four seats.  
 **Resolution:** Left as-is (auditor walkthrough). Do not paste that password into the email to the PhD team unless they already have the auditor report. Prefer inviting them to Supabase and rotating.
@@ -81,13 +81,13 @@ https://fathers-com-pilot.vercel.app login sentence is still “Official Fathers
 
 ### M3 — CI still tests the static site, and only on `main`
 
-**Evidence:** `.github/workflows/ci.yml` `on.push/pull_request.branches: [main]`, runs `tools/check_release.py`.  
-**Resolution:** Left as-is. Changing CI on this branch does not change `main` until merge; adding Next CI is a human decision.
+**Evidence:** `.github/workflows/ci.yml` `on.push/pull_request.branches: [main]`, historically ran `tools/check_release.py`.  
+**Resolution:** Current CI on this line runs Next typecheck, lint, and `tests/*.test.ts`. The static checker now lives under `archive/static-site/tools/`.
 
 ### M4 — `ARCHITECTURE.md` / `ROLES.md` / root docs still describe the static architecture
 
-**Evidence:** `ARCHITECTURE.md` §1 still says generated static front-end.  
-**Resolution:** Left as-is. Rewriting those doctrine docs is out of scope and they live on `main` too. Reviewers are told to use `PILOT.md` and `handoff/`.
+**Evidence:** `docs/archive/ARCHITECTURE.md` §1 still says generated static front-end.  
+**Resolution:** Those files now sit in `docs/archive/`. Reviewers use `docs/engineering/PILOT.md` and `handoff/`.
 
 ### M5 — Optional integrations unset
 

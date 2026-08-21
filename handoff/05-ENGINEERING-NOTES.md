@@ -15,7 +15,7 @@ npm run dev
 
 Open http://localhost:3000 → `/login`.
 
-Local `supabase start` is **not** the default path. `AGENTS.md` documents that applying the full `supabase/migrations/` directory (including pre-`20260817025510` files) fails on a blank database. Prefer the hosted Pilot project.
+Local `supabase start` is **not** the default path. `AGENTS.md` and `docs/engineering/PILOT.md` document that applying the full `supabase/migrations/` directory (including pre-`20260817025510` files) fails on a blank database. Prefer the hosted Pilot project.
 
 Signup needs a group `invite_code`. First Leader/admin: `supabase/sql/promote_pilot_role.sql` on Pilot, then sign out and in so the JWT picks up `app_metadata.role`.
 
@@ -34,7 +34,7 @@ To send reminders or run `/api/cron/*`: `CRON_SECRET` and `SUPABASE_SERVICE_ROLE
 3. **Whether to drop or adopt `platform_assessments*` on Pilot.** Present, unused by this branch.
 4. **Whether to enable RLS on `internal.training_series_split_backup`.**
 5. **Whether to add Next.js CI on `clean-pilot` PRs.** Current CI only runs the static checker on `main`.
-6. **Whether leftover static HTML should ever be deleted**, and on which branch, without wiping `main`.
+6. **Whether leftover static HTML in `archive/static-site/` should ever be deleted**, and on which branch, without wiping `main`.
 7. **Rotate pilot passwords and review hardcoded publishable keys** before any public launch.
 8. **Draft PR #92** — do not merge in this package; decide separately.
 
@@ -60,4 +60,4 @@ Signed-out HTTP after cleanup (`npm run dev`, 18 Aug 2026):
 | `/privacy` | 200 |
 | `/this-page-does-not-exist` | 404 |
 
-Public hosts probed the same day (see `PILOT.md`). Father/manager/admin **authenticated** click-throughs were not run here. Unit tests, `tsc`, and lint were re-run after the UX port.
+Public hosts probed the same day (see `docs/engineering/PILOT.md`). Father/manager/admin **authenticated** click-throughs were not run here. Unit tests, `tsc`, and lint were re-run after the UX port.

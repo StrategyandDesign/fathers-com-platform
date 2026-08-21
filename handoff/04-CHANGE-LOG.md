@@ -37,7 +37,7 @@ Schema: `trainings.overview_video_url` (migration `20260818230000_training_overv
 | Path | Why |
 |---|---|
 | `README.md` | Next.js clean-pilot; isolated-repo note |
-| `PILOT.md` | Live-host table from 18 Aug 2026 probes |
+| `docs/engineering/PILOT.md` | Live-host table from 18 Aug 2026 probes |
 | `.env.example` | Cron schedule matches `vercel.json` |
 | `.gitignore` | Ignore local static-builder stub HTML |
 | `.github/workflows/ci.yml` | Next.js typecheck / lint / unit tests (replaces static-site checker) |
@@ -54,8 +54,11 @@ Schema: `trainings.overview_video_url` (migration `20260818230000_training_overv
 | `handoff/05-ENGINEERING-NOTES.md` | How to run, gaps |
 | `handoff/06-VERIFICATION-CHECKLIST.md` | Confirm the cleanup |
 
+## Repo organization (transfer)
+
+Root markdown is now only `README.md`, `CONTRIBUTING.md`, `AGENTS.md`, `SHARED.md`, and `SUBMITS.md`. Old HTML and Python builders moved to `archive/static-site/`. Engineering runbooks moved to `docs/engineering/`. Discovery notes moved to `docs/product/`. Outdated architecture writeups moved to `docs/archive/`. Indexes live in `docs/README.md`.
+
 ## Not changed (on purpose)
 
 - Auth / RLS
-- Root static HTML and Python builders
 - `fathers-com-platform` `main`

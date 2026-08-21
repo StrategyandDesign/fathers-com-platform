@@ -1,6 +1,7 @@
 # Old static HTML platform — do not upload to the Next.js pilot project.
 *.html
 assets/
+archive/
 content/
 emails/
 partner-kit/
@@ -11,6 +12,7 @@ __pycache__/
 .pytest_cache/
 docs/
 *.md
-!PILOT.md
+!README.md
+!docs/engineering/PILOT.md
 .env*
 !.env.example

@@ -2,7 +2,7 @@
 
 Internal and donor-facing. Not a public website page. Not father-facing copy.
 Every numbered source is dated August 2018 through August 2026.
-POSITIONING.md governs price, vocabulary, and claims. If this brief and
+docs/product/POSITIONING.md governs price, vocabulary, and claims. If this brief and
 that file disagree, that file wins.
 
 ---
@@ -202,7 +202,7 @@ Only sources dated in this window. Older Canfield, Sarkadi, Lamb, and the
    https://www.acf.hhs.gov/ofa/programs/healthy-marriage-responsible-fatherhood/about
 4. National Fatherhood Initiative. (2026). *24:7 Dad* program kits, $899.
    https://www.fatherhood.org/solutions/programs-and-resources
-5. POSITIONING.md §3–4. Launch prices are a priced hypothesis. Seat
+5. docs/product/POSITIONING.md §3–4. Launch prices are a priced hypothesis. Seat
    sponsorship retired.
 6. Title IV-E Prevention Services Clearinghouse. (2025, July). *24:7 Dad®
    A.M. + P.M.* Does not currently meet criteria.
@@ -210,7 +210,7 @@ Only sources dated in this window. Older Canfield, Sarkadi, Lamb, and the
 7. Title IV-E Prevention Services Clearinghouse. (2025, July). *InsideOut
    Dad®.* Does not currently meet criteria.
    https://preventionservices.acf.hhs.gov/programs/933/show
-8. docs/EVIDENCE-BAR.md. Path from unrated to rated. No page prints a
+8. docs/product/EVIDENCE-BAR.md. Path from unrated to rated. No page prints a
    rating claim until one exists.
 9. National Academy for State Health Policy. *State opioid settlement
    spending decisions.* States implementing at least $50 billion.

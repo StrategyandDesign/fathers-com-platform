@@ -13,8 +13,10 @@ Run these on a clone of `fathers-com-clean-pilot` (`review`). Do not use `father
 - [ ] These paths are gone: `components/father/group-membership.tsx`, `components/father/session-steps.tsx`, `components/father/session-complete-mark.tsx`, `lib/father/evaluate.ts`.
 - [ ] `components/assessments/assigned-list.tsx` is present (used by `/father/assessments` after Keystone is complete).
 - [ ] `rg FatherGroupMembership\|SessionSteps\|SessionCompleteMark\|evaluatePlaceholder` in `*.ts,*.tsx` is empty.
-- [ ] `README.md` starts with “clean-pilot (Next.js)”.
-- [ ] `PILOT.md` has the 18 Aug 2026 host table.
+- [ ] `README.md` starts with “Fathers.com — clean-pilot”.
+- [ ] Root `*.md` is only `README.md`, `CONTRIBUTING.md`, `AGENTS.md`, `SHARED.md`, `SUBMITS.md`.
+- [ ] No `*.html` at the repo root. Old pages are under `archive/static-site/`.
+- [ ] `docs/engineering/PILOT.md` has the 18 Aug 2026 host table.
 
 ## C. Automated
 

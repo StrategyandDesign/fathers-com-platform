@@ -16,7 +16,7 @@ Fathering ("NCF"), for fatherhood education services.
    proceedings if necessary, any effort to obtain access to patient identifying
    information related to substance use disorder diagnosis, treatment, or
    referral, except as permitted by 42 CFR Part 2.
-4. Data minimization by design. Platform doctrine (POSITIONING.md 9): no
+4. Data minimization by design. Platform doctrine (docs/product/POSITIONING.md 9): no
    clinical information is stored on the platform; the certificate and public
    verification page never name the referring organization; the participant
    owns his account. The parties intend that no Part 2 records cross to NCF.
