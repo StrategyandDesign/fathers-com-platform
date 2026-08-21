@@ -24,7 +24,6 @@ import { decorateCohortNoteDesk } from "@/lib/cohort-note/audience";
 import { loadManagerCohortNotes } from "@/lib/cohort-note/data";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { buildManagerReport } from "@/lib/manager/reports";
-import { buildManagerCatalog } from "@/lib/manager/catalog";
 import { loadNudgePanel } from "@/lib/manager/nudge-panel-data";
 import { participationCopyKey, participationModeFromGroups } from "@/lib/participation";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
@@ -61,33 +60,6 @@ export default async function ManagerHomePage({
     trainingProgressFor,
     certificates,
   } = workspace;
-  const catalog = buildManagerCatalog({
-    trainings: workspace.trainings,
-    pending: reviews.pending.map((item) => ({
-      training: item.training,
-      sessionCount: item.sessionCount,
-      groupId: item.review.group_id,
-      groupName: item.groupName,
-    })),
-    accepted: reviews.history
-      .filter((item) => item.review.status === "accepted")
-      .map((item) => ({
-        training: item.training,
-        sessionCount: item.sessionCount,
-        groupId: item.review.group_id,
-        groupName: item.groupName,
-      })),
-    declined: reviews.history
-      .filter((item) => item.review.status === "declined")
-      .map((item) => ({
-        training: item.training,
-        sessionCount: item.sessionCount,
-        groupId: item.review.group_id,
-        groupName: item.groupName,
-      })),
-    defaultGroupId: groups[0]?.id,
-    showGroupName: groups.length > 1,
-  });
   const quietIds = participants
     .filter((participant) =>
       needsNudge(participant.lastActivity, trainingProgressFor(participant.fatherId))
@@ -384,52 +356,6 @@ export default async function ManagerHomePage({
               {t("manager.dashboard.openReports")}
             </Link>
           </div>
-        </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">{t("nav.trainings")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.dashboard.trainingsLead")}
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {catalog.length === 1
-              ? t("manager.dashboard.catalogCountOne")
-              : t("manager.dashboard.catalogCountMany", { count: catalog.length })}
-          </p>
-          <Link
-            href="/manager/trainings#catalog"
-            className={cn(buttonVariants(), "mt-5 w-full sm:w-auto")}
-          >
-            {t("manager.dashboard.openCatalog")}
-          </Link>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.assessments")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.dashboard.assessmentsLead")}
-          </p>
-          <Link
-            href="/manager/assessments"
-            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
-          >
-            {t("manager.dashboard.viewAssessments")}
-          </Link>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">
-            {t("manager.dashboard.certificates")}
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.dashboard.certificatesLead")}
-          </p>
-          <Link
-            href="/manager/participants#certificates"
-            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
-          >
-            {t("manager.dashboard.viewCertificates")}
-          </Link>
         </div>
       </section>
     </div>

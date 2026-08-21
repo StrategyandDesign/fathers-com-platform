@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 65,
-  "label": "Shared 1-1.65",
+  "patch": 66,
+  "label": "Shared 1-1.66",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Drop the Leaders and Desk tape cards from Home.",
+  "title": "Let a leader send an update to the whole cohort or one training.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -463,6 +463,13 @@
       "label": "Shared 1-1.65",
       "at": "2026-08-21",
       "title": "Drop the Leaders and Desk tape cards from Home."
+    },
+    {
+      "patch": 66,
+      "revision": "1.66",
+      "label": "Shared 1-1.66",
+      "at": "2026-08-21",
+      "title": "Let a leader send an update to the whole cohort or one training."
     }
   ]
 }

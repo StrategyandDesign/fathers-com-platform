@@ -187,6 +187,9 @@ describe("leader dashboard order", () => {
     assert.ok(update > openItems);
     assert.doesNotMatch(page, /<StaffDesk/);
     assert.doesNotMatch(page, /<ActivityTicker/);
+    assert.doesNotMatch(page, /manager\.dashboard\.openCatalog/);
+    assert.doesNotMatch(page, /manager\.dashboard\.viewAssessments/);
+    assert.doesNotMatch(page, /manager\.dashboard\.viewCertificates/);
   });
 });
 
