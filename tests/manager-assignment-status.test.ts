@@ -220,6 +220,17 @@ describe("hidden assignment surfaces", () => {
     assert.doesNotMatch(page, /manager\.trainings\.allAssigned/);
   });
 
+  it("gives included catalog trainings the same remove note as accepted ones", () => {
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/(manager)/manager/trainings/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    const legacy = page.slice(page.indexOf("legacy.map"), page.indexOf('id="hidden"'));
+    assert.match(legacy, /ReviewDecisionForms/);
+    assert.match(legacy, /manager\.trainings\.removeLead/);
+    assert.match(legacy, /status="accepted"/);
+  });
+
   it("renders each cohort training as its own card", () => {
     const page = readFileSync(
       fileURLToPath(new URL("../app/(manager)/manager/trainings/page.tsx", import.meta.url)),

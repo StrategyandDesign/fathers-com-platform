@@ -329,6 +329,22 @@ export default async function ManagerTrainingsPage({
                       {t("manager.trainings.chooseFathers")}
                     </Link>
                   </div>
+                  {groups.map((group) => (
+                    <div key={group.id} className="mt-5 border-t border-border pt-5">
+                      {groups.length > 1 ? (
+                        <p className="mb-2 text-sm font-medium">{group.name}</p>
+                      ) : null}
+                      <p className="mb-3 text-sm text-muted-foreground">
+                        {t("manager.trainings.removeLead")}
+                      </p>
+                      <ReviewDecisionForms
+                        trainingId={training.id}
+                        groupId={group.id}
+                        status="accepted"
+                        returnTo="trainings"
+                      />
+                    </div>
+                  ))}
                 </li>
               );
             })}

@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 62,
-  "label": "Shared 1-1.62",
+  "patch": 63,
+  "label": "Shared 1-1.63",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Let Super-admin send dismissible desk notes to Leaders and Reviewers.",
+  "title": "Match the assistant toggle to the same chevron used below it.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -442,6 +442,13 @@
       "label": "Shared 1-1.62",
       "at": "2026-08-21",
       "title": "Let Super-admin send dismissible desk notes to Leaders and Reviewers."
+    },
+    {
+      "patch": 63,
+      "revision": "1.63",
+      "label": "Shared 1-1.63",
+      "at": "2026-08-21",
+      "title": "Match the assistant toggle to the same chevron used below it."
     }
   ]
 }
