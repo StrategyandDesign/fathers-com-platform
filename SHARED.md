@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.89**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.90**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -106,3 +106,4 @@ The badge on this checkout is **Shared 1-1.89**. It ticks on each push of the Sh
 | **1.87** | undefined | Let Leaders review assessment questions before they share. |
 | **1.88** | undefined | Keep Hebrew in the catalog and hide it from public screens. |
 | **1.89** | undefined | Give assessments the same Include and Decline row as trainings. |
+| **1.90** | undefined | Stop rewriting the language cookie on every Trainings click. |

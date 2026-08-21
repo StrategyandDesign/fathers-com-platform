@@ -26,4 +26,10 @@ describe("trainings ribbon arrow", () => {
     assert.match(nav, /icon: BrandLogoArrow/);
     assert.match(nav, /className=\{cn\("size-5"/);
   });
+
+  it("puts Assessments above Impact Snapshot on the Leader ribbon", () => {
+    const nav = readRepo("components/layout/app-nav.tsx");
+    const manager = nav.slice(nav.indexOf("manager: ["), nav.indexOf("reviewer: ["));
+    assert.ok(manager.indexOf('href: "/manager/assessments"') < manager.indexOf('href: "/manager/impact"'));
+  });
 });
