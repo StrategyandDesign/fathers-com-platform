@@ -1826,11 +1826,6 @@ export const en = {
       included: "Included",
       decline: "Decline",
       declined: "Declined",
-      waitingTitle: "Waiting on you",
-      waitingLead:
-        "New releases still land here. You can also include or decline them in Available trainings without opening them.",
-      waitingEmptyTitle: "Nothing waiting",
-      waitingEmptyBody: "No new trainings are waiting.",
       cohortTitle: "In your cohort",
       cohortLead:
         "Assigned, not started, in progress, and done. Assign remaining from this row.",

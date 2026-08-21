@@ -119,57 +119,6 @@ export default async function ManagerTrainingsPage({
         </section>
       ) : null}
 
-      <section id="pending" className="space-y-4">
-        <div>
-          <h2 className="font-heading text-lg font-semibold">{t("manager.trainings.waitingTitle")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("manager.trainings.waitingLead")}</p>
-        </div>
-        {pending.length === 0 ? (
-          <EmptyState title={t("manager.trainings.waitingEmptyTitle")}>
-            {t("manager.trainings.waitingEmptyBody")}
-          </EmptyState>
-        ) : (
-          <div className="space-y-4">
-            {pending.map((item) => (
-              <article
-                key={`${item.review.group_id}-${item.training.id}`}
-                className="rounded-xl border border-border bg-card p-4 sm:p-6"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="min-w-0">
-                    <h3 className="font-heading text-lg font-semibold">{item.training.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {sessionLabel(item.sessionCount, t)}
-                      {groups.length > 1 ? ` · ${item.groupName}` : ""}
-                    </p>
-                  </div>
-                  <ReviewStatusBadge status={item.review.status} />
-                </div>
-                {item.training.description ? (
-                  <p className="mt-4 text-sm text-muted-foreground">{item.training.description}</p>
-                ) : null}
-                <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-                  <Link
-                    href={`/manager/reviews/${item.training.id}?group=${item.review.group_id}`}
-                    className={cn(buttonVariants({ variant: "outline" }), "w-full min-h-11 sm:w-auto")}
-                  >
-                    {t("manager.trainings.preview")}
-                  </Link>
-                </div>
-                <div className="mt-5 border-t border-border pt-5">
-                  <ReviewDecisionForms
-                    trainingId={item.training.id}
-                    groupId={item.review.group_id}
-                    status={item.review.status}
-                    returnTo="trainings"
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
-
       <section id="cohort" className="space-y-4">
         <div>
           <h2 className="font-heading text-lg font-semibold">{t("manager.trainings.cohortTitle")}</h2>

@@ -16,6 +16,13 @@ describe("training catalog decisions", () => {
     assert.doesNotMatch(catalog, /StatusMark/);
   });
 
+  it("does not keep a Waiting on you queue on Trainings", () => {
+    const page = readRepo("app/(manager)/manager/trainings/page.tsx");
+    assert.match(page, /TrainingCatalog/);
+    assert.doesNotMatch(page, /manager\.trainings\.waitingTitle/);
+    assert.doesNotMatch(page, /id="pending"/);
+  });
+
   it("scrolls available trainings after three cards", () => {
     const catalog = readRepo("components/manager/training-catalog.tsx");
     const scroller = readRepo("components/manager/catalog-scroll-list.tsx");
