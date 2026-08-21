@@ -89,29 +89,50 @@ export async function joinAsLeader(formData: FormData) {
     joinPath(token, "The account was created, but the desk is not ready. Ask a Super-admin.");
   }
 
-  const { data: group } = await admin
-    .from("groups")
-    .insert({
-      name: invite.organizationName,
-      manager_id: userId,
-    })
-    .select("id")
-    .single();
+  let groupId = invite.groupId;
+  if (groupId) {
+    const { data: existingGroup } = await admin
+      .from("groups")
+      .select("id")
+      .eq("id", groupId)
+      .maybeSingle();
+    if (!existingGroup?.id) {
+      joinPath(token, "That organization is no longer open. Ask a Super-admin.");
+    }
+    const { error: staffError } = await admin.from("organization_staff").insert({
+      group_id: groupId,
+      profile_id: userId,
+      staff_role: "manager",
+      added_by: userId,
+    });
+    if (staffError && staffError.code !== "23505") {
+      joinPath(token, "The account was created, but the desk is not ready. Ask a Super-admin.");
+    }
+  } else {
+    const { data: group } = await admin
+      .from("groups")
+      .insert({
+        name: invite.organizationName,
+        manager_id: userId,
+      })
+      .select("id")
+      .single();
+    groupId = group?.id ?? null;
+    if (groupId) {
+      await admin.rpc("seed_group_training_reviews", { p_group_id: groupId });
+      await admin.rpc("seed_group_assessment_reviews", { p_group_id: groupId });
+    }
+  }
 
   await admin
     .from("manager_invites")
     .update({
       accepted_at: new Date().toISOString(),
       accepted_by: userId,
-      group_id: group?.id ?? null,
+      group_id: groupId,
       full_name: fullName,
     })
     .eq("id", invite.id);
-
-  if (group?.id) {
-    await admin.rpc("seed_group_training_reviews", { p_group_id: group.id });
-    await admin.rpc("seed_group_assessment_reviews", { p_group_id: group.id });
-  }
 
   const supabase = await createClient();
   const { error: signInError } = await supabase.auth.signInWithPassword({

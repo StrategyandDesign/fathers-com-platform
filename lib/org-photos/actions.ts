@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/session";
+import { isManagerOfGroup } from "@/lib/org-staff/membership";
 import { loadCatalogTrainings } from "@/lib/org-photos/data";
 import { trainingCoverSlug } from "@/lib/trainings/series";
 import { readImageMeta, validateOrgPhoto } from "@/lib/org-photos/image";
@@ -40,7 +41,7 @@ async function requireManagedGroup(groupId: string) {
     .maybeSingle();
 
   if (error) return { error: "Couldn’t load that organization. Try again." } as const;
-  if (!data || data.manager_id !== user.id) {
+  if (!data || !(await isManagerOfGroup(supabase, user.id, groupId))) {
     return { error: "That organization isn’t yours." } as const;
   }
 

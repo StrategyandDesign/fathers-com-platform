@@ -1,5 +1,5 @@
 import { AssessmentHomeCard } from "@/components/assessments/home-card";
-import { CohortNoteCard } from "@/components/father/cohort-note-card";
+import { CohortNoteStack } from "@/components/father/cohort-note-card";
 import { HomeAssessmentCard } from "@/components/father/home-assessment-card";
 import { HomePathRow } from "@/components/father/home-path";
 import { HomeStreakRow } from "@/components/father/home-streak";
@@ -10,7 +10,7 @@ import { LeaderMeta } from "@/components/father/leader-meta";
 import { StreakNotices } from "@/components/father/streak-notices";
 import { Flash } from "@/components/manager/flash";
 import { loadFatherAssignments } from "@/lib/assessments/data";
-import { loadFatherLeader, loadVisibleCohortNote } from "@/lib/cohort-note/data";
+import { loadFatherLeaders, loadVisibleCohortNotes } from "@/lib/cohort-note/data";
 import { requireRole } from "@/lib/auth/session";
 import { formatCertificateDate } from "@/lib/certificates/types";
 import { readHomeDeskVisit } from "@/lib/father/home-desk-cookie";
@@ -61,8 +61,8 @@ export default async function FatherHomePage({
     customAssignments,
     orgPhotos,
     streak,
-    leader,
-    cohortNote,
+    leaders,
+    cohortNotes,
     participationMode,
     homeDesk,
   ] = await Promise.all([
@@ -70,8 +70,8 @@ export default async function FatherHomePage({
     loadFatherAssignments(user.id),
     loadFatherOrgPhotoCovers(user.id),
     loadFatherStreakHome(user.id),
-    loadFatherLeader(user.id),
-    loadVisibleCohortNote(user.id),
+    loadFatherLeaders(user.id),
+    loadVisibleCohortNotes(user.id),
     loadFatherParticipationMode(user.id),
     readHomeDeskVisit(),
   ]);
@@ -186,18 +186,8 @@ export default async function FatherHomePage({
           : "max-w-xl"
       )}
     >
-      {leader ? (
-        <LeaderMeta name={leader.name} avatarUrl={leader.avatarUrl} t={t} />
-      ) : null}
-      {cohortNote ? (
-        <CohortNoteCard
-          groupId={cohortNote.groupId}
-          body={cohortNote.body}
-          updatedAt={cohortNote.updatedAt}
-          locale={locale}
-          t={t}
-        />
-      ) : null}
+      {leaders.length > 0 ? <LeaderMeta leaders={leaders} t={t} /> : null}
+      <CohortNoteStack notes={cohortNotes} locale={locale} t={t} />
       <Flash error={error} notice={notice} />
       <StreakNotices notices={streak.notices} />
       <HomeStreakRow

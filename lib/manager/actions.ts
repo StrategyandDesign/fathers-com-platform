@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { seedGroupAssessmentReviews } from "@/lib/admin/assessment-release";
 import { seedGroupTrainingReviews } from "@/lib/admin/release";
 import { requireRole } from "@/lib/auth/session";
+import { groupIdForFather, recordOrganizationActivity } from "@/lib/org-staff/activity";
+import { isManagerOfGroup } from "@/lib/org-staff/membership";
 import { parseParticipationMode } from "@/lib/participation";
 import {
   assignTrainingToFather,
@@ -74,11 +76,14 @@ export async function saveParticipationMode(formData: FormData) {
   }
 
   const supabase = await createClient();
+  if (!(await isManagerOfGroup(supabase, user.id, groupId))) {
+    fail("/manager", "That group is not yours.");
+  }
+
   const { data, error } = await supabase
     .from("groups")
     .update({ participation_mode: mode })
     .eq("id", groupId)
-    .eq("manager_id", user.id)
     .select("id")
     .maybeSingle();
 
@@ -88,6 +93,13 @@ export async function saveParticipationMode(formData: FormData) {
   if (!data) {
     fail("/manager", "That group is not yours.");
   }
+
+  await recordOrganizationActivity(supabase, {
+    groupId,
+    actorId: user.id,
+    kind: "participation_set",
+    payload: { mode },
+  });
 
   revalidateManager();
   revalidatePath("/father");
@@ -116,6 +128,15 @@ export async function assignTraining(formData: FormData) {
   }
   if (result.status === "skipped") {
     redirectManagerAssign("error", "That training is already assigned.", formData, fatherId);
+  }
+
+  const groupId = await groupIdForFather(supabase, fatherId);
+  if (groupId) {
+    await recordOrganizationActivity(supabase, {
+      groupId,
+      actorId: user.id,
+      kind: "training_assigned",
+    });
   }
 
   revalidateManager(fatherId);
@@ -191,6 +212,15 @@ export async function sendCertificate(formData: FormData) {
   }
   if (result.status === "skipped") {
     ok(previewPath, result.reason ?? "A certificate is already on file for this training.");
+  }
+
+  const groupId = await groupIdForFather(supabase, fatherId);
+  if (groupId) {
+    await recordOrganizationActivity(supabase, {
+      groupId,
+      actorId: user.id,
+      kind: "certificate_issued",
+    });
   }
 
   revalidateManager(fatherId, trainingId);

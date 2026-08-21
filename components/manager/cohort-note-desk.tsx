@@ -4,23 +4,16 @@ import { useState } from "react";
 
 import { CohortNoteMessage } from "@/components/cohort-note/message";
 import { clearCohortNote, publishCohortNote } from "@/lib/cohort-note/actions";
-import { COHORT_NOTE_MAX, normalizeCohortNote } from "@/lib/cohort-note/types";
+import { COHORT_NOTE_MAX, normalizeCohortNote, type ManagerCohortDeskGroup } from "@/lib/cohort-note/types";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/components/i18n/locale-provider";
 import { formatShortDateTime } from "@/lib/i18n/dates";
 import { textareaClassName } from "@/lib/ui";
 
-type CohortNoteGroup = {
-  groupId: string;
-  groupName: string;
-  body: string;
-  updatedAt: string | null;
-};
-
 export function CohortNoteDesk({
   groups,
 }: {
-  groups: CohortNoteGroup[];
+  groups: ManagerCohortDeskGroup[];
 }) {
   const { t } = useI18n();
   if (groups.length === 0) return null;
@@ -57,18 +50,43 @@ function CohortNoteEditor({
   group,
   showGroupName,
 }: {
-  group: CohortNoteGroup;
+  group: ManagerCohortDeskGroup;
   showGroupName: boolean;
 }) {
   const { t, locale } = useI18n();
   const [draft, setDraft] = useState("");
-  const liveBody = normalizeCohortNote(group.body);
+  const liveBody = normalizeCohortNote(group.own?.body ?? "");
   const preview = normalizeCohortNote(draft);
-  const liveStamp = group.updatedAt ? formatShortDateTime(group.updatedAt, locale) : null;
+  const liveStamp = group.own?.updatedAt
+    ? formatShortDateTime(group.own.updatedAt, locale)
+    : null;
 
   return (
     <div className="space-y-4">
       {showGroupName ? <p className="text-sm font-medium">{group.groupName}</p> : null}
+
+      {group.peers.length > 0 ? (
+        <div className="space-y-3">
+          {group.peers.map((peer) => (
+            <div
+              key={`${peer.authorId}-${peer.updatedAt}`}
+              className="rounded-xl border border-border bg-black/20 p-4"
+            >
+              <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+                {t("manager.dashboard.notePeerShowing", {
+                  name: peer.authorName ?? t("role.leader"),
+                })}
+              </p>
+              <div className="mt-2">
+                <CohortNoteMessage
+                  body={peer.body}
+                  stamp={formatShortDateTime(peer.updatedAt, locale)}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
 
       {liveBody ? (
         <div className="rounded-xl border border-border bg-black/20 p-4">

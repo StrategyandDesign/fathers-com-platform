@@ -106,14 +106,32 @@ async function applySession(request: NextRequest) {
     if (!isLocale(cookieLocale)) {
       let nextLocale: Locale | null = isLocale(profile?.locale) ? profile.locale : null;
       if (!nextLocale) {
-        const { data: managed } = await supabase
-          .from("groups")
-          .select("locale")
-          .eq("manager_id", user.id)
-          .order("created_at", { ascending: true })
+        const { data: staffRow } = await supabase
+          .from("organization_staff")
+          .select("group_id")
+          .eq("profile_id", user.id)
+          .eq("staff_role", "manager")
           .limit(1)
           .maybeSingle();
-        if (isLocale(managed?.locale)) nextLocale = managed.locale;
+        const localeGroupId = staffRow?.group_id;
+        if (localeGroupId) {
+          const { data: staffGroup } = await supabase
+            .from("groups")
+            .select("locale")
+            .eq("id", localeGroupId)
+            .maybeSingle();
+          if (isLocale(staffGroup?.locale)) nextLocale = staffGroup.locale;
+        }
+        if (!nextLocale) {
+          const { data: managed } = await supabase
+            .from("groups")
+            .select("locale")
+            .eq("manager_id", user.id)
+            .order("created_at", { ascending: true })
+            .limit(1)
+            .maybeSingle();
+          if (isLocale(managed?.locale)) nextLocale = managed.locale;
+        }
       }
       if (!nextLocale) {
         const { data: membership } = await supabase

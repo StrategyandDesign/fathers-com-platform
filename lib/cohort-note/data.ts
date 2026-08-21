@@ -4,9 +4,12 @@ import {
   isCohortNoteVisible,
   type CohortNote,
   type FatherLeader,
+  type ManagerCohortDeskGroup,
 } from "@/lib/cohort-note/types";
+import { loadGroupsForManager } from "@/lib/org-staff/membership";
+import { visibleCohortNotes } from "@/lib/org-staff/types";
 import { createClient } from "@/lib/supabase/server";
-import { AVATARS_BUCKET, signStorageUrl } from "@/lib/storage";
+import { AVATARS_BUCKET, signStorageUrl, signStorageUrls } from "@/lib/storage";
 
 type LeaderRow = {
   id: string;
@@ -14,125 +17,186 @@ type LeaderRow = {
   avatar_url: string | null;
 };
 
-function asLeaderRow(data: unknown): LeaderRow | null {
-  const row = Array.isArray(data) ? data[0] : data;
-  if (!row || typeof row !== "object") return null;
-  const value = row as Record<string, unknown>;
-  if (typeof value.id !== "string") return null;
-  return {
-    id: value.id,
-    full_name: typeof value.full_name === "string" ? value.full_name : null,
-    avatar_url: typeof value.avatar_url === "string" ? value.avatar_url : null,
-  };
+function asLeaderRows(data: unknown): LeaderRow[] {
+  const rows = Array.isArray(data) ? data : data ? [data] : [];
+  return rows.flatMap((row) => {
+    if (!row || typeof row !== "object") return [];
+    const value = row as Record<string, unknown>;
+    if (typeof value.id !== "string") return [];
+    return [
+      {
+        id: value.id,
+        full_name: typeof value.full_name === "string" ? value.full_name : null,
+        avatar_url: typeof value.avatar_url === "string" ? value.avatar_url : null,
+      },
+    ];
+  });
 }
 
-export const loadFatherLeader = cache(async (fatherId: string): Promise<FatherLeader | null> => {
-  if (!fatherId) return null;
+export const loadFatherLeaders = cache(async (fatherId: string): Promise<FatherLeader[]> => {
+  if (!fatherId) return [];
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("father_leader_identity");
-  if (error) return null;
-  const row = asLeaderRow(data);
-  const name = row?.full_name?.trim() ?? "";
-  if (!row || !name) return null;
-  return {
+  const { data, error } = await supabase.rpc("father_leader_identities");
+  const rows = error ? asLeaderRows(null) : asLeaderRows(data);
+  if (rows.length === 0) {
+    const fallback = await supabase.rpc("father_leader_identity");
+    rows.push(...asLeaderRows(fallback.data));
+  }
+  const unique = new Map<string, LeaderRow>();
+  for (const row of rows) {
+    if (!unique.has(row.id) && row.full_name?.trim()) unique.set(row.id, row);
+  }
+  const leaders = [...unique.values()];
+  const urls = await signStorageUrls(
+    supabase,
+    AVATARS_BUCKET,
+    leaders.map((row) => row.avatar_url)
+  );
+  return leaders.map((row) => ({
     id: row.id,
-    name,
-    avatarUrl: await signStorageUrl(supabase, AVATARS_BUCKET, row.avatar_url),
-  };
+    name: row.full_name?.trim() ?? "",
+    avatarUrl: row.avatar_url ? urls.get(row.avatar_url) ?? null : null,
+  }));
 });
 
-export const loadVisibleCohortNote = cache(async (fatherId: string): Promise<CohortNote | null> => {
+export const loadFatherLeader = cache(async (fatherId: string): Promise<FatherLeader | null> => {
+  const leaders = await loadFatherLeaders(fatherId);
+  return leaders[0] ?? null;
+});
+
+export const loadVisibleCohortNotes = cache(async (fatherId: string): Promise<CohortNote[]> => {
   const supabase = await createClient();
   const { data: memberships, error: memberError } = await supabase
     .from("group_members")
     .select("group_id")
     .eq("father_id", fatherId)
     .order("joined_at", { ascending: true });
-  if (memberError) return null;
+  if (memberError) return [];
 
   const groupIds = [...new Set((memberships ?? []).map((row) => String(row.group_id)))];
-  if (groupIds.length === 0) return null;
+  if (groupIds.length === 0) return [];
 
   const [notesRes, dismissRes] = await Promise.all([
     supabase
       .from("organization_cohort_notes")
-      .select("group_id, body, updated_at")
+      .select("id, group_id, author_id, body, updated_at")
       .in("group_id", groupIds),
     supabase
       .from("organization_cohort_note_dismissals")
-      .select("group_id, dismissed_at")
-      .eq("father_id", fatherId)
-      .in("group_id", groupIds),
+      .select("note_id, group_id, dismissed_at")
+      .eq("father_id", fatherId),
   ]);
-  if (notesRes.error || dismissRes.error) return null;
+  if (notesRes.error) return [];
 
-  const dismissedAt = new Map(
-    ((dismissRes.data ?? []) as Array<{ group_id: string; dismissed_at: string }>).map((row) => [
-      row.group_id,
-      row.dismissed_at,
+  const noteRows = (notesRes.data ?? []) as Array<{
+    id?: string;
+    group_id: string;
+    author_id?: string;
+    body: string;
+    updated_at: string;
+  }>;
+
+  const dismissedByNote = new Map<string, string>();
+  const dismissedByGroup = new Map<string, string>();
+  for (const row of (dismissRes.data ?? []) as Array<{
+    note_id?: string;
+    group_id?: string;
+    dismissed_at: string;
+  }>) {
+    if (row.note_id) dismissedByNote.set(row.note_id, row.dismissed_at);
+    if (row.group_id) dismissedByGroup.set(row.group_id, row.dismissed_at);
+  }
+
+  const authorIds = [...new Set(noteRows.map((row) => row.author_id).filter(Boolean))] as string[];
+  const { data: authors } = authorIds.length
+    ? await supabase.from("profiles").select("id, full_name").in("id", authorIds)
+    : { data: [] };
+  const authorName = new Map(
+    ((authors ?? []) as Array<{ id: string; full_name: string | null }>).map((row) => [
+      row.id,
+      row.full_name?.trim() || null,
     ])
   );
 
-  const visible = ((notesRes.data ?? []) as Array<{
-    group_id: string;
-    body: string;
-    updated_at: string;
-  }>)
-    .filter((row) => isCohortNoteVisible(row.updated_at, dismissedAt.get(row.group_id)))
-    .sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
+  const prepared = noteRows
+    .filter((row) => row.body.trim())
+    .map((row) => ({
+      id: row.id ?? `${row.group_id}:${row.author_id ?? "leader"}`,
+      groupId: row.group_id,
+      authorId: row.author_id ?? "",
+      authorName: row.author_id ? authorName.get(row.author_id) ?? null : null,
+      body: row.body.trim(),
+      updatedAt: row.updated_at,
+      dismissedAt: (row.id && dismissedByNote.get(row.id)) || dismissedByGroup.get(row.group_id) || null,
+    }));
 
-  const note = visible[0];
-  if (!note?.body.trim()) return null;
-  return {
-    groupId: note.group_id,
-    body: note.body.trim(),
-    updatedAt: note.updated_at,
-  };
+  return visibleCohortNotes(prepared, isCohortNoteVisible).map(({ dismissedAt: _dismissedAt, ...note }) => note);
 });
 
-export async function loadManagerCohortNotes(managerId: string) {
+export const loadVisibleCohortNote = cache(async (fatherId: string): Promise<CohortNote | null> => {
+  const notes = await loadVisibleCohortNotes(fatherId);
+  return notes[0] ?? null;
+});
+
+export async function loadManagerCohortNotes(
+  managerId: string
+): Promise<ManagerCohortDeskGroup[]> {
   const supabase = await createClient();
-  const { data: groups, error: groupError } = await supabase
-    .from("groups")
-    .select("id, name")
-    .eq("manager_id", managerId)
-    .order("created_at");
-  if (groupError) throw groupError;
+  const groups = await loadGroupsForManager(managerId, supabase);
+  if (groups.length === 0) return [];
 
-  const rows = (groups ?? []) as Array<{ id: string; name: string }>;
-  const groupIds = rows.map((group) => group.id);
-  if (groupIds.length === 0) return [];
-
+  const groupIds = groups.map((group) => group.id);
   const { data: notes, error: noteError } = await supabase
     .from("organization_cohort_notes")
-    .select("group_id, body, updated_at")
+    .select("id, group_id, author_id, body, updated_at")
     .in("group_id", groupIds);
   if (noteError) {
     if (/organization_cohort_notes/i.test(noteError.message)) {
-      return rows.map((group) => ({
+      return groups.map((group) => ({
         groupId: group.id,
         groupName: group.name,
-        body: "",
-        updatedAt: null,
+        own: null,
+        peers: [],
       }));
     }
     throw noteError;
   }
 
-  const noteByGroup = new Map(
-    ((notes ?? []) as Array<{ group_id: string; body: string; updated_at: string }>).map((row) => [
-      row.group_id,
-      row,
+  const noteRows = (notes ?? []) as Array<{
+    id: string;
+    group_id: string;
+    author_id: string;
+    body: string;
+    updated_at: string;
+  }>;
+  const authorIds = [...new Set(noteRows.map((row) => row.author_id).filter(Boolean))];
+  const { data: authors } = authorIds.length
+    ? await supabase.from("profiles").select("id, full_name").in("id", authorIds)
+    : { data: [] };
+  const authorName = new Map(
+    ((authors ?? []) as Array<{ id: string; full_name: string | null }>).map((row) => [
+      row.id,
+      row.full_name?.trim() || "A leader",
     ])
   );
 
-  return rows.map((group) => {
-    const note = noteByGroup.get(group.id);
+  return groups.map((group) => {
+    const forGroup = noteRows.filter((row) => row.group_id === group.id);
+    const ownRow = forGroup.find((row) => row.author_id === managerId);
     return {
       groupId: group.id,
       groupName: group.name,
-      body: note?.body ?? "",
-      updatedAt: note?.updated_at ?? null,
+      own: ownRow
+        ? { id: ownRow.id, body: ownRow.body ?? "", updatedAt: ownRow.updated_at }
+        : null,
+      peers: forGroup
+        .filter((row) => row.author_id !== managerId && row.body.trim())
+        .map((row) => ({
+          authorId: row.author_id,
+          authorName: authorName.get(row.author_id) ?? "A leader",
+          body: row.body,
+          updatedAt: row.updated_at,
+        })),
     };
   });
 }

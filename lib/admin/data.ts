@@ -145,7 +145,16 @@ export async function loadAdminOrganization(groupId: string) {
     };
   });
 
-  return { group, participants, managers: users.filter((user) => user.role === "manager") };
+  const { loadOrganizationStaff } = await import("@/lib/org-staff/membership");
+  const staff = await loadOrganizationStaff([group.id]);
+
+  return {
+    group,
+    participants,
+    managers: users.filter((user) => user.role === "manager"),
+    reviewers: users.filter((user) => user.role === "reviewer"),
+    staff,
+  };
 }
 
 export async function loadAdminTrainings(): Promise<AdminTrainingRow[]> {

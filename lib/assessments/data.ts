@@ -70,13 +70,9 @@ function asAssignment(row: CustomAssessmentAssignment): CustomAssessmentAssignme
 
 export async function loadManagerRoster(managerId: string): Promise<RosterFather[]> {
   const supabase = await createClient();
-  const { data: groups, error: groupsError } = await supabase
-    .from("groups")
-    .select("id")
-    .eq("manager_id", managerId);
-
-  if (groupsError) throw groupsError;
-  const groupIds = (groups ?? []).map((group) => group.id);
+  const { loadGroupsForManager } = await import("@/lib/org-staff/membership");
+  const groups = await loadGroupsForManager(managerId, supabase);
+  const groupIds = groups.map((group) => group.id);
 
   const membersRes = await emptyIn<{ father_id: string; group_id: string }>(groupIds, () =>
     supabase.from("group_members").select("father_id, group_id").in("group_id", groupIds)

@@ -1,9 +1,19 @@
 export const COHORT_NOTE_MAX = 280;
 
 export type CohortNote = {
+  id: string;
   groupId: string;
+  authorId: string;
+  authorName: string | null;
   body: string;
   updatedAt: string;
+};
+
+export type ManagerCohortDeskGroup = {
+  groupId: string;
+  groupName: string;
+  own: Pick<CohortNote, "id" | "body" | "updatedAt"> | null;
+  peers: Array<Pick<CohortNote, "authorId" | "authorName" | "body" | "updatedAt">>;
 };
 
 export type FatherLeader = {

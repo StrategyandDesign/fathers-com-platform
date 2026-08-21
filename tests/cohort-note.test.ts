@@ -120,13 +120,13 @@ describe("home update desk", () => {
 });
 
 describe("father dismiss", () => {
-  it("upserts a dismiss on the group and father", () => {
+  it("upserts a dismiss on the note and father", () => {
     const actions = readFileSync(
       fileURLToPath(new URL("../lib/cohort-note/actions.ts", import.meta.url)),
       "utf8"
     );
     assert.match(actions, /dismissCohortNote/);
-    assert.match(actions, /onConflict: "group_id,father_id"/);
+    assert.match(actions, /onConflict: "note_id,father_id"/);
     assert.match(actions, /father\.home\.noteDismissFailed/);
   });
 });

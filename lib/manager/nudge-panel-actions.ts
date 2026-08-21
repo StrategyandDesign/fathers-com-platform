@@ -14,6 +14,7 @@ import {
 import { queueLeaderEncouragement } from "@/lib/notifications/events";
 import { encouragementHref } from "@/lib/notifications/next-session";
 import { isInQuietHours, nextQuietEnd } from "@/lib/notifications/schedule";
+import { recordOrganizationActivity } from "@/lib/org-staff/activity";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
@@ -168,6 +169,18 @@ export async function sendNudgePanelNotes(fatherIds: string[]): Promise<{
   const results: NudgePanelSendResult[] = [];
   for (const fatherId of unique) {
     results.push(await sendOne({ managerId: user.id, fatherId, workspace }));
+  }
+
+  const supabase = await createClient();
+  for (const result of results) {
+    if (result.status !== "sent" && result.status !== "queued") continue;
+    const participant = workspace.participants.find((row) => row.fatherId === result.fatherId);
+    if (!participant) continue;
+    await recordOrganizationActivity(supabase, {
+      groupId: participant.groupId,
+      actorId: user.id,
+      kind: "nudge_sent",
+    });
   }
 
   revalidatePath("/manager");

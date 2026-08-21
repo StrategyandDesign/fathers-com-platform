@@ -2,6 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { deleteOrganization, updateOrganization } from "@/lib/admin/actions";
+import {
+  addOrganizationStaff,
+  inviteOrganizationLeader,
+  removeOrganizationStaff,
+} from "@/lib/org-staff/actions";
+import { canRemoveStaff } from "@/lib/org-staff/types";
 import { loadAdminOrganization } from "@/lib/admin/data";
 import { CopyButton } from "@/components/manager/copy-button";
 import { Flash } from "@/components/manager/flash";
@@ -25,7 +31,14 @@ export default async function AdminOrganizationDetailPage({
 
   if (!detail) notFound();
 
-  const { group, participants, managers } = detail;
+  const { group, participants, managers, reviewers, staff } = detail;
+  const managerCount = staff.filter((row) => row.staffRole === "manager").length;
+  const availableLeaders = managers.filter(
+    (manager) => !staff.some((row) => row.profileId === manager.id && row.staffRole === "manager")
+  );
+  const availableReviewers = reviewers.filter(
+    (reviewer) => !staff.some((row) => row.profileId === reviewer.id && row.staffRole === "reviewer")
+  );
   const managerOptions = managers.some((manager) => manager.id === group.manager_id)
     ? managers
     : [
@@ -68,7 +81,7 @@ export default async function AdminOrganizationDetailPage({
           />
         </label>
         <label className="block space-y-2">
-          <span className="text-sm text-muted-foreground">Manager</span>
+          <span className="text-sm text-muted-foreground">Listed owner</span>
           <select
             className={fieldClassName}
             name="manager_id"
@@ -93,6 +106,107 @@ export default async function AdminOrganizationDetailPage({
           Save organization
         </Button>
       </form>
+
+      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <h2 className="font-heading text-lg font-semibold">Leaders and reviewers</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          More than one leader can share this organization. They see the same roster, and each
+          action is recorded for the others. Reviewers on this list are scoped to this group.
+        </p>
+        <ul className="mt-4 divide-y divide-border overflow-hidden rounded-lg border border-border">
+          {staff.map((row) => (
+            <li
+              key={`${row.profileId}-${row.staffRole}`}
+              className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="min-w-0">
+                <p className="truncate font-medium">{row.name}</p>
+                <p className="text-sm text-muted-foreground">
+                  {row.staffRole === "manager" ? "Leader" : "Reviewer"}
+                  {row.listedOwner ? " · listed owner" : ""}
+                </p>
+              </div>
+              <form action={removeOrganizationStaff}>
+                <input type="hidden" name="group_id" value={group.id} />
+                <input type="hidden" name="profile_id" value={row.profileId} />
+                <input type="hidden" name="return_to" value={`/admin/organizations/${group.id}`} />
+                <Button
+                  type="submit"
+                  variant="outline"
+                  size="sm"
+                  disabled={
+                    !canRemoveStaff({
+                      targetId: row.profileId,
+                      targetRole: row.staffRole,
+                      managerCount,
+                    })
+                  }
+                >
+                  Remove
+                </Button>
+              </form>
+            </li>
+          ))}
+        </ul>
+
+        {availableLeaders.length > 0 ? (
+          <form action={addOrganizationStaff} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+            <input type="hidden" name="group_id" value={group.id} />
+            <input type="hidden" name="staff_role" value="manager" />
+            <input type="hidden" name="return_to" value={`/admin/organizations/${group.id}`} />
+            <label className="block min-w-0 flex-1 space-y-2">
+              <span className="text-sm text-muted-foreground">Add an existing leader</span>
+              <select className={fieldClassName} name="profile_id" required>
+                {availableLeaders.map((manager) => (
+                  <option key={manager.id} value={manager.id}>
+                    {manager.full_name || manager.email || manager.id}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button type="submit" variant="outline" className="w-full sm:w-auto">
+              Add leader
+            </Button>
+          </form>
+        ) : null}
+
+        {availableReviewers.length > 0 ? (
+          <form action={addOrganizationStaff} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+            <input type="hidden" name="group_id" value={group.id} />
+            <input type="hidden" name="staff_role" value="reviewer" />
+            <input type="hidden" name="return_to" value={`/admin/organizations/${group.id}`} />
+            <label className="block min-w-0 flex-1 space-y-2">
+              <span className="text-sm text-muted-foreground">Add a reviewer</span>
+              <select className={fieldClassName} name="profile_id" required>
+                {availableReviewers.map((reviewer) => (
+                  <option key={reviewer.id} value={reviewer.id}>
+                    {reviewer.full_name || reviewer.email || reviewer.id}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button type="submit" variant="outline" className="w-full sm:w-auto">
+              Add reviewer
+            </Button>
+          </form>
+        ) : null}
+
+        <form action={inviteOrganizationLeader} className="mt-4 space-y-3">
+          <input type="hidden" name="group_id" value={group.id} />
+          <p className="text-sm text-muted-foreground">Invite a new leader to this organization</p>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Email</span>
+            <input className={fieldClassName} name="email" type="email" required />
+          </label>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Name</span>
+            <input className={fieldClassName} name="full_name" maxLength={80} />
+          </label>
+          <Button type="submit" variant="outline" className="w-full sm:w-auto">
+            Send invite
+          </Button>
+        </form>
+      </section>
 
       <section className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="border-b border-border px-4 py-4 sm:px-6">

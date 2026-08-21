@@ -34,13 +34,9 @@ export const resolveUserLocale = cache(async (userId: string): Promise<ResolvedL
       };
     }
 
-    const { data: managed } = await supabase
-      .from("groups")
-      .select("id, locale, code")
-      .eq("manager_id", userId)
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    const { loadGroupsForManager } = await import("@/lib/org-staff/membership");
+    const managedGroups = await loadGroupsForManager(userId, supabase);
+    const managed = managedGroups[0];
 
     if (managed && isLocale(managed.locale)) {
       return {

@@ -6,6 +6,7 @@ import {
   type Training,
 } from "@/lib/father/types";
 import { loadOrganizationReviews } from "@/lib/manager/reviews";
+import { loadGroupsForManager } from "@/lib/org-staff/membership";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrls } from "@/lib/storage";
 import {
@@ -39,15 +40,7 @@ function emptyIn<T>(
 }
 
 export async function loadManagerGroups(managerId: string) {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("groups")
-    .select("*")
-    .eq("manager_id", managerId)
-    .order("created_at");
-
-  if (error) throw error;
-  return (data ?? []) as Group[];
+  return loadGroupsForManager(managerId);
 }
 
 export async function loadManagerWorkspace(managerId: string) {

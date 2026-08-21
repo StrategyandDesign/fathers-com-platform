@@ -10,6 +10,7 @@ import {
   isReviewStatus,
   REVERSE_ACCEPT_CONFIRM,
 } from "@/lib/manager/reviews";
+import { recordOrganizationActivity } from "@/lib/org-staff/activity";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
@@ -133,6 +134,12 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
   if (error) {
     fail(path, "The decision didn’t save. Try again.");
   }
+
+  await recordOrganizationActivity(supabase, {
+    groupId,
+    actorId: user.id,
+    kind: status === "accepted" ? "review_accepted" : "review_declined",
+  });
 
   revalidateReviews(trainingId);
 
