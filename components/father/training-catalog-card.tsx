@@ -6,7 +6,7 @@ import { TrainingHandoutLinks } from "@/components/father/training-handout-links
 import { HostedFilmPlayer } from "@/components/media/hosted-film-player";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
-import { hasStartedTrainingWork, shouldShowCatalogOverview } from "@/lib/father/training-door";
+import { shouldShowCatalogOverview } from "@/lib/father/training-door";
 import { sessionFilmPath, type Session, type SessionProgress } from "@/lib/father/types";
 import { hasHostedVideo } from "@/lib/media/hosted-video";
 import type { Translate } from "@/lib/i18n/translate";
@@ -57,6 +57,7 @@ export function FatherTrainingCatalogCard({
   sessionDots,
   certificateId,
   featured,
+  sideBySide,
   quiet,
   gated,
   gatedLabel,
@@ -99,74 +100,69 @@ export function FatherTrainingCatalogCard({
     complete && firstSessionId
       ? sessionHref?.(firstSessionId) ?? sessionFilmPath(firstSessionId)
       : null;
-  const started = hasStartedTrainingWork(completed, nextProgress, sessionDots);
+  const href = gated
+    ? null
+    : hrefOverride ?? (next ? sessionFilmPath(next.id) : watchAgainHref);
+  const started =
+    completed > 0 ||
+    sessionInProgress(nextProgress) ||
+    sessionDots.some((dot) => dot.done);
+  const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+  const ctaLabel = next
+    ? started
+      ? t("father.trainings.openSession", { n: next.session_number })
+      : t("father.trainings.startSessionN", { n: next.session_number })
+    : href
+      ? t("father.trainings.watchAgain")
+      : null;
+  const openLabel = next
+    ? t("father.trainings.sessionLabel", { n: next.session_number, title: next.title })
+    : ctaLabel ?? title;
   const overviewLink = overviewHref ?? null;
-  const showOverviewMedia = shouldShowCatalogOverview({
-    enabled:
-      Boolean(showOverviewSlot ?? hasOverview ?? overviewLink ?? overviewUrl) &&
-      Boolean(hasOverview || hasHostedVideo(overviewUrl) || overviewLink),
+  const listOverview = shouldShowCatalogOverview({
+    enabled: showOverviewSlot,
     gated,
     completed,
     progress: nextProgress,
     sessionDots,
   });
-  const href = gated
-    ? null
-    : showOverviewMedia && overviewLink
-      ? overviewLink
-      : hrefOverride ?? (next ? sessionFilmPath(next.id) : watchAgainHref);
-  const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
-  const ctaLabel =
-    showOverviewMedia && overviewLink
-      ? t("father.trainings.watchOverview")
-      : next
-      ? started
-        ? t("father.trainings.openSession", { n: next.session_number })
-        : t("father.trainings.startSessionN", { n: next.session_number })
-      : href
-        ? t("father.trainings.watchAgain")
-        : null;
-  const landscape = showOverviewMedia;
+  const overviewFilm = listOverview && hasHostedVideo(overviewUrl);
+  const landscape = Boolean(featured || sideBySide);
 
   return (
     <article
       className={cn(
         "overflow-hidden rounded-xl border bg-card",
-        featured && !showOverviewMedia ? "border-primary/35" : "border-border",
+        featured ? "border-primary/35" : "border-border",
         landscape && "lg:grid lg:grid-cols-2 lg:items-stretch"
       )}
     >
-      {showOverviewMedia ? (
-        <div className="min-w-0 border-b-2 border-primary bg-primary/5 p-3 lg:border-b-0 lg:border-e-2">
-          <p className="text-[11px] font-medium tracking-[0.14em] text-primary uppercase">
-            {t("father.trainings.overviewEyebrow")}
-          </p>
-          <div className="mt-2 overflow-hidden rounded-lg border-2 border-primary">
-            {hasHostedVideo(overviewUrl) || (hasOverview && overviewUrl) ? (
-              <HostedFilmPlayer
-                url={overviewUrl}
-                title={t("father.trainings.overviewTitle", { title })}
-                coverSrc={coverSrc}
-              />
-            ) : overviewLink ? (
-              <Link
-                href={overviewLink}
-                aria-label={t("father.trainings.watchOverview")}
-                className={cn(
-                  "relative block aspect-video overflow-hidden bg-[#101510]",
-                  interactiveSurfaceClassName
-                )}
-              >
-                <CoverPhoto src={coverSrc} />
-              </Link>
-            ) : (
-              <div className="relative aspect-video overflow-hidden bg-[#101510]">
-                <CoverPhoto src={coverSrc} />
-              </div>
-            )}
-          </div>
+      {href ? (
+        <Link
+          href={href}
+          aria-label={openLabel}
+          className={cn(
+            "relative block overflow-hidden bg-[#101510]",
+            landscape
+              ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]"
+              : quiet
+                ? "h-32 sm:h-36"
+                : "h-40 sm:h-44",
+            interactiveSurfaceClassName
+          )}
+        >
+          <CoverPhoto src={coverSrc} />
+        </Link>
+      ) : (
+        <div
+          className={cn(
+            "relative overflow-hidden bg-[#101510]",
+            landscape ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]" : "h-32 sm:h-36"
+          )}
+        >
+          <CoverPhoto src={coverSrc} />
         </div>
-      ) : null}
+      )}
 
       <div className="flex min-w-0 flex-col gap-4 p-4 sm:p-5 lg:p-6">
         <div className="space-y-2">
@@ -197,6 +193,52 @@ export function FatherTrainingCatalogCard({
             <p className="text-sm text-muted-foreground">{t("father.home.sessionsReady")}</p>
           ) : null}
         </div>
+
+        {listOverview ? (
+          <div
+            className={cn(
+              "rounded-lg px-3 py-3",
+              overviewLink || overviewFilm
+                ? "border-2 border-primary bg-primary/5"
+                : "border border-dashed border-border bg-black/10"
+            )}
+          >
+            <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+              {t("father.trainings.overviewEyebrow")}
+            </p>
+            {overviewFilm ? (
+              <div className="mt-2 overflow-hidden rounded-md border-2 border-primary">
+                <HostedFilmPlayer
+                  url={overviewUrl}
+                  title={t("father.trainings.overviewTitle", { title })}
+                  coverSrc={coverSrc}
+                />
+              </div>
+            ) : null}
+            {overviewLink && hasOverview ? (
+              <>
+                {overviewFilm ? null : (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {t("father.trainings.overviewSlotBody")}
+                  </p>
+                )}
+                <Link
+                  href={overviewLink}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "mt-3 min-h-10 w-full sm:w-auto"
+                  )}
+                >
+                  {t("father.trainings.watchOverview")}
+                </Link>
+              </>
+            ) : (
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t("father.trainings.overviewMissing")}
+              </p>
+            )}
+          </div>
+        ) : null}
 
         {gated ? null : next ? (
           <div className="space-y-1">

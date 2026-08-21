@@ -38,9 +38,8 @@ describe("training catalog decisions", () => {
     assert.match(page, /rounded-xl border border-border/);
     assert.match(page, /divide-y divide-border/);
     assert.match(page, /completedGroup[\s\S]*sideBySide/s);
-    assert.match(card, /const landscape = showOverviewMedia/);
+    assert.match(card, /featured \|\| sideBySide/);
     assert.match(card, /lg:grid lg:grid-cols-2 lg:items-stretch/);
-    assert.doesNotMatch(card, /featured \|\| sideBySide/);
     assert.match(card, /father\.trainings\.watchAgain/);
     assert.match(card, /watchAgainHref/);
   });
