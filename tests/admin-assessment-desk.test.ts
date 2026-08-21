@@ -142,4 +142,18 @@ describe("admin assessment desk", () => {
     assert.equal(item.questionCount, 30);
     assert.equal(item.href, "/admin/assessments/family-fortress");
   });
+
+  it("lists Steady Presence beside the other first-party instruments with a Release action", () => {
+    const assessment = getFirstPartyAssessment("steady-presence");
+    assert.ok(assessment);
+    const item = firstPartyDeskItem(assessment, {
+      releasedAt: null,
+      firstReleasedAt: null,
+      releaseTargets: [],
+    });
+    assert.equal(item.title, "The Steady Presence Keystone Assessment");
+    assert.equal(item.actionLabel, "Release");
+    assert.equal(item.questionCount, 30);
+    assert.equal(item.href, "/admin/assessments/steady-presence");
+  });
 });

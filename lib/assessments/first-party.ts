@@ -17,6 +17,15 @@ import {
   LEGACY_ARCHITECT_TITLE,
   legacyArchitectInstrument,
 } from "@/lib/assessments/instruments/legacy-architect";
+import {
+  STEADY_PRESENCE_ASSESSMENT_KEY,
+  STEADY_PRESENCE_COPY,
+  STEADY_PRESENCE_DESCRIPTION,
+  STEADY_PRESENCE_QUESTION_COUNT,
+  STEADY_PRESENCE_SLUG,
+  STEADY_PRESENCE_TITLE,
+  steadyPresenceInstrument,
+} from "@/lib/assessments/instruments/steady-presence";
 
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -56,6 +65,15 @@ export const FIRST_PARTY_ASSESSMENTS: FirstPartyAssessment[] = [
     questionCount: FAMILY_FORTRESS_QUESTION_COUNT,
     instrument: familyFortressInstrument,
     copy: FAMILY_FORTRESS_COPY,
+  },
+  {
+    key: STEADY_PRESENCE_ASSESSMENT_KEY,
+    slug: STEADY_PRESENCE_SLUG,
+    title: STEADY_PRESENCE_TITLE,
+    description: STEADY_PRESENCE_DESCRIPTION,
+    questionCount: STEADY_PRESENCE_QUESTION_COUNT,
+    instrument: steadyPresenceInstrument,
+    copy: STEADY_PRESENCE_COPY,
   },
 ];
 
