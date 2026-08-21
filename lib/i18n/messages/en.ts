@@ -240,6 +240,8 @@ export const en = {
       "This assessment has no questions yet. Check back after your leader adds some.",
     youtubeUrlInvalid:
       "Use a YouTube video link. Playlists and other sites will not play.",
+    hostedVideoUrlInvalid:
+      "Use a YouTube or Vimeo video link. Playlists and other sites will not play.",
     questionNotFound: "That question was not found.",
     answerSaveFailed: "Your answer didn’t save. Try again.",
     answerEveryQuestion: "Answer every question to finish.",
@@ -582,6 +584,16 @@ export const en = {
       openSession: "Open Session {n}",
       startSessionN: "Start Session {n}",
       seeSessions: "See sessions",
+      watchOverview: "Watch overview",
+      overviewEyebrow: "Training overview",
+      overviewBadge: "Overview",
+      overviewNotSession: "Not a session",
+      overviewTitle: "Overview: {title}",
+      overviewLead:
+        "A conversation that introduces this training. It is not one of the sessions.",
+      overviewCardLine: "Starts with the overview film",
+      overviewThen: "Then the first open session",
+      backToTrainings: "Back to Trainings",
       trainingComplete: "This training is complete.",
       sessionDone: "Done",
       downloadCertificate: "Download certificate",

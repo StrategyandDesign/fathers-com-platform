@@ -3,7 +3,8 @@ import { ChevronLeft } from "lucide-react";
 
 import { FilmRuntime } from "@/components/father/film-runtime";
 import { sessionChrome, type SessionStep } from "@/lib/father/action-commitment";
-import type { Session, Training } from "@/lib/father/types";
+import { hasTrainingOverview } from "@/lib/father/training-door";
+import { trainingOverviewPath, type Session, type Training } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -41,7 +42,12 @@ export async function SessionHeader({
 }) {
   const { t } = await getI18n();
   const chrome = sessionChrome(current);
-  const catalogHref = trainingHref === undefined ? "/father/trainings" : trainingHref;
+  const catalogHref =
+    trainingHref === undefined
+      ? hasTrainingOverview(training)
+        ? trainingOverviewPath(training.id)
+        : "/father/trainings"
+      : trainingHref;
   const total = sessionTotal ?? training.session_count;
   const subtitle =
     chrome.showKeyline && session.keyline && session.keyline !== session.title
