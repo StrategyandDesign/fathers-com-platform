@@ -182,11 +182,11 @@ describe("leader dashboard order", () => {
     const stats = page.indexOf("lg:grid-cols-5");
     const invite = page.indexOf("manager.dashboard.inviteTitle");
     const openItems = page.indexOf("manager.dashboard.attention");
-    const staff = page.indexOf("<StaffDesk");
-    const tape = page.indexOf("<ActivityTicker");
     const update = page.indexOf("<CohortNoteDesk");
     assert.ok(stats > 0 && invite > stats && openItems > invite);
-    assert.ok(staff > openItems && tape > staff && update > tape);
+    assert.ok(update > openItems);
+    assert.doesNotMatch(page, /<StaffDesk/);
+    assert.doesNotMatch(page, /<ActivityTicker/);
   });
 });
 

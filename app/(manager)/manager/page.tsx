@@ -19,12 +19,8 @@ import {
   organizationLabel,
 } from "@/lib/manager/companion";
 import { loadManagerAssessments } from "@/lib/assessments/data";
-import { ActivityTicker } from "@/components/manager/activity-ticker";
 import { CohortNoteDesk } from "@/components/manager/cohort-note-desk";
-import { StaffDesk } from "@/components/manager/staff-desk";
 import { loadManagerCohortNotes } from "@/lib/cohort-note/data";
-import { loadOrganizationActivity } from "@/lib/org-staff/activity";
-import { loadOrganizationStaff } from "@/lib/org-staff/membership";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { buildManagerReport } from "@/lib/manager/reports";
 import { buildManagerCatalog } from "@/lib/manager/catalog";
@@ -42,18 +38,13 @@ export default async function ManagerHomePage({
 }) {
   const params = await searchParams;
   const { user, role } = await requireRole("manager");
-  const { t, locale } = await getI18n();
+  const { t } = await getI18n();
   scheduleDueReminderFlush();
   const [workspace, reviews, assessments, cohortNotes] = await Promise.all([
     loadManagerWorkspace(user.id),
     loadReviewQueue(user.id),
     loadManagerAssessments(user.id),
     loadManagerCohortNotes(user.id),
-  ]);
-  const groupIds = workspace.groups.map((group) => group.id);
-  const [activity, staff] = await Promise.all([
-    loadOrganizationActivity(groupIds),
-    loadOrganizationStaff(groupIds),
   ]);
   const nudgePanel = await loadNudgePanel({
     role,
@@ -245,14 +236,6 @@ export default async function ManagerHomePage({
         </div>
       </section>
 
-      <StaffDesk staff={staff} groups={workspace.groups} t={t} />
-      <ActivityTicker
-        items={activity}
-        viewerId={user.id}
-        showGroupName={workspace.groups.length > 1}
-        locale={locale}
-        t={t}
-      />
       <CohortNoteDesk groups={cohortNotes} />
       <CompanionPanel briefing={companion} mode={participationMode} t={t} />
 

@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 63,
-  "label": "Shared 1-1.63",
+  "patch": 64,
+  "label": "Shared 1-1.64",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Match the assistant toggle to the same chevron used below it.",
+  "title": "Give included catalog trainings the same remove note as accepted ones.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -449,6 +449,13 @@
       "label": "Shared 1-1.63",
       "at": "2026-08-21",
       "title": "Match the assistant toggle to the same chevron used below it."
+    },
+    {
+      "patch": 64,
+      "revision": "1.64",
+      "label": "Shared 1-1.64",
+      "at": "2026-08-21",
+      "title": "Give included catalog trainings the same remove note as accepted ones."
     }
   ]
 }
