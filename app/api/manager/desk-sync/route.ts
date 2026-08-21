@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAuthContext } from "@/lib/auth/session";
-import { loadManagerDeskSyncVersion } from "@/lib/manager/desk-sync";
+import { loadManagerDeskSyncVersion } from "@/lib/manager/desk-sync-data";
 
 export const dynamic = "force-dynamic";
 

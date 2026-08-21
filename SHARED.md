@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.75**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.76**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -92,3 +92,4 @@ The badge on this checkout is **Shared 1-1.75**. It ticks on each push of the Sh
 | **1.73** | undefined | Keep org leader desks in step with each other. |
 | **1.74** | undefined | Keep every Leader desk on the same org record. |
 | **1.75** | undefined | Name the leader on each father Home update. |
+| **1.76** | undefined | Show the catalog overview film only before a session is watched. |
