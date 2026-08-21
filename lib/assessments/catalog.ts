@@ -24,6 +24,7 @@ import type { AssessmentListItem } from "@/lib/assessments/types";
 
 export type AssessmentCatalogKind = "keystone" | "custom" | "platform";
 export type AssessmentCatalogSection = "pending" | "available" | "hidden" | "declined";
+export type AssessmentCatalogDecision = "pending" | "ready" | "catalog" | "declined";
 
 export type AssessmentCatalogItem = {
   key: string;
@@ -31,6 +32,7 @@ export type AssessmentCatalogItem = {
   kind: AssessmentCatalogKind;
   status: AssessmentVisibility;
   section: AssessmentCatalogSection;
+  decision: AssessmentCatalogDecision;
   reviewStatus: AssessmentReviewStatus | null;
   groupId: string;
   groupName?: string;
@@ -64,6 +66,28 @@ function platformSection(input: {
   return null;
 }
 
+export function assessmentCatalogDecision(input: {
+  kind: AssessmentCatalogKind;
+  section: AssessmentCatalogSection;
+  reviewStatus: AssessmentReviewStatus | null;
+  status?: AssessmentVisibility;
+}): AssessmentCatalogDecision {
+  if (input.reviewStatus === "pending" || input.section === "pending") return "pending";
+  if (input.reviewStatus === "declined" || input.section === "declined") return "declined";
+  if (input.reviewStatus === "accepted") return "ready";
+  if (input.kind === "custom" && input.status === "hidden") return "pending";
+  return "catalog";
+}
+
+function withDecision(
+  item: Omit<AssessmentCatalogItem, "decision">
+): AssessmentCatalogItem {
+  return {
+    ...item,
+    decision: assessmentCatalogDecision(item),
+  };
+}
+
 export function buildManagerAssessmentCatalog(input: {
   groups: Array<{ id: string; name: string }>;
   custom: AssessmentListItem[];
@@ -82,22 +106,24 @@ export function buildManagerAssessmentCatalog(input: {
   const reviews = input.reviews ?? [];
 
   if (groups.length === 0) {
-    return input.custom.map((assessment) => ({
-      key: assessment.id,
-      assessmentKey: customAssessmentKey(assessment.id),
-      kind: "custom" as const,
-      status: "available" as const,
-      section: "available" as const,
-      reviewStatus: null,
-      groupId: "",
-      href: `/manager/assessments/${assessment.id}`,
-      questionCount: assessment.questionCount,
-      assignedCount: assessment.assignedCount,
-      completedCount: assessment.completedCount,
-      customId: assessment.id,
-      title: assessment.title,
-      description: assessment.description,
-    }));
+    return input.custom.map((assessment) =>
+      withDecision({
+        key: assessment.id,
+        assessmentKey: customAssessmentKey(assessment.id),
+        kind: "custom",
+        status: "available",
+        section: "available",
+        reviewStatus: null,
+        groupId: "",
+        href: `/manager/assessments/${assessment.id}`,
+        questionCount: assessment.questionCount,
+        assignedCount: assessment.assignedCount,
+        completedCount: assessment.completedCount,
+        customId: assessment.id,
+        title: assessment.title,
+        description: assessment.description,
+      })
+    );
   }
 
   for (const group of groups) {
@@ -116,23 +142,25 @@ export function buildManagerAssessmentCatalog(input: {
     });
     if (!section) continue;
 
-    items.push({
-      key: `${group.id}:${KEYSTONE_ASSESSMENT_KEY}`,
-      assessmentKey: KEYSTONE_ASSESSMENT_KEY,
-      kind: "keystone",
-      status,
-      section,
-      reviewStatus: review?.status ?? null,
-      groupId: group.id,
-      groupName: showGroupName ? group.name : undefined,
-      href:
-        section === "pending" || section === "declined"
-          ? `/manager/assessment-reviews/keystone?group=${group.id}#instrument`
-          : `/manager/assessments/keystone?group=${group.id}#instrument`,
-      questionCount: PROFILE_QUESTION_COUNT,
-      assignedCount: input.groupSize[group.id] ?? 0,
-      completedCount: input.keystoneCompletedByGroup[group.id] ?? 0,
-    });
+    items.push(
+      withDecision({
+        key: `${group.id}:${KEYSTONE_ASSESSMENT_KEY}`,
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        kind: "keystone",
+        status,
+        section,
+        reviewStatus: review?.status ?? null,
+        groupId: group.id,
+        groupName: showGroupName ? group.name : undefined,
+        href:
+          section === "pending" || section === "declined"
+            ? `/manager/assessment-reviews/keystone?group=${group.id}#instrument`
+            : `/manager/assessments/keystone?group=${group.id}#instrument`,
+        questionCount: PROFILE_QUESTION_COUNT,
+        assignedCount: input.groupSize[group.id] ?? 0,
+        completedCount: input.keystoneCompletedByGroup[group.id] ?? 0,
+      })
+    );
   }
 
   const firstParty = input.firstParty ?? listFirstPartyAssessments();
@@ -153,25 +181,27 @@ export function buildManagerAssessmentCatalog(input: {
       });
       if (!section) continue;
 
-      items.push({
-        key: `${group.id}:${assessment.key}`,
-        assessmentKey: assessment.key,
-        kind: "platform",
-        status,
-        section,
-        reviewStatus: review?.status ?? null,
-        groupId: group.id,
-        groupName: showGroupName ? group.name : undefined,
-        href:
-          section === "pending" || section === "declined"
-            ? `${firstPartyReviewPath(assessment.key)}?group=${group.id}#instrument`
-            : `${firstPartyManagerPath(assessment.key)}?group=${group.id}#instrument`,
-        questionCount: assessment.questionCount,
-        assignedCount: input.groupSize[group.id] ?? 0,
-        completedCount: input.firstPartyCompletedByGroup?.[assessment.key]?.[group.id] ?? 0,
-        title: assessment.title,
-        description: assessment.description,
-      });
+      items.push(
+        withDecision({
+          key: `${group.id}:${assessment.key}`,
+          assessmentKey: assessment.key,
+          kind: "platform",
+          status,
+          section,
+          reviewStatus: review?.status ?? null,
+          groupId: group.id,
+          groupName: showGroupName ? group.name : undefined,
+          href:
+            section === "pending" || section === "declined"
+              ? `${firstPartyReviewPath(assessment.key)}?group=${group.id}#instrument`
+              : `${firstPartyManagerPath(assessment.key)}?group=${group.id}#instrument`,
+          questionCount: assessment.questionCount,
+          assignedCount: input.groupSize[group.id] ?? 0,
+          completedCount: input.firstPartyCompletedByGroup?.[assessment.key]?.[group.id] ?? 0,
+          title: assessment.title,
+          description: assessment.description,
+        })
+      );
     }
   }
 
@@ -183,23 +213,25 @@ export function buildManagerAssessmentCatalog(input: {
         groupId: group.id,
         availability: input.availability,
       });
-      items.push({
-        key: `${group.id}:${assessmentKey}`,
-        assessmentKey,
-        kind: "custom",
-        status,
-        section: status === "hidden" ? "hidden" : "available",
-        reviewStatus: null,
-        groupId: group.id,
-        groupName: showGroupName ? group.name : undefined,
-        href: `/manager/assessments/${assessment.id}`,
-        questionCount: assessment.questionCount,
-        assignedCount: assessment.assignedCount,
-        completedCount: assessment.completedCount,
-        customId: assessment.id,
-        title: assessment.title,
-        description: assessment.description,
-      });
+      items.push(
+        withDecision({
+          key: `${group.id}:${assessmentKey}`,
+          assessmentKey,
+          kind: "custom",
+          status,
+          section: status === "hidden" ? "hidden" : "available",
+          reviewStatus: null,
+          groupId: group.id,
+          groupName: showGroupName ? group.name : undefined,
+          href: `/manager/assessments/${assessment.id}`,
+          questionCount: assessment.questionCount,
+          assignedCount: assessment.assignedCount,
+          completedCount: assessment.completedCount,
+          customId: assessment.id,
+          title: assessment.title,
+          description: assessment.description,
+        })
+      );
     }
   }
 

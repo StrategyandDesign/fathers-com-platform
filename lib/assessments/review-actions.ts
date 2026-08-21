@@ -50,6 +50,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
   const groupId = String(formData.get("group_id") ?? "").trim();
   const reason = String(formData.get("decline_reason") ?? "").trim();
   const confirm = String(formData.get("confirm") ?? "").trim();
+  const quick = String(formData.get("quick") ?? "").trim() === "1";
   const returnTo = String(formData.get("return_to") ?? "").trim();
   const path = assessmentKey && groupId
     ? reviewPath(assessmentKey, groupId, returnTo)
@@ -88,7 +89,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
   }
 
   if (status === "accepted") {
-    if (current.status === "declined" && confirm !== ASSESSMENT_REVERSE_ACCEPT_CONFIRM) {
+    if (current.status === "declined" && !quick && confirm !== ASSESSMENT_REVERSE_ACCEPT_CONFIRM) {
       fail(path, "flash.assessmentReviewTypeAccept");
     }
     const release = await loadPlatformAssessmentRelease(assessmentKey);

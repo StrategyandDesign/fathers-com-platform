@@ -221,6 +221,7 @@ describe("assessment catalog", () => {
     assert.equal(pending.length, 1);
     assert.equal(available.length, 0);
     assert.equal(hidden.length, 0);
+    assert.equal(pending[0]?.decision, "pending");
     assert.match(pending[0]?.href ?? "", /assessment-reviews/);
   });
 
@@ -256,6 +257,7 @@ describe("assessment catalog", () => {
     const { available, hidden } = partitionAssessmentCatalog(items);
     assert.equal(available.length, 0);
     assert.equal(hidden.length, 1);
+    assert.equal(hidden[0]?.decision, "ready");
   });
 
   it("hides a first-party instrument until Super-admin releases it", () => {
