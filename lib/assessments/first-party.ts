@@ -1,5 +1,14 @@
 import type { AssessmentInstrument } from "@/lib/assessments/instrument";
 import {
+  FAMILY_FORTRESS_ASSESSMENT_KEY,
+  FAMILY_FORTRESS_COPY,
+  FAMILY_FORTRESS_DESCRIPTION,
+  FAMILY_FORTRESS_QUESTION_COUNT,
+  FAMILY_FORTRESS_SLUG,
+  FAMILY_FORTRESS_TITLE,
+  familyFortressInstrument,
+} from "@/lib/assessments/instruments/family-fortress";
+import {
   LEGACY_ARCHITECT_ASSESSMENT_KEY,
   LEGACY_ARCHITECT_COPY,
   LEGACY_ARCHITECT_DESCRIPTION,
@@ -38,6 +47,15 @@ export const FIRST_PARTY_ASSESSMENTS: FirstPartyAssessment[] = [
     questionCount: LEGACY_ARCHITECT_QUESTION_COUNT,
     instrument: legacyArchitectInstrument,
     copy: LEGACY_ARCHITECT_COPY,
+  },
+  {
+    key: FAMILY_FORTRESS_ASSESSMENT_KEY,
+    slug: FAMILY_FORTRESS_SLUG,
+    title: FAMILY_FORTRESS_TITLE,
+    description: FAMILY_FORTRESS_DESCRIPTION,
+    questionCount: FAMILY_FORTRESS_QUESTION_COUNT,
+    instrument: familyFortressInstrument,
+    copy: FAMILY_FORTRESS_COPY,
   },
 ];
 

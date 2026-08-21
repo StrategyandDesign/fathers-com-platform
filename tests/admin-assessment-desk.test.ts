@@ -128,4 +128,18 @@ describe("admin assessment desk", () => {
     assert.equal(item.actionLabel, "Release");
     assert.equal(item.questionCount, 30);
   });
+
+  it("lists Family Fortress beside Legacy Architect with a Release action", () => {
+    const assessment = getFirstPartyAssessment("family-fortress");
+    assert.ok(assessment);
+    const item = firstPartyDeskItem(assessment, {
+      releasedAt: null,
+      firstReleasedAt: null,
+      releaseTargets: [],
+    });
+    assert.equal(item.title, "The Family Fortress Keystone Assessment");
+    assert.equal(item.actionLabel, "Release");
+    assert.equal(item.questionCount, 30);
+    assert.equal(item.href, "/admin/assessments/family-fortress");
+  });
 });
