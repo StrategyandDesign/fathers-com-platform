@@ -72,7 +72,7 @@ export function TrainingStageDesk({ training }: { training: AdminTrainingRow }) 
         />
       </dl>
 
-      <div className="rounded-lg border border-border bg-black/20 px-3 py-3">
+      <div className="rounded-lg border border-border bg-inset px-3 py-3">
         <p className="text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
           Previewed
         </p>
@@ -129,7 +129,7 @@ export function TrainingStageDesk({ training }: { training: AdminTrainingRow }) 
 
 function DeskStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border bg-black/30 px-3 py-3">
+    <div className="rounded-lg border border-border bg-inset px-3 py-3">
       <dt className="text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
         {label}
       </dt>
@@ -147,7 +147,7 @@ function StageSessionRow({
 }) {
   const { session } = row;
   return (
-    <li className="rounded-lg border border-border bg-black/20 p-3 sm:p-4">
+    <li className="rounded-lg border border-border bg-inset p-3 sm:p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground">

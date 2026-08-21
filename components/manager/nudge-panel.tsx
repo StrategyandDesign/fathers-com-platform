@@ -75,7 +75,7 @@ export function NudgePanel({ panel }: { panel: NudgePanelView }) {
             return (
               <li key={row.fatherId} className="px-4 py-4">
                 <div className="flex items-start gap-3">
-                  <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-medium">
+                  <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-xs font-medium">
                     {initials(row.name)}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -89,7 +89,7 @@ export function NudgePanel({ panel }: { panel: NudgePanelView }) {
                       <>
                         <p className="mt-1 text-sm text-muted-foreground">{row.context}</p>
                         {reviewing ? (
-                          <div className="mt-3 space-y-3 rounded-lg border border-border bg-black/30 px-4 py-3">
+                          <div className="mt-3 space-y-3 rounded-lg border border-border bg-inset px-4 py-3">
                             <p className="text-sm text-muted-foreground">{t("manager.nudgePanel.youConfirm")}</p>
                             <div dir={row.dir} className="space-y-1">
                               <p className="text-sm font-medium">{row.title}</p>
@@ -166,7 +166,7 @@ export function NudgePanel({ panel }: { panel: NudgePanelView }) {
       {reachable.length > 1 ? (
         <div className="mt-5 space-y-3">
           {bulkOpen ? (
-            <div className="space-y-4 rounded-lg border border-border bg-black/30 px-4 py-4">
+            <div className="space-y-4 rounded-lg border border-border bg-inset px-4 py-4">
               <p className="text-sm text-muted-foreground">{t("manager.nudgePanel.youConfirm")}</p>
               <ul className="space-y-4">
                 {reachable.map((row) => (

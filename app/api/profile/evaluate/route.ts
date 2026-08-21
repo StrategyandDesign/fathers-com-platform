@@ -74,5 +74,5 @@ export async function POST(request: Request) {
 
 export async function GET() {
   const { role } = await getAuthContext();
-  redirect(role === "manager" ? "/manager/practice" : "/father/profile");
+  redirect(role === "manager" ? "/manager/practice" : "/father/assessments");
 }

@@ -98,21 +98,21 @@ export function OrganizationPhotoSlot({
         {view.guidance.kind === "home_hero" ? (
           <div>
             <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.home")}</p>
-            <div className="relative h-24 overflow-hidden rounded-lg bg-[#101510] sm:h-36 lg:h-44">
+            <div className="relative h-24 overflow-hidden rounded-lg bg-cover sm:h-36 lg:h-44">
               <CoverPhoto src={preview} />
             </div>
           </div>
         ) : view.guidance.kind === "home_profile" ? (
           <div>
             <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.homeProfile")}</p>
-            <div className="relative min-h-56 overflow-hidden rounded-lg bg-[#101510] sm:min-h-64">
+            <div className="relative min-h-56 overflow-hidden rounded-lg bg-cover sm:min-h-64">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={preview}
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover object-[center_62%] opacity-45"
               />
-              <div className="absolute inset-0 bg-[#141414]/50" />
+              <div className="absolute inset-0 bg-card/50" />
               <div className="absolute inset-0 bg-gradient-to-tr from-[#0a0a0a]/50 via-[#0a0a0a]/25 to-transparent" />
               <div className="relative z-10 flex min-h-56 flex-col justify-end p-4 sm:min-h-64">
                 <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
@@ -128,13 +128,13 @@ export function OrganizationPhotoSlot({
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.home")}</p>
-              <div className="relative h-28 overflow-hidden rounded-lg bg-[#101510] sm:h-32">
+              <div className="relative h-28 overflow-hidden rounded-lg bg-cover sm:h-32">
                 <CoverPhoto src={preview} />
               </div>
             </div>
             <div>
               <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.trainings")}</p>
-              <div className="relative aspect-video overflow-hidden rounded-lg bg-[#101510]">
+              <div className="relative aspect-video overflow-hidden rounded-lg bg-cover">
                 <CoverPhoto src={preview} />
               </div>
             </div>

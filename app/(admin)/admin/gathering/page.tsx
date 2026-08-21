@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 
 function Stat({ label, value }: { label: string; value: string | number | null }) {
   return (
-    <div className="rounded-lg border border-border bg-black/30 px-3 py-3">
+    <div className="rounded-lg border border-border bg-inset px-3 py-3">
       <p className="text-[11px] tracking-[0.12em] text-muted-foreground uppercase">{label}</p>
       <p className="mt-1 text-2xl font-semibold tabular-nums">{value ?? "—"}</p>
     </div>
@@ -23,10 +23,10 @@ function StackedBar({
 }) {
   const total = notStarted + inProgress + completed;
   if (total === 0) {
-    return <div className="h-1.5 rounded-full bg-white/10" />;
+    return <div className="h-1.5 rounded-full bg-foreground/10" />;
   }
   return (
-    <div className="flex h-1.5 overflow-hidden rounded-full bg-white/10">
+    <div className="flex h-1.5 overflow-hidden rounded-full bg-foreground/10">
       <div className="h-full bg-primary" style={{ width: `${(completed / total) * 100}%` }} />
       <div className="h-full bg-primary/50" style={{ width: `${(inProgress / total) * 100}%` }} />
       <div
@@ -144,7 +144,7 @@ export default async function AdminGatheringPage() {
                             completed={row.completed ?? 0}
                           />
                         ) : (
-                          <div className="h-1.5 rounded-full bg-white/10" />
+                          <div className="h-1.5 rounded-full bg-foreground/10" />
                         )}
                       </li>
                     );

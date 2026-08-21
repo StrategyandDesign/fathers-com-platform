@@ -34,7 +34,7 @@ export function ActionIntentionList({
   interactive?: boolean;
 }) {
   return (
-    <div className="divide-y divide-white/8 border-y border-white/8">
+    <div className="divide-y divide-border border-y border-border">
       {INTENTION_OPTIONS.map((option) => {
         const selected = value === option;
         const label = (

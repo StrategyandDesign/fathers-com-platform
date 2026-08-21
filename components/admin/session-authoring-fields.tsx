@@ -111,7 +111,7 @@ function SkillPromptFields({
   values: { stem: string; a: string; b: string; c: string };
 }) {
   return (
-    <fieldset className="space-y-3 rounded-lg border border-border bg-black/20 p-3 sm:p-4">
+    <fieldset className="space-y-3 rounded-lg border border-border bg-inset p-3 sm:p-4">
       <legend className="px-1 text-sm font-medium">{heading}</legend>
       <p className="text-xs text-muted-foreground">{hint}</p>
       <label className="block space-y-2">

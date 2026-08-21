@@ -221,11 +221,11 @@ export function AppNav({
               (layout === "side" || layout === "list" || layout === "bar") &&
                 (active
                   ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"),
+                  : "text-muted-foreground hover:bg-hover hover:text-foreground"),
               layout === "tabs" &&
                 (active
                   ? "text-foreground"
-                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground")
+                  : "text-muted-foreground hover:bg-hover hover:text-foreground")
             )}
           >
             <Icon

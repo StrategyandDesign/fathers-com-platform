@@ -68,7 +68,7 @@ export function AssessmentQuestionEditor({
       {questions.map((question, index) => (
         <fieldset
           key={question.key}
-          className="space-y-4 rounded-xl border border-border bg-black/20 p-4 sm:p-5"
+          className="space-y-4 rounded-xl border border-border bg-inset p-4 sm:p-5"
         >
           <legend className="px-1 font-heading text-sm font-semibold">
             {t("manager.assessments.questionN", { n: index + 1 })}

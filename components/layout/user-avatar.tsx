@@ -17,7 +17,7 @@ export function UserAvatar({
       <img
         src={src}
         alt=""
-        className={cn("rounded-full bg-white/10 object-cover", className)}
+        className={cn("rounded-full bg-foreground/10 object-cover", className)}
       />
     );
   }
@@ -25,7 +25,7 @@ export function UserAvatar({
   return (
     <span
       className={cn(
-        "flex items-center justify-center rounded-full bg-white/10 font-medium",
+        "flex items-center justify-center rounded-full bg-foreground/10 font-medium",
         className
       )}
     >

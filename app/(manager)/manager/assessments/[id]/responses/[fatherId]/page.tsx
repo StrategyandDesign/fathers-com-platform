@@ -27,14 +27,14 @@ export default async function ManagerAssessmentResponsesPage({
         <Link href="/manager/assessments" className={interactiveLinkClassName}>
           {t("manager.assessments.title")}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <Link
           href={`/manager/assessments/${detail.assessment.id}`}
           className={interactiveLinkClassName}
         >
           {detail.assessment.title}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <Link
           href={`/manager/participants/${fatherId}`}
           className={interactiveLinkClassName}

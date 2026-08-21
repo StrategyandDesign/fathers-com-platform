@@ -116,7 +116,7 @@ export default async function ManagerBulkReviewPage({
         <Link href="/manager/participants" className={interactiveLinkClassName}>
           {t("manager.participants.title")}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>{t("manager.bulk.reviewCrumb")}</span>
       </p>
       <Flash error={params.error} />

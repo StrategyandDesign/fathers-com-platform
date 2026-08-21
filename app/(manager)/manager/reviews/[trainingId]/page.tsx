@@ -43,11 +43,11 @@ export default async function ManagerTrainingReviewPage({
         <Link href="/manager" className={interactiveLinkClassName}>
           {t("manager.reviewDetail.dashboard")}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <Link href="/manager/trainings" className={interactiveLinkClassName}>
           {t("manager.trainings.title")}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span className="min-w-0">{training.title}</span>
       </p>
       <Flash error={flash.error} notice={flash.notice} />

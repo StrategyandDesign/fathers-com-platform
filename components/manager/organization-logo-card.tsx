@@ -38,7 +38,7 @@ export function OrganizationLogoCard({
         {t("account.logoLead", { name: markName })}
       </p>
 
-      <div className="mt-5 rounded-lg border border-border bg-black/30 px-4 py-3">
+      <div className="mt-5 rounded-lg border border-border bg-inset px-4 py-3">
         <p className="text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
           {t("account.logoPreview")}
         </p>

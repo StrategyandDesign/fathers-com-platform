@@ -41,11 +41,11 @@ export default async function ManagerCertificatePage({
         <Link href="/manager/participants" className={interactiveLinkClassName}>
           {t("manager.participants.title")}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <Link href={`/manager/participants/${id}`} className={interactiveLinkClassName}>
           {preview.participant.name}
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         {t("manager.cert.title")}
       </p>
       <Flash error={flash.error} notice={flash.notice} />

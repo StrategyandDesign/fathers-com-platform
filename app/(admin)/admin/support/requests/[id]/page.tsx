@@ -36,7 +36,7 @@ export default async function AdminTrainingRequestDetailPage({
           <Link href="/admin/support/requests" className={interactiveLinkClassName}>
             Training Requests
           </Link>
-          <span className="text-white/20">|</span>
+          <span className="text-foreground/20">|</span>
           <span>Request</span>
         </p>
         <EmptyState
@@ -67,7 +67,7 @@ export default async function AdminTrainingRequestDetailPage({
           <Link href="/admin/support/requests" className={interactiveLinkClassName}>
             Training Requests
           </Link>
-          <span className="text-white/20">|</span>
+          <span className="text-foreground/20">|</span>
           <span>Request</span>
         </p>
         <EmptyState
@@ -88,7 +88,7 @@ export default async function AdminTrainingRequestDetailPage({
           <Link href="/admin/support/requests" className={interactiveLinkClassName}>
             Training Requests
           </Link>
-          <span className="text-white/20">|</span>
+          <span className="text-foreground/20">|</span>
           <span>Request</span>
         </p>
         <EmptyState
@@ -113,7 +113,7 @@ export default async function AdminTrainingRequestDetailPage({
         <Link href="/admin/support/requests" className={interactiveLinkClassName}>
           Training Requests
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>{request.topic}</span>
       </p>
       <div>

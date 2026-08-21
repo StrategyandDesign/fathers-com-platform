@@ -25,7 +25,7 @@ export default async function AdminTrainingSourcesPage({
         <Link href="/admin/trainings" className={interactiveLinkClassName}>
           Trainings
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>Bring in</span>
       </p>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

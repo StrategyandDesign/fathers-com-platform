@@ -112,7 +112,7 @@ export function DevelopmentDesk({
             <StatusButton current={status} value="in_development" label="In Development" />
             <StatusButton current={status} value="ready_for_review" label="Ready for Review" />
           </form>
-          <form action={archiveTraining} className="space-y-3 rounded-lg border border-border bg-black/20 p-3 sm:p-4">
+          <form action={archiveTraining} className="space-y-3 rounded-lg border border-border bg-inset p-3 sm:p-4">
             <input type="hidden" name="training_id" value={training.id} />
             <p className="text-sm text-muted-foreground">
               Archive keeps the idea. It leaves the active catalog. Live
@@ -159,7 +159,7 @@ function StatusButton({
 
 function DeskStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border bg-black/30 px-3 py-3">
+    <div className="rounded-lg border border-border bg-inset px-3 py-3">
       <dt className="text-[11px] tracking-[0.12em] text-muted-foreground uppercase">
         {label}
       </dt>

@@ -6,7 +6,7 @@ The live product is the Next.js 15 App Router app in `app/`. `package.json` scri
 
 ### Services
 
-- **Next.js** (`npm run dev`) — required. Listens on http://localhost:3000. Throws at runtime if `NEXT_PUBLIC_SUPABASE_URL` and a publishable/anon key are missing (see `lib/supabase/env.ts` and `.env.example`).
+- **Next.js** (`npm run dev`) — required. Listens on http://localhost:3000. Throws at runtime if `NEXT_PUBLIC_SUPABASE_URL` and a publishable/anon key are missing (see `lib/supabase/env.ts` and `.env.example`). `npm run dev` also starts the live-preview puller: it fast-forwards the current branch from `origin` every 2s so Cloud Agent pushes show up in the local app. It never force-resets. Skip the puller with `LIVE_PREVIEW_PULL=0`. After a Cloud Agent commit, run `npm run live-preview:push` (or rely on the `cursor/*` post-commit hook).
 - **Supabase** (Postgres + Auth + Storage) — required for login, signup, and every authenticated surface. Local stack: `supabase start` (needs Docker). Put keys from `supabase status` into `.env.local`.
 - **Supabase Edge Functions, Stripe, Resend, VAPID, YouTube, Sentry** — optional. Local/pilot degrades without them.
 

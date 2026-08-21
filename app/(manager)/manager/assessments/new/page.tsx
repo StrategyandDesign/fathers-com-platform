@@ -23,7 +23,7 @@ export default async function ManagerNewAssessmentPage({
         <Link href="/manager/assessments" className={interactiveLinkClassName}>
           {t("manager.assessments.title")}
         </Link>
-        <span className="px-2 text-white/20">|</span>
+        <span className="px-2 text-foreground/20">|</span>
         <span>{t("manager.assessments.newCrumb")}</span>
       </p>
       <div>

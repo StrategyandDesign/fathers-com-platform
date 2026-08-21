@@ -37,7 +37,7 @@ export default async function AdminTrainingRequestsPage({
         <Link href="/admin" className={interactiveLinkClassName}>
           Dashboard
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>Training Requests</span>
       </p>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

@@ -37,7 +37,7 @@ export default async function AdminSupportDetailPage({
           <Link href="/admin/support" className={interactiveLinkClassName}>
             Support Inbox
           </Link>
-          <span className="text-white/20">|</span>
+          <span className="text-foreground/20">|</span>
           <span>Report</span>
         </p>
         <EmptyState title="That report was not found" actionHref="/admin/support" actionLabel="Back to inbox">
@@ -64,7 +64,7 @@ export default async function AdminSupportDetailPage({
           <Link href="/admin/support" className={interactiveLinkClassName}>
             Support Inbox
           </Link>
-          <span className="text-white/20">|</span>
+          <span className="text-foreground/20">|</span>
           <span>Report</span>
         </p>
         <EmptyState title="Unable to load this report" actionHref="/admin/support" actionLabel="Back to inbox">
@@ -81,7 +81,7 @@ export default async function AdminSupportDetailPage({
           <Link href="/admin/support" className={interactiveLinkClassName}>
             Support Inbox
           </Link>
-          <span className="text-white/20">|</span>
+          <span className="text-foreground/20">|</span>
           <span>Report</span>
         </p>
         <EmptyState title="That report was not found" actionHref="/admin/support" actionLabel="Back to inbox">
@@ -102,7 +102,7 @@ export default async function AdminSupportDetailPage({
         <Link href="/admin/support" className={interactiveLinkClassName}>
           Support Inbox
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span>{SUPPORT_CATEGORY_LABEL[report.category]}</span>
       </p>
       <div>
@@ -154,7 +154,7 @@ export default async function AdminSupportDetailPage({
             <img
               src={detail.screenshotUrl}
               alt="Submitted screenshot"
-              className="max-h-[32rem] w-full object-contain bg-black/40"
+              className="max-h-[32rem] w-full object-contain bg-inset"
             />
           </a>
         </section>

@@ -85,6 +85,28 @@ export async function signIn(formData: FormData) {
     // Locale cookie is best-effort; sign-in still proceeds.
   }
 
+  try {
+    const { peekPaletteCookie, writePaletteCookie } = await import("@/lib/theme/cookie");
+    const { parsePalette } = await import("@/lib/theme/palette");
+    const { data: paletteRow } = await supabase
+      .from("profiles")
+      .select("color_scheme")
+      .eq("id", data.user.id)
+      .maybeSingle();
+    const accountPalette = parsePalette(paletteRow?.color_scheme);
+    const cookiePalette = await peekPaletteCookie();
+    if (accountPalette) {
+      await writePaletteCookie(accountPalette);
+    } else if (cookiePalette) {
+      await supabase
+        .from("profiles")
+        .update({ color_scheme: cookiePalette })
+        .eq("id", data.user.id);
+    }
+  } catch {
+    // Palette cookie is best-effort; sign-in still proceeds.
+  }
+
   redirect(next ?? ROLE_HOME[resolveRole(data.user)]);
 }
 

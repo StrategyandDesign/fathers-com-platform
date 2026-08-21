@@ -4,6 +4,7 @@ import { AnonymousShareToggle } from "@/components/account/anonymous-share-toggl
 import { DisplayNameForm } from "@/components/account/display-name-form";
 import { DisplayTitleForm } from "@/components/account/display-title-form";
 import { NotificationPrefs } from "@/components/account/notification-prefs";
+import { PaletteForm } from "@/components/account/palette-form";
 import { LanguageForm } from "@/components/i18n/language-form";
 import { LegalLinks } from "@/components/legal/legal-links";
 import { Flash } from "@/components/manager/flash";
@@ -86,6 +87,8 @@ export async function AccountView({
           </div>
         </div>
       </section>
+
+      <PaletteForm />
 
       {role === "manager" ? (
         <>

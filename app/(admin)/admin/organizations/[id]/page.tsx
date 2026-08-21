@@ -47,7 +47,7 @@ export default async function AdminOrganizationDetailPage({
         <Link href="/admin/organizations" className={interactiveLinkClassName}>
           Organizations
         </Link>
-        <span className="text-white/20">|</span>
+        <span className="text-foreground/20">|</span>
         <span className="min-w-0">{group.name}</span>
       </p>
       <Flash error={flash.error} notice={flash.notice} />
@@ -82,7 +82,7 @@ export default async function AdminOrganizationDetailPage({
             ))}
           </select>
         </label>
-        <div className="flex flex-col gap-3 rounded-lg border border-input bg-black/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 rounded-lg border border-input bg-inset px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <p className="text-sm text-muted-foreground">Invite code</p>
             <p className="break-all font-mono text-sm tracking-wide">{group.invite_code}</p>
