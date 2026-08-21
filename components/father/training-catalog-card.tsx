@@ -125,6 +125,14 @@ export function FatherTrainingCatalogCard({
   });
   const overviewFilm = listOverview && hasHostedVideo(overviewUrl);
   const landscape = Boolean(featured || sideBySide);
+  const coverWellClassName = cn(
+    "relative block w-full overflow-hidden bg-[#101510]",
+    landscape
+      ? "h-44 sm:h-52 lg:h-full lg:min-h-[17rem]"
+      : quiet
+        ? "h-32 sm:h-36"
+        : "h-40 sm:h-44"
+  );
 
   return (
     <article
@@ -138,25 +146,12 @@ export function FatherTrainingCatalogCard({
         <Link
           href={href}
           aria-label={openLabel}
-          className={cn(
-            "relative block overflow-hidden bg-[#101510]",
-            landscape
-              ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]"
-              : quiet
-                ? "h-32 sm:h-36"
-                : "h-40 sm:h-44",
-            interactiveSurfaceClassName
-          )}
+          className={cn(coverWellClassName, interactiveSurfaceClassName)}
         >
           <CoverPhoto src={coverSrc} />
         </Link>
       ) : (
-        <div
-          className={cn(
-            "relative overflow-hidden bg-[#101510]",
-            landscape ? "h-44 sm:h-52 lg:h-auto lg:min-h-[17rem]" : "h-32 sm:h-36"
-          )}
-        >
+        <div className={coverWellClassName}>
           <CoverPhoto src={coverSrc} />
         </div>
       )}

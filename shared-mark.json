@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 79,
-  "label": "Shared 1-1.79",
+  "patch": 80,
+  "label": "Shared 1-1.80",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Open the training overview from a popup, and keep it until a session is watched.",
+  "title": "Add the Legacy Architect assessment to Super-admin.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -561,6 +561,13 @@
       "label": "Shared 1-1.79",
       "at": "2026-08-21",
       "title": "Open the training overview from a popup, and keep it until a session is watched."
+    },
+    {
+      "patch": 80,
+      "revision": "1.80",
+      "label": "Shared 1-1.80",
+      "at": "2026-08-21",
+      "title": "Add the Legacy Architect assessment to Super-admin."
     }
   ]
 }

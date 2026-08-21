@@ -29,6 +29,19 @@ describe("training catalog decisions", () => {
     assert.match(styles, /scrollbar-width:\s*thin/);
   });
 
+  it("spreads the training picture across the card cover well", () => {
+    const card = readRepo("components/father/training-catalog-card.tsx");
+    const cover = readRepo("components/brand/cover.tsx");
+    const scene = readRepo("components/brand/scene.tsx");
+
+    assert.match(card, /relative block w-full overflow-hidden bg-\[#101510\]/);
+    assert.match(card, /lg:h-full lg:min-h-\[17rem\]/);
+    assert.doesNotMatch(card, /lg:h-auto/);
+    assert.match(cover, /absolute inset-0 size-full object-cover/);
+    assert.match(cover, /SceneArt className="absolute inset-0 size-full"/);
+    assert.match(scene, /preserveAspectRatio="xMidYMid slice"/);
+  });
+
   it("separates available and completed trainings on the father desk", () => {
     const page = readRepo("app/(father)/father/trainings/page.tsx");
     const card = readRepo("components/father/training-catalog-card.tsx");

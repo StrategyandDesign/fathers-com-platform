@@ -4,6 +4,7 @@ export function SceneArt({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 640 280"
+      preserveAspectRatio="xMidYMid slice"
       className={cn("h-full w-full", className)}
       aria-hidden
     >

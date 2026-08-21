@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.79**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.80**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -96,3 +96,4 @@ The badge on this checkout is **Shared 1-1.79**. It ticks on each push of the Sh
 | **1.77** | undefined | Keep Leader desk sync cookies off the browser bundle. |
 | **1.78** | undefined | Restore catalog covers and keep the overview film beside them. |
 | **1.79** | undefined | Open the training overview from a popup, and keep it until a session is watched. |
+| **1.80** | undefined | Add the Legacy Architect assessment to Super-admin. |

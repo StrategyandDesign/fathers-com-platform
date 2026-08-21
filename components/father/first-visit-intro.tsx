@@ -42,7 +42,7 @@ export async function FirstVisitIntro({
     <div className="min-w-0 space-y-2">
       <p className={eyebrowClassName}>{t("father.home.startHere")}</p>
       <section className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="h-20 overflow-hidden bg-[#101510] sm:h-32 lg:h-40">
+        <div className="relative h-20 w-full overflow-hidden bg-[#101510] sm:h-32 lg:h-40">
           <CoverPhoto src={coverSrc} />
         </div>
         <div className="space-y-5 p-4 sm:p-5 lg:p-6">
