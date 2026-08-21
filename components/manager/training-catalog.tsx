@@ -9,9 +9,10 @@ import type { Translate } from "@/lib/i18n/translate";
 import { cn } from "@/lib/utils";
 
 function sessionLabel(count: number, t: Translate) {
-  return count === 1
+  const n = Number.isFinite(count) ? count : 0;
+  return n === 1
     ? t("manager.dashboard.sessionOne")
-    : t("manager.dashboard.sessionMany", { count });
+    : t("manager.dashboard.sessionMany", { count: n });
 }
 
 export function TrainingCatalog({

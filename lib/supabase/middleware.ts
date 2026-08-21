@@ -8,7 +8,7 @@ import {
   resolveRole,
   roleForPath,
 } from "@/lib/auth/roles";
-import { DEFAULT_LOCALE, isPublicLocale, LOCALE_COOKIE, type Locale } from "@/lib/i18n/config";
+import { isLocale, isPublicLocale, LOCALE_COOKIE, type Locale } from "@/lib/i18n/config";
 import { getSupabasePublishableKey, getSupabaseUrl } from "@/lib/supabase/env";
 import { PALETTE_COOKIE, paletteCookieOptions, parsePalette } from "@/lib/theme/palette";
 
@@ -103,7 +103,7 @@ async function applySession(request: NextRequest) {
     role = resolveProfileRole(profile?.role, user);
 
     const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
-    if (!isPublicLocale(cookieLocale)) {
+    if (!isLocale(cookieLocale)) {
       let nextLocale: Locale | null = isPublicLocale(profile?.locale) ? profile.locale : null;
       if (!nextLocale) {
         const { data: staffRow } = await supabase
@@ -153,12 +153,6 @@ async function applySession(request: NextRequest) {
       }
       if (nextLocale) {
         supabaseResponse.cookies.set(LOCALE_COOKIE, nextLocale, {
-          path: "/",
-          maxAge: 60 * 60 * 24 * 365,
-          sameSite: "lax",
-        });
-      } else {
-        supabaseResponse.cookies.set(LOCALE_COOKIE, DEFAULT_LOCALE, {
           path: "/",
           maxAge: 60 * 60 * 24 * 365,
           sameSite: "lax",

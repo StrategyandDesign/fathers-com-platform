@@ -43,6 +43,16 @@ describe("Hebrew stays in the catalog and off the public surface", () => {
     assert.equal(resolveFatherLocale({ profileLocale: "he", groupLocale: "he" }), "en");
   });
 
+  it("does not rewrite a Hebrew cookie on every Trainings request", () => {
+    const middleware = readRepo("lib/supabase/middleware.ts");
+    assert.match(middleware, /if \(!isLocale\(cookieLocale\)\)/);
+    assert.match(middleware, /isPublicLocale\(profile\?\.locale\)/);
+    assert.doesNotMatch(
+      middleware,
+      /cookies\.set\(\s*LOCALE_COOKIE,\s*DEFAULT_LOCALE/
+    );
+  });
+
   it("does not show a language picker on Account", () => {
     const account = readRepo("components/layout/account-view.tsx");
     const form = readRepo("components/i18n/language-form.tsx");
