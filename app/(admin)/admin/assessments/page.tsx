@@ -27,7 +27,7 @@ export default async function AdminAssessmentsPage({
   return (
     <AdminCatalogDesk
       title="Assessments"
-      lead="You create and share assessments with organization Leaders. Leaders then decide what their fathers can take. Finish the instrument, mark Ready, then Release."
+      lead="Open a row to edit the instrument. Preview the father path, then release it to Leaders. They decide what their fathers can take."
       error={flash.error}
       notice={flash.notice}
       archivedView={archivedView}
@@ -44,7 +44,7 @@ export default async function AdminAssessmentsPage({
     >
       <AdminDeskList
         countHeader="Questions"
-        actionHeader="Release"
+        actionHeader="Desk"
         empty={
           visible.length === 0 ? (
             <EmptyState

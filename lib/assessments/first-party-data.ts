@@ -4,7 +4,12 @@ import {
   getFirstPartyAssessment,
   isFirstPartyAssessmentKey,
   listFirstPartyAssessments,
+  type FirstPartyAssessment,
 } from "@/lib/assessments/first-party";
+import {
+  overlayFirstPartyAssessment,
+  type FirstPartyCatalogRow,
+} from "@/lib/assessments/first-party-catalog";
 import {
   loadAssessmentAvailability,
   loadOrganizationAssessmentReviews,
@@ -30,13 +35,17 @@ export type FirstPartyAttempt = {
   completedAt: string | null;
 };
 
-function missingAttemptRelation(error: { message?: string; code?: string } | null) {
+function missingRelation(error: { message?: string; code?: string } | null, table: string) {
   if (!error) return false;
   return (
     error.code === "42P01" ||
     error.code === "PGRST205" ||
-    /catalog_assessment_attempts|does not exist|Could not find the table/i.test(error.message ?? "")
+    new RegExp(`${table}|does not exist|Could not find the table`, "i").test(error.message ?? "")
   );
+}
+
+function missingAttemptRelation(error: { message?: string; code?: string } | null) {
+  return missingRelation(error, "catalog_assessment_attempts");
 }
 
 function asAnswers(value: unknown): Record<string, number> {
@@ -61,6 +70,56 @@ function asAttempt(row: Record<string, unknown>): FirstPartyAttempt {
     startedAt: String(row.started_at ?? ""),
     completedAt: typeof row.completed_at === "string" ? row.completed_at : null,
   };
+}
+
+function asCatalogRow(row: Record<string, unknown>): FirstPartyCatalogRow {
+  return {
+    title: typeof row.title === "string" ? row.title : null,
+    description: typeof row.description === "string" ? row.description : null,
+    instrument: row.instrument,
+    lastEditedAt: typeof row.last_edited_at === "string" ? row.last_edited_at : null,
+  };
+}
+
+export async function loadFirstPartyCatalogRows(keys: string[]) {
+  const rows = new Map<string, FirstPartyCatalogRow>();
+  if (keys.length === 0) return rows;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("platform_assessments")
+    .select("assessment_key, title, description, instrument, last_edited_at")
+    .in("assessment_key", keys);
+  if (missingRelation(error, "platform_assessments")) return rows;
+  if (error) {
+    if (
+      error.code === "42501" ||
+      /permission denied|row-level security/i.test(error.message ?? "")
+    ) {
+      return rows;
+    }
+    throw error;
+  }
+  for (const row of (data ?? []) as Record<string, unknown>[]) {
+    const key = String(row.assessment_key ?? "");
+    if (!key) continue;
+    rows.set(key, asCatalogRow(row));
+  }
+  return rows;
+}
+
+export async function loadFirstPartyCatalog(
+  assessmentKey: string
+): Promise<FirstPartyAssessment | null> {
+  const seed = getFirstPartyAssessment(assessmentKey);
+  if (!seed) return null;
+  const rows = await loadFirstPartyCatalogRows([assessmentKey]);
+  return overlayFirstPartyAssessment(seed, rows.get(assessmentKey) ?? null);
+}
+
+export async function loadFirstPartyCatalogList(): Promise<FirstPartyAssessment[]> {
+  const seeds = listFirstPartyAssessments();
+  const rows = await loadFirstPartyCatalogRows(seeds.map((assessment) => assessment.key));
+  return seeds.map((seed) => overlayFirstPartyAssessment(seed, rows.get(seed.key) ?? null));
 }
 
 export async function loadFirstPartyAttempt(userId: string, assessmentKey: string) {
@@ -191,7 +250,7 @@ export async function loadFatherFirstPartyCards(input: {
   availability: Awaited<ReturnType<typeof loadAssessmentAvailability>>;
   reviews: Awaited<ReturnType<typeof loadOrganizationAssessmentReviews>>;
 }) {
-  const assessments = listFirstPartyAssessments();
+  const assessments = await loadFirstPartyCatalogList();
   const [releases, attempts] = await Promise.all([
     loadPlatformAssessmentReleases(assessments.map((assessment) => assessment.key)),
     loadFirstPartyAttempts(input.fatherId),
@@ -227,7 +286,7 @@ export async function loadFatherFirstPartyCards(input: {
 
 export async function loadFatherFirstPartyAccess(fatherId: string, assessmentKey: string) {
   if (!isFirstPartyAssessmentKey(assessmentKey)) return null;
-  const assessment = getFirstPartyAssessment(assessmentKey);
+  const assessment = await loadFirstPartyCatalog(assessmentKey);
   if (!assessment) return null;
 
   const supabase = await createClient();

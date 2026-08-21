@@ -83,8 +83,8 @@ export function keystoneDeskItem(keystone: {
     key: keystone.assessmentKey || KEYSTONE_ASSESSMENT_KEY,
     title: "Keystone Assessment",
     href: "/admin/assessments/keystone",
-    actionHref: "/admin/assessments/keystone#release",
-    actionLabel: "Release",
+    actionHref: "/admin/assessments/keystone",
+    actionLabel: "Desk",
     questionCount: PROFILE_QUESTION_COUNT,
     kindLabel: "Platform assessment",
     editedAt: assessmentEditedAt(release),
@@ -100,6 +100,7 @@ export function firstPartyDeskItem(
     releasedAt: string | null;
     firstReleasedAt: string | null;
     releaseTargets: Array<{ reviewStatus: AdminReviewStatus | null }>;
+    lastEditedAt?: string | null;
   }
 ): AdminAssessmentDeskItem {
   const state = {
@@ -111,11 +112,11 @@ export function firstPartyDeskItem(
     key: assessment.key,
     title: assessment.title,
     href: firstPartyAdminPath(assessment.key),
-    actionHref: `${firstPartyAdminPath(assessment.key)}#release`,
-    actionLabel: "Release",
+    actionHref: firstPartyAdminPath(assessment.key),
+    actionLabel: "Desk",
     questionCount: assessment.questionCount,
     kindLabel: "Platform assessment",
-    editedAt: assessmentEditedAt(state),
+    editedAt: release.lastEditedAt ?? assessmentEditedAt(state),
     archived: false,
     developmentStatus: assessmentDevelopmentStatus(state),
     releaseState: assessmentReleaseState(state),

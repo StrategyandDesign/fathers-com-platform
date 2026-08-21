@@ -9,7 +9,8 @@ import {
   loadPlatformAssessmentRelease,
   markAssessmentNotificationsRead,
 } from "@/lib/assessments/data";
-import { getFirstPartyAssessment, isFirstPartyAssessmentKey } from "@/lib/assessments/first-party";
+import { isFirstPartyAssessmentKey } from "@/lib/assessments/first-party";
+import { loadFirstPartyCatalog } from "@/lib/assessments/first-party-data";
 import {
   isAssessmentCurrentlyReleased,
   reviewForGroup,
@@ -31,7 +32,7 @@ export default async function ManagerFirstPartyReviewPage({
   const { user } = await requireRole("manager");
   const { t } = await getI18n();
   if (!isFirstPartyAssessmentKey(assessmentKey)) notFound();
-  const assessment = getFirstPartyAssessment(assessmentKey);
+  const assessment = await loadFirstPartyCatalog(assessmentKey);
   if (!assessment) notFound();
 
   const workspace = await loadManagerWorkspace(user.id);

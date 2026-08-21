@@ -56,7 +56,7 @@ describe("Legacy Architect Keystone Assessment", () => {
     });
     assert.equal(item.title, LEGACY_ARCHITECT_TITLE);
     assert.equal(item.questionCount, 30);
-    assert.equal(item.actionLabel, "Release");
+    assert.equal(item.actionLabel, "Desk");
     assert.equal(item.kindLabel, "Platform assessment");
     assert.equal(item.href, "/admin/assessments/legacy-architect");
   });

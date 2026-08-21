@@ -10,7 +10,9 @@ import {
   unreleaseAssessmentFromManagers,
 } from "@/lib/admin/assessment-release";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
-import { firstPartyAdminPath, isPlatformReviewKey } from "@/lib/assessments/first-party";
+import { firstPartyAdminPath, isFirstPartyAssessmentKey, isPlatformReviewKey } from "@/lib/assessments/first-party";
+import { firstPartyInstrumentReady } from "@/lib/assessments/first-party-catalog";
+import { loadFirstPartyCatalog } from "@/lib/assessments/first-party-data";
 import { ROLE_HOME } from "@/lib/auth/roles";
 import { getAuthContext } from "@/lib/auth/session";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
@@ -118,6 +120,14 @@ export async function releaseAssessment(formData: FormData) {
 
   if (scope === "selected" && selectedIds.length === 0) {
     fail(path, "Choose at least one organization, or send to all.");
+  }
+
+  if (isFirstPartyAssessmentKey(assessmentKey)) {
+    const catalog = await loadFirstPartyCatalog(assessmentKey);
+    const ready = catalog ? firstPartyInstrumentReady(catalog) : { ok: false as const };
+    if (!ready.ok) {
+      fail(path, "Save a complete instrument before you release it.");
+    }
   }
 
   const result = await releaseAssessmentToManagers(supabase, {

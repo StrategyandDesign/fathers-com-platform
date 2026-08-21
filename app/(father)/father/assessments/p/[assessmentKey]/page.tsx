@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 
 import { ChoiceAssessmentPlayer } from "@/components/assessments/choice-assessment-player";
 import { Flash } from "@/components/manager/flash";
-import { getFirstPartyAssessment, isFirstPartyAssessmentKey } from "@/lib/assessments/first-party";
-import { loadFatherFirstPartyAccess } from "@/lib/assessments/first-party-data";
+import { isFirstPartyAssessmentKey } from "@/lib/assessments/first-party";
+import { loadFatherFirstPartyAccess, loadFirstPartyCatalog } from "@/lib/assessments/first-party-data";
 import { isChoiceItem } from "@/lib/assessments/instrument";
 import { requireRole } from "@/lib/auth/session";
 
@@ -20,7 +20,7 @@ export default async function FatherFirstPartyAssessmentPage({
   if (!isFirstPartyAssessmentKey(assessmentKey)) {
     redirect("/father/assessments");
   }
-  const assessment = getFirstPartyAssessment(assessmentKey);
+  const assessment = await loadFirstPartyCatalog(assessmentKey);
   if (!assessment) {
     redirect("/father/assessments");
   }

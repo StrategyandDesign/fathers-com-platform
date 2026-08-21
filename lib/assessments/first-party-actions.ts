@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { firstPartyTakePath, getFirstPartyAssessment } from "@/lib/assessments/first-party";
+import { firstPartyTakePath } from "@/lib/assessments/first-party";
+import { loadFirstPartyCatalog } from "@/lib/assessments/first-party-data";
 import {
   loadFatherFirstPartyAccess,
   resetFirstPartyAttempt,
@@ -38,7 +39,7 @@ function parseAnswers(formData: FormData, itemIds: string[]) {
 export async function saveFirstPartyProgress(formData: FormData) {
   const { user } = await requireRole("father");
   const assessmentKey = String(formData.get("assessment_key") ?? "").trim();
-  const assessment = getFirstPartyAssessment(assessmentKey);
+  const assessment = await loadFirstPartyCatalog(assessmentKey);
   const path = assessment ? firstPartyTakePath(assessmentKey) : "/father/assessments";
   if (!assessment) fail("/father/assessments", "flash.assessmentNotFound");
   if (!(await allowActionRateLimit("father.assessment"))) {
@@ -78,7 +79,7 @@ export async function saveFirstPartyProgress(formData: FormData) {
 export async function completeFirstPartyAssessment(formData: FormData) {
   const { user } = await requireRole("father");
   const assessmentKey = String(formData.get("assessment_key") ?? "").trim();
-  const assessment = getFirstPartyAssessment(assessmentKey);
+  const assessment = await loadFirstPartyCatalog(assessmentKey);
   const path = assessment ? firstPartyTakePath(assessmentKey) : "/father/assessments";
   if (!assessment) fail("/father/assessments", "flash.assessmentNotFound");
   if (!(await allowActionRateLimit("father.assessment"))) {
@@ -119,7 +120,7 @@ export async function completeFirstPartyAssessment(formData: FormData) {
 export async function retakeFirstPartyAssessment(formData: FormData) {
   const { user } = await requireRole("father");
   const assessmentKey = String(formData.get("assessment_key") ?? "").trim();
-  const assessment = getFirstPartyAssessment(assessmentKey);
+  const assessment = await loadFirstPartyCatalog(assessmentKey);
   const path = assessment ? firstPartyTakePath(assessmentKey) : "/father/assessments";
   if (!assessment) fail("/father/assessments", "flash.assessmentNotFound");
   if (!(await allowActionRateLimit("father.assessment"))) {

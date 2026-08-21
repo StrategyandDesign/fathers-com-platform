@@ -114,6 +114,10 @@ export function firstPartyAdminPath(assessmentKey: string) {
   return `/admin/assessments/${assessmentKey}`;
 }
 
+export function firstPartyAdminPreviewPath(assessmentKey: string) {
+  return `/admin/assessments/${assessmentKey}/preview`;
+}
+
 export function firstPartyManagerPath(assessmentKey: string) {
   return `/manager/assessments/${assessmentKey}`;
 }

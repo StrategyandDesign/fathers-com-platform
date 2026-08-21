@@ -12,8 +12,7 @@ import {
   loadOrganizationAssessmentReviews,
   loadPlatformAssessmentRelease,
 } from "@/lib/assessments/data";
-import { getFirstPartyAssessment } from "@/lib/assessments/first-party";
-import { loadFirstPartyCompletedByGroup } from "@/lib/assessments/first-party-data";
+import { loadFirstPartyCatalog, loadFirstPartyCompletedByGroup } from "@/lib/assessments/first-party-data";
 import {
   catalogVisibility,
   isAssessmentCurrentlyReleased,
@@ -36,7 +35,7 @@ export async function ManagerPlatformAssessmentDesk({
   flash: { group?: string; error?: string; notice?: string };
 }) {
   const { t } = await getI18n();
-  const assessment = getFirstPartyAssessment(assessmentKey);
+  const assessment = await loadFirstPartyCatalog(assessmentKey);
   if (!assessment) notFound();
 
   const workspace = await loadManagerWorkspace(userId);

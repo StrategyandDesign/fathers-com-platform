@@ -23,6 +23,7 @@ export const RATE_LIMITS = {
   "admin.support": { limit: 30, windowMs: 15 * 60 * 1000 },
   "admin.training_request": { limit: 30, windowMs: 15 * 60 * 1000 },
   "admin.sourcing": { limit: 20, windowMs: 15 * 60 * 1000 },
+  "admin.assessment_edit": { limit: 30, windowMs: 15 * 60 * 1000 },
   "support.submit": { limit: 6, windowMs: 15 * 60 * 1000 },
   "manager.training_request": { limit: 8, windowMs: 15 * 60 * 1000 },
   "reviewer.summary_export": { limit: 20, windowMs: 5 * 60 * 1000 },

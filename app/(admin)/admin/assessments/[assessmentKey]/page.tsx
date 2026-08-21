@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AssessmentAuthoringForm } from "@/components/admin/assessment-authoring-form";
 import {
   releaseAssessment,
   unreleaseAssessment,
@@ -11,7 +12,11 @@ import { ReleaseStatusBadge } from "@/components/admin/release-status";
 import { ReleaseTargetStatusList, ReleaseTargets } from "@/components/admin/release-targets";
 import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { getFirstPartyAssessment, isFirstPartyAssessmentKey } from "@/lib/assessments/first-party";
+import {
+  firstPartyAdminPreviewPath,
+  isFirstPartyAssessmentKey,
+} from "@/lib/assessments/first-party";
+import { loadFirstPartyCatalog } from "@/lib/assessments/first-party-data";
 import { requireRole } from "@/lib/auth/session";
 import { formatShortDate } from "@/lib/manager/types";
 import { fieldClassName, interactiveLinkClassName } from "@/lib/ui";
@@ -28,7 +33,7 @@ export default async function AdminFirstPartyAssessmentPage({
   const flash = await searchParams;
   await requireRole("admin");
   if (!isFirstPartyAssessmentKey(assessmentKey)) notFound();
-  const assessment = getFirstPartyAssessment(assessmentKey);
+  const assessment = await loadFirstPartyCatalog(assessmentKey);
   if (!assessment) notFound();
 
   const release = await loadAdminAssessmentRelease(assessmentKey);
@@ -37,13 +42,21 @@ export default async function AdminFirstPartyAssessmentPage({
 
   return (
     <div className="space-y-6">
-      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
-        <Link href="/admin/assessments" className={interactiveLinkClassName}>
-          Assessments
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+          <Link href="/admin/assessments" className={interactiveLinkClassName}>
+            Assessments
+          </Link>
+          <span className="text-white/20">|</span>
+          <span className="min-w-0">{assessment.title}</span>
+        </p>
+        <Link
+          href={firstPartyAdminPreviewPath(assessment.key)}
+          className={cn(buttonVariants(), "w-full sm:w-auto")}
+        >
+          Preview
         </Link>
-        <span className="text-white/20">|</span>
-        <span className="min-w-0">{assessment.title}</span>
-      </p>
+      </div>
       <Flash error={flash.error} notice={flash.notice} />
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
@@ -53,38 +66,21 @@ export default async function AdminFirstPartyAssessmentPage({
               {assessment.title}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {assessment.questionCount} questions. Release shares it with
-              Leaders. They accept, then share it with fathers.
+              {assessment.questionCount} questions. Edit every field, preview the
+              father path, then release it to Leaders.
             </p>
           </div>
           <ReleaseStatusBadge
             state={alreadyReleased ? "released" : firstReleased ? "ready" : "catalog"}
           />
         </div>
-        <div className="mt-5 space-y-4 text-sm leading-6 text-muted-foreground">
-          <p>{assessment.copy.introduction}</p>
-          <p>{assessment.copy.purpose}</p>
-          <p>{assessment.copy.goal}</p>
-        </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <h2 className="font-heading text-lg font-semibold">Designations</h2>
-        <ul className="mt-4 space-y-4">
-          {assessment.instrument.scoring.outcome.kind === "bands"
-            ? assessment.instrument.scoring.outcome.bands.map((band) => (
-                <li key={band.label}>
-                  <p className="font-medium">
-                    {band.min}-{band.max}: {band.label}
-                  </p>
-                  {band.description ? (
-                    <p className="mt-1 text-sm text-muted-foreground">{band.description}</p>
-                  ) : null}
-                </li>
-              ))
-            : null}
-        </ul>
-      </section>
+      <AssessmentAuthoringForm
+        assessment={assessment}
+        invalid={Boolean(flash.error)}
+        released={alreadyReleased}
+      />
 
       <section id="release" className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">

@@ -20,8 +20,10 @@ import {
   loadPlatformAssessmentRelease,
   loadPlatformAssessmentReleases,
 } from "@/lib/assessments/data";
-import { listFirstPartyAssessments } from "@/lib/assessments/first-party";
-import { loadFirstPartyCompletedByGroup } from "@/lib/assessments/first-party-data";
+import {
+  loadFirstPartyCatalogList,
+  loadFirstPartyCompletedByGroup,
+} from "@/lib/assessments/first-party-data";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
 import { loadManagerWorkspace } from "@/lib/manager/data";
@@ -136,7 +138,7 @@ export default async function ManagerAssessmentsPage({
     loadManagerAssessments(user.id),
   ]);
   const groupIds = workspace.groups.map((group) => group.id);
-  const firstParty = listFirstPartyAssessments();
+  const firstParty = await loadFirstPartyCatalogList();
   const [availability, reviews, keystoneRelease, firstPartyReleases, firstPartyCompleted, notifications] =
     await Promise.all([
       loadAssessmentAvailability(groupIds),

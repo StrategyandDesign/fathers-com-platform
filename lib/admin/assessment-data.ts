@@ -7,6 +7,8 @@ import { loadPlatformAssessments } from "@/lib/admin/assessment-sourcing-data";
 import { createClient } from "@/lib/supabase/server";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
 import { isFirstPartyAssessmentKey, listFirstPartyAssessments } from "@/lib/assessments/first-party";
+import { overlayFirstPartyAssessment } from "@/lib/assessments/first-party-catalog";
+import { loadFirstPartyCatalogRows } from "@/lib/assessments/first-party-data";
 import type { AdminReleaseTarget, AdminReviewStatus } from "@/lib/admin/types";
 import { displayName } from "@/lib/manager/types";
 
@@ -79,20 +81,27 @@ export async function loadAdminKeystoneRelease(): Promise<AdminAssessmentRelease
 }
 
 export async function loadAdminAssessmentDesk() {
-  const firstParty = listFirstPartyAssessments();
-  const [keystone, sourced, ...firstPartyReleases] = await Promise.all([
+  const seeds = listFirstPartyAssessments();
+  const [keystone, sourced, catalogRows, ...firstPartyReleases] = await Promise.all([
     loadAdminKeystoneRelease(),
     loadPlatformAssessments(),
-    ...firstParty.map((assessment) => loadAdminAssessmentRelease(assessment.key)),
+    loadFirstPartyCatalogRows(seeds.map((assessment) => assessment.key)),
+    ...seeds.map((assessment) => loadAdminAssessmentRelease(assessment.key)),
   ]);
+  const firstParty = seeds.map((seed) =>
+    overlayFirstPartyAssessment(seed, catalogRows.get(seed.key) ?? null)
+  );
   const firstPartyKeys = new Set(firstParty.map((assessment) => assessment.key));
   return [
     keystoneDeskItem(keystone),
     ...firstParty.map((assessment, index) =>
-      firstPartyDeskItem(assessment, firstPartyReleases[index] ?? {
-        releasedAt: null,
-        firstReleasedAt: null,
-        releaseTargets: [],
+      firstPartyDeskItem(assessment, {
+        ...(firstPartyReleases[index] ?? {
+          releasedAt: null,
+          firstReleasedAt: null,
+          releaseTargets: [],
+        }),
+        lastEditedAt: catalogRows.get(assessment.key)?.lastEditedAt ?? null,
       })
     ),
     ...sourced

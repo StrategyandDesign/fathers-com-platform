@@ -11,7 +11,11 @@ import {
   saveFirstPartyProgress,
 } from "@/lib/assessments/first-party-actions";
 import type { FirstPartyAssessmentCopy } from "@/lib/assessments/first-party";
-import type { InstrumentChoice } from "@/lib/assessments/instrument";
+import {
+  evaluateInstrument,
+  type AssessmentInstrument,
+  type InstrumentChoice,
+} from "@/lib/assessments/instrument";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +39,8 @@ export function ChoiceAssessmentPlayer({
   items,
   initialAnswers,
   completed,
+  preview = false,
+  instrument,
 }: {
   assessmentKey: string;
   title: string;
@@ -42,9 +48,12 @@ export function ChoiceAssessmentPlayer({
   items: PlayerItem[];
   initialAnswers: Record<string, number>;
   completed: CompletedResult | null;
+  preview?: boolean;
+  instrument?: AssessmentInstrument;
 }) {
   const t = useT();
   const [pending, startTransition] = useTransition();
+  const [localResult, setLocalResult] = useState<CompletedResult | null>(null);
   const [screen, setScreen] = useState<"intro" | "questions" | "results">(
     completed ? "results" : Object.keys(initialAnswers).length > 0 ? "questions" : "intro"
   );
@@ -61,9 +70,9 @@ export function ChoiceAssessmentPlayer({
   const percent = Math.round(((index + 1) / items.length) * 100);
 
   const result = useMemo(() => {
-    if (completed && screen === "results") return completed;
-    return null;
-  }, [completed, screen]);
+    if (screen !== "results") return null;
+    return localResult ?? completed;
+  }, [completed, localResult, screen]);
 
   function goTo(next: number) {
     setIndex(Math.min(items.length - 1, Math.max(0, next)));
@@ -78,6 +87,21 @@ export function ChoiceAssessmentPlayer({
       window.setTimeout(() => goTo(index + 1), 160);
       return;
     }
+    if (preview && instrument) {
+      try {
+        const scored = evaluateInstrument(instrument, nextAnswers);
+        setLocalResult({
+          total: scored.total,
+          maxTotal: items.length * instrument.scoring.scale.max,
+          outcomeLabel: scored.outcomeLabel,
+          outcomeDescription: scored.outcomeDescription,
+        });
+        setScreen("results");
+      } catch {
+        return;
+      }
+      return;
+    }
     const formData = new FormData();
     formData.set("assessment_key", assessmentKey);
     for (const entry of items) {
@@ -88,6 +112,7 @@ export function ChoiceAssessmentPlayer({
   }
 
   function saveAndExit() {
+    if (preview) return;
     const formData = new FormData();
     formData.set("assessment_key", assessmentKey);
     formData.set("intent", "exit");
@@ -100,6 +125,14 @@ export function ChoiceAssessmentPlayer({
   }
 
   function retake() {
+    if (preview) {
+      setAnswers({});
+      setLocalResult(null);
+      setIndex(0);
+      setScreen("intro");
+      setStepKey((value) => value + 1);
+      return;
+    }
     const formData = new FormData();
     formData.set("assessment_key", assessmentKey);
     startTransition(() => retakeFirstPartyAssessment(formData));
@@ -250,17 +283,21 @@ export function ChoiceAssessmentPlayer({
               {t("common.back")}
             </button>
           ) : null}
-          <button
-            type="button"
-            onClick={saveAndExit}
-            className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
-          >
-            {t("father.assessments.saveExit")}
-          </button>
+          {preview ? null : (
+            <button
+              type="button"
+              onClick={saveAndExit}
+              className={cn("text-sm text-muted-foreground", interactiveLinkClassName)}
+            >
+              {t("father.assessments.saveExit")}
+            </button>
+          )}
         </div>
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          {pending ? t("common.saving") : t("father.assessments.canStop")}
-        </p>
+        {preview ? null : (
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            {pending ? t("common.saving") : t("father.assessments.canStop")}
+          </p>
+        )}
       </div>
     </div>
   );

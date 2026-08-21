@@ -27,7 +27,7 @@ describe("admin assessment desk", () => {
     assert.equal(item.releaseState, "catalog");
     assert.equal(item.questionCount, 128);
     assert.equal(item.kindLabel, "Platform assessment");
-    assert.equal(item.actionLabel, "Release");
+    assert.equal(item.actionLabel, "Desk");
     assert.equal(item.archived, false);
     assert.equal(item.editedAt, null);
     assert.equal(
@@ -116,7 +116,7 @@ describe("admin assessment desk", () => {
     assert.equal(item.href, "/admin/assessments/intakes/intake-1");
   });
 
-  it("lists a first-party instrument with a Release action", () => {
+  it("lists a first-party instrument with a Desk action", () => {
     const assessment = getFirstPartyAssessment("legacy-architect");
     assert.ok(assessment);
     const item = firstPartyDeskItem(assessment, {
@@ -125,11 +125,11 @@ describe("admin assessment desk", () => {
       releaseTargets: [],
     });
     assert.equal(item.title, "The Legacy Architect Keystone Assessment");
-    assert.equal(item.actionLabel, "Release");
+    assert.equal(item.actionLabel, "Desk");
     assert.equal(item.questionCount, 30);
   });
 
-  it("lists Family Fortress beside Legacy Architect with a Release action", () => {
+  it("lists Family Fortress beside Legacy Architect with a Desk action", () => {
     const assessment = getFirstPartyAssessment("family-fortress");
     assert.ok(assessment);
     const item = firstPartyDeskItem(assessment, {
@@ -138,12 +138,12 @@ describe("admin assessment desk", () => {
       releaseTargets: [],
     });
     assert.equal(item.title, "The Family Fortress Keystone Assessment");
-    assert.equal(item.actionLabel, "Release");
+    assert.equal(item.actionLabel, "Desk");
     assert.equal(item.questionCount, 30);
     assert.equal(item.href, "/admin/assessments/family-fortress");
   });
 
-  it("lists Steady Presence beside the other first-party instruments with a Release action", () => {
+  it("lists Steady Presence beside the other first-party instruments with a Desk action", () => {
     const assessment = getFirstPartyAssessment("steady-presence");
     assert.ok(assessment);
     const item = firstPartyDeskItem(assessment, {
@@ -152,7 +152,7 @@ describe("admin assessment desk", () => {
       releaseTargets: [],
     });
     assert.equal(item.title, "The Steady Presence Keystone Assessment");
-    assert.equal(item.actionLabel, "Release");
+    assert.equal(item.actionLabel, "Desk");
     assert.equal(item.questionCount, 30);
     assert.equal(item.href, "/admin/assessments/steady-presence");
   });
