@@ -881,7 +881,6 @@ export const en = {
       noteReplaceLabel: "New message",
       noteCount: "{n} of {max} characters",
       notePreview: "What they see",
-      notePreviewEmpty: "Nothing is showing. Home has no update.",
       noteNowShowing: "Now showing",
       noteStampPreview: "The date and time of posting",
       noteOneAtATime:
