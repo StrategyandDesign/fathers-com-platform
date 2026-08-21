@@ -127,8 +127,8 @@ export function buildManagerAssessmentCatalog(input: {
       groupName: showGroupName ? group.name : undefined,
       href:
         section === "pending" || section === "declined"
-          ? `/manager/assessment-reviews/keystone?group=${group.id}`
-          : `/manager/assessments/keystone?group=${group.id}`,
+          ? `/manager/assessment-reviews/keystone?group=${group.id}#instrument`
+          : `/manager/assessments/keystone?group=${group.id}#instrument`,
       questionCount: PROFILE_QUESTION_COUNT,
       assignedCount: input.groupSize[group.id] ?? 0,
       completedCount: input.keystoneCompletedByGroup[group.id] ?? 0,
@@ -164,8 +164,8 @@ export function buildManagerAssessmentCatalog(input: {
         groupName: showGroupName ? group.name : undefined,
         href:
           section === "pending" || section === "declined"
-            ? `${firstPartyReviewPath(assessment.key)}?group=${group.id}`
-            : `${firstPartyManagerPath(assessment.key)}?group=${group.id}`,
+            ? `${firstPartyReviewPath(assessment.key)}?group=${group.id}#instrument`
+            : `${firstPartyManagerPath(assessment.key)}?group=${group.id}#instrument`,
         questionCount: assessment.questionCount,
         assignedCount: input.groupSize[group.id] ?? 0,
         completedCount: input.firstPartyCompletedByGroup?.[assessment.key]?.[group.id] ?? 0,

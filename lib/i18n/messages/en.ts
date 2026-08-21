@@ -1334,6 +1334,11 @@ export const en = {
       available: "Available",
       hidden: "Hidden",
       view: "View",
+      instrumentTitle: "What fathers will take",
+      instrumentLead:
+        "Read every question and option before you share it with the group.",
+      instrumentScale: "Every question uses these answers.",
+      instrumentDesignations: "Designations",
       viewParticipant: "View participant",
       share: "Share with the group",
       shareTitle: "Share or remove",
@@ -1345,10 +1350,10 @@ export const en = {
         "Hides it from fathers who have not started. Those who already started or finished keep it.",
       removeCustomLead: "Hides it from new assignment. Fathers who already have it keep it.",
       keystoneLead:
-        "The 128-question Keystone Assessment. A Super-admin shares it with you. You decide when fathers in the group can take it.",
+        "The 128-question Keystone Assessment. Review the questions and answers, then share it when you want fathers in the group to take it.",
       keystoneRosterLead: "Every father in this group. Keystone does not need a separate assignment.",
       platformLead:
-        "A Super-admin shares this platform assessment with you. Accept it, then decide when fathers in the group can take it.",
+        "Review the questions and options, then share it when you want fathers in the group to take it.",
       platformRosterLead:
         "Every father in this group. This catalog assessment does not need a separate assignment.",
       sharePlatformLead:

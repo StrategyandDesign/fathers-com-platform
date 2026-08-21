@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AssessmentInstrumentReview } from "@/components/manager/assessment-instrument-review";
 import { AssessmentReviewForms } from "@/components/manager/assessment-review-forms";
 import { Flash } from "@/components/manager/flash";
 import { ReviewStatusBadge } from "@/components/manager/review-decision-forms";
@@ -11,6 +12,7 @@ import {
 } from "@/lib/assessments/data";
 import { isFirstPartyAssessmentKey } from "@/lib/assessments/first-party";
 import { loadFirstPartyCatalog } from "@/lib/assessments/first-party-data";
+import { firstPartyInstrumentReview } from "@/lib/assessments/instrument-review";
 import {
   isAssessmentCurrentlyReleased,
   reviewForGroup,
@@ -100,6 +102,8 @@ export default async function ManagerFirstPartyReviewPage({
           />
         </div>
       </section>
+
+      <AssessmentInstrumentReview model={firstPartyInstrumentReview(assessment)} />
     </div>
   );
 }

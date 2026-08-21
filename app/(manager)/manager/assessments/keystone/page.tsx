@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AssessmentInstrumentReview } from "@/components/manager/assessment-instrument-review";
 import { AssessmentReviewForms } from "@/components/manager/assessment-review-forms";
 import { AssessmentVisibilityForms } from "@/components/manager/assessment-visibility-forms";
 import { Flash } from "@/components/manager/flash";
@@ -24,6 +25,7 @@ import { requireRole } from "@/lib/auth/session";
 import { translateAssignmentStatus } from "@/lib/i18n/flash";
 import { getI18n } from "@/lib/i18n/server";
 import { loadManagerWorkspace } from "@/lib/manager/data";
+import { keystoneInstrumentReview } from "@/lib/assessments/instrument-review";
 import { PROFILE_QUESTION_COUNT } from "@/lib/father/questions";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -136,6 +138,8 @@ export default async function ManagerKeystonePage({
           )}
         </div>
       </section>
+
+      <AssessmentInstrumentReview model={keystoneInstrumentReview()} />
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.assignments")}</h2>

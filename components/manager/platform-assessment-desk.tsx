@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AssessmentInstrumentReview } from "@/components/manager/assessment-instrument-review";
 import { AssessmentReviewForms } from "@/components/manager/assessment-review-forms";
 import { AssessmentVisibilityForms } from "@/components/manager/assessment-visibility-forms";
 import { Flash } from "@/components/manager/flash";
@@ -13,6 +14,7 @@ import {
   loadPlatformAssessmentRelease,
 } from "@/lib/assessments/data";
 import { loadFirstPartyCatalog, loadFirstPartyCompletedByGroup } from "@/lib/assessments/first-party-data";
+import { firstPartyInstrumentReview } from "@/lib/assessments/instrument-review";
 import {
   catalogVisibility,
   isAssessmentCurrentlyReleased,
@@ -137,6 +139,8 @@ export async function ManagerPlatformAssessmentDesk({
           )}
         </div>
       </section>
+
+      <AssessmentInstrumentReview model={firstPartyInstrumentReview(assessment)} />
 
       <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.assignments")}</h2>
