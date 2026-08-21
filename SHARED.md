@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.69**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.70**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -86,3 +86,4 @@ The badge on this checkout is **Shared 1-1.69**. It ticks on each push of the Sh
 | **1.67** | undefined | Drop the Trainings, Assessments, and Certificates shortcut cards from Home. |
 | **1.68** | undefined | Show other leaders and their current updates on the Update card. |
 | **1.69** | undefined | Hide Impact Snapshot and Reports shortcut cards from Home. |
+| **1.70** | undefined | Put swap and clear on one row, then leaders and their updates below. |

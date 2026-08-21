@@ -1472,7 +1472,7 @@ export const he = {
       sessionsCompleted: "מפגשים שהושלמו",
       previousDays: "{count} ב־{days} הימים הקודמים",
       byTraining: "לפי הכשרה",
-      byTrainingLead: "איפה {org} נמצא בכל הכשרה בקטלוג.",
+      byTrainingLead: "איפה {org} נמצא בכל הכשרה שנכללה.",
       completeCount: "{count} הושלמו",
       trainingBreakdown: "{started} התחילו · {one} השלימו מפגש · {fully} הושלמו במלואם",
       howTitle: "איך לקרוא את המספרים",

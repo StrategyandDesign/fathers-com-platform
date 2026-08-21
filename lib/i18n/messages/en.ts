@@ -1546,7 +1546,7 @@ export const en = {
       sessionsCompleted: "Sessions completed",
       previousDays: "{count} in the previous {days} days",
       byTraining: "By training",
-      byTrainingLead: "How {org} sits in each catalog training.",
+      byTrainingLead: "How {org} sits in each included training.",
       completeCount: "{count} complete",
       trainingBreakdown:
         "{started} started · {one} completed a session · {fully} fully completed",

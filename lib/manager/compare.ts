@@ -2,7 +2,16 @@ import type { SessionProgress } from "@/lib/father/types";
 import { dateLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { createTranslator } from "@/lib/i18n/translate";
 import { loadManagerWorkspace } from "@/lib/manager/data";
-import { fullyCompletedTraining, percent, startedTraining } from "@/lib/manager/impact";
+import {
+  fullyCompletedTraining,
+  includedImpactSessionIds,
+  includedImpactTrainingIds,
+  percent,
+  scopeImpactCards,
+  scopeImpactCertificates,
+  scopeImpactProgress,
+  startedTraining,
+} from "@/lib/manager/impact";
 import type { Certificate, Group, ParticipantRow, TrainingProgress } from "@/lib/manager/types";
 
 export const COMPARE_MODES = ["groups", "periods"] as const;
@@ -250,7 +259,17 @@ export async function loadManagerCompare(
   locale: Locale = DEFAULT_LOCALE
 ) {
   const workspace = await loadManagerWorkspace(managerId);
-  const { groups, participants, progress, certificates, trainingProgressFor } = workspace;
+  const trainingIds = includedImpactTrainingIds({
+    trainings: workspace.trainings,
+    groups: workspace.groups,
+    reviews: workspace.reviews,
+  });
+  const sessionIds = includedImpactSessionIds(workspace.sessions, trainingIds);
+  const { groups, participants } = workspace;
+  const progress = scopeImpactProgress(workspace.progress, sessionIds);
+  const certificates = scopeImpactCertificates(workspace.certificates, trainingIds);
+  const trainingProgressFor = (fatherId: string) =>
+    scopeImpactCards(workspace.trainingProgressFor(fatherId), trainingIds);
 
   const progressByFather = new Map<string, SessionProgress[]>();
   for (const row of progress) {
