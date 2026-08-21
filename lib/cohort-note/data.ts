@@ -7,7 +7,7 @@ import {
   type FatherLeader,
   type ManagerCohortDeskGroup,
 } from "@/lib/cohort-note/types";
-import { loadGroupsForManager } from "@/lib/org-staff/membership";
+import { loadGroupsForManager, loadOrganizationStaff } from "@/lib/org-staff/membership";
 import { visibleCohortNotes } from "@/lib/org-staff/types";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrl, signStorageUrls } from "@/lib/storage";
@@ -191,6 +191,7 @@ export async function loadManagerCohortNotes(
         groupName: group.name,
         fatherCount: 0,
         audiences: [],
+        leaders: [],
         own: null,
         peers: [],
       }));
@@ -207,11 +208,14 @@ export async function loadManagerCohortNotes(
     audience_training_id?: string | null;
   }>;
   const authorIds = [...new Set(noteRows.map((row) => row.author_id).filter(Boolean))];
-  const { data: authors } = authorIds.length
-    ? await supabase.from("profiles").select("id, full_name").in("id", authorIds)
-    : { data: [] };
+  const [authorsRes, staff] = await Promise.all([
+    authorIds.length
+      ? supabase.from("profiles").select("id, full_name").in("id", authorIds)
+      : Promise.resolve({ data: [] as Array<{ id: string; full_name: string | null }> }),
+    loadOrganizationStaff(groupIds),
+  ]);
   const authorName = new Map(
-    ((authors ?? []) as Array<{ id: string; full_name: string | null }>).map((row) => [
+    ((authorsRes.data ?? []) as Array<{ id: string; full_name: string | null }>).map((row) => [
       row.id,
       row.full_name?.trim() || "A leader",
     ])
@@ -225,6 +229,13 @@ export async function loadManagerCohortNotes(
       groupName: group.name,
       fatherCount: 0,
       audiences: [],
+      leaders: staff
+        .filter((row) => row.groupId === group.id)
+        .map((row) => ({
+          id: row.profileId,
+          name: row.name,
+          staffRole: row.staffRole,
+        })),
       own: ownRow
         ? {
             id: ownRow.id,

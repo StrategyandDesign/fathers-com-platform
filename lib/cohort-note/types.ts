@@ -11,6 +11,17 @@ export type CohortNote = {
   audienceTrainingTitle?: string | null;
 };
 
+export type ManagerCohortDeskLeader = {
+  id: string;
+  name: string;
+  staffRole: "manager" | "reviewer";
+};
+
+export type ManagerCohortDeskPeer = Pick<
+  CohortNote,
+  "authorId" | "authorName" | "body" | "updatedAt" | "audienceTrainingId" | "audienceTrainingTitle"
+>;
+
 export type ManagerCohortDeskGroup = {
   groupId: string;
   groupName: string;
@@ -20,17 +31,26 @@ export type ManagerCohortDeskGroup = {
     title: string;
     assignedCount: number;
   }>;
+  leaders: ManagerCohortDeskLeader[];
   own: Pick<
     CohortNote,
     "id" | "body" | "updatedAt" | "audienceTrainingId" | "audienceTrainingTitle"
   > | null;
-  peers: Array<
-    Pick<
-      CohortNote,
-      "authorId" | "authorName" | "body" | "updatedAt" | "audienceTrainingId" | "audienceTrainingTitle"
-    >
-  >;
+  peers: ManagerCohortDeskPeer[];
 };
+
+export function otherLeaderTickers(input: {
+  viewerId: string;
+  leaders: ManagerCohortDeskLeader[];
+  peers: ManagerCohortDeskPeer[];
+}) {
+  return input.leaders
+    .filter((row) => row.staffRole === "manager" && row.id !== input.viewerId)
+    .map((leader) => ({
+      leader,
+      note: input.peers.find((peer) => peer.authorId === leader.id) ?? null,
+    }));
+}
 
 export type FatherLeader = {
   id: string;

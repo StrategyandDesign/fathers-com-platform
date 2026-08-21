@@ -10,7 +10,12 @@ import {
   parseCohortNoteAudience,
 } from "../lib/cohort-note/audience";
 import { cohortNoteSegments, safeCohortNoteHref } from "../lib/cohort-note/links";
-import { composeCohortNoteParts, isCohortNoteVisible, normalizeCohortNote } from "../lib/cohort-note/types";
+import {
+  composeCohortNoteParts,
+  isCohortNoteVisible,
+  normalizeCohortNote,
+  otherLeaderTickers,
+} from "../lib/cohort-note/types";
 import { formatShortDateTime } from "../lib/i18n/dates";
 import { notificationCopy, safePayload } from "../lib/notifications/copy";
 import { fatherHomeHref, isFatherDeepLink, normalizeDeepLink } from "../lib/notifications/links";
@@ -71,6 +76,39 @@ describe("cohort note helpers", () => {
     assert.equal(parseCohortNoteAudience(""), null);
     assert.equal(parseCohortNoteAudience("cohort"), null);
     assert.equal(parseCohortNoteAudience("coming-home"), "coming-home");
+  });
+
+  it("lists other leaders and their current updates, including quiet ones", () => {
+    const tickers = otherLeaderTickers({
+      viewerId: "brenda",
+      leaders: [
+        { id: "brenda", name: "Brenda", staffRole: "manager" },
+        { id: "manager2", name: "Manager 2", staffRole: "manager" },
+        { id: "reviewer", name: "Reviewer", staffRole: "reviewer" },
+      ],
+      peers: [
+        {
+          authorId: "manager2",
+          authorName: "Manager 2",
+          body: "See you Tuesday.",
+          updatedAt: "2026-08-20T20:17:00.000Z",
+        },
+      ],
+    });
+    assert.equal(tickers.length, 1);
+    assert.equal(tickers[0]?.leader.name, "Manager 2");
+    assert.equal(tickers[0]?.note?.body, "See you Tuesday.");
+    assert.equal(
+      otherLeaderTickers({
+        viewerId: "brenda",
+        leaders: [
+          { id: "brenda", name: "Brenda", staffRole: "manager" },
+          { id: "manager2", name: "Manager 2", staffRole: "manager" },
+        ],
+        peers: [],
+      })[0]?.note,
+      null
+    );
   });
 });
 
@@ -147,6 +185,14 @@ describe("home update desk", () => {
     assert.match(desk, /noteNowShowing/);
     assert.match(desk, /noteAudience/);
     assert.match(desk, /audience_training_id/);
+    assert.match(desk, /noteLeadersMany/);
+    assert.match(desk, /otherLeaderTickers/);
+    assert.match(desk, /notePeerQuiet/);
+    const data = readFileSync(
+      fileURLToPath(new URL("../lib/cohort-note/data.ts", import.meta.url)),
+      "utf8"
+    );
+    assert.match(data, /loadOrganizationStaff/);
     const messages = readFileSync(
       fileURLToPath(new URL("../lib/i18n/messages/en.ts", import.meta.url)),
       "utf8"
@@ -162,6 +208,7 @@ describe("home update desk", () => {
           groupName: "Returning Home NWA",
           fatherCount: 0,
           audiences: [],
+          leaders: [],
           own: null,
           peers: [],
         },

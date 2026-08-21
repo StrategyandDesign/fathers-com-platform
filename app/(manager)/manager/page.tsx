@@ -210,6 +210,7 @@ export default async function ManagerHomePage({
       </section>
 
       <CohortNoteDesk
+        viewerId={user.id}
         groups={decorateCohortNoteDesk(cohortNotes, {
           trainings: workspace.trainings,
           reviews: workspace.reviews,

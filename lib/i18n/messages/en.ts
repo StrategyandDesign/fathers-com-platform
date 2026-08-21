@@ -959,6 +959,9 @@ export const en = {
       notePreview: "What they see",
       noteNowShowing: "Your update",
       notePeerShowing: "From {name}",
+      notePeerQuiet: "No update yet.",
+      noteLeadersOne: "1 leader",
+      noteLeadersMany: "{n} leaders",
       noteStampPreview: "The date and time of posting",
       noteOneAtATime:
         "Your new message replaces your last update. Updates from other leaders stay.",
