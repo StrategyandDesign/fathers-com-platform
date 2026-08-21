@@ -58,6 +58,15 @@ export type FatherLeader = {
   avatarUrl: string | null;
 };
 
+export function resolveCohortNoteAuthorName(
+  authorId: string | null | undefined,
+  names: Array<{ id: string; name: string | null | undefined }>
+) {
+  if (!authorId) return null;
+  const name = names.find((row) => row.id === authorId)?.name?.trim();
+  return name || null;
+}
+
 export function normalizeCohortNote(raw: string) {
   return raw.replace(/\s+/g, " ").trim();
 }

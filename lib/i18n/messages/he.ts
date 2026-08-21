@@ -529,7 +529,7 @@ export const he = {
       leaderLabel: "מנהיג: {name}",
       leadersLabel: "מנהיגים: {names}",
       noteEyebrow: "מהמנהיג",
-      noteEyebrowFrom: "מאת {name}",
+      noteEyebrowFrom: "מהמנהיג: {name}",
       noteDismiss: "סגירה",
       noteDismissed: "ההערה נסגרה.",
       noteDismissFailed: "ההערה לא נסגרה. נסה שוב.",

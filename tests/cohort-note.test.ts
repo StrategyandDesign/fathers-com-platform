@@ -15,6 +15,7 @@ import {
   isCohortNoteVisible,
   normalizeCohortNote,
   otherLeaderTickers,
+  resolveCohortNoteAuthorName,
 } from "../lib/cohort-note/types";
 import { formatShortDateTime } from "../lib/i18n/dates";
 import { notificationCopy, safePayload } from "../lib/notifications/copy";
@@ -76,6 +77,35 @@ describe("cohort note helpers", () => {
     assert.equal(parseCohortNoteAudience(""), null);
     assert.equal(parseCohortNoteAudience("cohort"), null);
     assert.equal(parseCohortNoteAudience("coming-home"), "coming-home");
+  });
+
+  it("puts the posting leader’s displayed name on the father’s update", () => {
+    assert.equal(
+      resolveCohortNoteAuthorName("manager2", [
+        { id: "brenda", name: "Brenda" },
+        { id: "manager2", name: "Manager 2" },
+      ]),
+      "Manager 2"
+    );
+    assert.equal(resolveCohortNoteAuthorName("missing", [{ id: "brenda", name: "Brenda" }]), null);
+    const card = readFileSync(
+      fileURLToPath(new URL("../components/father/cohort-note-card.tsx", import.meta.url)),
+      "utf8"
+    );
+    const data = readFileSync(
+      fileURLToPath(new URL("../lib/cohort-note/data.ts", import.meta.url)),
+      "utf8"
+    );
+    const copy = readFileSync(
+      fileURLToPath(new URL("../lib/i18n/messages/en.ts", import.meta.url)),
+      "utf8"
+    );
+    assert.match(card, /father\.home\.noteEyebrow/);
+    assert.match(card, /authorName/);
+    assert.match(card, /normal-case/);
+    assert.match(data, /loadFatherLeaders/);
+    assert.match(data, /resolveCohortNoteAuthorName/);
+    assert.match(copy, /noteEyebrowFrom: "From your leader: \{name\}"/);
   });
 
   it("lists other leaders and their current updates, including quiet ones", () => {

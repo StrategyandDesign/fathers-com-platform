@@ -3,6 +3,7 @@ import { cache } from "react";
 import { canSeeCohortNoteAudience } from "@/lib/cohort-note/audience";
 import {
   isCohortNoteVisible,
+  resolveCohortNoteAuthorName,
   type CohortNote,
   type FatherLeader,
   type ManagerCohortDeskGroup,
@@ -127,11 +128,14 @@ export const loadVisibleCohortNotes = cache(async (fatherId: string): Promise<Co
   }
 
   const authorIds = [...new Set(noteRows.map((row) => row.author_id).filter(Boolean))] as string[];
-  const { data: authors } = authorIds.length
-    ? await supabase.from("profiles").select("id, full_name").in("id", authorIds)
-    : { data: [] };
+  const [leaders, authorsRes] = await Promise.all([
+    loadFatherLeaders(fatherId),
+    authorIds.length
+      ? supabase.from("profiles").select("id, full_name").in("id", authorIds)
+      : Promise.resolve({ data: [] as Array<{ id: string; full_name: string | null }> }),
+  ]);
   const authorName = new Map(
-    ((authors ?? []) as Array<{ id: string; full_name: string | null }>).map((row) => [
+    ((authorsRes.data ?? []) as Array<{ id: string; full_name: string | null }>).map((row) => [
       row.id,
       row.full_name?.trim() || null,
     ])
@@ -147,7 +151,9 @@ export const loadVisibleCohortNotes = cache(async (fatherId: string): Promise<Co
       id: row.id ?? `${row.group_id}:${row.author_id ?? "leader"}`,
       groupId: row.group_id,
       authorId: row.author_id ?? "",
-      authorName: row.author_id ? authorName.get(row.author_id) ?? null : null,
+      authorName:
+        resolveCohortNoteAuthorName(row.author_id, leaders) ||
+        (row.author_id ? authorName.get(row.author_id) ?? null : null),
       body: row.body.trim(),
       updatedAt: row.updated_at,
       audienceTrainingId: row.audience_training_id ?? null,

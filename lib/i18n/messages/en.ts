@@ -555,7 +555,7 @@ export const en = {
       leaderLabel: "Leader: {name}",
       leadersLabel: "Leaders: {names}",
       noteEyebrow: "From your leader",
-      noteEyebrowFrom: "From {name}",
+      noteEyebrowFrom: "From your leader: {name}",
       noteDismiss: "Dismiss",
       noteDismissed: "Note dismissed.",
       noteDismissFailed: "That note didn’t dismiss. Try again.",

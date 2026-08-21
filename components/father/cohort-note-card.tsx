@@ -27,9 +27,13 @@ export function CohortNoteCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 space-y-2">
           <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
-            {authorName
-              ? t("father.home.noteEyebrowFrom", { name: authorName })
-              : t("father.home.noteEyebrow")}
+            {t("father.home.noteEyebrow")}
+            {authorName ? (
+              <>
+                {": "}
+                <span className="normal-case tracking-normal">{authorName}</span>
+              </>
+            ) : null}
           </p>
           <CohortNoteMessage body={body} stamp={formatShortDateTime(updatedAt, locale)} />
         </div>
