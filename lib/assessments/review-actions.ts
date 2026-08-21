@@ -132,14 +132,14 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
       {
         group_id: groupId,
         assessment_key: assessmentKey,
-        status: "hidden",
+        status: "available",
         decided_by: user.id,
         decided_at: new Date().toISOString(),
       },
       { onConflict: "group_id,assessment_key" }
     );
     if (hideError) {
-      console.error("[assessment-reviews] default hide failed", hideError.message);
+      console.error("[assessment-reviews] default share failed", hideError.message);
     }
   }
 

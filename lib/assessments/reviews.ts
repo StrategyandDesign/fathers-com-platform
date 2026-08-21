@@ -96,12 +96,5 @@ export function catalogVisibility(input: {
     (item) => item.group_id === input.groupId && item.assessment_key === input.assessmentKey
   );
   if (row) return row.status;
-  if (
-    (input.assessmentKey === KEYSTONE_ASSESSMENT_KEY ||
-      isFirstPartyAssessmentKey(input.assessmentKey)) &&
-    input.reviewStatus === "accepted"
-  ) {
-    return "hidden";
-  }
   return availabilityStatus(input.availability, input.groupId, input.assessmentKey);
 }

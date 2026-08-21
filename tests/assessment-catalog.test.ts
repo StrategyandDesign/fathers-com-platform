@@ -157,4 +157,16 @@ describe("assessment catalog decisions", () => {
     assert.match(sql, /grant insert on public.organization_assessment_reviews/);
     assert.match(desk, /AssessmentCatalogDecisionButtons/);
   });
+
+  it("offers an included assessment to fathers without a second Share step", () => {
+    const actions = readRepo("lib/assessments/review-actions.ts");
+    const page = readRepo("app/(father)/father/assessments/page.tsx");
+    const panel = readRepo("components/assessments/future-panel.tsx");
+
+    assert.match(actions, /status: "available"/);
+    assert.doesNotMatch(actions, /status: "hidden"/);
+    assert.match(page, /firstParty=\{firstParty\}/);
+    assert.match(panel, /firstParty\.length/);
+    assert.match(panel, /FirstPartyAssessmentLink/);
+  });
 });

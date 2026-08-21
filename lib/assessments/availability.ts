@@ -84,10 +84,7 @@ export function fatherCanStartAssessment(input: {
     if (!groupId) return false;
     const currentlyReleased = Boolean(input.release?.released_at);
     if (!currentlyReleased || input.reviewStatus !== "accepted") return false;
-    const row = input.rows.find(
-      (item) => item.group_id === groupId && item.assessment_key === input.assessmentKey
-    );
-    return row?.status === "available";
+    return isAssessmentAvailable(input.rows, groupId, input.assessmentKey);
   }
 
   if (!groupId) return true;
@@ -97,10 +94,7 @@ export function fatherCanStartAssessment(input: {
     const currentlyReleased = Boolean(input.release?.released_at);
     if (firstReleased) {
       if (!currentlyReleased || input.reviewStatus !== "accepted") return false;
-      const row = input.rows.find(
-        (item) => item.group_id === groupId && item.assessment_key === input.assessmentKey
-      );
-      return row?.status === "available";
+      return isAssessmentAvailable(input.rows, groupId, input.assessmentKey);
     }
     if (input.reviewStatus === "declined" || input.reviewStatus === "pending") {
       return false;

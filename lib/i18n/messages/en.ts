@@ -1311,11 +1311,11 @@ export const en = {
     },
     assessments: {
       title: "Assessments",
-      lead: "A Super-admin shares assessments with you. Include a release, then share it when you want fathers in {org} to take it.",
+      lead: "A Super-admin shares assessments with you. Include a release so fathers in {org} can take it.",
       new: "New assessment",
       catalogTitle: "Available assessments",
       catalogLead:
-        "Every assessment this organization can use. Include it to offer later, or decline to keep it hidden from your cohort. You can decide here without opening the assessment.",
+        "Every assessment this organization can use. Include it so fathers can take it, or decline to keep it hidden from your cohort. You can decide here without opening the assessment.",
       catalogEmptyTitle: "No assessments available",
       catalogEmptyBody:
         "When a Super-admin releases an assessment to this organization, it will appear here.",
@@ -1341,7 +1341,7 @@ export const en = {
         "Include a release above, share an assessment with the group, or create one.",
       cohortTitle: "In your group",
       cohortLead:
-        "Included assessments for this organization. Open one to share it with fathers, or assign a custom assessment.",
+        "Included assessments for this organization. Fathers can take them until you remove one, or assign a custom assessment.",
       cohortEmptyTitle: "No assessments in the group yet",
       cohortEmptyBody: "Include a release above, or create an assessment.",
       hiddenTitle: "Hidden from your cohort",

@@ -8,6 +8,7 @@ import {
   leaderCanStartAssessment,
   primaryFatherGroupId,
 } from "../lib/assessments/availability";
+import { FAMILY_FORTRESS_ASSESSMENT_KEY } from "../lib/assessments/instruments/family-fortress";
 import {
   buildManagerAssessmentCatalog,
   partitionAssessmentCatalog,
@@ -92,7 +93,7 @@ describe("assessment availability", () => {
     );
   });
 
-  it("blocks new starts after release until the Leader accepts and shares", () => {
+  it("blocks new starts after release until the Leader includes the assessment", () => {
     assert.equal(
       fatherCanStartAssessment({
         rows: [],
@@ -107,6 +108,19 @@ describe("assessment availability", () => {
     assert.equal(
       fatherCanStartAssessment({
         rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: released,
+        reviewStatus: "accepted",
+      }),
+      true
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [
+          { group_id: "g1", assessment_key: KEYSTONE_ASSESSMENT_KEY, status: "hidden" },
+        ],
         groupIds: ["g1"],
         homeGroupId: "g1",
         assessmentKey: KEYSTONE_ASSESSMENT_KEY,
@@ -141,6 +155,38 @@ describe("assessment availability", () => {
         hasProgress: true,
       }),
       true
+    );
+  });
+
+  it("lets a father start a first-party assessment as soon as the Leader includes it", () => {
+    const release = {
+      assessment_key: FAMILY_FORTRESS_ASSESSMENT_KEY,
+      released_at: "2026-08-21T00:00:00Z",
+      first_released_at: "2026-08-21T00:00:00Z",
+    };
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: FAMILY_FORTRESS_ASSESSMENT_KEY,
+        release,
+        reviewStatus: "accepted",
+      }),
+      true
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [
+          { group_id: "g1", assessment_key: FAMILY_FORTRESS_ASSESSMENT_KEY, status: "hidden" },
+        ],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: FAMILY_FORTRESS_ASSESSMENT_KEY,
+        release,
+        reviewStatus: "accepted",
+      }),
+      false
     );
   });
 
@@ -260,7 +306,7 @@ describe("assessment catalog", () => {
     assert.match(pending[0]?.href ?? "", /assessment-reviews/);
   });
 
-  it("treats an accepted Keystone as hidden until the Leader shares it", () => {
+  it("treats an accepted Keystone as available unless the Leader removes it", () => {
     assert.equal(
       catalogVisibility({
         assessmentKey: KEYSTONE_ASSESSMENT_KEY,
@@ -268,7 +314,7 @@ describe("assessment catalog", () => {
         availability: [],
         reviewStatus: "accepted",
       }),
-      "hidden"
+      "available"
     );
     const items = buildManagerAssessmentCatalog({
       groups: [groups[0]!],
@@ -290,9 +336,9 @@ describe("assessment catalog", () => {
       ],
     });
     const { available, hidden } = partitionAssessmentCatalog(items);
-    assert.equal(available.length, 0);
-    assert.equal(hidden.length, 1);
-    assert.equal(hidden[0]?.decision, "ready");
+    assert.equal(available.length, 1);
+    assert.equal(hidden.length, 0);
+    assert.equal(available[0]?.decision, "ready");
   });
 
   it("hides a first-party instrument until Super-admin releases it", () => {
