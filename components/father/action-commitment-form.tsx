@@ -6,10 +6,7 @@ import { useFormStatus } from "react-dom";
 import { ActionIntentionList } from "@/components/father/action-skill-card";
 import { useT } from "@/components/i18n/locale-provider";
 import { Button } from "@/components/ui/button";
-import {
-  OUTCOME_NOTE_MAX,
-  type IntentionOption,
-} from "@/lib/father/action-commitment";
+import { type IntentionOption } from "@/lib/father/action-commitment";
 import { fieldClassName, homePrimaryCtaClassName } from "@/lib/ui";
 
 export function ActionCommitmentForm({
@@ -85,36 +82,6 @@ export function ActionDoneForm({
     <form action={action}>
       <input type="hidden" name="session_id" value={sessionId} />
       <ActionPrimaryButton label={t("father.session.iDidIt")} />
-    </form>
-  );
-}
-
-export function ActionFinishForm({
-  sessionId,
-  defaultNote,
-  action,
-}: {
-  sessionId: string;
-  defaultNote?: string | null;
-  action: (formData: FormData) => void | Promise<void>;
-}) {
-  const t = useT();
-  return (
-    <form action={action} className="space-y-8">
-      <input type="hidden" name="session_id" value={sessionId} />
-      <label className="block space-y-2">
-        <span className="text-sm text-muted-foreground">{t("father.session.whatHappened")}</span>
-        <input
-          className={fieldClassName}
-          type="text"
-          name="outcome_note"
-          maxLength={OUTCOME_NOTE_MAX}
-          defaultValue={defaultNote ?? ""}
-          placeholder={t("father.session.outcomePlaceholder")}
-          autoComplete="off"
-        />
-      </label>
-      <ActionPrimaryButton label={t("father.session.finishSession")} />
     </form>
   );
 }

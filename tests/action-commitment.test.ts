@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   actionLoopState,
@@ -15,7 +17,7 @@ import {
 import { localParts } from "../lib/notifications/schedule";
 
 describe("action loop states", () => {
-  it("starts uncommitted, then State B, then State C after I did it", () => {
+  it("starts uncommitted, then I did it closes the session", () => {
     assert.equal(actionLoopState({ actionCompleted: false, commitment: null }), "commit");
     assert.equal(
       actionLoopState({
@@ -33,7 +35,7 @@ describe("action loop states", () => {
           closedAt: null,
         },
       }),
-      "finish"
+      "closed"
     );
     assert.equal(
       actionLoopState({
@@ -48,10 +50,9 @@ describe("action loop states", () => {
     );
   });
 
-  it("queues the Action reminder only in State B", () => {
+  it("queues the Action reminder only while the moment is still open", () => {
     assert.equal(shouldQueueActionReminder("commit"), false);
     assert.equal(shouldQueueActionReminder("do"), true);
-    assert.equal(shouldQueueActionReminder("finish"), false);
     assert.equal(shouldQueueActionReminder("closed"), false);
     assert.equal(
       isOpenActionCommitment({ completedAt: null, closedAt: null }),
@@ -228,5 +229,28 @@ describe("skill copy", () => {
       showKeyline: false,
       showSessionHeading: false,
     });
+  });
+});
+
+describe("action finish step", () => {
+  it("does not keep an optional-note finish screen on the action walk", () => {
+    const root = fileURLToPath(new URL("..", import.meta.url));
+    const loop = readFileSync(`${root}/components/father/action-loop.tsx`, "utf8");
+    const form = readFileSync(`${root}/components/father/action-commitment-form.tsx`, "utf8");
+    const father = readFileSync(
+      `${root}/app/(father)/father/sessions/[sessionId]/action/page.tsx`,
+      "utf8"
+    );
+    const practice = readFileSync(
+      `${root}/app/(manager)/manager/practice/sessions/[sessionId]/action/page.tsx`,
+      "utf8"
+    );
+    const door = readFileSync(`${root}/lib/father/action-commitment.ts`, "utf8");
+    assert.doesNotMatch(loop, /ActionFinishForm/);
+    assert.doesNotMatch(form, /ActionFinishForm/);
+    assert.doesNotMatch(father, /finishActionSession/);
+    assert.doesNotMatch(practice, /finishActionSession/);
+    assert.doesNotMatch(door, /"finish"/);
+    assert.match(form, /father\.session\.iDidIt/);
   });
 });

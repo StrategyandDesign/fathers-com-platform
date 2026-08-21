@@ -300,13 +300,15 @@ export async function markActionDone(formData: FormData) {
     }
   }
 
-  if (commitment && !commitment.completedAt) {
+  if (commitment && (!commitment.completedAt || !commitment.closedAt)) {
     const supabase = await createClient();
+    const now = new Date().toISOString();
     const { error } = await supabase
       .from("action_commitments")
       .update({
-        completed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        completed_at: commitment.completedAt ?? now,
+        closed_at: commitment.closedAt ?? now,
+        updated_at: now,
       })
       .eq("user_id", user.id)
       .eq("session_id", sessionId);
@@ -323,7 +325,19 @@ export async function markActionDone(formData: FormData) {
     }
   }
 
-  redirect(actionPath(sessionId, paths));
+  revalidatePath("/father");
+  revalidatePath(`/father/sessions/${sessionId}`);
+  revalidatePath(`/father/sessions/${sessionId}/action`);
+  revalidatePath("/manager/practice");
+  revalidatePath(`/manager/practice/sessions/${sessionId}`);
+  revalidatePath(`/manager/practice/sessions/${sessionId}/action`);
+
+  if (role === "manager") {
+    redirect(paths.done(sessionId));
+  }
+
+  const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
+  redirect(startHref ?? paths.done(sessionId));
 }
 
 export async function finishActionSession(formData: FormData) {

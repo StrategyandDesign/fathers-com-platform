@@ -41,7 +41,7 @@ export type ActionCommitment = {
   outcomeNote: string | null;
 };
 
-export type ActionLoopState = "commit" | "do" | "finish" | "closed";
+export type ActionLoopState = "commit" | "do" | "closed";
 
 export function isIntentionOption(value: unknown): value is IntentionOption {
   return typeof value === "string" && (INTENTION_OPTIONS as readonly string[]).includes(value);
@@ -58,9 +58,7 @@ export function actionLoopState(input: {
   commitment: Pick<ActionCommitment, "committedAt" | "completedAt" | "closedAt"> | null;
 }): ActionLoopState {
   if (input.commitment?.closedAt) return "closed";
-  if (input.actionCompleted || input.commitment?.completedAt) {
-    return input.commitment ? "finish" : "closed";
-  }
+  if (input.actionCompleted || input.commitment?.completedAt) return "closed";
   if (input.commitment?.committedAt) return "do";
   return "commit";
 }
