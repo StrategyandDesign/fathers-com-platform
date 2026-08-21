@@ -46,8 +46,9 @@ function CatalogCard({
   handouts: TrainingHandout[];
   t: Translate;
 }) {
+  const hasOverview = hasTrainingOverview(card.training);
   const showOverview =
-    hasTrainingOverview(card.training) &&
+    hasOverview &&
     !hasStartedTrainingWork(card.completed, card.nextProgress, card.sessionDots);
 
   return (
@@ -75,10 +76,17 @@ function CatalogCard({
       quiet={quiet}
       gated={false}
       gatedLabel={null}
-      hrefOverride={card.next ? sessionFilmPath(card.next.id) : null}
-      hasOverview={showOverview}
-      overviewHref={showOverview ? trainingOverviewPath(card.training.id) : null}
-      showOverviewSlot={showOverview}
+      hrefOverride={
+        showOverview
+          ? trainingOverviewPath(card.training.id)
+          : card.next
+            ? sessionFilmPath(card.next.id)
+            : null
+      }
+      hasOverview={hasOverview}
+      overviewHref={hasOverview ? trainingOverviewPath(card.training.id) : null}
+      overviewUrl={card.training.overview_video_url}
+      showOverviewSlot={hasOverview}
       handouts={handouts}
       t={t}
     />

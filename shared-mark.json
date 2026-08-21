@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 74,
-  "label": "Shared 1-1.74",
+  "patch": 75,
+  "label": "Shared 1-1.75",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Keep every Leader desk on the same org record.",
+  "title": "Name the leader on each father Home update.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -526,6 +526,13 @@
       "label": "Shared 1-1.74",
       "at": "2026-08-21",
       "title": "Keep every Leader desk on the same org record."
+    },
+    {
+      "patch": 75,
+      "revision": "1.75",
+      "label": "Shared 1-1.75",
+      "at": "2026-08-21",
+      "title": "Name the leader on each father Home update."
     }
   ]
 }

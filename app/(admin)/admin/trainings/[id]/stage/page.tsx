@@ -151,6 +151,7 @@ export default async function AdminTrainingStagePage({
                     sessionHref={paths.session}
                     hasOverview={hasOverview}
                     overviewHref={hasOverview ? paths.overview : null}
+                    overviewUrl={training.overview_video_url}
                     showOverviewSlot
                     t={t}
                   />

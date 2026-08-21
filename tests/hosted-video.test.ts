@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   reviewSessionHref,
@@ -12,6 +14,10 @@ import {
   parseHostedVideo,
   vimeoVideoRef,
 } from "../lib/media/hosted-video";
+
+function readRepo(relativePath: string) {
+  return readFileSync(fileURLToPath(new URL(`../${relativePath}`, import.meta.url)), "utf8");
+}
 
 describe("hosted overview video", () => {
   it("accepts YouTube and Vimeo links", () => {
@@ -210,5 +216,21 @@ describe("hosted overview video", () => {
       }),
       false
     );
+  });
+
+  it("puts the green overview film on the catalog card only before a session is watched", () => {
+    const card = readRepo("components/father/training-catalog-card.tsx");
+    const trainings = readRepo("app/(father)/father/trainings/page.tsx");
+    assert.match(card, /showOverviewMedia/);
+    assert.match(card, /HostedFilmPlayer/);
+    assert.match(card, /border-2 border-primary/);
+    assert.match(card, /shouldShowCatalogOverview/);
+    assert.match(card, /hasStartedTrainingWork/);
+    assert.match(card, /const landscape = showOverviewMedia/);
+    assert.match(card, /\{showOverviewMedia \? \(/);
+    assert.doesNotMatch(card, /overviewMissing/);
+    assert.match(trainings, /overviewUrl=\{card\.training\.overview_video_url\}/);
+    assert.match(trainings, /showOverviewSlot=\{hasOverview\}/);
+    assert.match(trainings, /trainingOverviewPath\(card\.training\.id\)/);
   });
 });
