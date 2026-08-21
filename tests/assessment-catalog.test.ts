@@ -158,6 +158,15 @@ describe("assessment catalog decisions", () => {
     assert.match(desk, /AssessmentCatalogDecisionButtons/);
   });
 
+  it("puts More assessments above Keystone retake and names the Keystone buttons", () => {
+    const view = readRepo("components/profile/keystone-completed-view.tsx");
+    const aside = view.indexOf("{aside}");
+    const retake = view.indexOf("father.profile.continueRetake");
+    assert.ok(aside > 0 && retake > aside);
+    assert.match(readRepo("lib/i18n/messages/en.ts"), /Continue the Keystone Assessment/);
+    assert.match(readRepo("lib/i18n/messages/en.ts"), /Retake the Keystone Assessment/);
+  });
+
   it("offers an included assessment to fathers without a second Share step", () => {
     const actions = readRepo("lib/assessments/review-actions.ts");
     const page = readRepo("app/(father)/father/assessments/page.tsx");

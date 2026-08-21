@@ -649,9 +649,9 @@ export const en = {
       lastProfile: "Date of last assessment: {date}",
       viewResults: "View results",
       retakeLead:
-        "You can start again if you want to see what’s changed. Your last results stay until a new Assessment is completed.",
-      continueRetake: "Continue the new Assessment",
-      retake: "Start a new Assessment",
+        "You can start the Keystone Assessment again if you want to see what’s changed. Your last results stay until a new Keystone Assessment is completed.",
+      continueRetake: "Continue the Keystone Assessment",
+      retake: "Retake the Keystone Assessment",
       progress: "Question {n} of {total} · {answered} answered",
       takeCta: "Start your Assessment",
       takeHint:

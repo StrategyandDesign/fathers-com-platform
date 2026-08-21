@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.93**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.94**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -110,3 +110,4 @@ The badge on this checkout is **Shared 1-1.93**. It ticks on each push of the Sh
 | **1.91** | undefined | Put Assessments above Impact Snapshot on the Leader ribbon. |
 | **1.92** | undefined | Let Leaders decline Keystone from the catalog. |
 | **1.93** | undefined | Put invite code and open items under the Update card. |
+| **1.94** | undefined | Offer included assessments to fathers on Assessments. |

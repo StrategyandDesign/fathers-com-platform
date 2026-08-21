@@ -61,6 +61,7 @@ export async function KeystoneCompletedView({
       </section>
 
       <div className="space-y-5">
+        {aside}
         <section className="rounded-xl border border-border bg-card px-4 py-3 sm:px-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:flex-col lg:items-stretch">
             <div className="min-w-0">
@@ -76,7 +77,7 @@ export async function KeystoneCompletedView({
               </Link>
             ) : canStartKeystone ? (
               <form action={retakeProfile} className="w-full shrink-0 sm:w-auto lg:w-full">
-                <Button type="submit" variant="outline" className="w-full min-h-11 sm:w-auto lg:w-full">
+                <Button type="submit" className="w-full min-h-11 sm:w-auto lg:w-full">
                   {t("father.profile.retake")}
                 </Button>
               </form>
@@ -85,7 +86,6 @@ export async function KeystoneCompletedView({
             )}
           </div>
         </section>
-        {aside}
       </div>
     </div>
   );
