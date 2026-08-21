@@ -18,6 +18,7 @@ import {
 } from "@/lib/manager/actions";
 import { buildQuietSuggestion } from "@/lib/manager/companion";
 import { loadManagedParticipant } from "@/lib/manager/data";
+import { loadFatherParticipationMode } from "@/lib/participation-data";
 import { isTrainingAssignable, reviewForGroup } from "@/lib/manager/reviews";
 import { saveParticipantNote } from "@/lib/manager/note-actions";
 import { NOTE_MAX_LENGTH, loadParticipantNotes } from "@/lib/manager/notes";
@@ -74,11 +75,12 @@ export default async function ManagerParticipantDetailPage({
   }
 
   const { participant, progress, reviews } = detail;
-  const [customAssignments, historyByFather, remindersAllowed, notes] = await Promise.all([
+  const [customAssignments, historyByFather, remindersAllowed, notes, participationMode] = await Promise.all([
     loadParticipantCustomAssignments(user.id, id),
     loadNudgeHistory([id]),
     loadReminderPrefAllowed(id),
     loadParticipantNotes(id),
+    loadFatherParticipationMode(id),
   ]);
   const nudgeHistory = historyByFather.byFather.get(id) ?? [];
   const historyUnavailable = historyByFather.unavailable;
@@ -225,6 +227,7 @@ export default async function ManagerParticipantDetailPage({
                 cooldownDays={companionSuggestion.cooldownDays}
                 returnTo="detail"
                 defaultOpen
+                mode={participationMode}
               />
             </div>
           ) : null}
@@ -265,7 +268,7 @@ export default async function ManagerParticipantDetailPage({
             />
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               {(["continue", "encouragement", "welcome_back"] as const).map((key) => {
-                const template = translateNudgeTemplate(key, t);
+                const template = translateNudgeTemplate(key, t, participationMode);
                 return (
                   <li key={key}>
                     <span className="font-medium text-foreground">{template.label}.</span>{" "}
@@ -287,7 +290,7 @@ export default async function ManagerParticipantDetailPage({
                 >
                   <p className="text-sm">
                     {isNudgeTemplate(row.template_key)
-                      ? translateNudgeTemplate(row.template_key, t).label
+                      ? translateNudgeTemplate(row.template_key, t, participationMode).label
                       : row.template_key}
                   </p>
                   <p className="text-sm text-muted-foreground">

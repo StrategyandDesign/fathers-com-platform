@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { isLegacyCatalogTraining, isTrainingPublished } from "@/lib/father/types";
 import { requireRole } from "@/lib/auth/session";
 import { formatShortDate, getI18n } from "@/lib/i18n/server";
+import { summarizeAssignmentStatus } from "@/lib/manager/assignment-status";
 import { buildManagerCatalog } from "@/lib/manager/catalog";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadReviewQueue } from "@/lib/manager/reviews";
@@ -64,23 +65,15 @@ export default async function ManagerTrainingsPage({
       groupId: item.review.group_id,
       groupName: item.groupName,
     })),
+    declined: declined.map((item) => ({
+      training: item.training,
+      sessionCount: item.sessionCount,
+      groupId: item.review.group_id,
+      groupName: item.groupName,
+    })),
+    defaultGroupId: groups[0]?.id,
     showGroupName: groups.length > 1,
   });
-
-  function assignedCount(trainingId: string, groupId?: string) {
-    return workspace.participants.filter((participant) => {
-      if (groupId && participant.groupId !== groupId) return false;
-      return workspace
-        .trainingProgressFor(participant.fatherId)
-        .some((card) => card.training.id === trainingId && card.assigned);
-    }).length;
-  }
-
-  function groupSize(groupId?: string) {
-    return workspace.participants.filter((participant) =>
-      groupId ? participant.groupId === groupId : true
-    ).length;
-  }
 
   return (
     <div className="space-y-8">
@@ -126,57 +119,6 @@ export default async function ManagerTrainingsPage({
         </section>
       ) : null}
 
-      <section id="pending" className="space-y-4">
-        <div>
-          <h2 className="font-heading text-lg font-semibold">{t("manager.trainings.waitingTitle")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("manager.trainings.waitingLead")}</p>
-        </div>
-        {pending.length === 0 ? (
-          <EmptyState title={t("manager.trainings.waitingEmptyTitle")}>
-            {t("manager.trainings.waitingEmptyBody")}
-          </EmptyState>
-        ) : (
-          <div className="space-y-4">
-            {pending.map((item) => (
-              <article
-                key={`${item.review.group_id}-${item.training.id}`}
-                className="rounded-xl border border-border bg-card p-4 sm:p-6"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="min-w-0">
-                    <h3 className="font-heading text-lg font-semibold">{item.training.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {sessionLabel(item.sessionCount, t)}
-                      {groups.length > 1 ? ` · ${item.groupName}` : ""}
-                    </p>
-                  </div>
-                  <ReviewStatusBadge status={item.review.status} />
-                </div>
-                {item.training.description ? (
-                  <p className="mt-4 text-sm text-muted-foreground">{item.training.description}</p>
-                ) : null}
-                <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-                  <Link
-                    href={`/manager/reviews/${item.training.id}?group=${item.review.group_id}`}
-                    className={cn(buttonVariants({ variant: "outline" }), "w-full min-h-11 sm:w-auto")}
-                  >
-                    {t("manager.trainings.preview")}
-                  </Link>
-                </div>
-                <div className="mt-5 border-t border-border pt-5">
-                  <ReviewDecisionForms
-                    trainingId={item.training.id}
-                    groupId={item.review.group_id}
-                    status={item.review.status}
-                    returnTo="trainings"
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
-
       <section id="cohort" className="space-y-4">
         <div>
           <h2 className="font-heading text-lg font-semibold">{t("manager.trainings.cohortTitle")}</h2>
@@ -187,13 +129,23 @@ export default async function ManagerTrainingsPage({
             {t("manager.trainings.cohortEmptyBody")}
           </EmptyState>
         ) : (
-          <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+          <ul className="space-y-4">
             {accepted.map((item) => {
-              const assigned = assignedCount(item.training.id, item.review.group_id);
-              const total = groupSize(item.review.group_id);
-              const remaining = Math.max(0, total - assigned);
+              const status = summarizeAssignmentStatus({
+                training: item.training,
+                participants: workspace.participants,
+                reviews: workspace.reviews,
+                progressFor: workspace.trainingProgressFor,
+                groupId: item.review.group_id,
+              });
+              const assigned = status.assigned;
+              const total = status.total;
+              const remaining = status.remaining;
               return (
-                <li key={`${item.review.group_id}-${item.training.id}`} className="px-4 py-5 sm:px-6">
+                <li
+                  key={`${item.review.group_id}-${item.training.id}`}
+                  className="rounded-xl border border-border bg-card p-4 sm:p-6"
+                >
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <Link
@@ -206,6 +158,9 @@ export default async function ManagerTrainingsPage({
                         {[
                           sessionLabel(item.sessionCount, t),
                           t("manager.trainings.assignedOf", { assigned, total }),
+                          t("manager.status.notStartedCount", { n: status.notStarted }),
+                          t("manager.status.inProgressCount", { n: status.inProgress }),
+                          t("manager.status.doneCount", { n: status.completed }),
                           item.review.decided_at
                             ? t("manager.trainings.acceptedOn", {
                                 date: formatShortDate(item.review.decided_at, locale),
@@ -233,15 +188,12 @@ export default async function ManagerTrainingsPage({
                       <form action={assignTrainingToUnassigned}>
                         <input type="hidden" name="training_id" value={item.training.id} />
                         <input type="hidden" name="group_id" value={item.review.group_id} />
+                        <input type="hidden" name="return_to" value="trainings" />
                         <Button type="submit" className="w-full min-h-11 sm:w-auto">
                           {t("manager.trainings.assignRemaining", { n: remaining })}
                         </Button>
                       </form>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        {t("manager.trainings.allAssigned")}
-                      </p>
-                    )}
+                    ) : null}
                     <Link
                       href={`/manager/participants?training=${item.training.id}#assign`}
                       className={cn(
@@ -268,12 +220,18 @@ export default async function ManagerTrainingsPage({
               );
             })}
             {legacy.map((training) => {
-              const assigned = assignedCount(training.id);
-              const total = groupSize();
-              const remaining = Math.max(0, total - assigned);
+              const status = summarizeAssignmentStatus({
+                training,
+                participants: workspace.participants,
+                reviews: workspace.reviews,
+                progressFor: workspace.trainingProgressFor,
+              });
+              const assigned = status.assigned;
+              const total = status.total;
+              const remaining = status.remaining;
               const viewHref = `/manager/reviews/${training.id}`;
               return (
-                <li key={training.id} className="px-4 py-5 sm:px-6">
+                <li key={training.id} className="rounded-xl border border-border bg-card p-4 sm:p-6">
                   <div className="min-w-0">
                     <Link href={viewHref} className={cn("block font-medium", interactiveLinkClassName)}>
                       {training.title}
@@ -282,6 +240,9 @@ export default async function ManagerTrainingsPage({
                       {[
                         sessionLabel(training.session_count, t),
                         t("manager.trainings.assignedOf", { assigned, total }),
+                        t("manager.status.notStartedCount", { n: status.notStarted }),
+                        t("manager.status.inProgressCount", { n: status.inProgress }),
+                        t("manager.status.doneCount", { n: status.completed }),
                         t("manager.trainings.catalogItem"),
                       ]
                         .filter(Boolean)
@@ -301,15 +262,12 @@ export default async function ManagerTrainingsPage({
                     {remaining > 0 ? (
                       <form action={assignTrainingToUnassigned}>
                         <input type="hidden" name="training_id" value={training.id} />
+                        <input type="hidden" name="return_to" value="trainings" />
                         <Button type="submit" className="w-full min-h-11 sm:w-auto">
                           {t("manager.trainings.assignRemaining", { n: remaining })}
                         </Button>
                       </form>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        {t("manager.trainings.allAssigned")}
-                      </p>
-                    )}
+                    ) : null}
                     <Link
                       href={`/manager/participants?training=${training.id}#assign`}
                       className={cn(
@@ -320,60 +278,22 @@ export default async function ManagerTrainingsPage({
                       {t("manager.trainings.chooseFathers")}
                     </Link>
                   </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
-
-      <section id="hidden" className="space-y-4">
-        <div>
-          <h2 className="font-heading text-lg font-semibold">{t("manager.trainings.hiddenTitle")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("manager.trainings.hiddenLead")}</p>
-        </div>
-        {declined.length === 0 ? (
-          <div className="rounded-xl border border-border bg-card px-4 py-5 sm:px-6">
-            <p className="text-sm text-muted-foreground">{t("manager.trainings.hiddenEmpty")}</p>
-          </div>
-        ) : (
-          <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
-            {declined.map((item) => {
-              const href = item.training.released_at
-                ? `/manager/reviews/${item.training.id}?group=${item.review.group_id}`
-                : null;
-              return (
-                <li key={`${item.review.group_id}-${item.training.id}`} className="px-4 py-5 sm:px-6">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0">
-                      {href ? (
-                        <Link href={href} className={cn("block font-medium", interactiveLinkClassName)}>
-                          {item.training.title}
-                        </Link>
-                      ) : (
-                        <span className="block font-medium">{item.training.title}</span>
-                      )}
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {formatShortDate(item.review.decided_at, locale)}
-                        {groups.length > 1 ? ` · ${item.groupName}` : ""}
+                  {groups.map((group) => (
+                    <div key={group.id} className="mt-5 border-t border-border pt-5">
+                      {groups.length > 1 ? (
+                        <p className="mb-2 text-sm font-medium">{group.name}</p>
+                      ) : null}
+                      <p className="mb-3 text-sm text-muted-foreground">
+                        {t("manager.trainings.removeLead")}
                       </p>
-                    </div>
-                    <ReviewStatusBadge status={item.review.status} />
-                  </div>
-                  {item.review.decline_reason ? (
-                    <p className="mt-2 text-sm text-muted-foreground">{item.review.decline_reason}</p>
-                  ) : null}
-                  {item.training.released_at ? (
-                    <div className="mt-4 border-t border-border pt-4">
                       <ReviewDecisionForms
-                        trainingId={item.training.id}
-                        groupId={item.review.group_id}
-                        status={item.review.status}
+                        trainingId={training.id}
+                        groupId={group.id}
+                        status="accepted"
                         returnTo="trainings"
-                        declineReason={item.review.decline_reason}
                       />
                     </div>
-                  ) : null}
+                  ))}
                 </li>
               );
             })}

@@ -8,6 +8,7 @@ import {
   leaderCanStartAssessment,
   primaryFatherGroupId,
 } from "../lib/assessments/availability";
+import { FAMILY_FORTRESS_ASSESSMENT_KEY } from "../lib/assessments/instruments/family-fortress";
 import {
   buildManagerAssessmentCatalog,
   partitionAssessmentCatalog,
@@ -34,6 +35,8 @@ const custom: AssessmentListItem = {
   questionCount: 4,
   assignedCount: 1,
   completedCount: 0,
+  notStartedCount: 1,
+  inProgressCount: 0,
 };
 
 const released: PlatformAssessmentRelease = {
@@ -92,7 +95,7 @@ describe("assessment availability", () => {
     );
   });
 
-  it("blocks new starts after release until the Leader accepts and shares", () => {
+  it("blocks new starts after release until the Leader includes the assessment", () => {
     assert.equal(
       fatherCanStartAssessment({
         rows: [],
@@ -107,6 +110,19 @@ describe("assessment availability", () => {
     assert.equal(
       fatherCanStartAssessment({
         rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: released,
+        reviewStatus: "accepted",
+      }),
+      true
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [
+          { group_id: "g1", assessment_key: KEYSTONE_ASSESSMENT_KEY, status: "hidden" },
+        ],
         groupIds: ["g1"],
         homeGroupId: "g1",
         assessmentKey: KEYSTONE_ASSESSMENT_KEY,
@@ -138,6 +154,72 @@ describe("assessment availability", () => {
         assessmentKey: KEYSTONE_ASSESSMENT_KEY,
         release: released,
         reviewStatus: "accepted",
+        hasProgress: true,
+      }),
+      true
+    );
+  });
+
+  it("lets a father start a first-party assessment as soon as the Leader includes it", () => {
+    const release = {
+      assessment_key: FAMILY_FORTRESS_ASSESSMENT_KEY,
+      released_at: "2026-08-21T00:00:00Z",
+      first_released_at: "2026-08-21T00:00:00Z",
+    };
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: FAMILY_FORTRESS_ASSESSMENT_KEY,
+        release,
+        reviewStatus: "accepted",
+      }),
+      true
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [
+          { group_id: "g1", assessment_key: FAMILY_FORTRESS_ASSESSMENT_KEY, status: "hidden" },
+        ],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: FAMILY_FORTRESS_ASSESSMENT_KEY,
+        release,
+        reviewStatus: "accepted",
+      }),
+      false
+    );
+  });
+
+  it("hides a declined Keystone from fathers who have not started", () => {
+    assert.equal(
+      organizationMayOfferAssessment({
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: null,
+        reviewStatus: "declined",
+      }),
+      false
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: null,
+        reviewStatus: "declined",
+      }),
+      false
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: null,
+        reviewStatus: "declined",
         hasProgress: true,
       }),
       true
@@ -191,13 +273,14 @@ describe("assessment catalog", () => {
     assert.equal(items[0]?.completedCount, 3);
     assert.equal(available.some((item) => item.kind === "keystone" && item.groupId === "g1"), true);
     assert.equal(hidden.some((item) => item.kind === "keystone" && item.groupId === "g2"), true);
+    assert.equal(items[0]?.decision, "catalog");
     assert.equal(
       available.filter((item) => item.kind === "custom").length,
       2
     );
   });
 
-  it("puts a released Keystone in Waiting on you until the Leader accepts", () => {
+  it("marks a released Keystone as pending until the Leader includes it", () => {
     const items = buildManagerAssessmentCatalog({
       groups: [groups[0]!],
       custom: [],
@@ -221,10 +304,11 @@ describe("assessment catalog", () => {
     assert.equal(pending.length, 1);
     assert.equal(available.length, 0);
     assert.equal(hidden.length, 0);
+    assert.equal(pending[0]?.decision, "pending");
     assert.match(pending[0]?.href ?? "", /assessment-reviews/);
   });
 
-  it("treats an accepted Keystone as hidden until the Leader shares it", () => {
+  it("treats an accepted Keystone as available unless the Leader removes it", () => {
     assert.equal(
       catalogVisibility({
         assessmentKey: KEYSTONE_ASSESSMENT_KEY,
@@ -232,7 +316,7 @@ describe("assessment catalog", () => {
         availability: [],
         reviewStatus: "accepted",
       }),
-      "hidden"
+      "available"
     );
     const items = buildManagerAssessmentCatalog({
       groups: [groups[0]!],
@@ -254,8 +338,49 @@ describe("assessment catalog", () => {
       ],
     });
     const { available, hidden } = partitionAssessmentCatalog(items);
-    assert.equal(available.length, 0);
-    assert.equal(hidden.length, 1);
+    assert.equal(available.length, 1);
+    assert.equal(hidden.length, 0);
+    assert.equal(available[0]?.decision, "ready");
+  });
+
+  it("hides a first-party instrument until Super-admin releases it", () => {
+    const items = buildManagerAssessmentCatalog({
+      groups: [groups[0]!],
+      custom: [],
+      availability: [],
+      keystoneCompletedByGroup: {},
+      groupSize: { g1: 4 },
+      firstParty: [
+        {
+          key: "legacy-architect",
+          slug: "legacy-architect",
+          title: "The Legacy Architect Keystone Assessment",
+          description: "Test",
+          questionCount: 30,
+          instrument: {
+            version: "1.0.0",
+            items: [],
+            scoring: {
+              method: "sum_coded",
+              scale: { min: 1, max: 4 },
+              dimensions: [{ id: "legacy", label: "Legacy" }],
+              outcome: { kind: "bands", dimension: "legacy", score: "raw", bands: [] },
+            },
+          },
+          copy: {
+            introduction: "",
+            purpose: "",
+            goal: "",
+            honestHint: "",
+          },
+        },
+      ],
+      firstPartyReleases: {},
+    });
+    assert.equal(
+      items.some((item) => item.assessmentKey === "legacy-architect"),
+      false
+    );
   });
 });
 

@@ -1,21 +1,28 @@
 import { AssessmentHomeCard } from "@/components/assessments/home-card";
-import { CohortNoteCard } from "@/components/father/cohort-note-card";
+import { CohortNoteStack } from "@/components/father/cohort-note-card";
 import { HomeAssessmentCard } from "@/components/father/home-assessment-card";
-import { HomeEarnedRow } from "@/components/father/home-earned";
 import { HomePathRow } from "@/components/father/home-path";
 import { HomeStreakRow } from "@/components/father/home-streak";
+import { HomeDeskStamp } from "@/components/father/home-desk-stamp";
+import { SkillUseCard } from "@/components/father/skill-use-card";
 import { HomeUpNextCard } from "@/components/father/home-up-next";
 import { LeaderMeta } from "@/components/father/leader-meta";
 import { StreakNotices } from "@/components/father/streak-notices";
 import { Flash } from "@/components/manager/flash";
 import { loadFatherAssignments } from "@/lib/assessments/data";
-import { loadFatherLeader, loadVisibleCohortNote } from "@/lib/cohort-note/data";
+import { loadFatherLeaders, loadVisibleCohortNotes } from "@/lib/cohort-note/data";
 import { requireRole } from "@/lib/auth/session";
+import { formatCertificateDate } from "@/lib/certificates/types";
+import { readHomeDeskVisit } from "@/lib/father/home-desk-cookie";
+import { shouldOfferSkillUseOnHome } from "@/lib/father/home-desk";
 import { pickHomeAssessment, splitHomeRows } from "@/lib/father/home";
 import { loadFatherHome } from "@/lib/father/data";
 import { loadFatherStreakHome } from "@/lib/father/streak-store";
-import { continueHref, type SessionProgress } from "@/lib/father/types";
+import { hasStartedTrainingWork, hasTrainingOverview, trainingContinueHref } from "@/lib/father/training-door";
+import { type SessionProgress } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
+import { loadFatherParticipationMode } from "@/lib/participation-data";
+import { participationCopyKey } from "@/lib/participation";
 import { scheduleDueReminderFlush } from "@/lib/jobs/flush-due-work";
 import {
   loadFatherOrgPhotoCovers,
@@ -47,22 +54,29 @@ export default async function FatherHomePage({
   const { done, error, notice } = await searchParams;
   const { user } = await requireRole("father");
   const { t, locale } = await getI18n();
+  const loginAt = user.last_sign_in_at ?? "";
   scheduleDueReminderFlush();
   const [
-    { pathCards, trainingCards, next, profile, draft, certificates },
+    { pathCards, trainingCards, next, profile, draft, certificates, skillUsePrompt },
     customAssignments,
     orgPhotos,
     streak,
-    leader,
-    cohortNote,
+    leaders,
+    cohortNotes,
+    participationMode,
+    homeDesk,
   ] = await Promise.all([
     loadFatherHome(user.id),
     loadFatherAssignments(user.id),
     loadFatherOrgPhotoCovers(user.id),
     loadFatherStreakHome(user.id),
-    loadFatherLeader(user.id),
-    loadVisibleCohortNote(user.id),
+    loadFatherLeaders(user.id),
+    loadVisibleCohortNotes(user.id),
+    loadFatherParticipationMode(user.id),
+    readHomeDeskVisit(),
   ]);
+  const showSkillUse =
+    Boolean(skillUsePrompt) && shouldOfferSkillUseOnHome(homeDesk, loginAt);
 
   const nextCard = next
     ? pathCards.find((card) => card.training.id === next.training.id)
@@ -90,11 +104,15 @@ export default async function FatherHomePage({
     }));
   const path = withCover(shelves.path);
   const available = withCover(shelves.trainings);
+  const completed = withCover(shelves.completed);
   const earned = certificates.map((row) => ({
     id: row.id,
     title:
       trainingCards.find((card) => card.training.id === row.training_id)?.training.title ??
       t("account.certificates"),
+    completedOn: formatCertificateDate(row.issued_at),
+    serialNumber: row.serial_number,
+    issuerName: row.issuer_name?.trim() || undefined,
   }));
   const heroCover = next
     ? resolveHomeHeroCover(next.session.session_number, orgPhotos.heroUrl, orgPhotos.photoPack)
@@ -102,14 +120,26 @@ export default async function FatherHomePage({
   const profileCover = resolveHomeProfileCover(orgPhotos.profileUrl, orgPhotos.photoPack);
   const pair = Boolean(next && assessment);
 
+  const startWithOverview = Boolean(
+    next &&
+      hasTrainingOverview(next.training) &&
+      !hasStartedTrainingWork(nextCompleted, next.progress, nextCard?.sessionDots)
+  );
   const upNext = next ? (
     <HomeUpNextCard
-      href={continueHref(next.session.id, next.progress)}
+      href={trainingContinueHref({
+        training: next.training,
+        next: next.session,
+        nextProgress: next.progress,
+        completed: nextCompleted,
+        sessionDots: nextCard?.sessionDots,
+      })}
       trainingTitle={next.training.title}
       sessionTitle={next.session.title}
       subtitle={next.session.keyline}
       durationSeconds={next.session.duration_seconds}
       continueSession={nextInProgress}
+      startWithOverview={startWithOverview}
       completed={nextCompleted}
       total={nextTotal}
       justFinished={justFinished}
@@ -123,7 +153,7 @@ export default async function FatherHomePage({
         {t("father.home.nothingAssigned")}
       </h1>
       <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-        {t("father.home.nothingAssignedBody")}
+        {t(participationCopyKey(participationMode, "father.home.nothingAssignedBody"))}
       </p>
     </section>
   ) : null;
@@ -148,31 +178,33 @@ export default async function FatherHomePage({
   return (
     <div
       className={cn(
-        "mx-auto w-full space-y-4 sm:space-y-5",
-        pair || (path.length > 0 && available.length > 0) ? "max-w-4xl" : "max-w-xl"
+        "mx-auto w-full space-y-6 sm:space-y-8",
+        pair ||
+          ((path.length > 0 || available.length > 0) &&
+            (completed.length > 0 || earned.length > 0))
+          ? "max-w-5xl"
+          : "max-w-xl"
       )}
     >
-      {leader ? (
-        <LeaderMeta name={leader.name} avatarUrl={leader.avatarUrl} t={t} />
-      ) : null}
-      {cohortNote ? (
-        <CohortNoteCard
-          groupId={cohortNote.groupId}
-          body={cohortNote.body}
-          updatedAt={cohortNote.updatedAt}
-          locale={locale}
-          t={t}
-        />
-      ) : null}
+      {leaders.length > 0 ? <LeaderMeta leaders={leaders} t={t} /> : null}
+      <CohortNoteStack notes={cohortNotes} locale={locale} t={t} />
       <Flash error={error} notice={notice} />
       <StreakNotices notices={streak.notices} />
       <HomeStreakRow
         weeks={streak.currentWeeks}
         longestWeeks={streak.longestWeeks}
         freezesRemaining={streak.freezesRemaining}
-        grid={streak.grid}
         justFinished={justFinished}
       />
+      <HomeDeskStamp loginAt={loginAt} />
+      {showSkillUse && skillUsePrompt ? (
+        <SkillUseCard
+          sessionId={skillUsePrompt.sessionId}
+          skill={skillUsePrompt.skill}
+          reported={null}
+          returnTo="home"
+        />
+      ) : null}
 
       {pair ? (
         <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(14rem,1fr)]">
@@ -185,8 +217,13 @@ export default async function FatherHomePage({
           {assessmentCard}
         </>
       )}
-      <HomePathRow path={path} trainings={available} t={t} />
-      <HomeEarnedRow marks={earned} t={t} />
+      <HomePathRow
+        path={path}
+        trainings={available}
+        completed={completed}
+        earned={earned}
+        t={t}
+      />
     </div>
   );
 }

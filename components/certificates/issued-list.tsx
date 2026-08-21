@@ -1,7 +1,15 @@
+import Link from "next/link";
+
 import { CertificateDownloadLink } from "@/components/certificates/download-link";
 import { EmptyState } from "@/components/ui/empty-state";
-import { formatCertificateDate, type IssuedCertificate } from "@/lib/certificates/types";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  certificatePreviewPath,
+  formatCertificateDate,
+  type IssuedCertificate,
+} from "@/lib/certificates/types";
 import { getI18n } from "@/lib/i18n/server";
+import { cn } from "@/lib/utils";
 
 export async function IssuedCertificateList({
   certificates,
@@ -48,7 +56,19 @@ export async function IssuedCertificateList({
               {certificate.serialNumber}
             </p>
           </div>
-          <CertificateDownloadLink certificateId={certificate.id} className="w-full sm:w-auto" />
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <Link
+              href={certificatePreviewPath(certificate.id)}
+              className={cn(buttonVariants({ variant: "default", size: "sm" }), "w-full sm:w-auto")}
+            >
+              {t("common.preview")}
+            </Link>
+            <CertificateDownloadLink
+              certificateId={certificate.id}
+              variant="outline"
+              className="w-full sm:w-auto"
+            />
+          </div>
         </li>
       ))}
     </ul>

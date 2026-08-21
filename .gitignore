@@ -20,3 +20,13 @@ yarn-debug.log*
 yarn-error.log*
 .env*
 !.env.example
+
+# Local static-builder stubs. Not part of the Next.js clean-pilot app.
+employers.html
+gatherings.html
+veterans.html
+veterans-*.html
+archive/static-site/employers.html
+archive/static-site/gatherings.html
+archive/static-site/veterans.html
+archive/static-site/veterans-*.html

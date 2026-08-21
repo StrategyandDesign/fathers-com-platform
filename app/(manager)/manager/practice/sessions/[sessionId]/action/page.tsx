@@ -13,11 +13,7 @@ import {
   INTENTION_LABEL_KEYS,
 } from "@/lib/father/action-commitment";
 import { loadActionCommitment, loadFatherTimeZone } from "@/lib/father/action-commitment-data";
-import {
-  commitActionMoment,
-  finishActionSession,
-  markActionDone,
-} from "@/lib/father/actions";
+import { commitActionMoment, markActionDone } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
 import { parseSkillPrompt, sessionAction } from "@/lib/father/session-questions";
 import { getI18n } from "@/lib/i18n/server";
@@ -110,12 +106,10 @@ export default async function LeaderPracticeActionPage({
         defaultOption={commitment?.intentionLabel}
         defaultDate={customParts?.date}
         defaultTime={customParts?.time}
-        defaultNote={commitment?.outcomeNote}
         skipHref={state === "commit" ? PRACTICE_ROOT : null}
         changeHref={`${PRACTICE_WALK.action(session.id)}?change=1`}
         commitAction={commitActionMoment}
         doneAction={markActionDone}
-        finishAction={finishActionSession}
       />
     </div>
   );

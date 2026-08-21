@@ -3,6 +3,7 @@ import { CERTIFICATES_BUCKET } from "@/lib/storage";
 import { displayName, profileName } from "@/lib/manager/types";
 import {
   formatCertificateDate,
+  resolveCertificateIssuerName,
   type CertificatePayload,
   type IssuedCertificate,
 } from "@/lib/certificates/types";
@@ -15,6 +16,7 @@ type CertificateRow = {
   serial_number: string;
   issued_at: string;
   issued_by: string | null;
+  issuer_name: string | null;
   pdf_storage_path: string | null;
 };
 
@@ -26,11 +28,22 @@ function trainingTitle(value: TrainingJoin, fallback = "Training") {
   return value.title || fallback;
 }
 
+async function loadReadableLeaderName(
+  supabase: Awaited<ReturnType<typeof createClient>>
+) {
+  const { data, error } = await supabase.rpc("father_leader_identity");
+  if (error) return null;
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row || typeof row !== "object") return null;
+  const name = (row as { full_name?: unknown }).full_name;
+  return typeof name === "string" && name.trim() ? name.trim() : null;
+}
+
 export async function loadFatherCertificates(fatherId: string): Promise<IssuedCertificate[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("certificates")
-    .select("id, serial_number, issued_at, issued_by, trainings(title)")
+    .select("id, serial_number, issued_at, issued_by, issuer_name, trainings(title)")
     .eq("father_id", fatherId)
     .order("issued_at", { ascending: false });
 
@@ -41,6 +54,7 @@ export async function loadFatherCertificates(fatherId: string): Promise<IssuedCe
     serial_number: string;
     issued_at: string;
     issued_by: string | null;
+    issuer_name: string | null;
     trainings: TrainingJoin;
   }>;
 
@@ -55,15 +69,22 @@ export async function loadFatherCertificates(fatherId: string): Promise<IssuedCe
   if (issuersRes.error) throw issuersRes.error;
 
   const issuers = new Map(
-    (issuersRes.data ?? []).map((row) => [row.id, profileName(row, "Fathers.com Leader")])
+    (issuersRes.data ?? []).map((row) => [row.id, profileName(row, "")])
   );
+  const leaderName = rows.some((row) => !row.issuer_name?.trim())
+    ? await loadReadableLeaderName(supabase)
+    : null;
 
   return rows.map((row) => ({
     id: row.id,
     serialNumber: row.serial_number,
     issuedAt: row.issued_at,
     trainingTitle: trainingTitle(row.trainings),
-    issuerName: (row.issued_by && issuers.get(row.issued_by)) || "",
+    issuerName: resolveCertificateIssuerName({
+      storedName: row.issuer_name,
+      profileName: row.issued_by ? issuers.get(row.issued_by) : null,
+      leaderName,
+    }),
   }));
 }
 
@@ -75,7 +96,7 @@ export async function loadCertificatePayload(certificateId: string): Promise<{
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("certificates")
-    .select("id, father_id, training_id, serial_number, issued_at, issued_by, pdf_storage_path")
+    .select("id, father_id, training_id, serial_number, issued_at, issued_by, issuer_name, pdf_storage_path")
     .eq("id", certificateId)
     .maybeSingle();
 
@@ -95,6 +116,10 @@ export async function loadCertificatePayload(certificateId: string): Promise<{
   if (trainingRes.error) throw trainingRes.error;
   if (issuerRes.error) throw issuerRes.error;
 
+  const leaderName = cert.issuer_name?.trim()
+    ? null
+    : await loadReadableLeaderName(supabase);
+
   return {
     serialNumber: cert.serial_number,
     storagePath: cert.pdf_storage_path,
@@ -103,7 +128,11 @@ export async function loadCertificatePayload(certificateId: string): Promise<{
       trainingName: trainingRes.data?.title ?? "Training",
       completedOn: formatCertificateDate(cert.issued_at),
       serialNumber: cert.serial_number,
-      managerName: profileName(issuerRes.data, "Fathers.com Leader"),
+      managerName: resolveCertificateIssuerName({
+        storedName: cert.issuer_name,
+        profileName: profileName(issuerRes.data, ""),
+        leaderName,
+      }),
     },
   };
 }
@@ -115,19 +144,19 @@ export async function loadCertificatePdfBytes(certificateId: string): Promise<{
   const loaded = await loadCertificatePayload(certificateId);
   if (!loaded) return null;
 
-  const supabase = await createClient();
-  if (loaded.storagePath) {
+  try {
+    return {
+      bytes: await renderCertificatePdf(loaded.payload),
+      serialNumber: loaded.serialNumber,
+    };
+  } catch {
+    if (!loaded.storagePath) return null;
+    const supabase = await createClient();
     const { data } = await supabase.storage.from(CERTIFICATES_BUCKET).download(loaded.storagePath);
-    if (data) {
-      return {
-        bytes: new Uint8Array(await data.arrayBuffer()),
-        serialNumber: loaded.serialNumber,
-      };
-    }
+    if (!data) return null;
+    return {
+      bytes: new Uint8Array(await data.arrayBuffer()),
+      serialNumber: loaded.serialNumber,
+    };
   }
-
-  return {
-    bytes: await renderCertificatePdf(loaded.payload),
-    serialNumber: loaded.serialNumber,
-  };
 }

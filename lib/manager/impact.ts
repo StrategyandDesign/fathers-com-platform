@@ -1,8 +1,12 @@
 import { isSessionComplete, type SessionProgress } from "@/lib/father/types";
 import { dateLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 import { createTranslator } from "@/lib/i18n/translate";
-import { loadManagerWorkspace } from "@/lib/manager/data";
-import type { TrainingProgress } from "@/lib/manager/types";
+import {
+  listAssignableTrainings,
+  type AssignableTrainingRef,
+  type AssignmentReviewRef,
+} from "@/lib/manager/assignment-status";
+import type { Certificate, TrainingProgress } from "@/lib/manager/types";
 
 export const IMPACT_PERIOD_DAYS = 30;
 
@@ -121,15 +125,79 @@ export function impactFilename() {
   return `fathers-com-impact-${new Date().toISOString().slice(0, 10)}.pdf`;
 }
 
-export async function loadManagerImpact(
-  managerId: string,
-  locale: Locale = DEFAULT_LOCALE
-): Promise<ImpactSnapshot> {
-  const workspace = await loadManagerWorkspace(managerId);
-  const { groups, trainings, participants, progress, certificates, trainingProgressFor } =
-    workspace;
+export function includedImpactTrainings(input: {
+  trainings: AssignableTrainingRef[];
+  groups: Array<{ id: string }>;
+  reviews: AssignmentReviewRef[];
+}) {
+  return listAssignableTrainings(input);
+}
 
-  const now = new Date();
+export function includedImpactTrainingIds(input: {
+  trainings: AssignableTrainingRef[];
+  groups: Array<{ id: string }>;
+  reviews: AssignmentReviewRef[];
+}) {
+  return new Set(includedImpactTrainings(input).map((training) => training.id));
+}
+
+export function includedImpactSessionIds(
+  sessions: Array<{ id: string; training_id: string }>,
+  trainingIds: Set<string>
+) {
+  return new Set(
+    sessions
+      .filter((session) => trainingIds.has(session.training_id))
+      .map((session) => session.id)
+  );
+}
+
+export function scopeImpactProgress(
+  progress: SessionProgress[],
+  sessionIds: Set<string>
+) {
+  return progress.filter((row) => sessionIds.has(row.session_id));
+}
+
+export function scopeImpactCards(
+  cards: TrainingProgress[],
+  trainingIds: Set<string>
+) {
+  return cards.filter((card) => trainingIds.has(card.training.id));
+}
+
+export function scopeImpactCertificates<T extends { training_id: string }>(
+  certificates: T[],
+  trainingIds: Set<string>
+) {
+  return certificates.filter((row) => trainingIds.has(row.training_id));
+}
+
+export function buildManagerImpactSnapshot(input: {
+  groups: Array<{ id: string; name: string }>;
+  trainings: AssignableTrainingRef[];
+  reviews: AssignmentReviewRef[];
+  sessions: Array<{ id: string; training_id: string }>;
+  participants: Array<{
+    fatherId: string;
+    lastActivity: string | null;
+    joinedAt: string;
+  }>;
+  progress: SessionProgress[];
+  certificates: Array<Pick<Certificate, "issued_at" | "training_id">>;
+  trainingProgressFor: (fatherId: string) => TrainingProgress[];
+  locale?: Locale;
+  now?: Date;
+}): ImpactSnapshot {
+  const locale = input.locale ?? DEFAULT_LOCALE;
+  const trainings = includedImpactTrainings(input);
+  const trainingIds = new Set(trainings.map((training) => training.id));
+  const sessionIds = includedImpactSessionIds(input.sessions, trainingIds);
+  const certificates = scopeImpactCertificates(input.certificates, trainingIds);
+  const progress = scopeImpactProgress(input.progress, sessionIds);
+  const { groups, participants, trainingProgressFor } = input;
+
+  const now = input.now ?? new Date();
   const currentEnd = addUtcDays(startOfUtcDay(now), 1);
   const currentStart = addUtcDays(currentEnd, -IMPACT_PERIOD_DAYS);
   const previousStart = addUtcDays(currentStart, -IMPACT_PERIOD_DAYS);
@@ -156,7 +224,7 @@ export async function loadManagerImpact(
 
   for (const participant of participants) {
     const fatherProgress = progressByFather.get(participant.fatherId) ?? [];
-    const cards = trainingProgressFor(participant.fatherId);
+    const cards = scopeImpactCards(trainingProgressFor(participant.fatherId), trainingIds);
     if (startedTraining(fatherProgress)) started += 1;
     if (completedOneSession(fatherProgress)) oneSession += 1;
     if (fullyCompletedTraining(cards)) finished += 1;
@@ -164,8 +232,8 @@ export async function loadManagerImpact(
 
     for (const [index, training] of trainings.entries()) {
       const card = cards.find((row) => row.training.id === training.id);
-      const sessionIds = new Set((card?.sessions ?? []).map((session) => session.id));
-      const scoped = fatherProgress.filter((row) => sessionIds.has(row.session_id));
+      const trainingSessionIds = new Set((card?.sessions ?? []).map((session) => session.id));
+      const scoped = fatherProgress.filter((row) => trainingSessionIds.has(row.session_id));
       if (startedTraining(scoped)) trainingStats[index].started += 1;
       if (completedOneSession(scoped)) trainingStats[index].completedOneSession += 1;
       if (card && card.total > 0 && card.completed === card.total) {
@@ -217,4 +285,23 @@ export async function loadManagerImpact(
       },
     },
   };
+}
+
+export async function loadManagerImpact(
+  managerId: string,
+  locale: Locale = DEFAULT_LOCALE
+): Promise<ImpactSnapshot> {
+  const { loadManagerWorkspace } = await import("@/lib/manager/data");
+  const workspace = await loadManagerWorkspace(managerId);
+  return buildManagerImpactSnapshot({
+    groups: workspace.groups,
+    trainings: workspace.trainings,
+    reviews: workspace.reviews,
+    sessions: workspace.sessions,
+    participants: workspace.participants,
+    progress: workspace.progress,
+    certificates: workspace.certificates,
+    trainingProgressFor: workspace.trainingProgressFor,
+    locale,
+  });
 }

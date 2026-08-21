@@ -9,7 +9,7 @@ import { normalizeDeepLink, sessionFilmHref } from "@/lib/notifications/links";
 import { weeklySessionTarget } from "@/lib/notifications/next-session";
 import { parseNotificationPrefsRow } from "@/lib/notifications/prefs";
 import { sendWebPush, type PushSubscriptionRecord } from "@/lib/notifications/push";
-import { isLocale } from "@/lib/i18n/config";
+import { isPublicLocale } from "@/lib/i18n/config";
 import {
   FREQUENCY_WINDOW_DAYS,
   isInQuietHours,
@@ -26,6 +26,7 @@ import {
   type NotificationType,
   type ReminderCandidate,
 } from "@/lib/notifications/types";
+import { parseParticipationMode, type ParticipationMode } from "@/lib/participation";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 type AdminClient = NonNullable<ReturnType<typeof createAdminClient>>;
@@ -107,7 +108,7 @@ export async function dispatchDueReminders(now = new Date()) {
   for (const row of prefsRes.data ?? []) {
     const parsed = parseNotificationPrefsRow(row, reminders.get((row as { user_id: string }).user_id) ?? null);
     const locale = localeByUser.get(parsed.userId);
-    if (isLocale(locale)) parsed.locale = locale;
+    if (isPublicLocale(locale)) parsed.locale = locale;
     if (parsed.userId) prefsByUser.set(parsed.userId, parsed);
   }
   for (const [fatherId, reminder] of reminders) {
@@ -117,7 +118,7 @@ export async function dispatchDueReminders(now = new Date()) {
         { weekday: reminder.weekday, remindAt: reminder.remind_at }
       );
       const locale = localeByUser.get(fatherId);
-      if (isLocale(locale)) parsed.locale = locale;
+      if (isPublicLocale(locale)) parsed.locale = locale;
       prefsByUser.set(fatherId, parsed);
     }
   }
@@ -146,6 +147,14 @@ export async function dispatchDueReminders(now = new Date()) {
     (pushRes.data ?? []) as Array<PushSubscriptionRecord & { user_id: string }>,
     (row) => row.user_id
   );
+
+  const fatherIds = [
+    ...new Set([
+      ...assignments.map((row) => row.father_id),
+      ...((outboxRes.data ?? []) as OutboxRow[]).map((row) => row.user_id),
+    ]),
+  ];
+  const participationByFather = await loadParticipationByFather(admin, fatherIds);
 
   const weekly = buildWeeklyCandidates({
     now,
@@ -227,7 +236,15 @@ export async function dispatchDueReminders(now = new Date()) {
     const subscriptions = pushByUser.get(userId) ?? [];
 
     for (const candidate of chosen) {
-      const copy = notificationCopy(candidate.type, candidate.payload, prefs.locale);
+      const copy = notificationCopy(
+        candidate.type,
+        {
+          ...candidate.payload,
+          participationMode:
+            candidate.payload.participationMode ?? participationByFather.get(userId) ?? "unset",
+        },
+        prefs.locale
+      );
       const href = normalizeDeepLink(candidate.href);
       const result = await deliverOne({
         prefs,
@@ -443,6 +460,30 @@ async function markOutbox(admin: AdminClient, outboxId: string | null | undefine
     .update({ processed_at: new Date().toISOString() })
     .eq("id", outboxId);
   if (error) console.error("[notifications] outbox update failed", error.message);
+}
+
+async function loadParticipationByFather(admin: AdminClient, fatherIds: string[]) {
+  const modes = new Map<string, ParticipationMode>();
+  const ids = [...new Set(fatherIds.filter(Boolean))];
+  if (ids.length === 0) return modes;
+  const { data, error } = await admin
+    .from("group_members")
+    .select("father_id, groups(participation_mode)")
+    .in("father_id", ids);
+  if (error) {
+    if (!/participation_mode/i.test(error.message)) {
+      console.error("[notifications] participation mode lookup failed", error.message);
+    }
+    return modes;
+  }
+  for (const row of (data ?? []) as Array<{
+    father_id: string;
+    groups: { participation_mode?: string | null } | { participation_mode?: string | null }[] | null;
+  }>) {
+    const group = Array.isArray(row.groups) ? row.groups[0] : row.groups;
+    modes.set(row.father_id, parseParticipationMode(group?.participation_mode));
+  }
+  return modes;
 }
 
 async function loadEmail(admin: AdminClient, userId: string) {

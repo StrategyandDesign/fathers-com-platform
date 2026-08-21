@@ -10,6 +10,7 @@ import {
   ARCHIVED_STATUS_ERROR,
   ATTRIBUTION_MAX,
   DEVELOPMENT_NOTES_MAX,
+  LEADER_SUMMARY_MAX,
   READY_REQUIRED_ERROR,
   SKILL_PROMPT_MAX,
   WORKING_TITLE_MAX,
@@ -21,7 +22,16 @@ import {
   isAuthoringStatus,
 } from "@/lib/admin/development";
 import { slugify } from "@/lib/admin/slug";
-import { loadSessionUsage, loadTrainingUsage } from "@/lib/admin/data";
+import { loadAdminUsers, loadSessionUsage, loadTrainingUsage } from "@/lib/admin/data";
+import { notifyLeaderInvite, notifyOrganizationReady } from "@/lib/email/events";
+import { getAppUrl } from "@/lib/email/send";
+import {
+  createManagerInviteToken,
+  isInviteEmail,
+  managerInviteExpiresAt,
+  managerJoinHref,
+  normalizeInviteEmail,
+} from "@/lib/manager/invite";
 import {
   isLegacyCatalogTraining,
   RELEASE_CONFIRM,
@@ -35,6 +45,7 @@ import { hasHardcodedSkillPack } from "@/lib/father/session-questions";
 import { isAppRole, ROLE_HOME } from "@/lib/auth/roles";
 import { getAuthContext, requireRole } from "@/lib/auth/session";
 import { youtubeVideoId } from "@/lib/father/types";
+import { hasHostedVideo } from "@/lib/media/hosted-video";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -52,6 +63,8 @@ import { sourcedReleaseBlocker } from "@/lib/admin/sourcing";
 
 const YOUTUBE_URL_ERROR =
   "Use a YouTube video link. Playlists and other sites will not play.";
+const HOSTED_VIDEO_URL_ERROR =
+  "Use a YouTube or Vimeo video link. Playlists and other sites will not play.";
 
 const RELEASE_WRITE_ERROR = "Unable to update release status. Please try again.";
 const RELEASE_NOTIFY_WARNING =
@@ -90,6 +103,7 @@ async function requireSuperAdmin() {
 
 function revalidateAdmin(extra?: string) {
   revalidatePath("/admin");
+  revalidatePath("/admin/gathering");
   revalidatePath("/admin/organizations");
   revalidatePath("/admin/trainings");
   revalidatePath("/admin/assessments");
@@ -294,8 +308,131 @@ export async function createOrganization(formData: FormData) {
     await seedGroupAssessmentReviews(supabase, data.id);
   }
 
+  const users = await loadAdminUsers();
+  const email = users.find((row) => row.id === managerId)?.email;
+  if (email) {
+    await notifyOrganizationReady({ email, organizationName: name });
+  }
+
   revalidateAdmin();
-  ok("/admin/organizations", "Organization created.");
+  ok("/admin/organizations", "Organization created. We emailed the leader.");
+}
+
+export async function provisionOrganization(formData: FormData) {
+  const { user } = await requireRole("admin");
+  const path = "/admin/organizations/new";
+  const name = String(formData.get("name") ?? "").trim();
+  const email = normalizeInviteEmail(formData.get("email"));
+  const fullName = String(formData.get("full_name") ?? "").trim() || null;
+  const managerId = String(formData.get("manager_id") ?? "").trim();
+
+  if (!name) fail(path, "Name is required.");
+  if (fullName && fullName.length > 80) fail(path, "Keep the name under 80 characters.");
+
+  const users = await loadAdminUsers();
+  const chosen = managerId ? users.find((row) => row.id === managerId) : null;
+  const matched = email ? users.find((row) => row.email?.toLowerCase() === email) : null;
+  const existing = chosen ?? matched ?? null;
+
+  if (existing) {
+    if (existing.role !== "manager") {
+      fail(path, "That email already belongs to another role. Use a different email.");
+    }
+    if (existing.deactivated_at) {
+      fail(path, "That leader is deactivated.");
+    }
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("groups")
+      .insert({ name, manager_id: existing.id })
+      .select("id")
+      .single();
+    if (error) fail(path, error.message);
+    if (data?.id) {
+      await seedGroupTrainingReviews(supabase, data.id);
+      await seedGroupAssessmentReviews(supabase, data.id);
+    }
+    if (existing.email) {
+      await notifyOrganizationReady({ email: existing.email, organizationName: name });
+    }
+    revalidateAdmin();
+    revalidatePath("/admin/support/leaders");
+    ok("/admin/organizations", "Organization created. We emailed the leader.");
+  }
+
+  if (!isInviteEmail(email)) {
+    fail(path, "Enter the leader’s email, or choose an existing leader.");
+  }
+
+  const supabase = await createClient();
+  const token = createManagerInviteToken();
+  const { error } = await supabase.from("manager_invites").insert({
+    token_hash: token.hash,
+    email,
+    full_name: fullName,
+    organization_name: name,
+    invited_by: user.id,
+    expires_at: managerInviteExpiresAt().toISOString(),
+  });
+
+  if (error) {
+    if (error.code === "23505") {
+      fail(path, "An invite is already open for that email.");
+    }
+    fail(path, error.message);
+  }
+
+  const mailed = await notifyLeaderInvite({
+    email,
+    organizationName: name,
+    joinHref: managerJoinHref(token.token, getAppUrl()),
+  });
+  revalidateAdmin();
+  revalidatePath("/admin/support/leaders");
+  ok(
+    "/admin/organizations",
+    mailed.sent
+      ? "Invite sent to their inbox. It also appears in Inbox."
+      : "Invite saved. Email did not send. Open Inbox to send it again."
+  );
+}
+
+export async function resendLeaderInvite(formData: FormData) {
+  await requireRole("admin");
+  const inviteId = String(formData.get("invite_id") ?? "").trim();
+  const path = "/admin/support/leaders";
+  if (!inviteId) fail(path, "Choose an invite.");
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("manager_invites")
+    .select("id, email, organization_name, accepted_at, expires_at")
+    .eq("id", inviteId)
+    .maybeSingle();
+  if (error) fail(path, error.message);
+  if (!data || data.accepted_at) fail(path, "That invite is no longer open.");
+
+  const token = createManagerInviteToken();
+  const { error: updateError } = await supabase
+    .from("manager_invites")
+    .update({
+      token_hash: token.hash,
+      expires_at: managerInviteExpiresAt().toISOString(),
+    })
+    .eq("id", inviteId)
+    .is("accepted_at", null);
+  if (updateError) fail(path, updateError.message);
+
+  const mailed = await notifyLeaderInvite({
+    email: String(data.email),
+    organizationName: String(data.organization_name),
+    joinHref: managerJoinHref(token.token, getAppUrl()),
+  });
+  revalidatePath(path);
+  ok(
+    path,
+    mailed.sent ? "Invite sent again." : "Invite refreshed. Email did not send."
+  );
 }
 
 export async function updateOrganization(formData: FormData) {
@@ -379,6 +516,13 @@ export async function createTraining(formData: FormData) {
     path,
     "Development notes"
   );
+  const leaderSummary = readCappedText(
+    formData,
+    "leader_summary",
+    LEADER_SUMMARY_MAX,
+    path,
+    "Training Summary"
+  );
   const attribution = readCappedText(formData, "attribution", ATTRIBUTION_MAX, path, "Credit");
 
   if (!title) fail(path, "Title is required.");
@@ -397,6 +541,7 @@ export async function createTraining(formData: FormData) {
       title,
       slug,
       description: description || null,
+      leader_summary: leaderSummary || null,
       published,
       order_index: orderIndex,
       session_count: 0,
@@ -438,10 +583,19 @@ export async function updateTraining(formData: FormData) {
     path,
     "Development notes"
   );
+  const leaderSummary = readCappedText(
+    formData,
+    "leader_summary",
+    LEADER_SUMMARY_MAX,
+    path,
+    "Training Summary"
+  );
   const attribution = readCappedText(formData, "attribution", ATTRIBUTION_MAX, path, "Credit");
+  const overviewVideoUrl = String(formData.get("overview_video_url") ?? "").trim();
 
   if (!trainingId) fail("/admin/trainings", "Choose a training.");
   if (!title) fail(path, "Title is required.");
+  if (overviewVideoUrl && !hasHostedVideo(overviewVideoUrl)) fail(path, HOSTED_VIDEO_URL_ERROR);
 
   const supabase = await createClient();
   const { data: current, error: currentError } = await supabase
@@ -476,17 +630,20 @@ export async function updateTraining(formData: FormData) {
       title,
       slug,
       description: description || null,
+      leader_summary: leaderSummary || null,
       published,
       order_index: orderIndex,
       working_title: workingTitle || null,
       development_notes: developmentNotes || null,
       attribution: attribution || null,
+      overview_video_url: overviewVideoUrl || null,
     })
     .eq("id", trainingId);
 
   if (error) failDb(path, error, error.message);
 
   revalidateAdmin(path);
+  revalidatePath(`/father/trainings/${trainingId}`);
   ok(path, published ? "Training saved and published." : "Training saved. It is hidden from new assignment.");
 }
 

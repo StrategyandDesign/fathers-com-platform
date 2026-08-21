@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Partner kit print artifacts. URLs derive from SITE_URL in build_pages.py
-(docs/DOMAIN.md). Output: partner-kit/dist/. Doctrine: POSITIONING.md 9 and 16;
+(docs/engineering/DOMAIN.md). Output: partner-kit/dist/. Doctrine: docs/product/POSITIONING.md 9 and 16;
 the parent insert copy is asserted against the section 9 vocabulary ban."""
 import re
 from pathlib import Path
@@ -14,11 +14,11 @@ from reportlab.graphics import renderPDF
 from reportlab.lib.utils import ImageReader
 
 REPO = Path(__file__).resolve().parents[1]
-SITE_URL = re.search(r'SITE_URL\s*=\s*"([^"]+)"', (REPO / "build_pages.py").read_text()).group(1)
+SITE_URL = re.search(r'SITE_URL\s*=\s*"([^"]+)"', (REPO / "archive/static-site/build_pages.py").read_text()).group(1)
 HOST = SITE_URL.replace("https://", "").replace("http://", "")
 PROFILE_URL, VERIFY_URL = SITE_URL + "/profile.html", SITE_URL + "/verify.html"
 PROFILE_DISP, VERIFY_DISP = HOST + "/profile.html", HOST + "/verify.html"
-LOGO = str(REPO / "assets/img/logomark-dark.png")
+LOGO = str(REPO / "archive/static-site/assets/img/logomark-dark.png")
 OUT = REPO / "partner-kit" / "dist"
 OUT.mkdir(exist_ok=True)
 

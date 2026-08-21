@@ -57,6 +57,7 @@ export async function startProfile() {
   await ensureProfileDraft(user.id);
   revalidatePath("/father");
   revalidatePath("/father/profile");
+  revalidatePath("/father/assessments");
   revalidatePath("/manager/practice");
   redirect(paths.profileTake);
 }
@@ -73,6 +74,7 @@ export async function retakeProfile() {
   revalidatePath("/father");
   revalidatePath("/father/profile");
   revalidatePath("/father/profile/take");
+  revalidatePath("/father/assessments");
   revalidatePath("/manager/practice");
   revalidatePath(paths.profileTake);
   redirect(`${paths.profileTake}?q=1`);
@@ -123,6 +125,7 @@ async function persistProfileProgress(formData: FormData, intent: ProfileIntent)
   revalidatePath("/father");
   revalidatePath("/father/profile");
   revalidatePath("/father/profile/take");
+  revalidatePath("/father/assessments");
   revalidatePath("/manager/practice");
   revalidatePath(paths.profileTake);
 

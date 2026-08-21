@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
 
 jobs:
   checks:
@@ -13,43 +12,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
 
-      - name: Python syntax (builders)
-        run: |
-          python -m py_compile build_pages.py build_dashboards.py build_emails.py
-          python -m py_compile tools/check_release.py
+      - name: Install
+        run: npm ci
 
-      - name: JS syntax (assets/js)
-        run: |
-          set -e
-          for f in assets/js/*.js; do
-            # skip example config; real config.js is present but must still parse
-            case "$f" in
-              */config.example.js) continue ;;
-            esac
-            node --check "$f"
-          done
+      - name: Typecheck
+        run: npx tsc --noEmit
 
-      - name: Release checker
-        run: python tools/check_release.py
+      - name: Lint
+        run: npm run lint
 
-      - name: E2E smoke (Playwright, optional)
-        continue-on-error: true
-        run: |
-          if ! python -c "import playwright" 2>/dev/null; then
-            pip install pytest playwright
-            python -m playwright install --with-deps chromium || {
-              echo "NOTE: Playwright browser install unavailable; skipping e2e smoke."
-              exit 0
-            }
-          fi
-          python -m pytest tests/e2e -q
+      - name: Unit tests
+        run: npx --yes tsx --test tests/*.test.ts

@@ -8,6 +8,8 @@ import { AssessmentVisibilityForms } from "@/components/manager/assessment-visib
 import { assignAssessment, updateAssessment } from "@/lib/assessments/actions";
 import { customAssessmentKey, isAssessmentAvailable } from "@/lib/assessments/availability";
 import { loadAssessmentAvailability, loadManagerAssessmentDetail } from "@/lib/assessments/data";
+import { isFirstPartyAssessmentKey } from "@/lib/assessments/first-party";
+import { ManagerPlatformAssessmentDesk } from "@/components/manager/platform-assessment-desk";
 import { loadManagerGroups } from "@/lib/manager/data";
 import { requireRole } from "@/lib/auth/session";
 import { translateAssignmentStatus } from "@/lib/i18n/flash";
@@ -26,6 +28,15 @@ export default async function ManagerAssessmentDetailPage({
   const flash = await searchParams;
   const { user } = await requireRole("manager");
   const { t } = await getI18n();
+  if (isFirstPartyAssessmentKey(id)) {
+    return (
+      <ManagerPlatformAssessmentDesk
+        assessmentKey={id}
+        userId={user.id}
+        flash={flash}
+      />
+    );
+  }
   const detail = await loadManagerAssessmentDetail(user.id, id);
 
   if (!detail) {
@@ -165,7 +176,7 @@ export default async function ManagerAssessmentDetailPage({
         )}
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+      <section id="assign" className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.assign")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {t("manager.assessments.assignLead")}

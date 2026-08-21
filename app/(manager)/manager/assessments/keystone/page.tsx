@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AssessmentCatalogDecisionButtons } from "@/components/manager/assessment-catalog-decision-buttons";
+import { AssessmentInstrumentReview } from "@/components/manager/assessment-instrument-review";
 import { AssessmentReviewForms } from "@/components/manager/assessment-review-forms";
 import { AssessmentVisibilityForms } from "@/components/manager/assessment-visibility-forms";
 import { Flash } from "@/components/manager/flash";
@@ -8,6 +10,7 @@ import { ReviewStatusBadge } from "@/components/manager/review-decision-forms";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
+import { assessmentCatalogDecision } from "@/lib/assessments/catalog";
 import {
   loadAssessmentAvailability,
   loadOrganizationAssessmentReviews,
@@ -24,6 +27,7 @@ import { requireRole } from "@/lib/auth/session";
 import { translateAssignmentStatus } from "@/lib/i18n/flash";
 import { getI18n } from "@/lib/i18n/server";
 import { loadManagerWorkspace } from "@/lib/manager/data";
+import { keystoneInstrumentReview } from "@/lib/assessments/instrument-review";
 import { PROFILE_QUESTION_COUNT } from "@/lib/father/questions";
 import { interactiveLinkClassName, interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -64,7 +68,21 @@ export default async function ManagerKeystonePage({
   const needsReview =
     isAssessmentCurrentlyReleased(release) &&
     (review?.status === "pending" || review?.status === "declined");
-  const inOpenCatalog = isLegacyCatalogAssessment(release);
+  const inOpenCatalog = isLegacyCatalogAssessment(release, KEYSTONE_ASSESSMENT_KEY);
+  const section =
+    review?.status === "pending"
+      ? "pending"
+      : review?.status === "declined"
+        ? "declined"
+        : status === "hidden"
+          ? "hidden"
+          : "available";
+  const decision = assessmentCatalogDecision({
+    kind: "keystone",
+    section,
+    reviewStatus: review?.status ?? null,
+    status,
+  });
   const roster = workspace.participants.filter((row) => row.groupId === group.id);
   const completed = roster.filter((row) => row.profileStatus === "completed").length;
 
@@ -108,12 +126,12 @@ export default async function ManagerKeystonePage({
             .filter(Boolean)
             .join(" · ")}
         </p>
-        {review && (needsReview || !inOpenCatalog) ? (
+        {review ? (
           <div className="mt-4">
             <ReviewStatusBadge status={review.status} />
           </div>
         ) : null}
-        <div className="mt-5">
+        <div className="mt-5 space-y-5">
           {needsReview && review ? (
             <AssessmentReviewForms
               assessmentKey={KEYSTONE_ASSESSMENT_KEY}
@@ -121,23 +139,50 @@ export default async function ManagerKeystonePage({
               status={review.status}
               declineReason={review.decline_reason}
             />
-          ) : mayOffer ? (
-            <AssessmentVisibilityForms
-              assessmentKey={KEYSTONE_ASSESSMENT_KEY}
-              groupId={group.id}
-              status={status}
-              kind="keystone"
-              returnTo="detail"
-            />
           ) : (
-            <p className="text-sm text-muted-foreground">
-              {t("manager.assessmentReviews.notReleased")}
-            </p>
+            <>
+              <div className="flex flex-row flex-wrap items-center gap-2">
+                <AssessmentCatalogDecisionButtons
+                  item={{
+                    key: `${group.id}:${KEYSTONE_ASSESSMENT_KEY}`,
+                    assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+                    kind: "keystone",
+                    status,
+                    section,
+                    decision,
+                    reviewStatus: review?.status ?? null,
+                    groupId: group.id,
+                    href: `/manager/assessments/keystone?group=${group.id}#instrument`,
+                    questionCount: PROFILE_QUESTION_COUNT,
+                    assignedCount: roster.length,
+                    completedCount: completed,
+                    notStartedCount: Math.max(0, roster.length - completed),
+                    inProgressCount: 0,
+                  }}
+                  t={t}
+                />
+              </div>
+              {mayOffer ? (
+                <AssessmentVisibilityForms
+                  assessmentKey={KEYSTONE_ASSESSMENT_KEY}
+                  groupId={group.id}
+                  status={status}
+                  kind="keystone"
+                  returnTo="detail"
+                />
+              ) : !inOpenCatalog && !review ? (
+                <p className="text-sm text-muted-foreground">
+                  {t("manager.assessmentReviews.notReleased")}
+                </p>
+              ) : null}
+            </>
           )}
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+      <AssessmentInstrumentReview model={keystoneInstrumentReview()} />
+
+      <section id="assign" className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.assignments")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {t("manager.assessments.keystoneRosterLead")}

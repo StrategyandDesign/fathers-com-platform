@@ -7,6 +7,7 @@ import { useT } from "@/components/i18n/locale-provider";
 import { Flash } from "@/components/manager/flash";
 import { PushDeviceButton } from "@/components/father/push-device-button";
 import {
+  shouldShowReminderSchedule,
   togglesForRole,
   type NotificationPrefKey,
   type NotificationPreferences,
@@ -113,7 +114,7 @@ export function NotificationPrefs({
         ))}
       </ul>
       )}
-      {role === "father" && schedule ? (
+      {role === "father" && schedule && shouldShowReminderSchedule(prefs) ? (
         <ReminderScheduleForm
           initial={schedule}
           onResult={(nextStatus, nextMessage) => {
@@ -121,6 +122,11 @@ export function NotificationPrefs({
             setMessage(nextMessage);
           }}
         />
+      ) : null}
+      {role === "father" ? (
+        <div className="mt-5">
+          <PushDeviceButton />
+        </div>
       ) : null}
       {pending ? (
         <p className="mt-4 text-sm text-muted-foreground" aria-live="polite">
@@ -236,7 +242,6 @@ function ReminderScheduleForm({
       <Button type="submit" variant="default" size="lg" className={homePrimaryCtaClassName} disabled={pending}>
         {t("notify.saveSchedule")}
       </Button>
-      <PushDeviceButton />
     </form>
   );
 }

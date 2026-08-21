@@ -2,27 +2,28 @@
 
 ## Cursor Cloud specific instructions
 
-The live product is the Next.js 15 App Router app in `app/`. `package.json` scripts (`npm run dev`, `npm run lint`, `npm run build`) are the source of truth for that app. The root `*.html` files and Python builders (`build_pages.py`, `README.md`, `.github/workflows/ci.yml`) are the previous static generation; they still pass CI but are not what `npm run dev` serves.
+The live product is the Next.js 15 App Router app in `app/`. `package.json` scripts (`npm run dev`, `npm run lint`, `npm run build`) are the source of truth.
+
+`archive/static-site/*.html` and `archive/static-site/build_*.py` are the previous static generation. They are not what `npm run dev` serves.
+
+Do not add new markdown to the repo root. Product notes go in `docs/product/`. Engineering runbooks go in `docs/engineering/`. Keep `README.md`, `CONTRIBUTING.md`, `AGENTS.md`, `SHARED.md`, and `SUBMITS.md` as the only root docs.
 
 ### Services
 
-- **Next.js** (`npm run dev`) — required. Listens on http://localhost:3000. Throws at runtime if `NEXT_PUBLIC_SUPABASE_URL` and a publishable/anon key are missing (see `lib/supabase/env.ts` and `.env.example`).
-- **Supabase** (Postgres + Auth + Storage) — required for login, signup, and every authenticated surface. Local stack: `supabase start` (needs Docker). Put keys from `supabase status` into `.env.local`.
-- **Supabase Edge Functions, Stripe, Resend, VAPID, YouTube, Sentry** — optional. Local/pilot degrades without them.
+- **Next.js** (`npm run dev`) — required. http://localhost:3000. If env keys are missing, Pilot fallback is in `lib/supabase/env.ts`.
+- **Supabase** — required for login and authenticated surfaces.
+- Edge Functions, Stripe, Resend, VAPID, YouTube, Sentry — optional. Local/pilot degrades without them.
 
 ### Fresh local database
 
-`supabase/migrations/` includes historical files from before `20260817025510_pilot_core_schema.sql`. Those were applied by hand to production and assume tables that a brand-new local database does not have. `supabase start` that applies the full directory will fail on the first `ALTER TABLE assessments`.
+`supabase/migrations/` includes historical files from before `20260817025510_pilot_core_schema.sql`. A brand-new `supabase start` that applies the full directory can fail on early `ALTER TABLE` files.
 
-For a local stack, apply only the clean-pilot era: `20260817025510` and later. Temporarily move older `supabase/migrations/*.sql` files aside; do not commit that move.
-
-Signup requires a group `invite_code`. Seed a manager `profiles` row and a `groups` row after `supabase start`. Default local `supabase/config.toml` has `enable_confirmations = false`, so signup creates a session immediately.
+For a local stack, apply only the clean-pilot era: `20260817025510` and later. See `docs/engineering/PILOT.md`.
 
 ### Lint / test / run
 
 - Lint: `npm run lint`
-- Unit tests: `npx tsx --test tests/*.test.ts` (no `package.json` test script; Node cannot resolve extensionless TS imports / `@/` aliases without `tsx`)
+- Unit tests: `npx tsx --test tests/*.test.ts`
 - Dev server: `npm run dev`
-- Legacy CI gate: `python3 tools/check_release.py` (static HTML). Playwright `tests/e2e` also targets the static files, not Next.js.
 
-Server-component chrome in `components/layout/role-shell.tsx` does not always hot-reload. Hard-refresh the browser, or restart `npm run dev` (clear `.next` if the old tree is still visible).
+Server-component chrome in `components/layout/role-shell.tsx` does not always hot-reload. Hard-refresh, or restart `npm run dev`.

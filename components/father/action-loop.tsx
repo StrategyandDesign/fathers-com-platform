@@ -1,10 +1,6 @@
 import Link from "next/link";
 
-import {
-  ActionCommitmentForm,
-  ActionDoneForm,
-  ActionFinishForm,
-} from "@/components/father/action-commitment-form";
+import { ActionCommitmentForm, ActionDoneForm } from "@/components/father/action-commitment-form";
 import { ActionDisplay } from "@/components/father/action-display";
 import type { ActionLoopState, IntentionOption } from "@/lib/father/action-commitment";
 import { getI18n } from "@/lib/i18n/server";
@@ -22,12 +18,10 @@ export async function ActionLoop({
   defaultOption,
   defaultDate,
   defaultTime,
-  defaultNote,
   skipHref,
   changeHref,
   commitAction,
   doneAction,
-  finishAction,
 }: {
   sessionId: string;
   sessionTitle?: string | null;
@@ -39,12 +33,10 @@ export async function ActionLoop({
   defaultOption?: IntentionOption | null;
   defaultDate?: string | null;
   defaultTime?: string | null;
-  defaultNote?: string | null;
   skipHref?: string | null;
   changeHref: string;
   commitAction: (formData: FormData) => void | Promise<void>;
   doneAction: (formData: FormData) => void | Promise<void>;
-  finishAction: (formData: FormData) => void | Promise<void>;
 }) {
   const { t } = await getI18n();
   const showCommit = state === "commit" || changing;
@@ -89,14 +81,6 @@ export async function ActionLoop({
           ) : null}
           <ActionDoneForm sessionId={sessionId} action={doneAction} />
         </div>
-      ) : null}
-
-      {state === "finish" ? (
-        <ActionFinishForm
-          sessionId={sessionId}
-          defaultNote={defaultNote}
-          action={finishAction}
-        />
       ) : null}
     </ActionDisplay>
   );

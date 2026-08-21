@@ -3,6 +3,7 @@ export type Training = {
   slug: string;
   title: string;
   description: string | null;
+  leader_summary?: string | null;
   session_count: number;
   order_index: number;
   published?: boolean | null;
@@ -17,7 +18,12 @@ export type Training = {
   last_edited_by?: string | null;
   previewed_at?: string | null;
   attribution?: string | null;
+  overview_video_url?: string | null;
 };
+
+export function trainingOverviewPath(trainingId: string) {
+  return `/father/trainings/${trainingId}`;
+}
 
 export function isTrainingPublished(training: { published?: boolean | null }) {
   return training.published !== false;
@@ -46,7 +52,7 @@ export function isTrainingAssignable(
 ) {
   if (!isTrainingPublished(training)) return false;
   if (training.released_at) return reviewStatus === "accepted";
-  return isLegacyCatalogTraining(training);
+  return isLegacyCatalogTraining(training) && reviewStatus !== "declined";
 }
 
 export function isTrainingVisibleInCatalog(
@@ -61,11 +67,13 @@ export function isTrainingVisibleInCatalog(
     assigned: boolean;
     hasProgress: boolean;
     hasCertificate: boolean;
+    declined?: boolean;
   }
 ) {
   if (access.assigned || access.hasProgress || access.hasCertificate) return true;
   if (!isTrainingPublished(training)) return false;
   if (training.released_at) return access.accepted;
+  if (access.declined) return false;
   return isLegacyCatalogTraining(training);
 }
 
@@ -104,6 +112,8 @@ export type SessionProgress = {
   status: "not_started" | "in_progress" | "completed";
   completed_at: string | null;
   action_try_at?: string | null;
+  skill_use?: "used" | "later" | "dismissed" | null;
+  skill_use_at?: string | null;
 };
 
 export function asSessionProgress(row: SessionProgress): SessionProgress {
@@ -128,6 +138,11 @@ export function asSessionProgress(row: SessionProgress): SessionProgress {
     checkin_answers: answers,
     session_note: fromColumn || fromAnswers || null,
     film_seconds: filmSeconds,
+    skill_use:
+      row.skill_use === "used" || row.skill_use === "later" || row.skill_use === "dismissed"
+        ? row.skill_use
+        : null,
+    skill_use_at: typeof row.skill_use_at === "string" ? row.skill_use_at : null,
   };
 }
 
@@ -153,6 +168,11 @@ export function isSessionComplete(
   );
 }
 
+export function sessionFilmPath(sessionId: string, options?: { root?: string }) {
+  const root = options?.root ?? "/father";
+  return `${root}/sessions/${sessionId}`;
+}
+
 export function continueHref(
   sessionId: string,
   progress: Pick<
@@ -162,7 +182,7 @@ export function continueHref(
   options?: { root?: string }
 ) {
   const root = options?.root ?? "/father";
-  if (!progress?.film_completed) return `${root}/sessions/${sessionId}`;
+  if (!progress?.film_completed) return sessionFilmPath(sessionId, { root });
   if (!progress.checkin_completed) {
     return `${root}/sessions/${sessionId}/checkin`;
   }

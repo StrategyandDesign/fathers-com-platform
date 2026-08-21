@@ -1,5 +1,5 @@
 import { saveLocalePreference } from "@/lib/i18n/actions";
-import { LOCALES, LOCALE_META, type Locale } from "@/lib/i18n/config";
+import { LOCALE_META, PUBLIC_LOCALES, SHOW_HEBREW, type Locale } from "@/lib/i18n/config";
 import { getI18n } from "@/lib/i18n/server";
 import { fieldClassName } from "@/lib/ui";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ export async function LanguageForm({
 }: {
   savedLocale: string | null;
 }) {
+  if (!SHOW_HEBREW) return null;
+
   const { t } = await getI18n();
   const current = savedLocale ?? "";
 
@@ -21,7 +23,7 @@ export async function LanguageForm({
           <span className="text-sm text-muted-foreground">{t("common.language")}</span>
           <select className={fieldClassName} name="locale" defaultValue={current}>
             <option value="">{t("common.organizationDefault")}</option>
-            {LOCALES.map((locale) => (
+            {PUBLIC_LOCALES.map((locale) => (
               <option key={locale} value={locale}>
                 {LOCALE_META[locale as Locale].nativeLabel}
               </option>

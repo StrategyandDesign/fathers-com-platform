@@ -1,0 +1,40 @@
+#!/bin/sh
+# Publish each internal origin push to the shared review copy, numbered.
+if [ -n "$FATHERS_PUBLISHING" ]; then
+  exit 0
+fi
+
+remote="$1"
+url="$2"
+case "$remote $url" in
+  *clean-pilot-only*|*fathers-com-clean-pilot*)
+    exit 0
+    ;;
+esac
+
+zero=0000000000000000000000000000000000000000
+root="$(git rev-parse --show-toplevel)"
+status=0
+
+while read local_ref local_sha remote_ref remote_sha
+do
+  if [ "$local_sha" = "$zero" ]; then
+    continue
+  fi
+  case "$remote_ref" in
+    refs/heads/submit/*)
+      echo "Frozen submit branches are not published as shared marks."
+      continue
+      ;;
+    refs/heads/*)
+      FATHERS_PUBLISHING=1 node "$root/scripts/publish-shared.mjs" --sha "$local_sha"
+      status=$?
+      if [ "$status" -ne 0 ]; then
+        echo "Shared publish failed. The internal push is stopped so the two repos stay aligned."
+        exit "$status"
+      fi
+      ;;
+  esac
+done
+
+exit 0

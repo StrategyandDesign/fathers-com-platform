@@ -1,0 +1,14 @@
+#!/bin/sh
+# Tick Shared 1-1.01, 1.02, … once per push on the Shared 1 desk.
+if [ -n "$FATHERS_PUBLISHING" ] || [ -n "$FATHERS_STAMPING" ]; then
+  exit 0
+fi
+
+root="$(git rev-parse --show-toplevel)"
+merge_head="$(git rev-parse --git-path MERGE_HEAD)"
+rebase_head="$(git rev-parse --git-path REBASE_HEAD)"
+if [ -f "$merge_head" ] || [ -f "$rebase_head" ]; then
+  exit 0
+fi
+
+FATHERS_STAMPING=1 node "$root/scripts/shared-revision.mjs" --pre-commit

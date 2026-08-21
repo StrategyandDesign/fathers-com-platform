@@ -6,11 +6,15 @@ import { redirect } from "next/navigation";
 import { seedGroupAssessmentReviews } from "@/lib/admin/assessment-release";
 import { seedGroupTrainingReviews } from "@/lib/admin/release";
 import { requireRole } from "@/lib/auth/session";
+import { groupIdForFather, recordOrganizationActivity } from "@/lib/org-staff/activity";
+import { isManagerOfGroup } from "@/lib/org-staff/membership";
+import { parseParticipationMode } from "@/lib/participation";
 import {
   assignTrainingToFather,
   issueCertificateToFather,
   markSessionsCompleteForFather,
 } from "@/lib/manager/mutations";
+import { redirectManagerAssign } from "@/lib/manager/return-path";
 import { createClient } from "@/lib/supabase/server";
 
 function fail(path: string, message: string): never {
@@ -62,28 +66,81 @@ export async function createGroup(formData: FormData) {
   ok("/manager", "Group created. Share the invite code with fathers.");
 }
 
+export async function saveParticipationMode(formData: FormData) {
+  const { user } = await requireRole("manager");
+  const groupId = String(formData.get("group_id") ?? "").trim();
+  const mode = parseParticipationMode(formData.get("participation_mode"));
+
+  if (!groupId) {
+    fail("/manager", "Choose a group.");
+  }
+
+  const supabase = await createClient();
+  if (!(await isManagerOfGroup(supabase, user.id, groupId))) {
+    fail("/manager", "That group is not yours.");
+  }
+
+  const { data, error } = await supabase
+    .from("groups")
+    .update({ participation_mode: mode })
+    .eq("id", groupId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    fail("/manager", "The setting didn’t save. Try again.");
+  }
+  if (!data) {
+    fail("/manager", "That group is not yours.");
+  }
+
+  await recordOrganizationActivity(supabase, {
+    groupId,
+    actorId: user.id,
+    kind: "participation_set",
+    payload: { mode },
+  });
+
+  revalidateManager();
+  revalidatePath("/father");
+  ok("/manager", "Participation setting saved.");
+}
+
 export async function assignTraining(formData: FormData) {
   const { user } = await requireRole("manager");
   const fatherId = String(formData.get("father_id") ?? "");
   const trainingId = String(formData.get("training_id") ?? "");
-  const path = `/manager/participants/${fatherId}`;
 
   if (!fatherId || !trainingId) {
-    fail(path || "/manager/participants", "Choose a training to assign.");
+    redirectManagerAssign("error", "Choose a training to assign.", formData, fatherId);
   }
 
   const supabase = await createClient();
   const result = await assignTrainingToFather(supabase, user, fatherId, trainingId);
 
   if (result.status === "failed") {
-    fail(path, `${result.reason ?? "The assignment didn’t save."} Try again.`);
+    redirectManagerAssign(
+      "error",
+      `${result.reason ?? "The assignment didn’t save."} Try again.`,
+      formData,
+      fatherId
+    );
   }
   if (result.status === "skipped") {
-    fail(path, "That training is already assigned.");
+    redirectManagerAssign("error", "That training is already assigned.", formData, fatherId);
+  }
+
+  const groupId = await groupIdForFather(supabase, fatherId);
+  if (groupId) {
+    await recordOrganizationActivity(supabase, {
+      groupId,
+      actorId: user.id,
+      kind: "training_assigned",
+    });
   }
 
   revalidateManager(fatherId);
-  ok(path, "Training assigned.");
+  redirectManagerAssign("notice", "Training assigned.", formData, fatherId);
 }
 
 export async function markTrainingComplete(formData: FormData) {
@@ -155,6 +212,15 @@ export async function sendCertificate(formData: FormData) {
   }
   if (result.status === "skipped") {
     ok(previewPath, result.reason ?? "A certificate is already on file for this training.");
+  }
+
+  const groupId = await groupIdForFather(supabase, fatherId);
+  if (groupId) {
+    await recordOrganizationActivity(supabase, {
+      groupId,
+      actorId: user.id,
+      kind: "certificate_issued",
+    });
   }
 
   revalidateManager(fatherId, trainingId);

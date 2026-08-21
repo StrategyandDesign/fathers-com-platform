@@ -1,4 +1,4 @@
-import { isLocale } from "@/lib/i18n/config";
+import { isPublicLocale } from "@/lib/i18n/config";
 import { parseClock, parseTimeZone } from "@/lib/notifications/schedule";
 import {
   DEFAULT_QUIET_END,
@@ -21,7 +21,7 @@ export function parseNotificationPrefsRow(
     parseWeekday(source.reminder_day) ?? parseWeekday(reminder?.weekday) ?? null;
   const reminderTime =
     parseClock(source.reminder_time) ?? parseClock(reminder?.remindAt) ?? null;
-  const locale: NotificationLocale = isLocale(source.locale) ? source.locale : "en";
+  const locale: NotificationLocale = isPublicLocale(source.locale) ? source.locale : "en";
 
   return {
     userId: typeof source.user_id === "string" ? source.user_id : "",

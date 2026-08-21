@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { createTraining } from "@/lib/admin/actions";
+import { LEADER_SUMMARY_MAX } from "@/lib/admin/development";
 import { Flash } from "@/components/manager/flash";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -62,6 +63,27 @@ export default async function AdminNewTrainingPage({
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Description</span>
           <textarea className={textareaClassName} name="description" />
+          <span className="block text-sm text-muted-foreground">
+            Short catalog blurb. Leaders see this on the training card.
+          </span>
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">Training Summary</span>
+          <textarea
+            className={textareaClassName}
+            name="leader_summary"
+            maxLength={LEADER_SUMMARY_MAX}
+            rows={8}
+            placeholder="The complete summary the leader reads first."
+          />
+          <span className="block text-sm text-muted-foreground">
+            This is what the leader (Org Manager) reads before the session
+            information or films.
+          </span>
+          <span className="block text-sm text-muted-foreground">
+            After you create the training, attach PDFs on the edit page. PDF
+            only, 5 MB each, up to 3.
+          </span>
         </label>
         <label className="block space-y-2">
           <span className="text-sm text-muted-foreground">Development notes</span>
@@ -83,7 +105,7 @@ export default async function AdminNewTrainingPage({
             value="true"
             className="size-4 accent-primary"
           />
-          <span>Published (catalog flag only — still not released to Leaders)</span>
+          <span>Published (catalog flag only, still not released to Leaders)</span>
         </label>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button type="submit" className="w-full sm:w-auto">

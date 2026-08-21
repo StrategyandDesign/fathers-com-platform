@@ -18,6 +18,7 @@ export function HomeUpNextCard({
   subtitle,
   durationSeconds,
   continueSession,
+  startWithOverview,
   completed,
   total,
   justFinished,
@@ -31,6 +32,7 @@ export function HomeUpNextCard({
   subtitle?: string | null;
   durationSeconds?: number | null;
   continueSession: boolean;
+  startWithOverview?: boolean;
   completed: number;
   total: number;
   justFinished?: boolean;
@@ -48,7 +50,7 @@ export function HomeUpNextCard({
     <div className={cn("flex h-full min-w-0 flex-col gap-3", className)}>
       <p className={eyebrowClassName}>{t("father.home.upNext")}</p>
       <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card">
-        <div className="h-36 shrink-0 overflow-hidden bg-[#101510] sm:h-44 lg:h-48">
+        <div className="relative h-36 w-full shrink-0 overflow-hidden bg-[#101510] sm:h-44 lg:h-48">
           <CoverPhoto src={coverSrc} />
         </div>
         <div className="flex flex-1 flex-col gap-3 px-3.5 py-3.5 sm:px-5 sm:py-5">
@@ -68,7 +70,11 @@ export function HomeUpNextCard({
               "mt-auto"
             )}
           >
-            {continueSession ? t("father.home.continueSession") : t("father.home.start")}
+            {startWithOverview
+              ? t("father.trainings.watchOverview")
+              : continueSession
+                ? t("father.home.continueSession")
+                : t("father.home.start")}
           </Link>
         </div>
         {total > 0 ? (

@@ -5,7 +5,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
-import { resolveUserLocale } from "@/lib/i18n/resolve";
+import { loadReviewerGroupIds } from "@/lib/org-staff/membership";
 import { formatShortDate } from "@/lib/i18n/server";
 import {
   COMPLETION_STATUSES,
@@ -99,15 +99,21 @@ export default async function ReviewerInsightsPage({
   const { user } = await requireRole("reviewer");
   const { t, locale } = await getI18n();
   const parsed = parseInsightSearchParams(params);
-  const resolved = await resolveUserLocale(user.id);
-  const scopedGroupId = resolved.homeGroupId;
+  const scopedGroupIds = await loadReviewerGroupIds(user.id);
+  const requestedGroup = parsed.filters.groupId;
+  const scopedGroupId =
+    scopedGroupIds.length === 1
+      ? scopedGroupIds[0]
+      : requestedGroup && scopedGroupIds.includes(requestedGroup)
+        ? requestedGroup
+        : scopedGroupIds[0] ?? requestedGroup;
   const filters = {
     ...parsed.filters,
-    groupId: scopedGroupId ?? parsed.filters.groupId,
+    groupId: scopedGroupId ?? requestedGroup,
   };
   const insights = await loadReviewerInsights(filters);
-  if (scopedGroupId) {
-    insights.groups = insights.groups.filter((group) => group.id === scopedGroupId);
+  if (scopedGroupIds.length > 0) {
+    insights.groups = insights.groups.filter((group) => scopedGroupIds.includes(group.id));
   }
   const query = insightQuery(filters);
   const exportQuery = query ? `${query}&` : "";
@@ -153,9 +159,9 @@ export default async function ReviewerInsightsPage({
               className={fieldClassName}
               name="group_id"
               defaultValue={filters.groupId ?? ""}
-              disabled={Boolean(scopedGroupId)}
+              disabled={scopedGroupIds.length === 1}
             >
-              {scopedGroupId ? null : <option value="">{t("reviewer.allGroups")}</option>}
+              {scopedGroupIds.length > 0 ? null : <option value="">{t("reviewer.allGroups")}</option>}
               {insights.groups.map((group) => (
                 <option key={group.id} value={group.id}>
                   {groupLabel(group.label, t)}

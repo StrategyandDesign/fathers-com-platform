@@ -25,6 +25,19 @@ export function homeTrainingLabel(training: {
   return training.title;
 }
 
+export function homeTrainingSessionCount(total: number) {
+  return total > 0 ? total : null;
+}
+
+/** More than one item in Completed or Certificates becomes a title list. */
+export function shouldCompactHomeDoneShelf(count: number) {
+  return count > 1;
+}
+
+export function isHomeTrainingComplete(card: HomePathCard) {
+  return card.total > 0 && card.completed >= card.total;
+}
+
 export function isHomeTrainingStarted(card: HomeShelfCard) {
   if (card.gated) return false;
   if (card.completed > 0) return true;
@@ -43,16 +56,13 @@ export function splitHomeRows<T extends HomeShelfCard>(
   currentTrainingId?: string | null
 ) {
   const open = cards.filter((card) => !card.gated);
-  const started = open.filter((card) => isHomeTrainingStarted(card));
-  const path =
-    started.length > 0
-      ? sortHomePath(started, currentTrainingId)
-      : open.filter((card) => currentTrainingId && card.training.id === currentTrainingId);
-  const pathIds = new Set(path.map((card) => card.training.id));
-  const trainings = open.filter(
-    (card) => !pathIds.has(card.training.id) && card.completed < card.total
+  const completed = open.filter((card) => isHomeTrainingComplete(card));
+  const completedIds = new Set(completed.map((card) => card.training.id));
+  const trainings = sortHomePath(
+    open.filter((card) => !completedIds.has(card.training.id) && card.completed < card.total),
+    currentTrainingId
   );
-  return { path, trainings };
+  return { path: [] as T[], trainings, completed };
 }
 
 export type HomeAssessment =

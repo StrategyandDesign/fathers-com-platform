@@ -8,8 +8,9 @@ import {
   resolveRole,
   roleForPath,
 } from "@/lib/auth/roles";
-import { isLocale, LOCALE_COOKIE, type Locale } from "@/lib/i18n/config";
+import { isLocale, isPublicLocale, LOCALE_COOKIE, type Locale } from "@/lib/i18n/config";
 import { getSupabasePublishableKey, getSupabaseUrl } from "@/lib/supabase/env";
+import { PALETTE_COOKIE, paletteCookieOptions, parsePalette } from "@/lib/theme/palette";
 
 function redirectWithSession(supabaseResponse: NextResponse, url: URL) {
   const response = NextResponse.redirect(url);
@@ -39,6 +40,14 @@ function nextWithPathname(request: NextRequest) {
 }
 
 export async function updateSession(request: NextRequest) {
+  try {
+    return await applySession(request);
+  } catch {
+    return nextWithPathname(request);
+  }
+}
+
+async function applySession(request: NextRequest) {
   let supabaseResponse = nextWithPathname(request);
 
   const config = supabasePublicConfig();
@@ -88,23 +97,41 @@ export async function updateSession(request: NextRequest) {
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("role, locale, home_group_id")
+      .select("role, locale, home_group_id, color_scheme")
       .eq("id", user.id)
       .maybeSingle();
     role = resolveProfileRole(profile?.role, user);
 
     const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
     if (!isLocale(cookieLocale)) {
-      let nextLocale: Locale | null = isLocale(profile?.locale) ? profile.locale : null;
+      let nextLocale: Locale | null = isPublicLocale(profile?.locale) ? profile.locale : null;
       if (!nextLocale) {
-        const { data: managed } = await supabase
-          .from("groups")
-          .select("locale")
-          .eq("manager_id", user.id)
-          .order("created_at", { ascending: true })
+        const { data: staffRow } = await supabase
+          .from("organization_staff")
+          .select("group_id")
+          .eq("profile_id", user.id)
+          .eq("staff_role", "manager")
           .limit(1)
           .maybeSingle();
-        if (isLocale(managed?.locale)) nextLocale = managed.locale;
+        const localeGroupId = staffRow?.group_id;
+        if (localeGroupId) {
+          const { data: staffGroup } = await supabase
+            .from("groups")
+            .select("locale")
+            .eq("id", localeGroupId)
+            .maybeSingle();
+          if (isPublicLocale(staffGroup?.locale)) nextLocale = staffGroup.locale;
+        }
+        if (!nextLocale) {
+          const { data: managed } = await supabase
+            .from("groups")
+            .select("locale")
+            .eq("manager_id", user.id)
+            .order("created_at", { ascending: true })
+            .limit(1)
+            .maybeSingle();
+          if (isPublicLocale(managed?.locale)) nextLocale = managed.locale;
+        }
       }
       if (!nextLocale) {
         const { data: membership } = await supabase
@@ -121,7 +148,7 @@ export async function updateSession(request: NextRequest) {
             .select("locale")
             .eq("id", groupId)
             .maybeSingle();
-          if (isLocale(group?.locale)) nextLocale = group.locale;
+          if (isPublicLocale(group?.locale)) nextLocale = group.locale;
         }
       }
       if (nextLocale) {
@@ -131,6 +158,18 @@ export async function updateSession(request: NextRequest) {
           sameSite: "lax",
         });
       }
+    }
+
+    const accountPalette = parsePalette(
+      (profile as { color_scheme?: unknown } | null)?.color_scheme
+    );
+    const cookiePalette = parsePalette(request.cookies.get(PALETTE_COOKIE)?.value);
+    if (accountPalette && accountPalette !== cookiePalette) {
+      supabaseResponse.cookies.set(
+        PALETTE_COOKIE,
+        accountPalette,
+        paletteCookieOptions()
+      );
     }
   }
 

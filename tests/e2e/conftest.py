@@ -1,7 +1,7 @@
 """Shared test infrastructure. Serves the built site locally and provides a
 browser page whose external requests are aborted, so every test is offline,
 deterministic, and can never touch the production database."""
-import subprocess, time, socket
+import os, subprocess, time, socket
 import pytest
 from playwright.sync_api import sync_playwright
 
@@ -19,8 +19,10 @@ def _wait_port(port, timeout=10):
 
 @pytest.fixture(scope="session")
 def server():
+    root = os.path.join(os.path.dirname(__file__), "..", "..", "archive", "static-site")
     proc = subprocess.Popen(
         ["python3", "-m", "http.server", str(PORT)],
+        cwd=root,
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
     _wait_port(PORT)

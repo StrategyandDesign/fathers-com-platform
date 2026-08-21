@@ -10,7 +10,7 @@ export const INTAKE_AUDIENCE_MAX = 200;
 export const INTAKE_OUTLINE_MAX = 8000;
 export const INTAKE_RIGHTS_NOTES_MAX = 2000;
 export const ATTRIBUTION_MAX = 120;
-export const OUTLINE_SESSION_MAX = 40;
+export const OUTLINE_SESSION_MAX = 20;
 
 export const RIGHTS_STATUSES = ["inquiry", "pending", "cleared", "declined"] as const;
 export type RightsStatus = (typeof RIGHTS_STATUSES)[number];
@@ -118,7 +118,7 @@ export function splitOutlineLine(line: string): OutlineSession {
   return { title, videoUrl };
 }
 
-export function parseSessionOutline(text: string): OutlineSession[] {
+export function readSessionOutline(text: string): OutlineSession[] {
   const lines = text
     .split(/\r?\n/)
     .map((line) => line.trim())
@@ -147,7 +147,63 @@ export function parseSessionOutline(text: string): OutlineSession[] {
     }
   }
 
-  return sessions.slice(0, OUTLINE_SESSION_MAX);
+  return sessions;
+}
+
+export function parseSessionOutline(text: string): OutlineSession[] {
+  return readSessionOutline(text).slice(0, OUTLINE_SESSION_MAX);
+}
+
+export function countSessionOutline(text: string) {
+  return readSessionOutline(text).length;
+}
+
+export function outlineSessionWarning(count: number) {
+  if (count <= OUTLINE_SESSION_MAX) return null;
+  return "This outline is longer than one training should be. Split the rest into another intake.";
+}
+
+export function intakeQueueCounts(
+  intakes: Array<{
+    status?: string | null;
+    rightsStatus?: string | null;
+    rights_status?: string | null;
+  }>
+) {
+  let waitingOnClearance = 0;
+  let inTheSandbox = 0;
+  let released = 0;
+
+  for (const intake of intakes) {
+    const status = asIntakeStatus(intake.status);
+    const rights = asRightsStatus(intake.rightsStatus ?? intake.rights_status);
+    if (status === "archived" || rights === "declined") continue;
+    if (status === "released") {
+      released += 1;
+      continue;
+    }
+    if (rights === "inquiry" || rights === "pending") {
+      waitingOnClearance += 1;
+      continue;
+    }
+    inTheSandbox += 1;
+  }
+
+  return { waitingOnClearance, inTheSandbox, released };
+}
+
+export function intakeQueueLine(
+  counts: ReturnType<typeof intakeQueueCounts>
+) {
+  const { waitingOnClearance, inTheSandbox, released } = counts;
+  if (waitingOnClearance + inTheSandbox + released === 0) {
+    return "No intakes in flight.";
+  }
+  return [
+    `${waitingOnClearance} waiting on clearance`,
+    `${inTheSandbox} in the sandbox`,
+    `${released} released`,
+  ].join(" · ");
 }
 
 export function isHttpUrl(value: string) {

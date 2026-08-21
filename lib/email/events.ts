@@ -182,6 +182,53 @@ export async function notifyManagerNudge(input: {
   return { status: result.sent ? ("sent" as const) : ("failed" as const) };
 }
 
+export async function notifyLeaderInvite(input: {
+  email: string;
+  organizationName: string;
+  joinHref: string;
+}) {
+  try {
+    const rendered = renderTransactionalEmail({
+      title: "Your Leader desk is ready.",
+      body: `${input.organizationName} is set up for you.\nCreate your password, then we will show you the desk.`,
+      ctaLabel: "Join as Leader",
+      ctaHref: input.joinHref,
+    });
+    return sendEmail({
+      to: input.email,
+      subject: `${input.organizationName} is ready on Fathers.com`,
+      html: rendered.html,
+      text: rendered.text,
+    });
+  } catch (error) {
+    console.error("[email] leader invite failed", error);
+    return { sent: false as const, reason: "network_error" };
+  }
+}
+
+export async function notifyOrganizationReady(input: {
+  email: string;
+  organizationName: string;
+}) {
+  try {
+    const rendered = renderTransactionalEmail({
+      title: "A group is ready on your desk.",
+      body: `${input.organizationName} is now yours.\nSign in to share the invite code and include a training.`,
+      ctaLabel: "Open the desk",
+      ctaHref: `${getAppUrl()}/login`,
+    });
+    return sendEmail({
+      to: input.email,
+      subject: `${input.organizationName} is on your Leader desk`,
+      html: rendered.html,
+      text: rendered.text,
+    });
+  } catch (error) {
+    console.error("[email] organization ready failed", error);
+    return { sent: false as const, reason: "network_error" };
+  }
+}
+
 async function sendWelcome(to: string) {
   const rendered = renderTransactionalEmail({
     title: "Your account is ready.",

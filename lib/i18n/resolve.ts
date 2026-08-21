@@ -1,6 +1,6 @@
 import { cache } from "react";
 
-import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, exposeLocale, isPublicLocale, type Locale } from "@/lib/i18n/config";
 import { createClient } from "@/lib/supabase/server";
 
 export type ResolvedLocaleSource = {
@@ -26,7 +26,7 @@ export const resolveUserLocale = cache(async (userId: string): Promise<ResolvedL
 
     if (profileError) return empty;
 
-    if (isLocale(profile?.locale)) {
+    if (isPublicLocale(profile?.locale)) {
       return {
         locale: profile.locale,
         homeGroupId: profile.home_group_id ?? null,
@@ -34,15 +34,11 @@ export const resolveUserLocale = cache(async (userId: string): Promise<ResolvedL
       };
     }
 
-    const { data: managed } = await supabase
-      .from("groups")
-      .select("id, locale, code")
-      .eq("manager_id", userId)
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    const { loadGroupsForManager } = await import("@/lib/org-staff/membership");
+    const managedGroups = await loadGroupsForManager(userId, supabase);
+    const managed = managedGroups[0];
 
-    if (managed && isLocale(managed.locale)) {
+    if (managed && isPublicLocale(managed.locale)) {
       return {
         locale: managed.locale,
         homeGroupId: managed.id,
@@ -74,7 +70,7 @@ export const resolveUserLocale = cache(async (userId: string): Promise<ResolvedL
       .maybeSingle();
 
     return {
-      locale: isLocale(group?.locale) ? group.locale : DEFAULT_LOCALE,
+      locale: exposeLocale(group?.locale),
       homeGroupId: group?.id ?? profile?.home_group_id ?? null,
       organizationCode: group?.code ?? null,
     };

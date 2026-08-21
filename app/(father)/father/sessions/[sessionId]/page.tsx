@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { SessionAdvanceButton } from "@/components/father/session-advance-button";
 import { SessionFilmPlayer } from "@/components/father/session-film-player";
 import { SessionHeader } from "@/components/father/session-header";
+import { TrainingHandoutLinks } from "@/components/father/training-handout-links";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { requireRole } from "@/lib/auth/session";
@@ -14,7 +15,8 @@ import { loadSessionContext } from "@/lib/father/data";
 import { loadOnboardingState } from "@/lib/father/onboarding-data";
 import { isOnboardingActive } from "@/lib/father/onboarding";
 import { loadFatherOrgPhotoCovers } from "@/lib/org-photos/data";
-import { youtubeEmbedUrl } from "@/lib/father/types";
+import { loadTrainingHandouts } from "@/lib/training-handouts/data";
+import { isSessionComplete, youtubeEmbedUrl } from "@/lib/father/types";
 import { getI18n } from "@/lib/i18n/server";
 import { sessionCtaClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -44,6 +46,7 @@ export default async function SessionViewerPage({
 
   const { t } = await getI18n();
   const { session, training, progress, completedCount, sessionTotal } = context;
+  const handouts = await loadTrainingHandouts(training.id);
   const funnel = isOnboardingActive(onboarding.mode, onboarding.step);
   const embed = youtubeEmbedUrl(session.video_url);
   const filmDone = progress?.film_completed ?? false;
@@ -76,6 +79,12 @@ export default async function SessionViewerPage({
         filmCompleted={filmDone}
         checkinCompleted={checkinDone}
       />
+
+      {isSessionComplete(progress) ? (
+        <p className="text-sm text-muted-foreground">{t("father.trainings.watchAgainHint")}</p>
+      ) : null}
+
+      <TrainingHandoutLinks handouts={handouts} t={t} />
 
       <SessionFilmPlayer
         session={session}

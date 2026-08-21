@@ -98,7 +98,7 @@ export function OrganizationPhotoSlot({
         {view.guidance.kind === "home_hero" ? (
           <div>
             <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.home")}</p>
-            <div className="relative h-24 overflow-hidden rounded-lg bg-[#101510] sm:h-36 lg:h-44">
+            <div className="relative h-24 w-full overflow-hidden rounded-lg bg-[#101510] sm:h-36 lg:h-44">
               <CoverPhoto src={preview} />
             </div>
           </div>
@@ -128,13 +128,13 @@ export function OrganizationPhotoSlot({
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.home")}</p>
-              <div className="relative h-28 overflow-hidden rounded-lg bg-[#101510] sm:h-32">
+              <div className="relative h-28 w-full overflow-hidden rounded-lg bg-[#101510] sm:h-32">
                 <CoverPhoto src={preview} />
               </div>
             </div>
             <div>
               <p className="mb-2 text-xs text-muted-foreground">{previewLabel} · {t("manager.photos.trainings")}</p>
-              <div className="relative aspect-video overflow-hidden rounded-lg bg-[#101510]">
+              <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-[#101510]">
                 <CoverPhoto src={preview} />
               </div>
             </div>

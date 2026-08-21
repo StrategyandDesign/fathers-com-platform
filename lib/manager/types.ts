@@ -8,6 +8,7 @@ export type Group = {
   created_at: string;
   code?: string | null;
   locale?: string | null;
+  participation_mode?: string | null;
 };
 
 export type GroupMember = {
@@ -37,6 +38,7 @@ export type Certificate = {
   serial_number: string;
   issued_at: string;
   issued_by: string | null;
+  issuer_name?: string | null;
   pdf_url?: string | null;
   pdf_storage_path?: string | null;
 };

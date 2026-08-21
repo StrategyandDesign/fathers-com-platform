@@ -10,6 +10,7 @@ import {
 } from "@/lib/assessments/availability";
 import { isLeaderSelfRow } from "@/lib/practice/paths";
 import { loadManagerGroups } from "@/lib/manager/data";
+import { loadOrgManagerIds } from "@/lib/org-staff/membership";
 import {
   isAssessmentReviewStatus,
   reviewForGroup,
@@ -70,13 +71,9 @@ function asAssignment(row: CustomAssessmentAssignment): CustomAssessmentAssignme
 
 export async function loadManagerRoster(managerId: string): Promise<RosterFather[]> {
   const supabase = await createClient();
-  const { data: groups, error: groupsError } = await supabase
-    .from("groups")
-    .select("id")
-    .eq("manager_id", managerId);
-
-  if (groupsError) throw groupsError;
-  const groupIds = (groups ?? []).map((group) => group.id);
+  const { loadGroupsForManager } = await import("@/lib/org-staff/membership");
+  const groups = await loadGroupsForManager(managerId, supabase);
+  const groupIds = groups.map((group) => group.id);
 
   const membersRes = await emptyIn<{ father_id: string; group_id: string }>(groupIds, () =>
     supabase.from("group_members").select("father_id, group_id").in("group_id", groupIds)
@@ -111,6 +108,26 @@ function missingAssessmentReviewRelation(error: { code?: string; message: string
     error.code === "PGRST205" ||
     /organization_assessment_reviews|platform_assessment_releases/i.test(error.message)
   );
+}
+
+export async function loadPlatformAssessmentReleases(assessmentKeys: string[]) {
+  if (assessmentKeys.length === 0) return new Map<string, PlatformAssessmentRelease>();
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("platform_assessment_releases")
+    .select("assessment_key, released_at, first_released_at, released_by")
+    .in("assessment_key", assessmentKeys);
+
+  if (error) {
+    if (missingAssessmentReviewRelation(error)) return new Map<string, PlatformAssessmentRelease>();
+    throw error;
+  }
+
+  const releases = new Map<string, PlatformAssessmentRelease>();
+  for (const row of (data ?? []) as PlatformAssessmentRelease[]) {
+    releases.set(row.assessment_key, row);
+  }
+  return releases;
 }
 
 export async function loadPlatformAssessmentRelease(assessmentKey: string) {
@@ -272,10 +289,11 @@ export async function loadLeaderAssessmentAccess(
 
 export async function loadManagerAssessments(managerId: string): Promise<AssessmentListItem[]> {
   const supabase = await createClient();
+  const managerIds = await loadOrgManagerIds(managerId);
   const { data, error } = await supabase
     .from("custom_assessments")
     .select("*")
-    .eq("manager_id", managerId)
+    .in("manager_id", managerIds)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -303,22 +321,27 @@ export async function loadManagerAssessments(managerId: string): Promise<Assessm
     const assigned = (assignmentsRes.data ?? []).filter(
       (row) => row.assessment_id === assessment.id && !isLeaderSelfRow(row.father_id, managerId)
     );
+    const completedCount = assigned.filter((row) => row.status === "completed").length;
+    const inProgressCount = assigned.filter((row) => row.status === "in_progress").length;
     return {
       ...asAssessment(assessment),
       questionCount,
       assignedCount: assigned.length,
-      completedCount: assigned.filter((row) => row.status === "completed").length,
+      completedCount,
+      notStartedCount: Math.max(0, assigned.length - completedCount - inProgressCount),
+      inProgressCount,
     };
   });
 }
 
 export async function loadManagerAssessmentDetail(managerId: string, assessmentId: string) {
   const supabase = await createClient();
+  const managerIds = await loadOrgManagerIds(managerId);
   const { data, error } = await supabase
     .from("custom_assessments")
     .select("*")
     .eq("id", assessmentId)
-    .eq("manager_id", managerId)
+    .in("manager_id", managerIds)
     .maybeSingle();
 
   if (error) throw error;
@@ -415,12 +438,13 @@ export async function loadParticipantCustomAssignments(managerId: string, father
     .map(asAssignment)
     .filter((row): row is CustomAssessmentAssignment => row !== null);
   const assessmentIds = [...new Set(assignments.map((row) => row.assessment_id))];
+  const managerIds = await loadOrgManagerIds(managerId);
 
   const assessmentsRes = await emptyIn<CustomAssessment>(assessmentIds, () =>
     supabase
       .from("custom_assessments")
       .select("*")
-      .eq("manager_id", managerId)
+      .in("manager_id", managerIds)
       .in("id", assessmentIds)
   );
   if (assessmentsRes.error) throw assessmentsRes.error;

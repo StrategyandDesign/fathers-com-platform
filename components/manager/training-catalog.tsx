@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { CatalogDecisionButtons } from "@/components/manager/catalog-decision-buttons";
+import { CatalogScrollList } from "@/components/manager/catalog-scroll-list";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { ManagerCatalogItem } from "@/lib/manager/catalog";
@@ -7,15 +9,10 @@ import type { Translate } from "@/lib/i18n/translate";
 import { cn } from "@/lib/utils";
 
 function sessionLabel(count: number, t: Translate) {
-  return count === 1
+  const n = Number.isFinite(count) ? count : 0;
+  return n === 1
     ? t("manager.dashboard.sessionOne")
-    : t("manager.dashboard.sessionMany", { count });
-}
-
-function statusLabel(status: ManagerCatalogItem["status"], t: Translate) {
-  if (status === "pending") return t("manager.trainings.catalogPending");
-  if (status === "ready") return t("manager.trainings.catalogReady");
-  return t("manager.trainings.catalogItem");
+    : t("manager.dashboard.sessionMany", { count: n });
 }
 
 export function TrainingCatalog({
@@ -36,33 +33,38 @@ export function TrainingCatalog({
           {t("manager.trainings.catalogEmptyBody")}
         </EmptyState>
       ) : (
-        <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+        <CatalogScrollList count={items.length} label={t("manager.trainings.catalogTitle")}>
           {items.map((item) => (
             <li key={item.key} className="px-4 py-5 sm:px-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0">
-                  <p className="font-medium">{item.training.title}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {[
-                      sessionLabel(item.sessionCount, t),
-                      statusLabel(item.status, t),
-                      item.groupName,
-                      item.training.attribution
-                        ? t("manager.trainings.fromSource", { name: item.training.attribution })
-                        : null,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
+              <div className="min-w-0">
+                <p className="font-medium">{item.training.title}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {[
+                    sessionLabel(item.sessionCount, t),
+                    item.groupName,
+                    item.training.attribution
+                      ? t("manager.trainings.fromSource", { name: item.training.attribution })
+                      : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+                {item.training.description ? (
+                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                    {item.training.description}
                   </p>
-                  {item.training.description ? (
-                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                      {item.training.description}
-                    </p>
-                  ) : null}
-                </div>
+                ) : null}
+              </div>
+              <div className="mt-4 flex flex-row flex-wrap items-center gap-2">
+                <CatalogDecisionButtons
+                  trainingId={item.training.id}
+                  groupId={item.groupId}
+                  status={item.status}
+                  t={t}
+                />
                 <Link
                   href={item.href}
-                  className={cn(buttonVariants({ variant: "outline" }), "w-full min-h-11 sm:w-auto")}
+                  className={cn(buttonVariants({ variant: "outline" }), "min-h-11")}
                 >
                   {item.status === "pending"
                     ? t("manager.trainings.preview")
@@ -71,7 +73,7 @@ export function TrainingCatalog({
               </div>
             </li>
           ))}
-        </ul>
+        </CatalogScrollList>
       )}
     </section>
   );

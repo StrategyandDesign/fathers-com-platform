@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import {
   DEFAULT_LOCALE,
   LOCALE_COOKIE,
-  isLocale,
+  isPublicLocale,
   type Locale,
 } from "@/lib/i18n/config";
 
@@ -18,7 +18,7 @@ export function localeCookieOptions() {
 export async function peekLocaleCookie(): Promise<Locale | null> {
   const jar = await cookies();
   const value = jar.get(LOCALE_COOKIE)?.value;
-  return isLocale(value) ? value : null;
+  return isPublicLocale(value) ? value : null;
 }
 
 export async function readLocaleCookie(): Promise<Locale> {
@@ -38,5 +38,5 @@ export async function clearLocaleCookie() {
 export function parseLocaleFormValue(value: FormDataEntryValue | null): Locale | null {
   const raw = String(value ?? "").trim();
   if (!raw) return null;
-  return isLocale(raw) ? raw : DEFAULT_LOCALE;
+  return isPublicLocale(raw) ? raw : DEFAULT_LOCALE;
 }

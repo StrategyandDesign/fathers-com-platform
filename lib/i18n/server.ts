@@ -4,7 +4,7 @@ import { cache } from "react";
 
 import { peekLocaleCookie } from "@/lib/i18n/cookie";
 import { createTranslator, type Translate } from "@/lib/i18n/translate";
-import { DEFAULT_LOCALE, dateLocale, localeDir, type Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, dateLocale, exposeLocale, localeDir, type Locale } from "@/lib/i18n/config";
 
 export { formatLongDate, formatShortDate, formatShortDateTime } from "@/lib/i18n/dates";
 
@@ -33,10 +33,10 @@ export const getI18n = cache(async (): Promise<I18n> => {
     } = await supabase.auth.getUser();
     if (user) {
       const cookieLocale = await peekLocaleCookie();
-      if (cookieLocale) return makeI18n(cookieLocale);
+      if (cookieLocale) return makeI18n(exposeLocale(cookieLocale));
       const { resolveUserLocale } = await import("@/lib/i18n/resolve");
       const resolved = await resolveUserLocale(user.id);
-      return makeI18n(resolved.locale);
+      return makeI18n(exposeLocale(resolved.locale));
     }
   } catch {
     // Session is best-effort; signed-out screens stay English.

@@ -1,0 +1,720 @@
+{
+  "mark": 1,
+  "patch": 101,
+  "label": "Shared 1-1.101",
+  "tag": "shared/1",
+  "at": "2026-08-19T15:48:57.108Z",
+  "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
+  "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
+  "title": "Put a created assessment in the cohort as included.",
+  "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
+  "revisions": [
+    {
+      "patch": 1,
+      "revision": "1.01",
+      "label": "Shared 1-1.01",
+      "at": "2026-08-19",
+      "title": "Show Shared 1-1.01 on the desk and tick it on each push."
+    },
+    {
+      "patch": 2,
+      "revision": "1.02",
+      "label": "Shared 1-1.02",
+      "at": "2026-08-19",
+      "title": "Show Shared 1-1.01 on the desk and tick it on each push."
+    },
+    {
+      "patch": 3,
+      "revision": "1.03",
+      "label": "Shared 1-1.03",
+      "at": "2026-08-19",
+      "title": "Keep photo work on Org Photos and fix Light header contrast."
+    },
+    {
+      "patch": 4,
+      "revision": "1.04",
+      "label": "Shared 1-1.04",
+      "at": "2026-08-19",
+      "title": "Give Org Managers an assignment-level report they can hand up."
+    },
+    {
+      "patch": 5,
+      "revision": "1.05",
+      "label": "Shared 1-1.05",
+      "at": "2026-08-19",
+      "title": "Put assignment and status on the first screens a leader uses."
+    },
+    {
+      "patch": 6,
+      "revision": "1.06",
+      "label": "Shared 1-1.06",
+      "at": "2026-08-19",
+      "title": "Add expected and open framing for assigned training."
+    },
+    {
+      "patch": 7,
+      "revision": "1.07",
+      "label": "Shared 1-1.07",
+      "at": "2026-08-19",
+      "title": "Add an optional I-used-it tap after a session is complete."
+    },
+    {
+      "patch": 8,
+      "revision": "1.08",
+      "label": "Shared 1-1.08",
+      "at": "2026-08-19",
+      "title": "Collapse audit sessions until a leader opens one."
+    },
+    {
+      "patch": 9,
+      "revision": "1.09",
+      "label": "Shared 1-1.09",
+      "at": "2026-08-19",
+      "title": "Hide assignment status on the manager dashboard."
+    },
+    {
+      "patch": 10,
+      "revision": "1.10",
+      "label": "Shared 1-1.10",
+      "at": "2026-08-19",
+      "title": "Hide the who-has-what board on Participants."
+    },
+    {
+      "patch": 11,
+      "revision": "1.11",
+      "label": "Shared 1-1.11",
+      "at": "2026-08-19",
+      "title": "Put include, decline, and view on one catalog row."
+    },
+    {
+      "patch": 12,
+      "revision": "1.12",
+      "label": "Shared 1-1.12",
+      "at": "2026-08-19",
+      "title": "Show each session subtitle under the title on the audit list."
+    },
+    {
+      "patch": 13,
+      "revision": "1.13",
+      "label": "Shared 1-1.13",
+      "at": "2026-08-20",
+      "title": "Clarify Expected and Open participation hints."
+    },
+    {
+      "patch": 14,
+      "revision": "1.14",
+      "label": "Shared 1-1.14",
+      "at": "2026-08-20",
+      "title": "Offer Completed, Not yet, and Dismiss on the skill-use card."
+    },
+    {
+      "patch": 15,
+      "revision": "1.15",
+      "label": "Shared 1-1.15",
+      "at": "2026-08-20",
+      "title": "Show Completed and Dismiss on the skill-use buttons."
+    },
+    {
+      "patch": 16,
+      "revision": "1.16",
+      "label": "Shared 1-1.16",
+      "at": "2026-08-20",
+      "title": "Write the skill-use line as a statement, not a topic fragment."
+    },
+    {
+      "patch": 17,
+      "revision": "1.17",
+      "label": "Shared 1-1.17",
+      "at": "2026-08-20",
+      "title": "Put finished trainings in their own Home row."
+    },
+    {
+      "patch": 18,
+      "revision": "1.18",
+      "label": "Shared 1-1.18",
+      "at": "2026-08-20",
+      "title": "Keep everyone-has-this off the cohort action row."
+    },
+    {
+      "patch": 19,
+      "revision": "1.19",
+      "label": "Shared 1-1.19",
+      "at": "2026-08-20",
+      "title": "Scroll available trainings after three cards."
+    },
+    {
+      "patch": 20,
+      "revision": "1.20",
+      "label": "Shared 1-1.20",
+      "at": "2026-08-20",
+      "title": "Name Rehab, Armed Forces Unit, and Performance Optimization Group."
+    },
+    {
+      "patch": 21,
+      "revision": "1.21",
+      "label": "Shared 1-1.21",
+      "at": "2026-08-20",
+      "title": "Invite leaders by email and show a first-run desk."
+    },
+    {
+      "patch": 22,
+      "revision": "1.22",
+      "label": "Shared 1-1.22",
+      "at": "2026-08-20",
+      "title": "Remove Assign from Trainings on the training view."
+    },
+    {
+      "patch": 23,
+      "revision": "1.23",
+      "label": "Shared 1-1.23",
+      "at": "2026-08-20",
+      "title": "Put completed work beside Your Path on Home."
+    },
+    {
+      "patch": 24,
+      "revision": "1.24",
+      "label": "Shared 1-1.24",
+      "at": "2026-08-20",
+      "title": "Add thin keylines around the Home board sections."
+    },
+    {
+      "patch": 25,
+      "revision": "1.25",
+      "label": "Shared 1-1.25",
+      "at": "2026-08-20",
+      "title": "Show the Fathers.com lockup and a Home certificate preview."
+    },
+    {
+      "patch": 26,
+      "revision": "1.26",
+      "label": "Shared 1-1.26",
+      "at": "2026-08-20",
+      "title": "Ask about the skill on first login or after a long stretch away."
+    },
+    {
+      "patch": 27,
+      "revision": "1.27",
+      "label": "Shared 1-1.27",
+      "at": "2026-08-20",
+      "title": "Let Dismiss save on the Home skill card."
+    },
+    {
+      "patch": 28,
+      "revision": "1.28",
+      "label": "Shared 1-1.28",
+      "at": "2026-08-20",
+      "title": "Put open work on one Your Trainings shelf."
+    },
+    {
+      "patch": 29,
+      "revision": "1.29",
+      "label": "Shared 1-1.29",
+      "at": "2026-08-20",
+      "title": "Center the certificate snapshot and enlarge the lockup."
+    },
+    {
+      "patch": 30,
+      "revision": "1.30",
+      "label": "Shared 1-1.30",
+      "at": "2026-08-20",
+      "title": "Give the training overview slot a green keyline."
+    },
+    {
+      "patch": 31,
+      "revision": "1.31",
+      "label": "Shared 1-1.31",
+      "at": "2026-08-20",
+      "title": "Let Super-admin set a panoramic login background."
+    },
+    {
+      "patch": 32,
+      "revision": "1.32",
+      "label": "Shared 1-1.32",
+      "at": "2026-08-20",
+      "title": "Show the session count under each Home training title."
+    },
+    {
+      "patch": 33,
+      "revision": "1.33",
+      "label": "Shared 1-1.33",
+      "at": "2026-08-20",
+      "title": "Compact extra completed trainings and certificates to titles."
+    },
+    {
+      "patch": 34,
+      "revision": "1.34",
+      "label": "Shared 1-1.34",
+      "at": "2026-08-20",
+      "title": "Separate available and completed trainings with a keyline."
+    },
+    {
+      "patch": 35,
+      "revision": "1.35",
+      "label": "Shared 1-1.35",
+      "at": "2026-08-20",
+      "title": "Let Super-admin attach small PDF handouts to a training."
+    },
+    {
+      "patch": 36,
+      "revision": "1.36",
+      "label": "Shared 1-1.36",
+      "at": "2026-08-20",
+      "title": "Put completed training covers on the left."
+    },
+    {
+      "patch": 37,
+      "revision": "1.37",
+      "label": "Shared 1-1.37",
+      "at": "2026-08-20",
+      "title": "Let fathers watch a completed training again."
+    },
+    {
+      "patch": 38,
+      "revision": "1.38",
+      "label": "Shared 1-1.38",
+      "at": "2026-08-20",
+      "title": "Put the leader name on Issued by."
+    },
+    {
+      "patch": 39,
+      "revision": "1.39",
+      "label": "Shared 1-1.39",
+      "at": "2026-08-20",
+      "title": "Put the mobile account avatar on the right."
+    },
+    {
+      "patch": 40,
+      "revision": "1.40",
+      "label": "Shared 1-1.40",
+      "at": "2026-08-20",
+      "title": "Name who Open participation is for."
+    },
+    {
+      "patch": 41,
+      "revision": "1.41",
+      "label": "Shared 1-1.41",
+      "at": "2026-08-20",
+      "title": "Enlarge the login lockup and sit it on the platform line."
+    },
+    {
+      "patch": 42,
+      "revision": "1.42",
+      "label": "Shared 1-1.42",
+      "at": "2026-08-20",
+      "title": "Explain what the participation section chooses."
+    },
+    {
+      "patch": 43,
+      "revision": "1.43",
+      "label": "Shared 1-1.43",
+      "at": "2026-08-20",
+      "title": "Make web addresses in the Home update clickable."
+    },
+    {
+      "patch": 44,
+      "revision": "1.44",
+      "label": "Shared 1-1.44",
+      "at": "2026-08-20",
+      "title": "Show the Bring-in queue and cap outlines at 15 sessions."
+    },
+    {
+      "patch": 45,
+      "revision": "1.45",
+      "label": "Shared 1-1.45",
+      "at": "2026-08-20",
+      "title": "Raise the outline cap to 20 without advertising it."
+    },
+    {
+      "patch": 46,
+      "revision": "1.46",
+      "label": "Shared 1-1.46",
+      "at": "2026-08-20",
+      "title": "Add donor fundraising copy sourced from 2018–2026 only."
+    },
+    {
+      "patch": 47,
+      "revision": "1.47",
+      "label": "Shared 1-1.47",
+      "at": "2026-08-20",
+      "title": "Default the login screen to black until Super-admin adds a photo."
+    },
+    {
+      "patch": 48,
+      "revision": "1.48",
+      "label": "Shared 1-1.48",
+      "at": "2026-08-20",
+      "title": "Drop the em dash from the participation lead."
+    },
+    {
+      "patch": 49,
+      "revision": "1.49",
+      "label": "Shared 1-1.49",
+      "at": "2026-08-20",
+      "title": "Remove the Skills used count from Leader desks."
+    },
+    {
+      "patch": 50,
+      "revision": "1.50",
+      "label": "Shared 1-1.50",
+      "at": "2026-08-20",
+      "title": "Turn anonymous sharing on by default for fathers and leaders."
+    },
+    {
+      "patch": 51,
+      "revision": "1.51",
+      "label": "Shared 1-1.51",
+      "at": "2026-08-20",
+      "title": "Add a Shared 1-1.49 status export for audit."
+    },
+    {
+      "patch": 52,
+      "revision": "1.52",
+      "label": "Shared 1-1.52",
+      "at": "2026-08-20",
+      "title": "Finish Keystone as a part-scoped tool a man can own."
+    },
+    {
+      "patch": 53,
+      "revision": "1.53",
+      "label": "Shared 1-1.53",
+      "at": "2026-08-20",
+      "title": "Widen Assessments on desktop into two columns."
+    },
+    {
+      "patch": 54,
+      "revision": "1.54",
+      "label": "Shared 1-1.54",
+      "at": "2026-08-20",
+      "title": "Sit the org mark in the header beside the lockup."
+    },
+    {
+      "patch": 55,
+      "revision": "1.55",
+      "label": "Shared 1-1.55",
+      "at": "2026-08-20",
+      "title": "Use the filled chevron stack for Trainings in the ribbon."
+    },
+    {
+      "patch": 56,
+      "revision": "1.56",
+      "label": "Shared 1-1.56",
+      "at": "2026-08-21",
+      "title": "Use the official Arrow logo for Trainings in the ribbon."
+    },
+    {
+      "patch": 57,
+      "revision": "1.57",
+      "label": "Shared 1-1.57",
+      "at": "2026-08-21",
+      "title": "Let multiple leaders and reviewers share one organization desk."
+    },
+    {
+      "patch": 58,
+      "revision": "1.58",
+      "label": "Shared 1-1.58",
+      "at": "2026-08-21",
+      "title": "Lead the Leader dashboard with counts, invite code, and open items."
+    },
+    {
+      "patch": 59,
+      "revision": "1.59",
+      "label": "Shared 1-1.59",
+      "at": "2026-08-21",
+      "title": "Log the real error when a Home update does not post."
+    },
+    {
+      "patch": 60,
+      "revision": "1.60",
+      "label": "Shared 1-1.60",
+      "at": "2026-08-21",
+      "title": "Give each cohort training its own card."
+    },
+    {
+      "patch": 61,
+      "revision": "1.61",
+      "label": "Shared 1-1.61",
+      "at": "2026-08-21",
+      "title": "Collapse how men take assigned training until the arrow is opened."
+    },
+    {
+      "patch": 62,
+      "revision": "1.62",
+      "label": "Shared 1-1.62",
+      "at": "2026-08-21",
+      "title": "Let Super-admin send dismissible desk notes to Leaders and Reviewers."
+    },
+    {
+      "patch": 63,
+      "revision": "1.63",
+      "label": "Shared 1-1.63",
+      "at": "2026-08-21",
+      "title": "Match the assistant toggle to the same chevron used below it."
+    },
+    {
+      "patch": 64,
+      "revision": "1.64",
+      "label": "Shared 1-1.64",
+      "at": "2026-08-21",
+      "title": "Give included catalog trainings the same remove note as accepted ones."
+    },
+    {
+      "patch": 65,
+      "revision": "1.65",
+      "label": "Shared 1-1.65",
+      "at": "2026-08-21",
+      "title": "Drop the Leaders and Desk tape cards from Home."
+    },
+    {
+      "patch": 66,
+      "revision": "1.66",
+      "label": "Shared 1-1.66",
+      "at": "2026-08-21",
+      "title": "Let a leader send an update to the whole cohort or one training."
+    },
+    {
+      "patch": 67,
+      "revision": "1.67",
+      "label": "Shared 1-1.67",
+      "at": "2026-08-21",
+      "title": "Drop the Trainings, Assessments, and Certificates shortcut cards from Home."
+    },
+    {
+      "patch": 68,
+      "revision": "1.68",
+      "label": "Shared 1-1.68",
+      "at": "2026-08-21",
+      "title": "Show other leaders and their current updates on the Update card."
+    },
+    {
+      "patch": 69,
+      "revision": "1.69",
+      "label": "Shared 1-1.69",
+      "at": "2026-08-21",
+      "title": "Hide Impact Snapshot and Reports shortcut cards from Home."
+    },
+    {
+      "patch": 70,
+      "revision": "1.70",
+      "label": "Shared 1-1.70",
+      "at": "2026-08-21",
+      "title": "Put swap and clear on one row, then leaders and their updates below."
+    },
+    {
+      "patch": 71,
+      "revision": "1.71",
+      "label": "Shared 1-1.71",
+      "at": "2026-08-21",
+      "title": "Limit Impact Snapshot to trainings the organization included."
+    },
+    {
+      "patch": 72,
+      "revision": "1.72",
+      "label": "Shared 1-1.72",
+      "at": "2026-08-21",
+      "title": "Hide Dashboard and Impact Snapshot header chips."
+    },
+    {
+      "patch": 73,
+      "revision": "1.73",
+      "label": "Shared 1-1.73",
+      "at": "2026-08-21",
+      "title": "Keep org leader desks in step with each other."
+    },
+    {
+      "patch": 74,
+      "revision": "1.74",
+      "label": "Shared 1-1.74",
+      "at": "2026-08-21",
+      "title": "Keep every Leader desk on the same org record."
+    },
+    {
+      "patch": 75,
+      "revision": "1.75",
+      "label": "Shared 1-1.75",
+      "at": "2026-08-21",
+      "title": "Name the leader on each father Home update."
+    },
+    {
+      "patch": 76,
+      "revision": "1.76",
+      "label": "Shared 1-1.76",
+      "at": "2026-08-21",
+      "title": "Show the catalog overview film only before a session is watched."
+    },
+    {
+      "patch": 77,
+      "revision": "1.77",
+      "label": "Shared 1-1.77",
+      "at": "2026-08-21",
+      "title": "Keep Leader desk sync cookies off the browser bundle."
+    },
+    {
+      "patch": 78,
+      "revision": "1.78",
+      "label": "Shared 1-1.78",
+      "at": "2026-08-21",
+      "title": "Restore catalog covers and keep the overview film beside them."
+    },
+    {
+      "patch": 79,
+      "revision": "1.79",
+      "label": "Shared 1-1.79",
+      "at": "2026-08-21",
+      "title": "Open the training overview from a popup, and keep it until a session is watched."
+    },
+    {
+      "patch": 80,
+      "revision": "1.80",
+      "label": "Shared 1-1.80",
+      "at": "2026-08-21",
+      "title": "Add the Legacy Architect assessment to Super-admin."
+    },
+    {
+      "patch": 81,
+      "revision": "1.81",
+      "label": "Shared 1-1.81",
+      "at": "2026-08-21",
+      "title": "Spread training card pictures across the cover well."
+    },
+    {
+      "patch": 82,
+      "revision": "1.82",
+      "label": "Shared 1-1.82",
+      "at": "2026-08-21",
+      "title": "Add the Family Fortress assessment to Super-admin."
+    },
+    {
+      "patch": 83,
+      "revision": "1.83",
+      "label": "Shared 1-1.83",
+      "at": "2026-08-21",
+      "title": "Add the Steady Presence assessment to Super-admin."
+    },
+    {
+      "patch": 84,
+      "revision": "1.84",
+      "label": "Shared 1-1.84",
+      "at": "2026-08-21",
+      "title": "Let Super-admin release catalog assessments again."
+    },
+    {
+      "patch": 85,
+      "revision": "1.85",
+      "label": "Shared 1-1.85",
+      "at": "2026-08-21",
+      "title": "Stop pinning the Shared badge test to 1.01."
+    },
+    {
+      "patch": 86,
+      "revision": "1.86",
+      "label": "Shared 1-1.86",
+      "at": "2026-08-21",
+      "title": "Let Super-admin edit catalog assessments before release."
+    },
+    {
+      "patch": 87,
+      "revision": "1.87",
+      "label": "Shared 1-1.87",
+      "at": "2026-08-21",
+      "title": "Let Leaders review assessment questions before they share."
+    },
+    {
+      "patch": 88,
+      "revision": "1.88",
+      "label": "Shared 1-1.88",
+      "at": "2026-08-21",
+      "title": "Keep Hebrew in the catalog and hide it from public screens."
+    },
+    {
+      "patch": 89,
+      "revision": "1.89",
+      "label": "Shared 1-1.89",
+      "at": "2026-08-21",
+      "title": "Give assessments the same Include and Decline row as trainings."
+    },
+    {
+      "patch": 90,
+      "revision": "1.90",
+      "label": "Shared 1-1.90",
+      "at": "2026-08-21",
+      "title": "Stop rewriting the language cookie on every Trainings click."
+    },
+    {
+      "patch": 91,
+      "revision": "1.91",
+      "label": "Shared 1-1.91",
+      "at": "2026-08-21",
+      "title": "Put Assessments above Impact Snapshot on the Leader ribbon."
+    },
+    {
+      "patch": 92,
+      "revision": "1.92",
+      "label": "Shared 1-1.92",
+      "at": "2026-08-21",
+      "title": "Let Leaders decline Keystone from the catalog."
+    },
+    {
+      "patch": 93,
+      "revision": "1.93",
+      "label": "Shared 1-1.93",
+      "at": "2026-08-21",
+      "title": "Put invite code and open items under the Update card."
+    },
+    {
+      "patch": 94,
+      "revision": "1.94",
+      "label": "Shared 1-1.94",
+      "at": "2026-08-21",
+      "title": "Offer included assessments to fathers on Assessments."
+    },
+    {
+      "patch": 95,
+      "revision": "1.95",
+      "label": "Shared 1-1.95",
+      "at": "2026-08-21",
+      "title": "Put More assessments above Keystone retake and name the buttons."
+    },
+    {
+      "patch": 96,
+      "revision": "1.96",
+      "label": "Shared 1-1.96",
+      "at": "2026-08-21",
+      "title": "Organize root docs and archive the static site."
+    },
+    {
+      "patch": 97,
+      "revision": "1.97",
+      "label": "Shared 1-1.97",
+      "at": "2026-08-21",
+      "title": "Remove the Waiting on you queue from Trainings."
+    },
+    {
+      "patch": 98,
+      "revision": "1.98",
+      "label": "Shared 1-1.98",
+      "at": "2026-08-21",
+      "title": "Remove the Waiting on you queue from Assessments."
+    },
+    {
+      "patch": 99,
+      "revision": "1.99",
+      "label": "Shared 1-1.99",
+      "at": "2026-08-21",
+      "title": "Remove Hidden from your cohort from Trainings and Assessments."
+    },
+    {
+      "patch": 100,
+      "revision": "1.100",
+      "label": "Shared 1-1.100",
+      "at": "2026-08-21",
+      "title": "Give included assessments training-style cohort cards."
+    },
+    {
+      "patch": 101,
+      "revision": "1.101",
+      "label": "Shared 1-1.101",
+      "at": "2026-08-21",
+      "title": "Put a created assessment in the cohort as included."
+    }
+  ]
+}

@@ -78,13 +78,33 @@ describe("manager catalog", () => {
     assert.equal(items[0]?.href, "/manager/reviews/presence?group=org-1");
   });
 
-  it("does not list declined, unpublished, or trainings released only to other orgs", () => {
+  it("keeps declined trainings in the available list", () => {
     const declined = training({
       id: "declined",
       title: "Declined",
       released_at: "2026-08-01T00:00:00.000Z",
       first_released_at: "2026-08-01T00:00:00.000Z",
     });
+    const items = buildManagerCatalog({
+      trainings: [declined],
+      pending: [],
+      accepted: [],
+      declined: [
+        {
+          training: declined,
+          sessionCount: 8,
+          groupId: "org-1",
+          groupName: "Pilot",
+        },
+      ],
+    });
+
+    assert.equal(items.length, 1);
+    assert.equal(items[0]?.status, "declined");
+    assert.equal(items[0]?.groupId, "org-1");
+  });
+
+  it("does not list unpublished or trainings released only to other orgs", () => {
     const draft = training({
       id: "draft",
       title: "Draft",
@@ -98,7 +118,7 @@ describe("manager catalog", () => {
       first_released_at: "2026-08-01T00:00:00.000Z",
     });
     const items = buildManagerCatalog({
-      trainings: [declined, draft, otherOrg],
+      trainings: [draft, otherOrg],
       pending: [],
       accepted: [],
     });

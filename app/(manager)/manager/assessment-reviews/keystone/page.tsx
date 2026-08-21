@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AssessmentInstrumentReview } from "@/components/manager/assessment-instrument-review";
 import { AssessmentReviewForms } from "@/components/manager/assessment-review-forms";
 import { Flash } from "@/components/manager/flash";
 import { ReviewStatusBadge } from "@/components/manager/review-decision-forms";
@@ -17,6 +18,7 @@ import {
 import { requireRole } from "@/lib/auth/session";
 import { getI18n } from "@/lib/i18n/server";
 import { loadManagerWorkspace } from "@/lib/manager/data";
+import { keystoneInstrumentReview } from "@/lib/assessments/instrument-review";
 import { PROFILE_QUESTION_COUNT } from "@/lib/father/questions";
 import { interactiveLinkClassName } from "@/lib/ui";
 
@@ -94,6 +96,8 @@ export default async function ManagerKeystoneReviewPage({
           />
         </div>
       </section>
+
+      <AssessmentInstrumentReview model={keystoneInstrumentReview()} />
     </div>
   );
 }

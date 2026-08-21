@@ -13,7 +13,7 @@ export async function AssessmentVisibilityForms({
   assessmentKey: string;
   groupId: string;
   status: AssessmentVisibility;
-  kind: "keystone" | "custom";
+  kind: "keystone" | "custom" | "platform";
   returnTo?: "list" | "detail";
 }) {
   const { t } = await getI18n();
@@ -31,7 +31,9 @@ export async function AssessmentVisibilityForms({
         <p className="mt-2 text-sm text-muted-foreground">
           {kind === "keystone"
             ? t("manager.assessments.shareKeystoneLead")
-            : t("manager.assessments.shareLead")}
+            : kind === "platform"
+              ? t("manager.assessments.sharePlatformLead")
+              : t("manager.assessments.shareLead")}
         </p>
       </form>
     );
@@ -48,7 +50,9 @@ export async function AssessmentVisibilityForms({
       <p className="mt-2 text-sm text-muted-foreground">
         {kind === "keystone"
           ? t("manager.assessments.removeKeystoneLead")
-          : t("manager.assessments.removeCustomLead")}
+          : kind === "platform"
+            ? t("manager.assessments.removePlatformLead")
+            : t("manager.assessments.removeCustomLead")}
       </p>
     </form>
   );

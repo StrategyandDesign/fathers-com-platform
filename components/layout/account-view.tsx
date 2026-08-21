@@ -4,15 +4,18 @@ import { AnonymousShareToggle } from "@/components/account/anonymous-share-toggl
 import { DisplayNameForm } from "@/components/account/display-name-form";
 import { DisplayTitleForm } from "@/components/account/display-title-form";
 import { NotificationPrefs } from "@/components/account/notification-prefs";
+import { PaletteForm } from "@/components/account/palette-form";
 import { LanguageForm } from "@/components/i18n/language-form";
 import { LegalLinks } from "@/components/legal/legal-links";
 import { Flash } from "@/components/manager/flash";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { managerDisplayTitleLabel } from "@/lib/account/display-title";
 import { loadAccountState, loadOrganizationName } from "@/lib/account/data";
 import { loadFatherLeader } from "@/lib/cohort-note/data";
 import { signOut } from "@/lib/auth/actions";
 import { ROLE_HELP, type AppRole } from "@/lib/auth/roles";
+import { SHOW_HEBREW } from "@/lib/i18n/config";
 import { getI18n } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +44,7 @@ export async function AccountView({
     role === "father"
       ? organizationName?.trim() || null
       : role === "manager"
-        ? t(`role.${account.displayTitle}`)
+        ? managerDisplayTitleLabel(account.displayTitle, t)
         : t(`role.${role}`);
 
   return (
@@ -87,6 +90,8 @@ export async function AccountView({
         </div>
       </section>
 
+      <PaletteForm />
+
       {role === "manager" ? (
         <>
           <DisplayNameForm savedName={account.fullName?.trim() ?? ""} />
@@ -94,7 +99,7 @@ export async function AccountView({
         </>
       ) : null}
 
-      <LanguageForm savedLocale={account.locale} />
+      {SHOW_HEBREW ? <LanguageForm savedLocale={account.locale} /> : null}
 
       {role !== "admin" ? (
         <AnonymousShareToggle role={role} initial={account.shareAnonymousAdmin} />

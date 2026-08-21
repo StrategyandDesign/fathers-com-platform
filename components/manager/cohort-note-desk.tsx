@@ -4,23 +4,20 @@ import { useState } from "react";
 
 import { CohortNoteMessage } from "@/components/cohort-note/message";
 import { clearCohortNote, publishCohortNote } from "@/lib/cohort-note/actions";
-import { COHORT_NOTE_MAX, normalizeCohortNote } from "@/lib/cohort-note/types";
+import { COHORT_NOTE_AUDIENCE_COHORT } from "@/lib/cohort-note/audience";
+import { COHORT_NOTE_MAX, normalizeCohortNote, otherLeaderTickers, type ManagerCohortDeskGroup } from "@/lib/cohort-note/types";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/components/i18n/locale-provider";
 import { formatShortDateTime } from "@/lib/i18n/dates";
-import { textareaClassName } from "@/lib/ui";
-
-type CohortNoteGroup = {
-  groupId: string;
-  groupName: string;
-  body: string;
-  updatedAt: string | null;
-};
+import { formatLeaderNames } from "@/lib/org-staff/types";
+import { fieldClassName, textareaClassName } from "@/lib/ui";
 
 export function CohortNoteDesk({
   groups,
+  viewerId,
 }: {
-  groups: CohortNoteGroup[];
+  groups: ManagerCohortDeskGroup[];
+  viewerId: string;
 }) {
   const { t } = useI18n();
   if (groups.length === 0) return null;
@@ -45,6 +42,7 @@ export function CohortNoteDesk({
           <CohortNoteEditor
             key={group.groupId}
             group={group}
+            viewerId={viewerId}
             showGroupName={groups.length > 1}
           />
         ))}
@@ -55,22 +53,37 @@ export function CohortNoteDesk({
 
 function CohortNoteEditor({
   group,
+  viewerId,
   showGroupName,
 }: {
-  group: CohortNoteGroup;
+  group: ManagerCohortDeskGroup;
+  viewerId: string;
   showGroupName: boolean;
 }) {
   const { t, locale } = useI18n();
   const [draft, setDraft] = useState("");
-  const liveBody = normalizeCohortNote(group.body);
+  const [audienceId, setAudienceId] = useState(
+    group.own?.audienceTrainingId ?? COHORT_NOTE_AUDIENCE_COHORT
+  );
+  const liveBody = normalizeCohortNote(group.own?.body ?? "");
   const preview = normalizeCohortNote(draft);
-  const liveStamp = group.updatedAt ? formatShortDateTime(group.updatedAt, locale) : null;
-  const draftMatchesLive = Boolean(liveBody) && preview === liveBody;
-  const previewStamp = draftMatchesLive
-    ? liveStamp
-    : preview
-      ? t("manager.dashboard.noteStampPreview")
-      : null;
+  const liveStamp = group.own?.updatedAt
+    ? formatShortDateTime(group.own.updatedAt, locale)
+    : null;
+  const selectedAudience = group.audiences.find((row) => row.trainingId === audienceId);
+  const audienceHint = selectedAudience
+    ? t("manager.dashboard.noteAudienceTrainingHint", {
+        title: selectedAudience.title,
+        n: selectedAudience.assignedCount,
+      })
+    : t("manager.dashboard.noteAudienceCohortHint", { n: group.fatherCount });
+  const managers = group.leaders.filter((row) => row.staffRole === "manager");
+  const reviewers = group.leaders.filter((row) => row.staffRole === "reviewer");
+  const peerTickers = otherLeaderTickers({
+    viewerId,
+    leaders: group.leaders,
+    peers: group.peers,
+  });
 
   return (
     <div className="space-y-4">
@@ -85,14 +98,17 @@ function CohortNoteEditor({
             <CohortNoteMessage body={liveBody} stamp={liveStamp} />
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
+            {group.own?.audienceTrainingTitle
+              ? t("manager.dashboard.noteAudienceShowingTraining", {
+                  title: group.own.audienceTrainingTitle,
+                })
+              : t("manager.dashboard.noteAudienceShowingCohort")}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
             {t("manager.dashboard.noteOneAtATime")}
           </p>
         </div>
-      ) : (
-        <p className="rounded-lg border border-border bg-black/30 px-4 py-3 text-sm text-muted-foreground">
-          {t("manager.dashboard.notePreviewEmpty")}
-        </p>
-      )}
+      ) : null}
 
       <form action={publishCohortNote} className="space-y-3">
         <input type="hidden" name="group_id" value={group.groupId} />
@@ -117,33 +133,110 @@ function CohortNoteEditor({
             })}
           </span>
         </label>
-        <div className="rounded-xl border border-border bg-black/20 p-4">
-          <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
-            {preview
-              ? t("father.home.noteEyebrow")
-              : t("manager.dashboard.notePreview")}
-          </p>
-          <div className="mt-2">
-            {preview ? (
-              <CohortNoteMessage body={preview} stamp={previewStamp} />
-            ) : (
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {t("manager.dashboard.notePreviewEmpty")}
-              </p>
-            )}
-          </div>
+        {group.audiences.length > 0 ? (
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">
+              {t("manager.dashboard.noteAudience")}
+            </span>
+            <select
+              className={fieldClassName}
+              name="audience_training_id"
+              value={audienceId}
+              onChange={(event) => setAudienceId(event.target.value)}
+            >
+              <option value={COHORT_NOTE_AUDIENCE_COHORT}>
+                {t("manager.dashboard.noteAudienceCohort")}
+              </option>
+              {group.audiences.map((row) => (
+                <option key={row.trainingId} value={row.trainingId}>
+                  {row.title}
+                </option>
+              ))}
+            </select>
+            <span className="block text-sm text-muted-foreground">{audienceHint}</span>
+          </label>
+        ) : null}
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Button type="submit" className="w-full sm:w-auto">
+            {liveBody ? t("manager.dashboard.noteReplace") : t("manager.dashboard.notePost")}
+          </Button>
+          {liveBody ? (
+            <Button
+              type="submit"
+              form={`clear-update-${group.groupId}`}
+              variant="outline"
+              className="w-full sm:w-auto"
+            >
+              {t("manager.dashboard.noteClear")}
+            </Button>
+          ) : null}
         </div>
-        <Button type="submit" className="w-full sm:w-auto">
-          {liveBody ? t("manager.dashboard.noteReplace") : t("manager.dashboard.notePost")}
-        </Button>
       </form>
       {liveBody ? (
-        <form action={clearCohortNote}>
+        <form id={`clear-update-${group.groupId}`} action={clearCohortNote} className="hidden">
           <input type="hidden" name="group_id" value={group.groupId} />
-          <Button type="submit" variant="outline" className="w-full sm:w-auto">
-            {t("manager.dashboard.noteClear")}
-          </Button>
         </form>
+      ) : null}
+
+      <div className="rounded-xl border border-border bg-black/20 p-4">
+        <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+          {t("manager.dashboard.staffEyebrow")}
+        </p>
+        <p className="mt-2 text-sm font-medium">
+          {managers.length === 1
+            ? t("manager.dashboard.noteLeadersOne")
+            : t("manager.dashboard.noteLeadersMany", { n: managers.length })}
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {managers.length > 1
+            ? formatLeaderNames(managers.map((row) => row.name))
+            : t("manager.dashboard.staffEmpty")}
+        </p>
+        {reviewers.length > 0 ? (
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("manager.dashboard.staffReviewers", {
+              names: formatLeaderNames(reviewers.map((row) => row.name)),
+            })}
+          </p>
+        ) : null}
+      </div>
+
+      {peerTickers.length > 0 ? (
+        <div className="space-y-3">
+          {peerTickers.map(({ leader, note }) => (
+            <div
+              key={leader.id}
+              className="rounded-xl border border-border bg-black/20 p-4"
+            >
+              <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+                {t("manager.dashboard.notePeerShowing", {
+                  name: note?.authorName ?? leader.name,
+                })}
+              </p>
+              {note ? (
+                <>
+                  <div className="mt-2">
+                    <CohortNoteMessage
+                      body={note.body}
+                      stamp={formatShortDateTime(note.updatedAt, locale)}
+                    />
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    {note.audienceTrainingTitle
+                      ? t("manager.dashboard.noteAudienceShowingTraining", {
+                          title: note.audienceTrainingTitle,
+                        })
+                      : t("manager.dashboard.noteAudienceShowingCohort")}
+                  </p>
+                </>
+              ) : (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t("manager.dashboard.notePeerQuiet")}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
       ) : null}
     </div>
   );

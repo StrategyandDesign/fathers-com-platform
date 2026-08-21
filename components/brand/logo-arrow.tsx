@@ -1,30 +1,30 @@
-import type { SVGProps } from "react";
+import { cn } from "@/lib/utils";
 
-/**
- * Chevron stack from the Fathers.com mark (no shield, no wordmark).
- * Centerlines traced from public/brand/fathers-com-logo-white.png.
- */
+/** Official Fathers.com Arrow mark. This is the logo file, not a redraw. */
+export const BRAND_ARROW_SRC = "/brand/fathers-com-arrow.png";
+
 export function BrandLogoArrow({
   className,
-  ...props
-}: SVGProps<SVGSVGElement>) {
+  strokeWidth: _strokeWidth,
+}: {
+  className?: string;
+  strokeWidth?: number;
+}) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
+    <span
       aria-hidden
-      {...props}
-      className={className}
-      // Official mark weight; ignore Lucide nav strokeWidth.
-      strokeWidth={undefined}
-    >
-      <path
-        d="M12.39 4.09 21.58 2.23 19.82 11.1M4.8 11.36 14.36 9.94 12.69 19.5M2.42 16.18 8.81 15.54 7.84 21.77"
-        stroke="currentColor"
-        strokeWidth={3}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+      className={cn("inline-block bg-current", className)}
+      style={{
+        WebkitMaskImage: `url(${BRAND_ARROW_SRC})`,
+        maskImage: `url(${BRAND_ARROW_SRC})`,
+        maskMode: "alpha",
+        WebkitMaskSize: "contain",
+        maskSize: "contain",
+        WebkitMaskRepeat: "no-repeat",
+        maskRepeat: "no-repeat",
+        WebkitMaskPosition: "center",
+        maskPosition: "center",
+      }}
+    />
   );
 }

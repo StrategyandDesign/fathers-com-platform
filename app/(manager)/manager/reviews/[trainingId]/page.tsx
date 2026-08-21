@@ -6,14 +6,14 @@ import {
   ReviewDecisionForms,
   ReviewStatusBadge,
 } from "@/components/manager/review-decision-forms";
-import { buttonVariants } from "@/components/ui/button";
+import { ReviewSessionList } from "@/components/manager/review-session-list";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
-import { youtubeEmbedUrl } from "@/lib/father/types";
 import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { loadReviewDetail } from "@/lib/manager/reviews";
+import { loadTrainingHandouts } from "@/lib/training-handouts/data";
+import { TrainingHandoutLinks } from "@/components/father/training-handout-links";
 import { interactiveLinkClassName } from "@/lib/ui";
-import { cn } from "@/lib/utils";
 
 export default async function ManagerTrainingReviewPage({
   params,
@@ -27,6 +27,7 @@ export default async function ManagerTrainingReviewPage({
   const { user } = await requireRole("manager");
   const { t, locale } = await getI18n();
   const detail = await loadReviewDetail(user.id, trainingId, flash.group);
+  const handouts = detail ? await loadTrainingHandouts(detail.training.id) : [];
 
   if (!detail) {
     notFound();
@@ -105,11 +106,32 @@ export default async function ManagerTrainingReviewPage({
           </div>
           {review ? <ReviewStatusBadge status={review.status} /> : null}
         </div>
-        {training.description ? (
-          <p className="mt-4 text-sm text-muted-foreground">{training.description}</p>
+        <div className="mt-6 border-t border-border pt-6">
+          <h2 className="font-heading text-lg font-semibold">
+            {t("manager.reviewDetail.summary")}
+          </h2>
+          {training.leader_summary ? (
+            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+              {training.leader_summary}
+            </p>
+          ) : (
+            <p className="mt-3 text-sm text-muted-foreground">
+              {t("manager.reviewDetail.summaryEmpty")}
+            </p>
+          )}
+        </div>
+        {handouts.length > 0 ? (
+          <div className="mt-6 border-t border-border pt-6">
+            <h2 className="font-heading text-lg font-semibold">
+              {t("manager.reviewDetail.handouts")}
+            </h2>
+            <div className="mt-3">
+              <TrainingHandoutLinks handouts={handouts} t={t} />
+            </div>
+          </div>
         ) : null}
         {review?.decided_at ? (
-          <p className="mt-4 text-sm text-muted-foreground">
+          <p className="mt-6 text-sm text-muted-foreground">
             {review.status === "accepted" ? t("manager.reviews.accepted") : t("manager.reviews.declined")}{" "}
             {formatShortDate(review.decided_at, locale)}
             {review.status === "declined" && review.decline_reason
@@ -126,16 +148,7 @@ export default async function ManagerTrainingReviewPage({
               declineReason={review.decline_reason}
             />
           </div>
-        ) : (
-          <div className="mt-6 border-t border-border pt-6">
-            <Link
-              href="/manager/trainings#cohort"
-              className={cn(buttonVariants(), "w-full sm:w-auto")}
-            >
-              {t("manager.reviewDetail.assignFromTrainings")}
-            </Link>
-          </div>
-        )}
+        ) : null}
       </section>
 
       <section className="space-y-4">
@@ -150,42 +163,7 @@ export default async function ManagerTrainingReviewPage({
             {t("manager.reviewDetail.noSessionsBody")}
           </EmptyState>
         ) : (
-          <ol className="space-y-4">
-            {sessions.map((session) => {
-              const embed = youtubeEmbedUrl(session.video_url);
-              return (
-                <li
-                  key={session.id}
-                  className="overflow-hidden rounded-xl border border-border bg-card"
-                >
-                  <div className="p-4 sm:p-6">
-                    <p className="text-sm text-muted-foreground">
-                      {t("manager.reviewDetail.sessionN", { n: session.session_number })}
-                    </p>
-                    <h3 className="mt-1 font-heading text-lg font-semibold">
-                      {session.title}
-                    </h3>
-                    {session.keyline ? (
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        {session.keyline}
-                      </p>
-                    ) : null}
-                  </div>
-                  {embed ? (
-                    <div className="aspect-video border-t border-border bg-black">
-                      <iframe
-                        className="h-full w-full"
-                        src={embed}
-                        title={session.title}
-                        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    </div>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ol>
+          <ReviewSessionList sessions={sessions} training={training} t={t} />
         )}
       </section>
     </div>

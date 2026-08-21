@@ -1,10 +1,10 @@
-import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, SHOW_HEBREW, isPublicLocale, type Locale } from "@/lib/i18n/config";
 
 type GroupLocaleFields = { locale?: string | null; code?: string | null };
 
 export function localeFromGroup(group: GroupLocaleFields | null | undefined): Locale | null {
-  if (isLocale(group?.locale)) return group.locale;
-  if (group?.code?.trim().toUpperCase() === "IL") return "he";
+  if (isPublicLocale(group?.locale)) return group.locale;
+  if (SHOW_HEBREW && group?.code?.trim().toUpperCase() === "IL") return "he";
   return null;
 }
 
@@ -20,11 +20,9 @@ export async function resolveManagerExportLocale(managerId: string): Promise<Loc
   try {
     const { createClient } = await import("@/lib/supabase/server");
     const supabase = await createClient();
-    const { data } = await supabase
-      .from("groups")
-      .select("locale, code")
-      .eq("manager_id", managerId);
-    return localeFromGroups(data ?? []);
+    const { loadGroupsForManager } = await import("@/lib/org-staff/membership");
+    const groups = await loadGroupsForManager(managerId, supabase);
+    return localeFromGroups(groups);
   } catch {
     return DEFAULT_LOCALE;
   }

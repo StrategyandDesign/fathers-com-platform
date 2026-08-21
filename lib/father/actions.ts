@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 
 import { getAuthContext, requireWalkUser } from "@/lib/auth/session";
 import { loadSessionContext } from "@/lib/father/data";
+import { nextSkillUse, parseSkillUse } from "@/lib/father/skill-use";
+import { isSessionComplete } from "@/lib/father/types";
 import { writeFilmSeconds } from "@/lib/father/film-position";
 import {
   isIntentionOption,
@@ -125,7 +127,10 @@ export async function markFilmWatched(formData: FormData) {
     redirect(paths.home);
   }
 
-  await requireReachableSession(user.id, sessionId, paths);
+  const context = await requireReachableSession(user.id, sessionId, paths);
+  if (isSessionComplete(context.progress)) {
+    redirect(paths.session(sessionId));
+  }
 
   try {
     await saveProgress(user.id, sessionId, { film_completed: true });
@@ -147,7 +152,10 @@ export async function submitCheckin(formData: FormData) {
     redirect(paths.home);
   }
 
-  await requireReachableSession(user.id, sessionId, paths);
+  const context = await requireReachableSession(user.id, sessionId, paths);
+  if (context.progress?.checkin_completed) {
+    redirect(paths.action(sessionId));
+  }
 
   const choice = String(formData.get(CHECKIN_CHOICE_KEY) ?? "").trim();
   if (!choice) {
@@ -292,13 +300,15 @@ export async function markActionDone(formData: FormData) {
     }
   }
 
-  if (commitment && !commitment.completedAt) {
+  if (commitment && (!commitment.completedAt || !commitment.closedAt)) {
     const supabase = await createClient();
+    const now = new Date().toISOString();
     const { error } = await supabase
       .from("action_commitments")
       .update({
-        completed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        completed_at: commitment.completedAt ?? now,
+        closed_at: commitment.closedAt ?? now,
+        updated_at: now,
       })
       .eq("user_id", user.id)
       .eq("session_id", sessionId);
@@ -315,7 +325,19 @@ export async function markActionDone(formData: FormData) {
     }
   }
 
-  redirect(actionPath(sessionId, paths));
+  revalidatePath("/father");
+  revalidatePath(`/father/sessions/${sessionId}`);
+  revalidatePath(`/father/sessions/${sessionId}/action`);
+  revalidatePath("/manager/practice");
+  revalidatePath(`/manager/practice/sessions/${sessionId}`);
+  revalidatePath(`/manager/practice/sessions/${sessionId}/action`);
+
+  if (role === "manager") {
+    redirect(paths.done(sessionId));
+  }
+
+  const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
+  redirect(startHref ?? paths.done(sessionId));
 }
 
 export async function finishActionSession(formData: FormData) {
@@ -354,6 +376,74 @@ export async function finishActionSession(formData: FormData) {
 
   const startHref = await advanceOnboardingAfterSession(user.id, sessionId);
   redirect(startHref ?? paths.done(sessionId));
+}
+
+export async function reportSkillUse(formData: FormData) {
+  const { user, role } = await requireWalkUser();
+  const paths = walkPathsFor(role);
+  const sessionId = String(formData.get("session_id") ?? "");
+  const report = parseSkillUse(formData.get("skill_use"));
+  const returnTo = String(formData.get("return_to") ?? "home") === "done" ? "done" : "home";
+  const dest = returnTo === "done" ? paths.done(sessionId) : paths.home;
+
+  if (!sessionId || !report) {
+    redirect(dest);
+  }
+
+  const context = await loadSessionContext(user.id, sessionId);
+  if (!context || !isSessionComplete(context.progress)) {
+    redirect(dest);
+  }
+
+  const next = nextSkillUse(parseSkillUse(context.progress?.skill_use), report);
+  const supabase = await createClient();
+  const error = await writeSkillUse(supabase, user.id, sessionId, next);
+
+  if (error) {
+    redirect(`${dest}${dest.includes("?") ? "&" : "?"}error=${encodeURIComponent("That didn’t save. Try again.")}`);
+  }
+
+  revalidatePath("/father");
+  revalidatePath(`/father/sessions/${sessionId}/done`);
+  revalidatePath("/manager");
+  revalidatePath("/manager/participants");
+  revalidatePath(`/manager/participants/${user.id}`);
+  revalidatePath("/manager/reports");
+  revalidatePath("/manager/practice");
+  revalidatePath(`${paths.done(sessionId)}`);
+
+  redirect(dest);
+}
+
+async function writeSkillUse(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  fatherId: string,
+  sessionId: string,
+  next: NonNullable<ReturnType<typeof parseSkillUse>>
+) {
+  const stamp = new Date().toISOString();
+  const first = await supabase
+    .from("session_progress")
+    .update({
+      skill_use: next,
+      skill_use_at: stamp,
+    })
+    .eq("father_id", fatherId)
+    .eq("session_id", sessionId);
+  if (!first.error) return null;
+  if (next !== "dismissed" || !/skill_use/i.test(first.error.message)) {
+    return first.error;
+  }
+  // Older databases only allowed used/later. Still put the card away.
+  const retry = await supabase
+    .from("session_progress")
+    .update({
+      skill_use: "later",
+      skill_use_at: stamp,
+    })
+    .eq("father_id", fatherId)
+    .eq("session_id", sessionId);
+  return retry.error;
 }
 
 export async function saveFilmPosition(sessionId: string, seconds: number) {

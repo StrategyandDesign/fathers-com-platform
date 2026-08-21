@@ -254,6 +254,7 @@ export async function issueCertificateToFather(
       training_id: trainingId,
       serial_number: serial,
       issued_by: user.id,
+      issuer_name: managerName,
       issued_at: issuedAt.toISOString(),
       pdf_storage_path: storagePath,
     })

@@ -1,4 +1,5 @@
-import { continueHref, isSessionComplete, type Session, type SessionProgress, type Training } from "@/lib/father/types";
+import { trainingContinueHref } from "@/lib/father/training-door";
+import { isSessionComplete, type Session, type SessionProgress, type Training } from "@/lib/father/types";
 import { createClient } from "@/lib/supabase/server";
 
 function sortByCatalog(a: Session, b: Session) {
@@ -67,7 +68,12 @@ export async function loadFirstAssignedSession(
       session: first,
       training,
       progress,
-      href: continueHref(first.id, progress),
+      href: trainingContinueHref({
+        training,
+        next: first,
+        nextProgress: progress,
+        completed: isSessionComplete(progress) ? 1 : 0,
+      }),
     };
   }
 

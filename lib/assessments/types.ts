@@ -63,6 +63,8 @@ export type AssessmentListItem = CustomAssessment & {
   questionCount: number;
   assignedCount: number;
   completedCount: number;
+  notStartedCount: number;
+  inProgressCount: number;
 };
 
 export type AssignmentRow = CustomAssessmentAssignment & {

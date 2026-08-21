@@ -13,11 +13,7 @@ import {
   INTENTION_LABEL_KEYS,
 } from "@/lib/father/action-commitment";
 import { loadActionCommitment, loadFatherTimeZone } from "@/lib/father/action-commitment-data";
-import {
-  commitActionMoment,
-  finishActionSession,
-  markActionDone,
-} from "@/lib/father/actions";
+import { commitActionMoment, markActionDone } from "@/lib/father/actions";
 import { loadSessionContext } from "@/lib/father/data";
 import { loadOnboardingState } from "@/lib/father/onboarding-data";
 import { isOnboardingActive } from "@/lib/father/onboarding";
@@ -112,12 +108,10 @@ export default async function SessionActionPage({
         defaultOption={commitment?.intentionLabel}
         defaultDate={customParts?.date}
         defaultTime={customParts?.time}
-        defaultNote={commitment?.outcomeNote}
         skipHref={state === "commit" && !funnel ? "/father" : null}
         changeHref={`/father/sessions/${session.id}/action?change=1`}
         commitAction={commitActionMoment}
         doneAction={markActionDone}
-        finishAction={finishActionSession}
       />
     </div>
   );

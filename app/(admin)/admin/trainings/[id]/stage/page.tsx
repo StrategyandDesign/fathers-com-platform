@@ -15,6 +15,7 @@ import {
   stagePaths,
   requireAdminStageTraining,
 } from "@/lib/admin/stage";
+import { hasTrainingOverview } from "@/lib/father/training-door";
 import { sessionCover } from "@/lib/brand/photos";
 import { getI18n } from "@/lib/i18n/server";
 import { resolveTrainingCardCover } from "@/lib/org-photos/data";
@@ -44,7 +45,8 @@ export default async function AdminTrainingStagePage({
       ? t("father.home.sessionOne")
       : t("father.home.sessionMany", { n: total });
   const heroCover = first ? sessionCover(first.session_number, "default") : coverSrc;
-  const firstHref = first ? paths.session(first.id) : paths.edit;
+  const hasOverview = hasTrainingOverview(training);
+  const firstHref = hasOverview ? paths.overview : first ? paths.session(first.id) : paths.edit;
   const sessionDots = training.sessions.map((session) => ({
     id: session.id,
     number: session.session_number,
@@ -147,6 +149,10 @@ export default async function AdminTrainingStagePage({
                     featured
                     hrefOverride={firstHref}
                     sessionHref={paths.session}
+                    hasOverview={hasOverview}
+                    overviewHref={hasOverview ? paths.overview : null}
+                    overviewUrl={training.overview_video_url}
+                    showOverviewSlot
                     t={t}
                   />
                 ) : (
@@ -182,7 +188,7 @@ export default async function AdminTrainingStagePage({
                       interactiveSurfaceClassName
                     )}
                   >
-                    <div className="h-28 overflow-hidden rounded-t-xl bg-[#101510] sm:h-32">
+                    <div className="relative h-28 w-full overflow-hidden rounded-t-xl bg-[#101510] sm:h-32">
                       <CoverPhoto src={coverSrc} />
                     </div>
                     <div className="p-4 sm:p-5">

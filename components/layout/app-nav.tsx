@@ -13,6 +13,7 @@ import {
   Image,
   Inbox,
   LayoutDashboard,
+  Megaphone,
   Settings,
   Users,
 } from "lucide-react";
@@ -86,19 +87,19 @@ export const NAV: Record<AppRole, NavItem[]> = {
       match: (path) => path.startsWith("/manager/participants"),
     },
     {
-      href: "/manager/impact",
-      labelKey: "nav.impact",
-      icon: BarChart3,
-      match: (path) =>
-        path.startsWith("/manager/impact") || path.startsWith("/manager/compare"),
-    },
-    {
       href: "/manager/assessments",
       labelKey: "nav.assessments",
       icon: ClipboardList,
       match: (path) =>
         path.startsWith("/manager/assessments") ||
         path.startsWith("/manager/assessment-reviews"),
+    },
+    {
+      href: "/manager/impact",
+      labelKey: "nav.impact",
+      icon: BarChart3,
+      match: (path) =>
+        path.startsWith("/manager/impact") || path.startsWith("/manager/compare"),
     },
     {
       href: "/manager/reports",
@@ -141,12 +142,6 @@ export const NAV: Record<AppRole, NavItem[]> = {
       match: (path) => path === "/admin",
     },
     {
-      href: "/admin/gathering",
-      labelKey: "nav.gathering",
-      icon: BarChart3,
-      match: (path) => path.startsWith("/admin/gathering"),
-    },
-    {
       href: "/admin/organizations",
       labelKey: "nav.organizations",
       icon: Building2,
@@ -171,10 +166,28 @@ export const NAV: Record<AppRole, NavItem[]> = {
       match: (path) => path.startsWith("/admin/users"),
     },
     {
+      href: "/admin/gathering",
+      labelKey: "nav.gathering",
+      icon: BarChart3,
+      match: (path) => path.startsWith("/admin/gathering"),
+    },
+    {
       href: "/admin/support",
       labelKey: "nav.inbox",
       icon: Inbox,
       match: (path) => path.startsWith("/admin/support"),
+    },
+    {
+      href: "/admin/messages",
+      labelKey: "nav.messages",
+      icon: Megaphone,
+      match: (path) => path.startsWith("/admin/messages"),
+    },
+    {
+      href: "/admin/appearance",
+      labelKey: "nav.appearance",
+      icon: Image,
+      match: (path) => path.startsWith("/admin/appearance"),
     },
   ],
 };

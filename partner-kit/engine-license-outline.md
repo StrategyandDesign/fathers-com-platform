@@ -10,7 +10,7 @@ authority. Counsel finalizes parties, term, fees, and jurisdiction.
    or regulatory approval.
 2. Verification is always public, and revocation is always shown. No
    private registries, no scrubbed history.
-3. The education line always holds (POSITIONING.md section 16). The
+3. The education line always holds (docs/product/POSITIONING.md section 16). The
    licensee never diagnoses, screens, treats, or counsels under the
    platform, and never uses those words about the program.
 

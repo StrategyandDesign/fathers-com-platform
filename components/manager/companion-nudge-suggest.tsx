@@ -8,9 +8,18 @@ import { Button } from "@/components/ui/button";
 import { translateNudgeTemplate } from "@/lib/i18n/flash";
 import type { CompanionCopy, CompanionNudgeBlock } from "@/lib/manager/companion";
 import type { NudgeTemplateKey } from "@/lib/manager/nudges";
+import { participationCopyKey, type ParticipationMode } from "@/lib/participation";
 
-function copyText(copy: CompanionCopy, t: (key: string, vars?: Record<string, string | number>) => string) {
-  return t(copy.key, copy.vars);
+function copyText(
+  copy: CompanionCopy,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+  mode: ParticipationMode
+) {
+  const key =
+    copy.key === "manager.companion.reasonStalledTitle"
+      ? participationCopyKey(mode, copy.key)
+      : copy.key;
+  return t(key, copy.vars);
 }
 
 export function CompanionNudgeSuggest({
@@ -24,6 +33,7 @@ export function CompanionNudgeSuggest({
   returnTo,
   compact = false,
   defaultOpen = false,
+  mode = "unset",
 }: {
   fatherId: string;
   template: NudgeTemplateKey;
@@ -35,11 +45,12 @@ export function CompanionNudgeSuggest({
   returnTo?: "list" | "detail" | "dashboard";
   compact?: boolean;
   defaultOpen?: boolean;
+  mode?: ParticipationMode;
 }) {
   const t = useT();
   const [open, setOpen] = useState(defaultOpen);
   const [dismissed, setDismissed] = useState(false);
-  const suggested = translateNudgeTemplate(template, t);
+  const suggested = translateNudgeTemplate(template, t, mode);
 
   if (dismissed) return null;
 
@@ -56,7 +67,7 @@ export function CompanionNudgeSuggest({
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted-foreground">{copyText(reason, t)}</p>
+      <p className="text-sm text-muted-foreground">{copyText(reason, t, mode)}</p>
       {blockMessage && !open ? (
         <p className="text-sm text-muted-foreground">{blockMessage}</p>
       ) : null}
@@ -87,7 +98,7 @@ export function CompanionNudgeSuggest({
             {suggested.label}
           </p>
           <p className="text-sm text-muted-foreground">{suggested.preview}</p>
-          <p className="text-sm text-muted-foreground">{copyText(whyTemplate, t)}</p>
+          <p className="text-sm text-muted-foreground">{copyText(whyTemplate, t, mode)}</p>
           {blockMessage ? (
             <p className="text-sm text-muted-foreground">{blockMessage}</p>
           ) : (

@@ -1,7 +1,9 @@
 import Link from "next/link";
 
+import { SkillUseCard } from "@/components/father/skill-use-card";
 import { buttonVariants } from "@/components/ui/button";
 import type { SessionCloseout } from "@/lib/father/session-closeout";
+import type { SkillUse } from "@/lib/father/skill-use";
 import type { Translate } from "@/lib/i18n/translate";
 import { homePrimaryCtaClassName, interactiveControlClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -9,10 +11,16 @@ import { cn } from "@/lib/utils";
 export function SessionCloseoutView({
   closeout,
   homeHref,
+  sessionId,
+  skill,
+  skillUse,
   t,
 }: {
   closeout: SessionCloseout;
   homeHref: string;
+  sessionId?: string;
+  skill?: string;
+  skillUse?: SkillUse | null;
   t: Translate;
 }) {
   const remainLabel = closeout.trainingComplete
@@ -37,6 +45,15 @@ export function SessionCloseoutView({
           {remainLabel}
         </p>
       </header>
+
+      {sessionId ? (
+        <SkillUseCard
+          sessionId={sessionId}
+          skill={skill ?? ""}
+          reported={skillUse ?? null}
+          returnTo="done"
+        />
+      ) : null}
 
       <nav aria-label={t("father.session.closeoutMap")}>
         <ol className="flex flex-wrap gap-2">

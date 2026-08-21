@@ -1,7 +1,16 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { pickHomeAssessment, sortHomePath, splitHomeRows } from "../lib/father/home";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+import {
+  homeTrainingSessionCount,
+  pickHomeAssessment,
+  shouldCompactHomeDoneShelf,
+  sortHomePath,
+  splitHomeRows,
+} from "../lib/father/home";
 import { fatherWeekStreak } from "../lib/father/streak";
 import type { FatherAssignmentCard } from "../lib/assessments/types";
 
@@ -114,8 +123,16 @@ describe("home path order", () => {
   });
 });
 
+describe("home training session count", () => {
+  it("returns the session total for a card with sessions", () => {
+    assert.equal(homeTrainingSessionCount(8), 8);
+    assert.equal(homeTrainingSessionCount(1), 1);
+    assert.equal(homeTrainingSessionCount(0), null);
+  });
+});
+
 describe("home shelves", () => {
-  it("keeps the started training on Path and other open trainings beside it", () => {
+  it("puts open trainings on one Your Trainings shelf, current first", () => {
     const rows = splitHomeRows(
       [
         {
@@ -137,14 +154,12 @@ describe("home shelves", () => {
       ],
       "fundamentals"
     );
-    assert.deepEqual(
-      rows.path.map((card) => card.training.id),
-      ["fundamentals"]
-    );
+    assert.deepEqual(rows.path, []);
     assert.deepEqual(
       rows.trainings.map((card) => card.training.id),
-      ["anger"]
+      ["fundamentals", "anger"]
     );
+    assert.deepEqual(rows.completed, []);
   });
 
   it("does not list a finished training as available", () => {
@@ -157,12 +172,79 @@ describe("home shelves", () => {
     );
     assert.deepEqual(
       rows.path.map((card) => card.training.id),
+      []
+    );
+    assert.deepEqual(
+      rows.completed.map((card) => card.training.id),
       ["fundamentals"]
     );
     assert.deepEqual(
       rows.trainings.map((card) => card.training.id),
       ["anger"]
     );
+  });
+
+  it("keeps finished trainings off Your Path", () => {
+    const rows = splitHomeRows(
+      [{ training: { id: "fundamentals" }, completed: 9, total: 9, gated: false }],
+      null
+    );
+    assert.equal(rows.path.length, 0);
+    assert.equal(rows.trainings.length, 0);
+    assert.equal(rows.completed[0]?.training.id, "fundamentals");
+  });
+});
+
+describe("home board layout", () => {
+  it("puts completed trainings and certificates beside Your Path on desktop", () => {
+    const path = readFileSync(
+      fileURLToPath(new URL("../components/father/home-path.tsx", import.meta.url)),
+      "utf8"
+    );
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/(father)/father/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(path, /lg:grid-cols-\[minmax\(0,1\.4fr\)_minmax\(16\.5rem,1fr\)\]/);
+    assert.match(path, /rounded-xl border border-border/);
+    assert.match(path, /divide-y divide-border/);
+    assert.match(path, /lg:divide-x/);
+    assert.match(path, /father\.home\.yourTrainings/);
+    assert.match(path, /homeTrainingSessionCount/);
+    assert.match(path, /father\.home\.trainingSessions/);
+    assert.match(path, /shouldCompactHomeDoneShelf/);
+    assert.doesNotMatch(path, /father\.home\.yourPath/);
+    assert.match(path, /HomeEarnedRow/);
+    assert.match(page, /earned=\{earned\}/);
+    assert.doesNotMatch(page, /<HomeEarnedRow/);
+    const earned = readFileSync(
+      fileURLToPath(new URL("../components/father/home-earned.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(earned, /certificatePreviewPath/);
+    assert.match(earned, /CertificateFace/);
+    assert.match(earned, /shouldCompactHomeDoneShelf/);
+    assert.doesNotMatch(earned, /certificateDownloadPath/);
+  });
+});
+
+describe("home done shelf compact", () => {
+  it("keeps a single completed item as a full card and compacts a list", () => {
+    assert.equal(shouldCompactHomeDoneShelf(1), false);
+    assert.equal(shouldCompactHomeDoneShelf(2), true);
+    assert.equal(shouldCompactHomeDoneShelf(0), false);
+    const path = readFileSync(
+      fileURLToPath(new URL("../components/father/home-path.tsx", import.meta.url)),
+      "utf8"
+    );
+    const earned = readFileSync(
+      fileURLToPath(new URL("../components/father/home-earned.tsx", import.meta.url)),
+      "utf8"
+    );
+    assert.match(path, /variant === "completed" && shouldCompactHomeDoneShelf/);
+    assert.match(path, /homeTrainingLabel\(card\.training\)/);
+    assert.match(earned, /shouldCompactHomeDoneShelf\(marks\.length\)/);
+    assert.match(earned, /certificatePreviewPath\(mark\.id\)/);
   });
 });
 

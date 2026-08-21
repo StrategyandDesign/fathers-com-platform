@@ -11,7 +11,9 @@ import { PROFILE_QUESTION_COUNT, answeredCount, firstUnanswered } from "@/lib/fa
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
 import { loadManagerOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
 import { loadLeaderPractice } from "@/lib/practice/data";
-import { PRACTICE_ROOT, practiceContinueHref } from "@/lib/practice/paths";
+import { hasTrainingOverview, hasWatchedTrainingSession } from "@/lib/father/training-door";
+import { sessionFilmPath } from "@/lib/father/types";
+import { PRACTICE_ROOT } from "@/lib/practice/paths";
 import { trainingCoverSlug } from "@/lib/trainings/series";
 import { interactiveSurfaceClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -114,10 +116,16 @@ export default async function LeaderPracticePage({
                   featured={inProgress}
                   hrefOverride={
                     card.next
-                      ? practiceContinueHref(card.next.id, card.nextProgress)
+                      ? sessionFilmPath(card.next.id, { root: PRACTICE_ROOT })
                       : null
                   }
                   sessionHref={(sessionId) => `${PRACTICE_ROOT}/sessions/${sessionId}`}
+                  hasOverview={hasTrainingOverview(card.training)}
+                  overviewUrl={card.training.overview_video_url}
+                  showOverviewSlot={
+                    hasTrainingOverview(card.training) &&
+                    !hasWatchedTrainingSession(card.completed, card.nextProgress, card.sessionDots)
+                  }
                   t={t}
                 />
               );

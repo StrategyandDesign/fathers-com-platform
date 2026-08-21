@@ -1,10 +1,9 @@
 import Link from "next/link";
 
-import { createOrganization } from "@/lib/admin/actions";
+import { provisionOrganization } from "@/lib/admin/actions";
 import { loadAdminUsers } from "@/lib/admin/data";
 import { Flash } from "@/components/manager/flash";
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
 import { requireRole } from "@/lib/auth/session";
 import { fieldClassName, interactiveLinkClassName } from "@/lib/ui";
 
@@ -31,14 +30,15 @@ export default async function AdminNewOrganizationPage({
           New organization
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Assign an existing manager. Promote someone on the Users page first if needed.
+          Enter a leader email to send a join link to their inbox. Or choose a
+          leader who already has an account.
         </p>
       </div>
       <Flash error={flash.error} notice={flash.notice} />
 
-      <form action={createOrganization} className="max-w-xl space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
+      <form action={provisionOrganization} className="max-w-xl space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6">
         <label className="block space-y-2">
-          <span className="text-sm text-muted-foreground">Name</span>
+          <span className="text-sm text-muted-foreground">Organization name</span>
           <input
             className={fieldClassName}
             name="name"
@@ -47,33 +47,39 @@ export default async function AdminNewOrganizationPage({
           />
         </label>
         <label className="block space-y-2">
-          <span className="text-sm text-muted-foreground">Manager</span>
-          {managers.length === 0 ? (
-            <EmptyState
-              framed={false}
-              className="p-0"
-              title="No managers yet"
-              actionHref="/admin/users"
-              actionLabel="Open users"
-            >
-              Change a user’s role to Manager, then come back to create the
-              organization.
-            </EmptyState>
-          ) : (
-            <select className={fieldClassName} name="manager_id" required>
+          <span className="text-sm text-muted-foreground">Leader email</span>
+          <input
+            className={fieldClassName}
+            type="email"
+            name="email"
+            autoComplete="off"
+            aria-invalid={Boolean(flash.error) || undefined}
+          />
+          <span className="block text-xs text-muted-foreground">
+            A new email gets a join link. An existing Leader gets the group on
+            their desk.
+          </span>
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">Leader name</span>
+          <input className={fieldClassName} name="full_name" maxLength={80} />
+        </label>
+        {managers.length > 0 ? (
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Or choose an existing Leader</span>
+            <select className={fieldClassName} name="manager_id" defaultValue="">
+              <option value="">Invite by email above</option>
               {managers.map((manager) => (
                 <option key={manager.id} value={manager.id}>
                   {manager.full_name || manager.email || manager.id}
                 </option>
               ))}
             </select>
-          )}
-        </label>
-        {managers.length > 0 ? (
-          <Button type="submit" className="w-full sm:w-auto">
-            Create organization
-          </Button>
+          </label>
         ) : null}
+        <Button type="submit" className="w-full sm:w-auto">
+          Send invite
+        </Button>
       </form>
     </div>
   );
