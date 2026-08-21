@@ -174,17 +174,18 @@ describe("cohort status and board", () => {
 });
 
 describe("leader dashboard order", () => {
-  it("puts counts, invite code, and open items first", () => {
+  it("puts counts first, then the update, then invite code and open items above the agent", () => {
     const page = readFileSync(
       fileURLToPath(new URL("../app/(manager)/manager/page.tsx", import.meta.url)),
       "utf8"
     );
     const stats = page.indexOf("lg:grid-cols-5");
+    const update = page.indexOf("<CohortNoteDesk");
     const invite = page.indexOf("manager.dashboard.inviteTitle");
     const openItems = page.indexOf("manager.dashboard.attention");
-    const update = page.indexOf("<CohortNoteDesk");
-    assert.ok(stats > 0 && invite > stats && openItems > invite);
-    assert.ok(update > openItems);
+    const agent = page.indexOf("<CompanionPanel");
+    assert.ok(stats > 0 && update > stats && invite > update);
+    assert.ok(openItems > invite && agent > openItems);
     assert.doesNotMatch(page, /<StaffDesk/);
     assert.doesNotMatch(page, /<ActivityTicker/);
     assert.doesNotMatch(page, /manager\.dashboard\.openCatalog/);

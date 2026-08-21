@@ -114,6 +114,16 @@ export default async function ManagerHomePage({
         ))}
       </section>
 
+      <CohortNoteDesk
+        viewerId={user.id}
+        groups={decorateCohortNoteDesk(cohortNotes, {
+          trainings: workspace.trainings,
+          reviews: workspace.reviews,
+          participants: workspace.participants,
+          assignments: workspace.assignments,
+        })}
+      />
+
       <section className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.inviteTitle")}</h2>
@@ -200,15 +210,6 @@ export default async function ManagerHomePage({
         </div>
       </section>
 
-      <CohortNoteDesk
-        viewerId={user.id}
-        groups={decorateCohortNoteDesk(cohortNotes, {
-          trainings: workspace.trainings,
-          reviews: workspace.reviews,
-          participants: workspace.participants,
-          assignments: workspace.assignments,
-        })}
-      />
       <CompanionPanel briefing={companion} mode={participationMode} t={t} />
 
       {reviews.pending.length > 0 || reviews.unread.length > 0 ? (
