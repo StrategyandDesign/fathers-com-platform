@@ -18,6 +18,7 @@ import {
   issueCertificateToFather,
   markSessionsCompleteForFather,
 } from "@/lib/manager/mutations";
+import { recordOrganizationActivity } from "@/lib/org-staff/activity";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
@@ -115,7 +116,22 @@ export async function runBulkAction(formData: FormData) {
               requireComplete: true,
             });
 
-    if (result.status === "ok") ok.push(participant.name);
+    if (result.status === "ok") {
+      ok.push(participant.name);
+      const kind =
+        actionRaw === "assign"
+          ? "training_assigned"
+          : actionRaw === "certificates"
+            ? "certificate_issued"
+            : null;
+      if (kind && participant.groupId) {
+        await recordOrganizationActivity(supabase, {
+          groupId: participant.groupId,
+          actorId: user.id,
+          kind,
+        });
+      }
+    }
     else if (result.status === "skipped") {
       skipped.push({ name: participant.name, reason: result.reason ?? "Skipped." });
     } else {

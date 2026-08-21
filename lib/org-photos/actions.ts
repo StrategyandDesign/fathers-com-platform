@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/session";
+import { recordOrganizationActivity } from "@/lib/org-staff/activity";
 import { isManagerOfGroup } from "@/lib/org-staff/membership";
 import { loadCatalogTrainings } from "@/lib/org-photos/data";
 import { trainingCoverSlug } from "@/lib/trainings/series";
@@ -110,6 +111,13 @@ export async function uploadOrganizationPhoto(
     return { error: "The photo didn’t save. Try again." };
   }
 
+  await recordOrganizationActivity(supabase, {
+    groupId: organization.id,
+    actorId: user.id,
+    kind: "photo_updated",
+    payload: { slot },
+  });
+
   revalidateOrgPhotos();
   return { notice: "Photo saved." };
 }
@@ -121,7 +129,7 @@ export async function resetOrganizationPhoto(
   const slotValue = String(formData.get("slot") ?? "");
   const access = await requireManagedGroup(groupId);
   if ("error" in access) return access;
-  const { organization } = access;
+  const { user, organization } = access;
 
   if (!(await allowActionRateLimit("account.org_photo"))) {
     return { error: "Too many photo changes. Wait a few minutes and try again." };
@@ -147,6 +155,13 @@ export async function resetOrganizationPhoto(
   }
 
   await supabase.storage.from(ORG_PHOTOS_BUCKET).remove([objectPath]);
+
+  await recordOrganizationActivity(supabase, {
+    groupId: organization.id,
+    actorId: user.id,
+    kind: "photo_reset",
+    payload: { slot },
+  });
 
   revalidateOrgPhotos();
   return { notice: "Reset to the platform default." };

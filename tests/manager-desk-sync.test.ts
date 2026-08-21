@@ -61,6 +61,58 @@ describe("shared leader desk stamp", () => {
     );
   });
 
+  it("changes when photos, certificates, assessments, or roster rows change", () => {
+    const base = deskSyncVersion({
+      reviews: [],
+      photoCount: 1,
+      photoAt: "2026-08-21T01:00:00.000Z",
+      certificateCount: 1,
+      certificateAt: "2026-08-21T01:00:00.000Z",
+    });
+    assert.notEqual(
+      base,
+      deskSyncVersion({
+        reviews: [],
+        photoCount: 2,
+        photoAt: "2026-08-21T01:01:00.000Z",
+        certificateCount: 1,
+        certificateAt: "2026-08-21T01:00:00.000Z",
+      })
+    );
+    assert.notEqual(
+      base,
+      deskSyncVersion({
+        reviews: [],
+        photoCount: 1,
+        photoAt: "2026-08-21T01:00:00.000Z",
+        certificateCount: 2,
+        certificateAt: "2026-08-21T01:02:00.000Z",
+      })
+    );
+    assert.notEqual(
+      deskSyncVersion({
+        assessmentAvailability: [
+          {
+            group_id: "nwa",
+            training_id: "keystone",
+            status: "available",
+            decided_at: "2026-08-21T01:00:00.000Z",
+          },
+        ],
+      }),
+      deskSyncVersion({
+        assessmentAvailability: [
+          {
+            group_id: "nwa",
+            training_id: "keystone",
+            status: "hidden",
+            decided_at: "2026-08-21T01:00:10.000Z",
+          },
+        ],
+      })
+    );
+  });
+
   it("is the same for every leader on the same organization", () => {
     const reviews = [
       {
@@ -133,5 +185,19 @@ describe("leader desk live loop", () => {
     assert.match(decide, /review_accepted/);
     assert.match(decide, /review_declined/);
     assert.doesNotMatch(decide, /manager_id/);
+    const photos = readRepo("lib/org-photos/actions.ts");
+    const assessments = readRepo("lib/assessments/data.ts");
+    const sync = readRepo("lib/manager/desk-sync.ts");
+    assert.match(photos, /recordOrganizationActivity/);
+    assert.match(assessments, /loadOrgManagerIds/);
+    assert.match(sync, /organization_photos/);
+    assert.match(sync, /certificates/);
+    assert.match(sync, /session_progress/);
+    assert.match(sync, /organization_assessment_reviews/);
+    assert.match(sync, /organization_assessment_availability/);
+    assert.match(sync, /manager_participant_notes/);
+    const peer = readRepo("supabase/migrations/20260821050000_peer_custom_assessments.sql");
+    assert.match(peer, /manages_same_organization_as/);
+    assert.match(peer, /owns_custom_assessment/);
   });
 });

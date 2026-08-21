@@ -14,6 +14,7 @@ import {
   reviewForGroup,
 } from "@/lib/assessments/reviews";
 import { requireRole } from "@/lib/auth/session";
+import { recordOrganizationActivity } from "@/lib/org-staff/activity";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
@@ -111,6 +112,13 @@ async function saveVisibility(formData: FormData, status: "available" | "hidden"
   if (error) {
     fail(path, "flash.assessmentVisibilityFailed");
   }
+
+  await recordOrganizationActivity(supabase, {
+    groupId,
+    actorId: user.id,
+    kind: status === "available" ? "assessment_shared" : "assessment_hidden",
+    payload: { assessmentKey },
+  });
 
   revalidateVisibility(assessmentKey);
   ok(

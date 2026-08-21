@@ -183,3 +183,15 @@ export async function loadOrganizationStaff(
     ];
   });
 }
+
+/** Every Leader seat on the same organizations, including this manager. */
+export async function loadOrgManagerIds(managerId: string, supabase?: StaffClient) {
+  const groups = await loadGroupsForManager(managerId, supabase);
+  const staff = await loadOrganizationStaff(groups.map((group) => group.id));
+  return [
+    ...new Set([
+      managerId,
+      ...staff.filter((row) => row.staffRole === "manager").map((row) => row.profileId),
+    ]),
+  ];
+}

@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 72,
-  "label": "Shared 1-1.72",
+  "patch": 73,
+  "label": "Shared 1-1.73",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Hide Dashboard and Impact Snapshot header chips.",
+  "title": "Keep org leader desks in step with each other.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -512,6 +512,13 @@
       "label": "Shared 1-1.72",
       "at": "2026-08-21",
       "title": "Hide Dashboard and Impact Snapshot header chips."
+    },
+    {
+      "patch": 73,
+      "revision": "1.73",
+      "label": "Shared 1-1.73",
+      "at": "2026-08-21",
+      "title": "Keep org leader desks in step with each other."
     }
   ]
 }

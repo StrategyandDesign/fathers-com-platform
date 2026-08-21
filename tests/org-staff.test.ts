@@ -51,6 +51,8 @@ describe("shared desk record", () => {
     assert.equal(activityCopyKey("note_posted"), "manager.dashboard.activityNotePosted");
     assert.equal(activityCopyKey("training_assigned"), "manager.dashboard.activityTrainingAssigned");
     assert.equal(activityCopyKey("staff_added"), "manager.dashboard.activityStaffAdded");
+    assert.equal(activityCopyKey("photo_updated"), "manager.dashboard.activityPhotoUpdated");
+    assert.equal(activityCopyKey("assessment_shared"), "manager.dashboard.activityAssessmentShared");
     assert.equal(activityCopyKey("mystery"), "manager.dashboard.activityUnknown");
   });
 
@@ -71,6 +73,18 @@ describe("shared desk record", () => {
     const notes = readRepo("lib/cohort-note/actions.ts");
     assert.match(notes, /note_posted/);
     assert.match(notes, /note_cleared/);
+    const photos = readRepo("lib/org-photos/actions.ts");
+    assert.match(photos, /photo_updated/);
+    assert.match(photos, /photo_reset/);
+    const visibility = readRepo("lib/assessments/visibility-actions.ts");
+    assert.match(visibility, /assessment_shared/);
+    assert.match(visibility, /assessment_hidden/);
+    const assessmentReviews = readRepo("lib/assessments/review-actions.ts");
+    assert.match(assessmentReviews, /assessment_accepted/);
+    assert.match(assessmentReviews, /assessment_declined/);
+    const bulk = readRepo("lib/manager/bulk-actions.ts");
+    assert.match(bulk, /certificate_issued/);
+    assert.match(bulk, /training_assigned/);
   });
 });
 
@@ -123,6 +137,7 @@ describe("staff wiring", () => {
     const membership = readRepo("lib/org-staff/membership.ts");
     assert.match(membership, /organization_staff/);
     assert.match(membership, /loadGroupsForManager/);
+    assert.match(membership, /loadOrgManagerIds/);
     const data = readRepo("lib/manager/data.ts");
     assert.match(data, /loadGroupsForManager/);
     const reviews = readRepo("lib/manager/reviews.ts");

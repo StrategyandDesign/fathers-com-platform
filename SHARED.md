@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.72**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.73**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -89,3 +89,4 @@ The badge on this checkout is **Shared 1-1.72**. It ticks on each push of the Sh
 | **1.70** | undefined | Put swap and clear on one row, then leaders and their updates below. |
 | **1.71** | undefined | Limit Impact Snapshot to trainings the organization included. |
 | **1.72** | undefined | Hide Dashboard and Impact Snapshot header chips. |
+| **1.73** | undefined | Keep org leader desks in step with each other. |

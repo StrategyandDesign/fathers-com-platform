@@ -12,6 +12,12 @@ export const ORGANIZATION_ACTIVITY_KINDS = [
   "certificate_issued",
   "participation_set",
   "nudge_sent",
+  "photo_updated",
+  "photo_reset",
+  "assessment_accepted",
+  "assessment_declined",
+  "assessment_shared",
+  "assessment_hidden",
 ] as const;
 export type OrganizationActivityKind = (typeof ORGANIZATION_ACTIVITY_KINDS)[number];
 
@@ -106,6 +112,18 @@ export function activityCopyKey(kind: string) {
       return "manager.dashboard.activityParticipationSet";
     case "nudge_sent":
       return "manager.dashboard.activityNudgeSent";
+    case "photo_updated":
+      return "manager.dashboard.activityPhotoUpdated";
+    case "photo_reset":
+      return "manager.dashboard.activityPhotoReset";
+    case "assessment_accepted":
+      return "manager.dashboard.activityAssessmentAccepted";
+    case "assessment_declined":
+      return "manager.dashboard.activityAssessmentDeclined";
+    case "assessment_shared":
+      return "manager.dashboard.activityAssessmentShared";
+    case "assessment_hidden":
+      return "manager.dashboard.activityAssessmentHidden";
     default:
       return "manager.dashboard.activityUnknown";
   }

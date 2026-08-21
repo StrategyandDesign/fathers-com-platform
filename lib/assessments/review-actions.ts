@@ -12,6 +12,7 @@ import {
   isAssessmentReviewStatus,
 } from "@/lib/assessments/reviews";
 import { requireRole } from "@/lib/auth/session";
+import { recordOrganizationActivity } from "@/lib/org-staff/activity";
 import { allowActionRateLimit } from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
@@ -124,6 +125,13 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
       console.error("[assessment-reviews] default hide failed", hideError.message);
     }
   }
+
+  await recordOrganizationActivity(supabase, {
+    groupId,
+    actorId: user.id,
+    kind: status === "accepted" ? "assessment_accepted" : "assessment_declined",
+    payload: { assessmentKey },
+  });
 
   revalidateAssessmentReviews(assessmentKey);
 

@@ -10,6 +10,7 @@ import {
 } from "@/lib/assessments/availability";
 import { isLeaderSelfRow } from "@/lib/practice/paths";
 import { loadManagerGroups } from "@/lib/manager/data";
+import { loadOrgManagerIds } from "@/lib/org-staff/membership";
 import {
   isAssessmentReviewStatus,
   reviewForGroup,
@@ -268,10 +269,11 @@ export async function loadLeaderAssessmentAccess(
 
 export async function loadManagerAssessments(managerId: string): Promise<AssessmentListItem[]> {
   const supabase = await createClient();
+  const managerIds = await loadOrgManagerIds(managerId);
   const { data, error } = await supabase
     .from("custom_assessments")
     .select("*")
-    .eq("manager_id", managerId)
+    .in("manager_id", managerIds)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -310,11 +312,12 @@ export async function loadManagerAssessments(managerId: string): Promise<Assessm
 
 export async function loadManagerAssessmentDetail(managerId: string, assessmentId: string) {
   const supabase = await createClient();
+  const managerIds = await loadOrgManagerIds(managerId);
   const { data, error } = await supabase
     .from("custom_assessments")
     .select("*")
     .eq("id", assessmentId)
-    .eq("manager_id", managerId)
+    .in("manager_id", managerIds)
     .maybeSingle();
 
   if (error) throw error;
@@ -411,12 +414,13 @@ export async function loadParticipantCustomAssignments(managerId: string, father
     .map(asAssignment)
     .filter((row): row is CustomAssessmentAssignment => row !== null);
   const assessmentIds = [...new Set(assignments.map((row) => row.assessment_id))];
+  const managerIds = await loadOrgManagerIds(managerId);
 
   const assessmentsRes = await emptyIn<CustomAssessment>(assessmentIds, () =>
     supabase
       .from("custom_assessments")
       .select("*")
-      .eq("manager_id", managerId)
+      .in("manager_id", managerIds)
       .in("id", assessmentIds)
   );
   if (assessmentsRes.error) throw assessmentsRes.error;

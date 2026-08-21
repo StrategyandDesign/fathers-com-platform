@@ -20,6 +20,10 @@ export function reviewDecisionStamp(reviews: DeskSyncReview[]) {
     .join(",");
 }
 
+export function countLatestStamp(count: number, latest?: string | null) {
+  return `${count}:${latest ?? ""}`;
+}
+
 export function deskSyncVersion(input: {
   reviews?: DeskSyncReview[];
   notes?: DeskSyncNote[];
@@ -27,6 +31,27 @@ export function deskSyncVersion(input: {
   activityAt?: string | null;
   assignmentCount?: number;
   assignmentAt?: string | null;
+  certificateCount?: number;
+  certificateAt?: string | null;
+  progressCount?: number;
+  progressAt?: string | null;
+  photoCount?: number;
+  photoAt?: string | null;
+  assessmentReviews?: DeskSyncReview[];
+  assessmentAvailability?: DeskSyncReview[];
+  assessmentAssignmentCount?: number;
+  assessmentAssignmentAt?: string | null;
+  customAssessmentCount?: number;
+  customAssessmentAt?: string | null;
+  participantNoteCount?: number;
+  participantNoteAt?: string | null;
+  nudgeCount?: number;
+  nudgeAt?: string | null;
+  staffCount?: number;
+  staffAt?: string | null;
+  memberCount?: number;
+  memberAt?: string | null;
+  participation?: string | null;
 }) {
   const reviews = reviewDecisionStamp(input.reviews ?? []);
   const notes = [...(input.notes ?? [])]
@@ -38,8 +63,19 @@ export function deskSyncVersion(input: {
     notes || "none",
     input.activityId ?? "",
     input.activityAt ?? "",
-    String(input.assignmentCount ?? 0),
-    input.assignmentAt ?? "",
+    countLatestStamp(input.assignmentCount ?? 0, input.assignmentAt),
+    countLatestStamp(input.certificateCount ?? 0, input.certificateAt),
+    countLatestStamp(input.progressCount ?? 0, input.progressAt),
+    countLatestStamp(input.photoCount ?? 0, input.photoAt),
+    reviewDecisionStamp(input.assessmentReviews ?? []) || "none",
+    reviewDecisionStamp(input.assessmentAvailability ?? []) || "none",
+    countLatestStamp(input.assessmentAssignmentCount ?? 0, input.assessmentAssignmentAt),
+    countLatestStamp(input.customAssessmentCount ?? 0, input.customAssessmentAt),
+    countLatestStamp(input.participantNoteCount ?? 0, input.participantNoteAt),
+    countLatestStamp(input.nudgeCount ?? 0, input.nudgeAt),
+    countLatestStamp(input.staffCount ?? 0, input.staffAt),
+    countLatestStamp(input.memberCount ?? 0, input.memberAt),
+    input.participation ?? "",
   ].join("|");
 }
 
@@ -70,72 +106,198 @@ function latestIso(values: Array<string | null | undefined>) {
   return values.filter((value): value is string => Boolean(value)).sort().at(-1) ?? "";
 }
 
+type CountLatest = { count: number; at: string };
+
+function countLatest<T>(
+  rows: T[] | null | undefined,
+  at: (row: T) => string | null | undefined
+): CountLatest {
+  const list = rows ?? [];
+  return { count: list.length, at: latestIso(list.map(at)) };
+}
+
+async function safeRows<T>(
+  result: PromiseLike<{ data: T[] | null; error: { message?: string; code?: string } | null }>,
+  name: string
+): Promise<T[]> {
+  const { data, error } = await result;
+  if (error && !missingRelation(error, name)) throw error;
+  return data ?? [];
+}
+
 /** Shared org stamp so every Leader on the same group refreshes together. */
 export async function loadManagerDeskSyncVersion(managerId: string) {
   const { createClient } = await import("@/lib/supabase/server");
-  const { loadGroupsForManager } = await import("@/lib/org-staff/membership");
+  const { loadGroupsForManager, loadOrgManagerIds } = await import("@/lib/org-staff/membership");
 
   const supabase = await createClient();
   const groups = await loadGroupsForManager(managerId, supabase);
   const groupIds = groups.map((group) => group.id);
   if (groupIds.length === 0) return "empty";
 
-  const [reviewsRes, activityRes, notesRes, membersRes] = await Promise.all([
-    supabase
-      .from("organization_training_reviews")
-      .select("group_id, training_id, status, decided_at")
-      .in("group_id", groupIds),
-    supabase
-      .from("organization_activity")
-      .select("id, created_at")
-      .in("group_id", groupIds)
-      .order("created_at", { ascending: false })
-      .limit(1),
-    supabase
-      .from("organization_cohort_notes")
-      .select("id, updated_at")
-      .in("group_id", groupIds),
-    supabase.from("group_members").select("father_id").in("group_id", groupIds),
+  const managerIds = await loadOrgManagerIds(managerId, supabase);
+
+  const [
+    reviews,
+    activityRows,
+    notes,
+    members,
+    photos,
+    assessmentReviews,
+    assessmentAvailability,
+    staff,
+    customAssessments,
+  ] = await Promise.all([
+    safeRows<{ group_id: string; training_id: string; status: string; decided_at: string | null }>(
+      supabase
+        .from("organization_training_reviews")
+        .select("group_id, training_id, status, decided_at")
+        .in("group_id", groupIds),
+      "organization_training_reviews"
+    ),
+    safeRows<{ id: string; created_at: string }>(
+      supabase
+        .from("organization_activity")
+        .select("id, created_at")
+        .in("group_id", groupIds)
+        .order("created_at", { ascending: false })
+        .limit(1),
+      "organization_activity"
+    ),
+    safeRows<{ id: string; updated_at: string | null }>(
+      supabase.from("organization_cohort_notes").select("id, updated_at").in("group_id", groupIds),
+      "organization_cohort_notes"
+    ),
+    safeRows<{ father_id: string; joined_at: string | null }>(
+      supabase.from("group_members").select("father_id, joined_at").in("group_id", groupIds),
+      "group_members"
+    ),
+    safeRows<{ updated_at: string | null }>(
+      supabase.from("organization_photos").select("updated_at").in("group_id", groupIds),
+      "organization_photos"
+    ),
+    safeRows<{ group_id: string; assessment_key: string; status: string; decided_at: string | null }>(
+      supabase
+        .from("organization_assessment_reviews")
+        .select("group_id, assessment_key, status, decided_at")
+        .in("group_id", groupIds),
+      "organization_assessment_reviews"
+    ),
+    safeRows<{ group_id: string; assessment_key: string; status: string; decided_at: string | null }>(
+      supabase
+        .from("organization_assessment_availability")
+        .select("group_id, assessment_key, status, decided_at")
+        .in("group_id", groupIds),
+      "organization_assessment_availability"
+    ),
+    safeRows<{ added_at: string | null }>(
+      supabase.from("organization_staff").select("added_at").in("group_id", groupIds),
+      "organization_staff"
+    ),
+    safeRows<{ updated_at: string | null }>(
+      supabase.from("custom_assessments").select("updated_at").in("manager_id", managerIds),
+      "custom_assessments"
+    ),
   ]);
 
-  if (reviewsRes.error && !missingRelation(reviewsRes.error, "organization_training_reviews")) {
-    throw reviewsRes.error;
-  }
-  if (activityRes.error && !missingRelation(activityRes.error, "organization_activity")) {
-    throw activityRes.error;
-  }
-  if (notesRes.error && !missingRelation(notesRes.error, "organization_cohort_notes")) {
-    throw notesRes.error;
-  }
+  const fatherIds = [...new Set(members.map((row) => row.father_id))];
+  const empty: CountLatest = { count: 0, at: "" };
+  const [
+    assignments,
+    certificates,
+    progress,
+    assessmentAssignments,
+    participantNotes,
+    nudges,
+  ] =
+    fatherIds.length === 0
+      ? [empty, empty, empty, empty, empty, empty]
+      : await Promise.all([
+          safeRows<{ assigned_at: string | null }>(
+            supabase.from("training_assignments").select("assigned_at").in("father_id", fatherIds),
+            "training_assignments"
+          ).then((rows) => countLatest(rows, (row) => row.assigned_at)),
+          safeRows<{ issued_at: string | null }>(
+            supabase.from("certificates").select("issued_at").in("father_id", fatherIds),
+            "certificates"
+          ).then((rows) => countLatest(rows, (row) => row.issued_at)),
+          safeRows<{ completed_at: string | null }>(
+            supabase.from("session_progress").select("completed_at").in("father_id", fatherIds),
+            "session_progress"
+          ).then((rows) => countLatest(rows, (row) => row.completed_at)),
+          safeRows<{ created_at: string | null; completed_at: string | null }>(
+            supabase
+              .from("custom_assessment_assignments")
+              .select("created_at, completed_at")
+              .in("father_id", fatherIds),
+            "custom_assessment_assignments"
+          ).then((rows) =>
+            countLatest(rows, (row) => row.completed_at || row.created_at)
+          ),
+          safeRows<{ created_at: string | null }>(
+            supabase
+              .from("manager_participant_notes")
+              .select("created_at")
+              .in("father_id", fatherIds),
+            "manager_participant_notes"
+          ).then((rows) => countLatest(rows, (row) => row.created_at)),
+          safeRows<{ sent_at: string | null }>(
+            supabase.from("manager_nudges").select("sent_at").in("father_id", fatherIds),
+            "manager_nudges"
+          ).then((rows) => countLatest(rows, (row) => row.sent_at)),
+        ]);
 
-  const fatherIds = [
-    ...new Set(
-      ((membersRes.data ?? []) as Array<{ father_id: string }>).map((row) => row.father_id)
-    ),
-  ];
-  let assignmentCount = 0;
-  let assignmentAt = "";
-  if (fatherIds.length > 0) {
-    const assignmentsRes = await supabase
-      .from("training_assignments")
-      .select("assigned_at")
-      .in("father_id", fatherIds);
-    if (assignmentsRes.error && !missingRelation(assignmentsRes.error, "training_assignments")) {
-      throw assignmentsRes.error;
-    }
-    const assigned = (assignmentsRes.data ?? []) as Array<{ assigned_at: string | null }>;
-    assignmentCount = assigned.length;
-    assignmentAt = latestIso(assigned.map((row) => row.assigned_at));
-  }
-
-  const activity = ((activityRes.data ?? []) as Array<{ id?: string; created_at?: string }>)[0] ?? null;
+  const activity = activityRows[0] ?? null;
+  const photosStamp = countLatest(photos, (row) => row.updated_at);
+  const staffStamp = countLatest(staff, (row) => row.added_at);
+  const membersStamp = countLatest(members, (row) => row.joined_at);
+  const customStamp = countLatest(customAssessments, (row) => row.updated_at);
 
   return deskSyncVersion({
-    reviews: (reviewsRes.data ?? []) as DeskSyncReview[],
-    notes: (notesRes.data ?? []) as DeskSyncNote[],
+    reviews: reviews.map((row) => ({
+      group_id: row.group_id,
+      training_id: row.training_id,
+      status: row.status,
+      decided_at: row.decided_at,
+    })),
+    notes,
     activityId: activity?.id ?? "",
     activityAt: activity?.created_at ?? "",
-    assignmentCount,
-    assignmentAt,
+    assignmentCount: assignments.count,
+    assignmentAt: assignments.at,
+    certificateCount: certificates.count,
+    certificateAt: certificates.at,
+    progressCount: progress.count,
+    progressAt: progress.at,
+    photoCount: photosStamp.count,
+    photoAt: photosStamp.at,
+    assessmentReviews: assessmentReviews.map((row) => ({
+      group_id: row.group_id,
+      training_id: row.assessment_key,
+      status: row.status,
+      decided_at: row.decided_at,
+    })),
+    assessmentAvailability: assessmentAvailability.map((row) => ({
+      group_id: row.group_id,
+      training_id: row.assessment_key,
+      status: row.status,
+      decided_at: row.decided_at,
+    })),
+    assessmentAssignmentCount: assessmentAssignments.count,
+    assessmentAssignmentAt: assessmentAssignments.at,
+    customAssessmentCount: customStamp.count,
+    customAssessmentAt: customStamp.at,
+    participantNoteCount: participantNotes.count,
+    participantNoteAt: participantNotes.at,
+    nudgeCount: nudges.count,
+    nudgeAt: nudges.at,
+    staffCount: staffStamp.count,
+    staffAt: staffStamp.at,
+    memberCount: membersStamp.count,
+    memberAt: membersStamp.at,
+    participation: groups
+      .map((group) => `${group.id}:${group.participation_mode ?? ""}`)
+      .sort()
+      .join(","),
   });
 }

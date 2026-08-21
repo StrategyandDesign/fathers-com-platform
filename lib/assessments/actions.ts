@@ -207,8 +207,7 @@ export async function updateAssessment(formData: FormData) {
       description,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", assessmentId)
-    .eq("manager_id", user.id);
+    .eq("id", assessmentId);
 
   if (error) {
     fail(path, "The assessment didn’t save. Try again.");
@@ -360,7 +359,6 @@ export async function startLeaderAssessment(formData: FormData) {
     .from("custom_assessments")
     .select("id")
     .eq("id", assessmentId)
-    .eq("manager_id", user.id)
     .maybeSingle();
 
   if (assessmentError || !assessment) {
