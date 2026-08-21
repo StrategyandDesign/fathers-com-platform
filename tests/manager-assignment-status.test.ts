@@ -173,6 +173,23 @@ describe("cohort status and board", () => {
   });
 });
 
+describe("leader dashboard order", () => {
+  it("puts counts, invite code, and open items first", () => {
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/(manager)/manager/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    const stats = page.indexOf("lg:grid-cols-5");
+    const invite = page.indexOf("manager.dashboard.inviteTitle");
+    const openItems = page.indexOf("manager.dashboard.attention");
+    const staff = page.indexOf("<StaffDesk");
+    const tape = page.indexOf("<ActivityTicker");
+    const update = page.indexOf("<CohortNoteDesk");
+    assert.ok(stats > 0 && invite > stats && openItems > invite);
+    assert.ok(staff > openItems && tape > staff && update > tape);
+  });
+});
+
 describe("hidden assignment surfaces", () => {
   it("does not render the assignment status strip on Home", () => {
     const page = readFileSync(

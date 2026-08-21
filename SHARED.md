@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.56**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.57**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -73,3 +73,4 @@ The badge on this checkout is **Shared 1-1.56**. It ticks on each push of the Sh
 | **1.54** | undefined | Sit the org mark in the header beside the lockup. |
 | **1.55** | undefined | Use the filled chevron stack for Trainings in the ribbon. |
 | **1.56** | undefined | Use the official Arrow logo for Trainings in the ribbon. |
+| **1.57** | undefined | Let multiple leaders and reviewers share one organization desk. |
