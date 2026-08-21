@@ -4,8 +4,9 @@ import { ChoiceAssessmentPlayer } from "@/components/assessments/choice-assessme
 import { Flash } from "@/components/manager/flash";
 import { isFirstPartyAssessmentKey } from "@/lib/assessments/first-party";
 import { loadFatherFirstPartyAccess, loadFirstPartyCatalog } from "@/lib/assessments/first-party-data";
-import { isChoiceItem } from "@/lib/assessments/instrument";
+import { isChoiceItem, listInstrumentDesignations } from "@/lib/assessments/instrument";
 import { requireRole } from "@/lib/auth/session";
+import { formatShortDateTime, getI18n } from "@/lib/i18n/server";
 
 export default async function FatherFirstPartyAssessmentPage({
   params,
@@ -17,6 +18,7 @@ export default async function FatherFirstPartyAssessmentPage({
   const { assessmentKey } = await params;
   const query = await searchParams;
   const { user } = await requireRole("father");
+  const { locale } = await getI18n();
   if (!isFirstPartyAssessmentKey(assessmentKey)) {
     redirect("/father/assessments");
   }
@@ -55,6 +57,12 @@ export default async function FatherFirstPartyAssessmentPage({
         items={items}
         initialAnswers={access.attempt?.answers ?? {}}
         completed={completed}
+        designations={listInstrumentDesignations(assessment.instrument)}
+        completedLabel={
+          access.attempt?.completedAt
+            ? formatShortDateTime(access.attempt.completedAt, locale)
+            : null
+        }
       />
     </div>
   );

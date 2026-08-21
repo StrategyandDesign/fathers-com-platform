@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import Link from "next/link";
 
 import { useT } from "@/components/i18n/locale-provider";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import {
   completeFirstPartyAssessment,
@@ -13,6 +14,7 @@ import {
 import type { FirstPartyAssessmentCopy } from "@/lib/assessments/first-party";
 import {
   evaluateInstrument,
+  listInstrumentDesignations,
   type AssessmentInstrument,
   type InstrumentChoice,
 } from "@/lib/assessments/instrument";
@@ -41,6 +43,9 @@ export function ChoiceAssessmentPlayer({
   completed,
   preview = false,
   instrument,
+  designations = [],
+  listHref = "/father/assessments",
+  completedLabel = null,
 }: {
   assessmentKey: string;
   title: string;
@@ -50,6 +55,9 @@ export function ChoiceAssessmentPlayer({
   completed: CompletedResult | null;
   preview?: boolean;
   instrument?: AssessmentInstrument;
+  designations?: string[];
+  listHref?: string;
+  completedLabel?: string | null;
 }) {
   const t = useT();
   const [pending, startTransition] = useTransition();
@@ -62,8 +70,13 @@ export function ChoiceAssessmentPlayer({
     const firstOpen = items.findIndex((item) => initialAnswers[item.id] == null);
     return firstOpen >= 0 ? firstOpen : 0;
   });
-  const [copied, setCopied] = useState(false);
   const [stepKey, setStepKey] = useState(0);
+  const designationScale =
+    designations.length > 0
+      ? designations
+      : instrument
+        ? listInstrumentDesignations(instrument)
+        : [];
 
   const item = items[index];
   const answeredCount = items.filter((entry) => answers[entry.id] != null).length;
@@ -138,25 +151,6 @@ export function ChoiceAssessmentPlayer({
     startTransition(() => retakeFirstPartyAssessment(formData));
   }
 
-  async function copySummary() {
-    if (!result) return;
-    const text = [
-      title,
-      `${result.outcomeLabel}`,
-      `Score ${result.total} of ${result.maxTotal}`,
-      result.outcomeDescription ?? "",
-    ]
-      .filter(Boolean)
-      .join("\n\n");
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setCopied(false);
-    }
-  }
-
   if (screen === "intro") {
     return (
       <div className="mx-auto max-w-2xl space-y-8">
@@ -194,24 +188,72 @@ export function ChoiceAssessmentPlayer({
       <div className="mx-auto max-w-2xl space-y-8">
         <div className="space-y-3">
           <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
-            {t("father.assessments.yourDesignation")}
+            {t("father.assessments.youEarned")}
           </p>
           <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
             {result.outcomeLabel}
           </h1>
+          <p className="text-base text-foreground">
+            {t("father.assessments.designationOn", { title })}
+          </p>
           <p className="text-sm text-muted-foreground">
             {t("father.assessments.scoreOf", { score: result.total, max: result.maxTotal })}
           </p>
+          {completedLabel ? (
+            <p className="text-sm text-muted-foreground">
+              {t("father.assessments.completedOn", { date: completedLabel })}
+            </p>
+          ) : null}
         </div>
         <section className="space-y-6 rounded-xl border border-primary/30 bg-card p-5 sm:p-7">
-          <p className="text-base leading-7 text-foreground sm:text-lg">
-            {result.outcomeDescription}
-          </p>
+          {designationScale.length > 0 ? (
+            <div>
+              <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+                {t("father.assessments.designationScale")}
+              </p>
+              <ol className="mt-3 space-y-2">
+                {designationScale.map((label) => {
+                  const earned = label === result.outcomeLabel;
+                  return (
+                    <li
+                      key={label}
+                      className={cn(
+                        "flex flex-wrap items-baseline justify-between gap-2 rounded-lg border px-3 py-2",
+                        earned
+                          ? "border-primary/50 bg-primary/10 text-foreground"
+                          : "border-border text-muted-foreground"
+                      )}
+                    >
+                      <span className={cn("font-medium", earned && "text-foreground")}>{label}</span>
+                      {earned ? (
+                        <span className="text-xs font-medium tracking-[0.08em] text-primary uppercase">
+                          {t("father.assessments.youEarnedThis")}
+                        </span>
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+          ) : null}
+          {result.outcomeDescription ? (
+            <div>
+              <p className="text-[11px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+                {t("father.assessments.designationMeans")}
+              </p>
+              <p className="mt-2 text-base leading-7 text-foreground sm:text-lg">
+                {result.outcomeDescription}
+              </p>
+            </div>
+          ) : null}
           <p className="text-sm leading-6 text-muted-foreground">{title}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button type="button" onClick={copySummary} variant="outline" className="w-full sm:w-auto">
-              {copied ? t("father.assessments.copied") : t("father.assessments.copyResults")}
-            </Button>
+            <Link
+              href={listHref}
+              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+            >
+              {t("father.assessments.returnToAssessments")}
+            </Link>
             <Button
               type="button"
               onClick={retake}

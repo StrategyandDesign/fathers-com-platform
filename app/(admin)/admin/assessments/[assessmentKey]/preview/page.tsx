@@ -8,7 +8,7 @@ import {
   isFirstPartyAssessmentKey,
 } from "@/lib/assessments/first-party";
 import { loadFirstPartyCatalog } from "@/lib/assessments/first-party-data";
-import { isChoiceItem } from "@/lib/assessments/instrument";
+import { isChoiceItem, listInstrumentDesignations } from "@/lib/assessments/instrument";
 import { requireRole } from "@/lib/auth/session";
 import { interactiveLinkClassName } from "@/lib/ui";
 import { cn } from "@/lib/utils";
@@ -64,6 +64,8 @@ export default async function AdminFirstPartyPreviewPage({
         completed={null}
         preview
         instrument={assessment.instrument}
+        designations={listInstrumentDesignations(assessment.instrument)}
+        listHref="/admin/assessments"
       />
     </div>
   );

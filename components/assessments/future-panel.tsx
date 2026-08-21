@@ -61,7 +61,9 @@ export async function FutureAssessmentsPanel({
   firstParty?: FatherFirstPartyCard[];
 }) {
   const { t } = await getI18n();
-  const empty = assignments.length === 0 && firstParty.length === 0;
+  const openFirstParty = firstParty.filter((item) => !item.attempt?.completedAt);
+  const openAssignments = assignments.filter((item) => item.assignment.status !== "completed");
+  const empty = openAssignments.length === 0 && openFirstParty.length === 0;
 
   return (
     <section className="rounded-xl border border-dashed border-border bg-card/40 p-4 sm:p-5">
@@ -72,16 +74,16 @@ export async function FutureAssessmentsPanel({
         </p>
       ) : (
         <div className="mt-3 space-y-3">
-          {firstParty.length > 0 ? (
+          {openFirstParty.length > 0 ? (
             <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
-              {firstParty.map((item) => (
+              {openFirstParty.map((item) => (
                 <li key={item.key}>
                   <FirstPartyAssessmentLink item={item} t={t} />
                 </li>
               ))}
             </ul>
           ) : null}
-          <AssignedAssessmentList assignments={assignments} hideHeader framed={false} quiet />
+          <AssignedAssessmentList assignments={openAssignments} hideHeader framed={false} quiet />
         </div>
       )}
     </section>

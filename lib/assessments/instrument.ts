@@ -400,6 +400,21 @@ export function sampleAnswers(instrument: AssessmentInstrument, value: number) {
 
 const DEFAULT_LETTER_VALUES: Record<string, number> = { A: 4, B: 3, C: 2, D: 1 };
 
+export function instrumentMaxTotal(instrument: AssessmentInstrument) {
+  return instrument.items.length * instrument.scoring.scale.max;
+}
+
+export function listInstrumentDesignations(instrument: AssessmentInstrument) {
+  const outcome = instrument.scoring.outcome;
+  if (outcome.kind === "bands") {
+    return [...outcome.bands]
+      .sort((a, b) => a.min - b.min)
+      .map((band) => band.label)
+      .filter(Boolean);
+  }
+  return Object.values(outcome.labels).filter(Boolean);
+}
+
 export function buildChoiceSumInstrument(input: {
   dimensionId: string;
   dimensionLabel: string;

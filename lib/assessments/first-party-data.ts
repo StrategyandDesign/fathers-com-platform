@@ -6,6 +6,7 @@ import {
   listFirstPartyAssessments,
   type FirstPartyAssessment,
 } from "@/lib/assessments/first-party";
+import { instrumentMaxTotal } from "@/lib/assessments/instrument";
 import {
   overlayFirstPartyAssessment,
   type FirstPartyCatalogRow,
@@ -239,6 +240,7 @@ export type FatherFirstPartyCard = {
   title: string;
   description: string;
   questionCount: number;
+  maxTotal: number;
   canStart: boolean;
   attempt: FirstPartyAttempt | null;
 };
@@ -277,6 +279,7 @@ export async function loadFatherFirstPartyCards(input: {
       title: assessment.title,
       description: assessment.description,
       questionCount: assessment.questionCount,
+      maxTotal: instrumentMaxTotal(assessment.instrument),
       canStart,
       attempt,
     });

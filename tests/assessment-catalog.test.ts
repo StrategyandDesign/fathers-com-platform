@@ -281,8 +281,8 @@ describe("assessment catalog decisions", () => {
 
     assert.match(actions, /status: "available"/);
     assert.doesNotMatch(actions, /status: "hidden"/);
-    assert.match(page, /firstParty=\{firstParty\}/);
-    assert.match(panel, /firstParty\.length/);
+    assert.match(page, /firstParty=\{openWork.firstParty\}/);
+    assert.match(panel, /openFirstParty\.length/);
     assert.match(panel, /FirstPartyAssessmentLink/);
   });
 });

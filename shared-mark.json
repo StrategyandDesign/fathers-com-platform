@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 100,
-  "label": "Shared 1-1.100",
+  "patch": 101,
+  "label": "Shared 1-1.101",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Give included assessments training-style cohort cards.",
+  "title": "Put a created assessment in the cohort as included.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -708,6 +708,13 @@
       "label": "Shared 1-1.100",
       "at": "2026-08-21",
       "title": "Give included assessments training-style cohort cards."
+    },
+    {
+      "patch": 101,
+      "revision": "1.101",
+      "label": "Shared 1-1.101",
+      "at": "2026-08-21",
+      "title": "Put a created assessment in the cohort as included."
     }
   ]
 }
