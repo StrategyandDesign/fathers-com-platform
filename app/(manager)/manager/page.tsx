@@ -23,7 +23,6 @@ import { CohortNoteDesk } from "@/components/manager/cohort-note-desk";
 import { decorateCohortNoteDesk } from "@/lib/cohort-note/audience";
 import { loadManagerCohortNotes } from "@/lib/cohort-note/data";
 import { loadManagerWorkspace } from "@/lib/manager/data";
-import { buildManagerReport } from "@/lib/manager/reports";
 import { loadNudgePanel } from "@/lib/manager/nudge-panel-data";
 import { participationCopyKey, participationModeFromGroups } from "@/lib/participation";
 import { loadNudgeHistory, loadReminderPrefs } from "@/lib/manager/nudge-data";
@@ -82,14 +81,6 @@ export default async function ManagerHomePage({
   });
 
   const participationMode = participationModeFromGroups(groups);
-  const report = buildManagerReport({
-    participants,
-    groups,
-    assignments: workspace.assignments,
-    progress: workspace.progress,
-    trainings: workspace.trainings,
-    trainingProgressFor,
-  });
 
   const stats = [
     { label: t("manager.dashboard.active"), value: summary.activeParticipants },
@@ -311,52 +302,6 @@ export default async function ManagerHomePage({
           >
             {t("manager.dashboard.practiceAssessment")}
           </Link>
-        </div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.impact")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.dashboard.impactLead")}
-          </p>
-          <Link
-            href="/manager/impact"
-            className={cn(buttonVariants(), "mt-5 w-full sm:w-auto")}
-          >
-            {t("manager.dashboard.openImpact")}
-          </Link>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-semibold">{t("manager.dashboard.reports")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.dashboard.reportsLead")}
-          </p>
-          <dl className="mt-4 grid grid-cols-3 gap-3 text-sm">
-            <div>
-              <dt className="text-muted-foreground">{t("manager.dashboard.reportMen")}</dt>
-              <dd className="font-heading text-xl font-semibold">{report.summary.men}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t("manager.dashboard.reportCompleted")}</dt>
-              <dd className="font-heading text-xl font-semibold">{report.summary.completed}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t("manager.dashboard.reportInProgress")}</dt>
-              <dd className="font-heading text-xl font-semibold">{report.summary.inProgress}</dd>
-            </div>
-          </dl>
-          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-            <Link href="/api/manager/reports/export?format=csv" className={cn(buttonVariants(), "w-full sm:w-auto")}>
-              {t("manager.dashboard.downloadCsv")}
-            </Link>
-            <Link
-              href="/manager/reports"
-              className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
-            >
-              {t("manager.dashboard.openReports")}
-            </Link>
-          </div>
         </div>
       </section>
     </div>

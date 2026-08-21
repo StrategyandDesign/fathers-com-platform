@@ -190,6 +190,9 @@ describe("leader dashboard order", () => {
     assert.doesNotMatch(page, /manager\.dashboard\.openCatalog/);
     assert.doesNotMatch(page, /manager\.dashboard\.viewAssessments/);
     assert.doesNotMatch(page, /manager\.dashboard\.viewCertificates/);
+    assert.doesNotMatch(page, /manager\.dashboard\.openImpact/);
+    assert.doesNotMatch(page, /manager\.dashboard\.openReports/);
+    assert.doesNotMatch(page, /manager\.dashboard\.downloadCsv/);
   });
 });
 
