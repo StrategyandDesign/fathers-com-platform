@@ -89,67 +89,6 @@ function CohortNoteEditor({
     <div className="space-y-4">
       {showGroupName ? <p className="text-sm font-medium">{group.groupName}</p> : null}
 
-      <div className="rounded-xl border border-border bg-black/20 p-4">
-        <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
-          {t("manager.dashboard.staffEyebrow")}
-        </p>
-        <p className="mt-2 text-sm font-medium">
-          {managers.length === 1
-            ? t("manager.dashboard.noteLeadersOne")
-            : t("manager.dashboard.noteLeadersMany", { n: managers.length })}
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {managers.length > 1
-            ? formatLeaderNames(managers.map((row) => row.name))
-            : t("manager.dashboard.staffEmpty")}
-        </p>
-        {reviewers.length > 0 ? (
-          <p className="mt-1 text-sm text-muted-foreground">
-            {t("manager.dashboard.staffReviewers", {
-              names: formatLeaderNames(reviewers.map((row) => row.name)),
-            })}
-          </p>
-        ) : null}
-      </div>
-
-      {peerTickers.length > 0 ? (
-        <div className="space-y-3">
-          {peerTickers.map(({ leader, note }) => (
-            <div
-              key={leader.id}
-              className="rounded-xl border border-border bg-black/20 p-4"
-            >
-              <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
-                {t("manager.dashboard.notePeerShowing", {
-                  name: note?.authorName ?? leader.name,
-                })}
-              </p>
-              {note ? (
-                <>
-                  <div className="mt-2">
-                    <CohortNoteMessage
-                      body={note.body}
-                      stamp={formatShortDateTime(note.updatedAt, locale)}
-                    />
-                  </div>
-                  <p className="mt-3 text-sm text-muted-foreground">
-                    {note.audienceTrainingTitle
-                      ? t("manager.dashboard.noteAudienceShowingTraining", {
-                          title: note.audienceTrainingTitle,
-                        })
-                      : t("manager.dashboard.noteAudienceShowingCohort")}
-                  </p>
-                </>
-              ) : (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {t("manager.dashboard.notePeerQuiet")}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
-      ) : null}
-
       {liveBody ? (
         <div className="rounded-xl border border-border bg-black/20 p-4">
           <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
@@ -217,17 +156,87 @@ function CohortNoteEditor({
             <span className="block text-sm text-muted-foreground">{audienceHint}</span>
           </label>
         ) : null}
-        <Button type="submit" className="w-full sm:w-auto">
-          {liveBody ? t("manager.dashboard.noteReplace") : t("manager.dashboard.notePost")}
-        </Button>
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Button type="submit" className="w-full sm:w-auto">
+            {liveBody ? t("manager.dashboard.noteReplace") : t("manager.dashboard.notePost")}
+          </Button>
+          {liveBody ? (
+            <Button
+              type="submit"
+              form={`clear-update-${group.groupId}`}
+              variant="outline"
+              className="w-full sm:w-auto"
+            >
+              {t("manager.dashboard.noteClear")}
+            </Button>
+          ) : null}
+        </div>
       </form>
       {liveBody ? (
-        <form action={clearCohortNote}>
+        <form id={`clear-update-${group.groupId}`} action={clearCohortNote} className="hidden">
           <input type="hidden" name="group_id" value={group.groupId} />
-          <Button type="submit" variant="outline" className="w-full sm:w-auto">
-            {t("manager.dashboard.noteClear")}
-          </Button>
         </form>
+      ) : null}
+
+      <div className="rounded-xl border border-border bg-black/20 p-4">
+        <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+          {t("manager.dashboard.staffEyebrow")}
+        </p>
+        <p className="mt-2 text-sm font-medium">
+          {managers.length === 1
+            ? t("manager.dashboard.noteLeadersOne")
+            : t("manager.dashboard.noteLeadersMany", { n: managers.length })}
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {managers.length > 1
+            ? formatLeaderNames(managers.map((row) => row.name))
+            : t("manager.dashboard.staffEmpty")}
+        </p>
+        {reviewers.length > 0 ? (
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("manager.dashboard.staffReviewers", {
+              names: formatLeaderNames(reviewers.map((row) => row.name)),
+            })}
+          </p>
+        ) : null}
+      </div>
+
+      {peerTickers.length > 0 ? (
+        <div className="space-y-3">
+          {peerTickers.map(({ leader, note }) => (
+            <div
+              key={leader.id}
+              className="rounded-xl border border-border bg-black/20 p-4"
+            >
+              <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.18em]">
+                {t("manager.dashboard.notePeerShowing", {
+                  name: note?.authorName ?? leader.name,
+                })}
+              </p>
+              {note ? (
+                <>
+                  <div className="mt-2">
+                    <CohortNoteMessage
+                      body={note.body}
+                      stamp={formatShortDateTime(note.updatedAt, locale)}
+                    />
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    {note.audienceTrainingTitle
+                      ? t("manager.dashboard.noteAudienceShowingTraining", {
+                          title: note.audienceTrainingTitle,
+                        })
+                      : t("manager.dashboard.noteAudienceShowingCohort")}
+                  </p>
+                </>
+              ) : (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {t("manager.dashboard.notePeerQuiet")}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
       ) : null}
     </div>
   );

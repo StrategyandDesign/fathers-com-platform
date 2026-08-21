@@ -188,6 +188,9 @@ describe("home update desk", () => {
     assert.match(desk, /noteLeadersMany/);
     assert.match(desk, /otherLeaderTickers/);
     assert.match(desk, /notePeerQuiet/);
+    assert.match(desk, /sm:flex-row sm:flex-wrap/);
+    assert.ok(desk.indexOf("noteClear") < desk.indexOf("staffEyebrow"));
+    assert.ok(desk.indexOf("staffEyebrow") < desk.indexOf("notePeerShowing"));
     const data = readFileSync(
       fileURLToPath(new URL("../lib/cohort-note/data.ts", import.meta.url)),
       "utf8"
@@ -198,6 +201,8 @@ describe("home update desk", () => {
       "utf8"
     );
     assert.match(messages, /A web address becomes a link they can open/);
+    assert.match(messages, /Swap your update/);
+    assert.match(messages, /Clear your update/);
   });
 
   it("offers whole cohort or one training, not a name checklist", () => {

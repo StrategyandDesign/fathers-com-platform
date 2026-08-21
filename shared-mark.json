@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 68,
-  "label": "Shared 1-1.68",
+  "patch": 69,
+  "label": "Shared 1-1.69",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Show other leaders and their current updates on the Update card.",
+  "title": "Hide Impact Snapshot and Reports shortcut cards from Home.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -484,6 +484,13 @@
       "label": "Shared 1-1.68",
       "at": "2026-08-21",
       "title": "Show other leaders and their current updates on the Update card."
+    },
+    {
+      "patch": 69,
+      "revision": "1.69",
+      "label": "Shared 1-1.69",
+      "at": "2026-08-21",
+      "title": "Hide Impact Snapshot and Reports shortcut cards from Home."
     }
   ]
 }
