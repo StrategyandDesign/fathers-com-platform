@@ -1,5 +1,6 @@
 import { cache } from "react";
 
+import { canSeeCohortNoteAudience } from "@/lib/cohort-note/audience";
 import {
   isCohortNoteVisible,
   type CohortNote,
@@ -10,6 +11,15 @@ import { loadGroupsForManager } from "@/lib/org-staff/membership";
 import { visibleCohortNotes } from "@/lib/org-staff/types";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrl, signStorageUrls } from "@/lib/storage";
+
+type NoteRow = {
+  id?: string;
+  group_id: string;
+  author_id?: string;
+  body: string;
+  updated_at: string;
+  audience_training_id?: string | null;
+};
 
 type LeaderRow = {
   id: string;
@@ -76,25 +86,34 @@ export const loadVisibleCohortNotes = cache(async (fatherId: string): Promise<Co
   const groupIds = [...new Set((memberships ?? []).map((row) => String(row.group_id)))];
   if (groupIds.length === 0) return [];
 
-  const [notesRes, dismissRes] = await Promise.all([
+  const [notesRes, dismissRes, assignmentRes] = await Promise.all([
     supabase
       .from("organization_cohort_notes")
-      .select("id, group_id, author_id, body, updated_at")
+      .select("id, group_id, author_id, body, updated_at, audience_training_id")
       .in("group_id", groupIds),
     supabase
       .from("organization_cohort_note_dismissals")
       .select("note_id, group_id, dismissed_at")
       .eq("father_id", fatherId),
+    supabase.from("training_assignments").select("training_id").eq("father_id", fatherId),
   ]);
-  if (notesRes.error) return [];
+  let noteData = notesRes.data as NoteRow[] | null;
+  if (notesRes.error) {
+    if (!/audience_training_id/i.test(`${notesRes.error.code} ${notesRes.error.message}`)) {
+      return [];
+    }
+    const legacy = await supabase
+      .from("organization_cohort_notes")
+      .select("id, group_id, author_id, body, updated_at")
+      .in("group_id", groupIds);
+    if (legacy.error) return [];
+    noteData = (legacy.data ?? []) as NoteRow[];
+  }
 
-  const noteRows = (notesRes.data ?? []) as Array<{
-    id?: string;
-    group_id: string;
-    author_id?: string;
-    body: string;
-    updated_at: string;
-  }>;
+  const noteRows = noteData ?? [];
+  const assignedTrainingIds = new Set(
+    ((assignmentRes.data ?? []) as Array<{ training_id: string }>).map((row) => row.training_id)
+  );
 
   const dismissedByNote = new Map<string, string>();
   const dismissedByGroup = new Map<string, string>();
@@ -119,7 +138,11 @@ export const loadVisibleCohortNotes = cache(async (fatherId: string): Promise<Co
   );
 
   const prepared = noteRows
-    .filter((row) => row.body.trim())
+    .filter(
+      (row) =>
+        row.body.trim() &&
+        canSeeCohortNoteAudience(row.audience_training_id, assignedTrainingIds)
+    )
     .map((row) => ({
       id: row.id ?? `${row.group_id}:${row.author_id ?? "leader"}`,
       groupId: row.group_id,
@@ -127,6 +150,7 @@ export const loadVisibleCohortNotes = cache(async (fatherId: string): Promise<Co
       authorName: row.author_id ? authorName.get(row.author_id) ?? null : null,
       body: row.body.trim(),
       updatedAt: row.updated_at,
+      audienceTrainingId: row.audience_training_id ?? null,
       dismissedAt: (row.id && dismissedByNote.get(row.id)) || dismissedByGroup.get(row.group_id) || null,
     }));
 
@@ -146,15 +170,27 @@ export async function loadManagerCohortNotes(
   if (groups.length === 0) return [];
 
   const groupIds = groups.map((group) => group.id);
-  const { data: notes, error: noteError } = await supabase
+  const notesWithAudience = await supabase
     .from("organization_cohort_notes")
-    .select("id, group_id, author_id, body, updated_at")
+    .select("id, group_id, author_id, body, updated_at, audience_training_id")
     .in("group_id", groupIds);
+  const notesLegacy =
+    notesWithAudience.error &&
+    /audience_training_id/i.test(`${notesWithAudience.error.code} ${notesWithAudience.error.message}`)
+      ? await supabase
+          .from("organization_cohort_notes")
+          .select("id, group_id, author_id, body, updated_at")
+          .in("group_id", groupIds)
+      : null;
+  const notes = (notesLegacy ?? notesWithAudience).data as NoteRow[] | null;
+  const noteError = (notesLegacy ?? notesWithAudience).error;
   if (noteError) {
     if (/organization_cohort_notes/i.test(noteError.message)) {
       return groups.map((group) => ({
         groupId: group.id,
         groupName: group.name,
+        fatherCount: 0,
+        audiences: [],
         own: null,
         peers: [],
       }));
@@ -168,6 +204,7 @@ export async function loadManagerCohortNotes(
     author_id: string;
     body: string;
     updated_at: string;
+    audience_training_id?: string | null;
   }>;
   const authorIds = [...new Set(noteRows.map((row) => row.author_id).filter(Boolean))];
   const { data: authors } = authorIds.length
@@ -186,8 +223,15 @@ export async function loadManagerCohortNotes(
     return {
       groupId: group.id,
       groupName: group.name,
+      fatherCount: 0,
+      audiences: [],
       own: ownRow
-        ? { id: ownRow.id, body: ownRow.body ?? "", updatedAt: ownRow.updated_at }
+        ? {
+            id: ownRow.id,
+            body: ownRow.body ?? "",
+            updatedAt: ownRow.updated_at,
+            audienceTrainingId: ownRow.audience_training_id ?? null,
+          }
         : null,
       peers: forGroup
         .filter((row) => row.author_id !== managerId && row.body.trim())
@@ -196,6 +240,7 @@ export async function loadManagerCohortNotes(
           authorName: authorName.get(row.author_id) ?? "A leader",
           body: row.body,
           updatedAt: row.updated_at,
+          audienceTrainingId: row.audience_training_id ?? null,
         })),
     };
   });

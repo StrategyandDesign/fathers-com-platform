@@ -20,6 +20,7 @@ import {
 } from "@/lib/manager/companion";
 import { loadManagerAssessments } from "@/lib/assessments/data";
 import { CohortNoteDesk } from "@/components/manager/cohort-note-desk";
+import { decorateCohortNoteDesk } from "@/lib/cohort-note/audience";
 import { loadManagerCohortNotes } from "@/lib/cohort-note/data";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { buildManagerReport } from "@/lib/manager/reports";
@@ -236,7 +237,14 @@ export default async function ManagerHomePage({
         </div>
       </section>
 
-      <CohortNoteDesk groups={cohortNotes} />
+      <CohortNoteDesk
+        groups={decorateCohortNoteDesk(cohortNotes, {
+          trainings: workspace.trainings,
+          reviews: workspace.reviews,
+          participants: workspace.participants,
+          assignments: workspace.assignments,
+        })}
+      />
       <CompanionPanel briefing={companion} mode={participationMode} t={t} />
 
       {reviews.pending.length > 0 || reviews.unread.length > 0 ? (

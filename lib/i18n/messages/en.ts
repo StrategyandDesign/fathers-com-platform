@@ -962,6 +962,13 @@ export const en = {
       noteStampPreview: "The date and time of posting",
       noteOneAtATime:
         "Your new message replaces your last update. Updates from other leaders stay.",
+      noteAudience: "Who sees this",
+      noteAudienceCohort: "Whole cohort",
+      noteAudienceCohortHint: "Fathers in this group: {n}.",
+      noteAudienceTrainingHint: "Assigned {title}: {n}.",
+      noteAudienceShowingCohort: "Shown to the whole cohort",
+      noteAudienceShowingTraining: "Shown to men assigned {title}",
+      noteBadAudience: "Choose who should see this.",
       activityEyebrow: "Desk tape",
       activityTitle: "What leaders did",
       activityLead:

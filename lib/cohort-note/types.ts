@@ -7,13 +7,29 @@ export type CohortNote = {
   authorName: string | null;
   body: string;
   updatedAt: string;
+  audienceTrainingId?: string | null;
+  audienceTrainingTitle?: string | null;
 };
 
 export type ManagerCohortDeskGroup = {
   groupId: string;
   groupName: string;
-  own: Pick<CohortNote, "id" | "body" | "updatedAt"> | null;
-  peers: Array<Pick<CohortNote, "authorId" | "authorName" | "body" | "updatedAt">>;
+  fatherCount: number;
+  audiences: Array<{
+    trainingId: string;
+    title: string;
+    assignedCount: number;
+  }>;
+  own: Pick<
+    CohortNote,
+    "id" | "body" | "updatedAt" | "audienceTrainingId" | "audienceTrainingTitle"
+  > | null;
+  peers: Array<
+    Pick<
+      CohortNote,
+      "authorId" | "authorName" | "body" | "updatedAt" | "audienceTrainingId" | "audienceTrainingTitle"
+    >
+  >;
 };
 
 export type FatherLeader = {

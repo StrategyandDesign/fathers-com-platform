@@ -3,6 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import {
+  fatherIdsForCohortNoteAudience,
+  isCohortNoteAudienceAllowed,
+  parseCohortNoteAudience,
+} from "@/lib/cohort-note/audience";
 import { COHORT_NOTE_MAX, normalizeCohortNote } from "@/lib/cohort-note/types";
 import { requireRole } from "@/lib/auth/session";
 import { isManagerOfGroup } from "@/lib/org-staff/membership";
@@ -29,6 +34,7 @@ function revalidateCohort() {
 export async function publishCohortNote(formData: FormData) {
   const { user } = await requireRole("manager");
   const groupId = String(formData.get("group_id") ?? "").trim();
+  const audienceTrainingId = parseCohortNoteAudience(formData.get("audience_training_id"));
   const body = normalizeCohortNote(String(formData.get("body") ?? ""));
   const path = "/manager";
 
@@ -46,15 +52,47 @@ export async function publishCohortNote(formData: FormData) {
     fail(path, "manager.dashboard.noteNotYours");
   }
 
-  const { error } = await supabase.from("organization_cohort_notes").upsert(
-    {
-      group_id: groupId,
-      author_id: user.id,
-      body,
-      updated_by: user.id,
-    },
-    { onConflict: "group_id,author_id" }
-  );
+  if (audienceTrainingId) {
+    const [{ data: training }, { data: review }] = await Promise.all([
+      supabase
+        .from("trainings")
+        .select("id, published, released_at, first_published_at, first_released_at")
+        .eq("id", audienceTrainingId)
+        .maybeSingle(),
+      supabase
+        .from("organization_training_reviews")
+        .select("status")
+        .eq("group_id", groupId)
+        .eq("training_id", audienceTrainingId)
+        .maybeSingle(),
+    ]);
+    if (
+      !isCohortNoteAudienceAllowed({
+        training,
+        reviewStatus: review?.status,
+      })
+    ) {
+      fail(path, "manager.dashboard.noteBadAudience");
+    }
+  }
+
+  const payload = {
+    group_id: groupId,
+    author_id: user.id,
+    body,
+    updated_by: user.id,
+    audience_training_id: audienceTrainingId,
+  };
+  let { error } = await supabase
+    .from("organization_cohort_notes")
+    .upsert(payload, { onConflict: "group_id,author_id" });
+  if (error && /audience_training_id/i.test(`${error.code} ${error.message}`)) {
+    const { audience_training_id: _audience, ...legacy } = payload;
+    const retry = await supabase
+      .from("organization_cohort_notes")
+      .upsert(legacy, { onConflict: "group_id,author_id" });
+    error = retry.error;
+  }
   if (error) {
     console.error("[cohort-note] publish failed", error.code, error.message);
     fail(path, "manager.dashboard.noteSaveFailed");
@@ -69,6 +107,24 @@ export async function publishCohortNote(formData: FormData) {
     .from("group_members")
     .select("father_id")
     .eq("group_id", groupId);
+  const memberIds = ((members ?? []) as Array<{ father_id: string }>).map(
+    (row) => row.father_id
+  );
+  const { data: assignments } =
+    audienceTrainingId && memberIds.length
+      ? await supabase
+          .from("training_assignments")
+          .select("father_id, training_id")
+          .eq("training_id", audienceTrainingId)
+          .in("father_id", memberIds)
+      : { data: [] as Array<{ father_id: string; training_id: string }> };
+  const recipientIds = fatherIdsForCohortNoteAudience({
+    audienceTrainingId,
+    memberIds,
+    assignedPairs: ((assignments ?? []) as Array<{ father_id: string; training_id: string }>).map(
+      (row) => ({ fatherId: row.father_id, trainingId: row.training_id })
+    ),
+  });
   const { data: saved } = await supabase
     .from("organization_cohort_notes")
     .select("id, updated_at")
@@ -83,11 +139,11 @@ export async function publishCohortNote(formData: FormData) {
       : undefined;
 
   await Promise.allSettled(
-    ((members ?? []) as Array<{ father_id: string }>).map((member) =>
+    recipientIds.map((fatherId) =>
       enqueueNotification(supabase, {
-        userId: member.father_id,
+        userId: fatherId,
         type: "leader_encouragement",
-        dedupeKey: `cohort-note:${member.father_id}:${saved?.id ?? groupId}:${stamp}`,
+        dedupeKey: `cohort-note:${fatherId}:${saved?.id ?? groupId}:${stamp}`,
         href: fatherHomeHref(),
         payload: {
           leaderName,

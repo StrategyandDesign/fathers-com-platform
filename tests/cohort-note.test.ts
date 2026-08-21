@@ -3,6 +3,12 @@ import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 
+import {
+  canSeeCohortNoteAudience,
+  decorateCohortNoteDesk,
+  fatherIdsForCohortNoteAudience,
+  parseCohortNoteAudience,
+} from "../lib/cohort-note/audience";
 import { cohortNoteSegments, safeCohortNoteHref } from "../lib/cohort-note/links";
 import { composeCohortNoteParts, isCohortNoteVisible, normalizeCohortNote } from "../lib/cohort-note/types";
 import { formatShortDateTime } from "../lib/i18n/dates";
@@ -37,6 +43,34 @@ describe("cohort note helpers", () => {
       isCohortNoteVisible("2026-08-18T13:00:00.000Z", "2026-08-18T12:05:00.000Z"),
       true
     );
+  });
+
+  it("keeps whole-cohort notes for everyone and training notes for assigned men", () => {
+    assert.equal(canSeeCohortNoteAudience(null, ["coming-home"]), true);
+    assert.equal(canSeeCohortNoteAudience("coming-home", ["coming-home"]), true);
+    assert.equal(canSeeCohortNoteAudience("coming-home", ["steady"]), false);
+    assert.deepEqual(
+      fatherIdsForCohortNoteAudience({
+        audienceTrainingId: null,
+        memberIds: ["a", "b"],
+        assignedPairs: [{ fatherId: "a", trainingId: "coming-home" }],
+      }),
+      ["a", "b"]
+    );
+    assert.deepEqual(
+      fatherIdsForCohortNoteAudience({
+        audienceTrainingId: "coming-home",
+        memberIds: ["a", "b"],
+        assignedPairs: [
+          { fatherId: "a", trainingId: "coming-home" },
+          { fatherId: "b", trainingId: "steady" },
+        ],
+      }),
+      ["a"]
+    );
+    assert.equal(parseCohortNoteAudience(""), null);
+    assert.equal(parseCohortNoteAudience("cohort"), null);
+    assert.equal(parseCohortNoteAudience("coming-home"), "coming-home");
   });
 });
 
@@ -111,11 +145,76 @@ describe("home update desk", () => {
     assert.doesNotMatch(desk, /notePreview/);
     assert.doesNotMatch(desk, /noteStampPreview/);
     assert.match(desk, /noteNowShowing/);
+    assert.match(desk, /noteAudience/);
+    assert.match(desk, /audience_training_id/);
     const messages = readFileSync(
       fileURLToPath(new URL("../lib/i18n/messages/en.ts", import.meta.url)),
       "utf8"
     );
     assert.match(messages, /A web address becomes a link they can open/);
+  });
+
+  it("offers whole cohort or one training, not a name checklist", () => {
+    const desk = decorateCohortNoteDesk(
+      [
+        {
+          groupId: "nwa",
+          groupName: "Returning Home NWA",
+          fatherCount: 0,
+          audiences: [],
+          own: null,
+          peers: [],
+        },
+      ],
+      {
+        trainings: [
+          {
+            id: "coming-home",
+            title: "Coming Home Present",
+            order_index: 1,
+            published: true,
+            released_at: "2026-08-01T00:00:00.000Z",
+            first_published_at: "2026-01-01T00:00:00.000Z",
+            first_released_at: "2026-08-01T00:00:00.000Z",
+          },
+          {
+            id: "steady",
+            title: "Steady Under Pressure",
+            order_index: 2,
+            published: true,
+            first_published_at: "2026-01-01T00:00:00.000Z",
+          },
+        ],
+        reviews: [
+          { group_id: "nwa", training_id: "coming-home", status: "accepted" },
+        ],
+        participants: [
+          { fatherId: "a", groupId: "nwa" },
+          { fatherId: "b", groupId: "nwa" },
+        ],
+        assignments: [{ father_id: "a", training_id: "coming-home" }],
+      }
+    );
+    assert.equal(desk[0]?.fatherCount, 2);
+    assert.deepEqual(
+      desk[0]?.audiences.map((row) => [row.trainingId, row.assignedCount]),
+      [
+        ["coming-home", 1],
+        ["steady", 0],
+      ]
+    );
+    const actions = readFileSync(
+      fileURLToPath(new URL("../lib/cohort-note/actions.ts", import.meta.url)),
+      "utf8"
+    );
+    assert.match(actions, /parseCohortNoteAudience/);
+    assert.match(actions, /fatherIdsForCohortNoteAudience/);
+    const sql = readFileSync(
+      fileURLToPath(new URL("../supabase/migrations/20260821040000_cohort_note_audience.sql", import.meta.url)),
+      "utf8"
+    );
+    assert.match(sql, /audience_training_id/);
+    assert.match(sql, /training_assignments/);
   });
 });
 

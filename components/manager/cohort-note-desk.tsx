@@ -4,11 +4,12 @@ import { useState } from "react";
 
 import { CohortNoteMessage } from "@/components/cohort-note/message";
 import { clearCohortNote, publishCohortNote } from "@/lib/cohort-note/actions";
+import { COHORT_NOTE_AUDIENCE_COHORT } from "@/lib/cohort-note/audience";
 import { COHORT_NOTE_MAX, normalizeCohortNote, type ManagerCohortDeskGroup } from "@/lib/cohort-note/types";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/components/i18n/locale-provider";
 import { formatShortDateTime } from "@/lib/i18n/dates";
-import { textareaClassName } from "@/lib/ui";
+import { fieldClassName, textareaClassName } from "@/lib/ui";
 
 export function CohortNoteDesk({
   groups,
@@ -55,11 +56,21 @@ function CohortNoteEditor({
 }) {
   const { t, locale } = useI18n();
   const [draft, setDraft] = useState("");
+  const [audienceId, setAudienceId] = useState(
+    group.own?.audienceTrainingId ?? COHORT_NOTE_AUDIENCE_COHORT
+  );
   const liveBody = normalizeCohortNote(group.own?.body ?? "");
   const preview = normalizeCohortNote(draft);
   const liveStamp = group.own?.updatedAt
     ? formatShortDateTime(group.own.updatedAt, locale)
     : null;
+  const selectedAudience = group.audiences.find((row) => row.trainingId === audienceId);
+  const audienceHint = selectedAudience
+    ? t("manager.dashboard.noteAudienceTrainingHint", {
+        title: selectedAudience.title,
+        n: selectedAudience.assignedCount,
+      })
+    : t("manager.dashboard.noteAudienceCohortHint", { n: group.fatherCount });
 
   return (
     <div className="space-y-4">
@@ -83,6 +94,13 @@ function CohortNoteEditor({
                   stamp={formatShortDateTime(peer.updatedAt, locale)}
                 />
               </div>
+              <p className="mt-3 text-sm text-muted-foreground">
+                {peer.audienceTrainingTitle
+                  ? t("manager.dashboard.noteAudienceShowingTraining", {
+                      title: peer.audienceTrainingTitle,
+                    })
+                  : t("manager.dashboard.noteAudienceShowingCohort")}
+              </p>
             </div>
           ))}
         </div>
@@ -97,6 +115,13 @@ function CohortNoteEditor({
             <CohortNoteMessage body={liveBody} stamp={liveStamp} />
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
+            {group.own?.audienceTrainingTitle
+              ? t("manager.dashboard.noteAudienceShowingTraining", {
+                  title: group.own.audienceTrainingTitle,
+                })
+              : t("manager.dashboard.noteAudienceShowingCohort")}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
             {t("manager.dashboard.noteOneAtATime")}
           </p>
         </div>
@@ -125,6 +150,29 @@ function CohortNoteEditor({
             })}
           </span>
         </label>
+        {group.audiences.length > 0 ? (
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">
+              {t("manager.dashboard.noteAudience")}
+            </span>
+            <select
+              className={fieldClassName}
+              name="audience_training_id"
+              value={audienceId}
+              onChange={(event) => setAudienceId(event.target.value)}
+            >
+              <option value={COHORT_NOTE_AUDIENCE_COHORT}>
+                {t("manager.dashboard.noteAudienceCohort")}
+              </option>
+              {group.audiences.map((row) => (
+                <option key={row.trainingId} value={row.trainingId}>
+                  {row.title}
+                </option>
+              ))}
+            </select>
+            <span className="block text-sm text-muted-foreground">{audienceHint}</span>
+          </label>
+        ) : null}
         <Button type="submit" className="w-full sm:w-auto">
           {liveBody ? t("manager.dashboard.noteReplace") : t("manager.dashboard.notePost")}
         </Button>
