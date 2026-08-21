@@ -17,6 +17,7 @@ import {
   type CustomAssessmentQuestion,
   type QuestionDraftInput,
 } from "@/lib/assessments/types";
+import { loadManagerGroups } from "@/lib/manager/data";
 import { createClient } from "@/lib/supabase/server";
 
 function fail(path: string, message: string): never {
@@ -170,8 +171,28 @@ export async function createAssessment(formData: FormData) {
     fail(path, "The questions didn’t save. Try again.");
   }
 
+  const groups = await loadManagerGroups(user.id);
+  if (groups.length > 0) {
+    const now = new Date().toISOString();
+    const { error: shareError } = await supabase.from("organization_assessment_availability").upsert(
+      groups.map((group) => ({
+        group_id: group.id,
+        assessment_key: customAssessmentKey(data.id),
+        status: "available",
+        decided_by: user.id,
+        decided_at: now,
+      })),
+      { onConflict: "group_id,assessment_key" }
+    );
+    if (shareError) {
+      console.error("[assessments] include on create failed", shareError.message);
+    }
+  }
+
   revalidateAssessments(data.id);
-  ok(`/manager/assessments/${data.id}`, "Assessment created.");
+  redirect(
+    `/manager/assessments?notice=${encodeURIComponent("Assessment created.")}#cohort`
+  );
 }
 
 export async function updateAssessment(formData: FormData) {

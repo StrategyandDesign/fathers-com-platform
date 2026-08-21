@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.99**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.100**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -116,3 +116,4 @@ The badge on this checkout is **Shared 1-1.99**. It ticks on each push of the Sh
 | **1.97** | undefined | Remove the Waiting on you queue from Trainings. |
 | **1.98** | undefined | Remove the Waiting on you queue from Assessments. |
 | **1.99** | undefined | Remove Hidden from your cohort from Trainings and Assessments. |
+| **1.100** | undefined | Give included assessments training-style cohort cards. |

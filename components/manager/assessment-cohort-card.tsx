@@ -4,6 +4,7 @@ import {
   assessmentCatalogTitle,
   assessmentQuestionLabel,
 } from "@/components/manager/assessment-catalog";
+import { AssessmentCatalogDecisionButtons } from "@/components/manager/assessment-catalog-decision-buttons";
 import { AssessmentReviewForms } from "@/components/manager/assessment-review-forms";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { assignAssessmentToUnassigned } from "@/lib/assessments/actions";
@@ -66,6 +67,7 @@ export function AssessmentCohortCard({
         <span className="text-sm font-medium text-primary">{t("manager.assessments.included")}</span>
       </div>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        <AssessmentCatalogDecisionButtons item={item} t={t} />
         <Link
           href={item.href}
           className={cn(buttonVariants({ variant: "outline" }), "w-full min-h-11 sm:w-auto")}

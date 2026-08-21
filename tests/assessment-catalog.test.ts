@@ -48,6 +48,8 @@ describe("assessment catalog decisions", () => {
     assert.match(buttons, /name="quick"/);
     assert.match(buttons, /catalogAssessmentCanReview/);
     assert.doesNotMatch(buttons, /reviewStatus !== null/);
+    assert.match(buttons, /item\.kind === "custom"/);
+    assert.match(buttons, /removeAssessment/);
   });
 
   it("lets a Leader decline Keystone even before a review row exists", () => {
@@ -180,6 +182,7 @@ describe("assessment catalog decisions", () => {
     assert.match(page, /AssessmentCohortCard/);
     assert.match(page, /space-y-4/);
     assert.doesNotMatch(page, /AssessmentCatalogRow/);
+    assert.match(card, /AssessmentCatalogDecisionButtons/);
     assert.match(card, /manager\.assessments\.viewAssessment/);
     assert.match(card, /manager\.assessments\.chooseFathers/);
     assert.match(card, /manager\.assessments\.assignRemaining/);
@@ -187,6 +190,35 @@ describe("assessment catalog decisions", () => {
     assert.match(card, /AssessmentReviewForms/);
     assert.match(card, /rounded-xl border border-border bg-card p-4 sm:p-6/);
     assert.match(readRepo("lib/i18n/messages/en.ts"), /In your cohort/);
+  });
+
+  it("puts a Leader-created custom assessment in the cohort as included", () => {
+    const items = buildManagerAssessmentCatalog({
+      groups: [{ id: "g1", name: "Returning Home NWA" }],
+      custom: [
+        {
+          id: "a1",
+          manager_id: "m1",
+          title: "Skill check",
+          description: null,
+          created_at: "2026-08-18T00:00:00Z",
+          updated_at: "2026-08-18T00:00:00Z",
+          questionCount: 4,
+          assignedCount: 0,
+          completedCount: 0,
+          notStartedCount: 0,
+          inProgressCount: 0,
+        },
+      ],
+      availability: [
+        { group_id: "g1", assessment_key: "a1", status: "available" },
+      ],
+      keystoneCompletedByGroup: {},
+      groupSize: { g1: 4 },
+    });
+    const created = items.find((item) => item.kind === "custom");
+    assert.equal(created?.decision, "catalog");
+    assert.equal(isAssessmentInCohort(created!), true);
   });
 
   it("puts included catalog assessments in the cohort and pending ones out", () => {
@@ -231,6 +263,15 @@ describe("assessment catalog decisions", () => {
     assert.equal(stats.total, 4);
     assert.equal(stats.remaining, 3);
     assert.equal(stats.notStarted, 1);
+  });
+
+  it("includes a created assessment in the cohort and returns the Leader there", () => {
+    const actions = readRepo("lib/assessments/actions.ts");
+    assert.match(actions, /organization_assessment_availability/);
+    assert.match(actions, /status: "available"/);
+    assert.match(actions, /\/manager\/assessments\?notice=/);
+    assert.match(actions, /#cohort/);
+    assert.doesNotMatch(actions, /ok\(`\/manager\/assessments\/\$\{data\.id\}`/);
   });
 
   it("offers an included assessment to fathers without a second Share step", () => {

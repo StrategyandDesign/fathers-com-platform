@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 99,
-  "label": "Shared 1-1.99",
+  "patch": 100,
+  "label": "Shared 1-1.100",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Remove Hidden from your cohort from Trainings and Assessments.",
+  "title": "Give included assessments training-style cohort cards.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -701,6 +701,13 @@
       "label": "Shared 1-1.99",
       "at": "2026-08-21",
       "title": "Remove Hidden from your cohort from Trainings and Assessments."
+    },
+    {
+      "patch": 100,
+      "revision": "1.100",
+      "label": "Shared 1-1.100",
+      "at": "2026-08-21",
+      "title": "Give included assessments training-style cohort cards."
     }
   ]
 }
