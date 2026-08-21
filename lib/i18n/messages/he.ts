@@ -582,6 +582,7 @@ export const he = {
       startSessionN: "התחלת מפגש {n}",
       seeSessions: "צפייה במפגשים",
       watchOverview: "צפייה בסקירה",
+      overviewClose: "סגירת הסקירה",
       overviewEyebrow: "סקירת ההכשרה",
       overviewBadge: "סקירה",
       overviewNotSession: "זה לא מפגש",

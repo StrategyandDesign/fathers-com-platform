@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CoverPhoto } from "@/components/brand/cover";
 import { FilmRuntime } from "@/components/father/film-runtime";
 import { TrainingHandoutLinks } from "@/components/father/training-handout-links";
-import { HostedFilmPlayer } from "@/components/media/hosted-film-player";
+import { TrainingOverviewWatch } from "@/components/father/training-overview-watch";
 import { buttonVariants } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress";
 import { shouldShowCatalogOverview } from "@/lib/father/training-door";
@@ -63,8 +63,6 @@ export function FatherTrainingCatalogCard({
   gatedLabel,
   hrefOverride,
   sessionHref,
-  hasOverview,
-  overviewHref,
   overviewUrl,
   showOverviewSlot,
   handouts,
@@ -118,7 +116,6 @@ export function FatherTrainingCatalogCard({
   const openLabel = next
     ? t("father.trainings.sessionLabel", { n: next.session_number, title: next.title })
     : ctaLabel ?? title;
-  const overviewLink = overviewHref ?? null;
   const listOverview = shouldShowCatalogOverview({
     enabled: showOverviewSlot,
     gated,
@@ -198,7 +195,7 @@ export function FatherTrainingCatalogCard({
           <div
             className={cn(
               "rounded-lg px-3 py-3",
-              overviewLink || overviewFilm
+              overviewFilm
                 ? "border-2 border-primary bg-primary/5"
                 : "border border-dashed border-border bg-black/10"
             )}
@@ -207,31 +204,15 @@ export function FatherTrainingCatalogCard({
               {t("father.trainings.overviewEyebrow")}
             </p>
             {overviewFilm ? (
-              <div className="mt-2 overflow-hidden rounded-md border-2 border-primary">
-                <HostedFilmPlayer
-                  url={overviewUrl}
-                  title={t("father.trainings.overviewTitle", { title })}
-                  coverSrc={coverSrc}
-                />
-              </div>
-            ) : null}
-            {overviewLink && hasOverview ? (
-              <>
-                {overviewFilm ? null : (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {t("father.trainings.overviewSlotBody")}
-                  </p>
-                )}
-                <Link
-                  href={overviewLink}
-                  className={cn(
-                    buttonVariants({ variant: "outline", size: "sm" }),
-                    "mt-3 min-h-10 w-full sm:w-auto"
-                  )}
-                >
-                  {t("father.trainings.watchOverview")}
-                </Link>
-              </>
+              <TrainingOverviewWatch
+                url={overviewUrl ?? ""}
+                title={t("father.trainings.overviewTitle", { title })}
+                coverSrc={coverSrc}
+                watchLabel={t("father.trainings.watchOverview")}
+                closeLabel={t("father.trainings.overviewClose")}
+                eyebrow={t("father.trainings.overviewEyebrow")}
+                notSession={t("father.trainings.overviewNotSession")}
+              />
             ) : (
               <p className="mt-1 text-sm text-muted-foreground">
                 {t("father.trainings.overviewMissing")}

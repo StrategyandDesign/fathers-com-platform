@@ -11,7 +11,7 @@ import { PROFILE_QUESTION_COUNT, answeredCount, firstUnanswered } from "@/lib/fa
 import { formatLongDate, getI18n } from "@/lib/i18n/server";
 import { loadManagerOrgPhotoCovers, resolveTrainingCardCover } from "@/lib/org-photos/data";
 import { loadLeaderPractice } from "@/lib/practice/data";
-import { hasStartedTrainingWork, hasTrainingOverview } from "@/lib/father/training-door";
+import { hasTrainingOverview, hasWatchedTrainingSession } from "@/lib/father/training-door";
 import { sessionFilmPath } from "@/lib/father/types";
 import { PRACTICE_ROOT } from "@/lib/practice/paths";
 import { trainingCoverSlug } from "@/lib/trainings/series";
@@ -124,7 +124,7 @@ export default async function LeaderPracticePage({
                   overviewUrl={card.training.overview_video_url}
                   showOverviewSlot={
                     hasTrainingOverview(card.training) &&
-                    !hasStartedTrainingWork(card.completed, card.nextProgress, card.sessionDots)
+                    !hasWatchedTrainingSession(card.completed, card.nextProgress, card.sessionDots)
                   }
                   t={t}
                 />

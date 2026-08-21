@@ -159,8 +159,8 @@ describe("hosted overview video", () => {
     assert.equal(reviewSessionHref([]), null);
   });
 
-  it("shows the catalog overview only before a session is started", () => {
-    const progress = {
+  it("shows the catalog overview until a session film is watched", () => {
+    const watched = {
       id: "p1",
       father_id: "f1",
       session_id: "s1",
@@ -173,6 +173,10 @@ describe("hosted overview video", () => {
       film_seconds: 12,
       status: "in_progress" as const,
       completed_at: null,
+    };
+    const opened = {
+      ...watched,
+      film_completed: false,
     };
 
     assert.equal(
@@ -187,7 +191,15 @@ describe("hosted overview video", () => {
       shouldShowCatalogOverview({
         enabled: true,
         completed: 0,
-        progress,
+        progress: opened,
+      }),
+      true
+    );
+    assert.equal(
+      shouldShowCatalogOverview({
+        enabled: true,
+        completed: 0,
+        progress: watched,
       }),
       false
     );
@@ -218,16 +230,20 @@ describe("hosted overview video", () => {
     );
   });
 
-  it("keeps the training picture and adds the overview film only before a session is started", () => {
+  it("keeps the training picture and opens the overview from a Watch overview link", () => {
     const card = readRepo("components/father/training-catalog-card.tsx");
+    const watch = readRepo("components/father/training-overview-watch.tsx");
     const trainings = readRepo("app/(father)/father/trainings/page.tsx");
     assert.match(card, /CoverPhoto src=\{coverSrc\}/);
     assert.match(card, /featured \|\| sideBySide/);
     assert.match(card, /listOverview/);
-    assert.match(card, /overviewFilm/);
-    assert.match(card, /HostedFilmPlayer/);
+    assert.match(card, /TrainingOverviewWatch/);
     assert.match(card, /border-2 border-primary/);
     assert.match(card, /shouldShowCatalogOverview/);
+    assert.doesNotMatch(card, /HostedFilmPlayer/);
+    assert.match(watch, /HostedFilmPlayer/);
+    assert.match(watch, /role="dialog"/);
+    assert.match(trainings, /hasWatchedTrainingSession/);
     assert.match(trainings, /overviewUrl=\{showOverview \? card\.training\.overview_video_url : null\}/);
     assert.match(trainings, /showOverviewSlot=\{showOverview\}/);
   });

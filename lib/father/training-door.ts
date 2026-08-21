@@ -30,6 +30,18 @@ export function hasStartedTrainingWork(
   );
 }
 
+/** Catalog overview hides after a session film is watched, not after a visit. */
+export function hasWatchedTrainingSession(
+  completed: number | null | undefined,
+  progress: SessionProgress | null | undefined,
+  sessionDots?: Array<{ id?: string; done?: boolean }> | null
+) {
+  if ((completed ?? 0) > 0) return true;
+  if (sessionDots?.some((dot) => Boolean(dot.done))) return true;
+  if (!progress) return false;
+  return isSessionComplete(progress) || progress.film_completed;
+}
+
 function shouldOpenOverview(
   training: Pick<Training, "overview_video_url">,
   completed?: number | null,
@@ -50,7 +62,7 @@ export function reviewSessionHref(
   return first?.id ? sessionFilmPath(first.id) : null;
 }
 
-/** Catalog card: overview only before the first session is started. */
+/** Catalog card: overview only before the first session film is watched. */
 export function shouldShowCatalogOverview(input: {
   enabled?: boolean;
   gated?: boolean;
@@ -61,7 +73,7 @@ export function shouldShowCatalogOverview(input: {
   return (
     Boolean(input.enabled) &&
     !input.gated &&
-    !hasStartedTrainingWork(input.completed, input.progress, input.sessionDots)
+    !hasWatchedTrainingSession(input.completed, input.progress, input.sessionDots)
   );
 }
 

@@ -614,6 +614,7 @@ export const en = {
       startSessionN: "Start Session {n}",
       seeSessions: "See sessions",
       watchOverview: "Watch overview",
+      overviewClose: "Close overview",
       overviewEyebrow: "Training overview",
       overviewBadge: "Overview",
       overviewNotSession: "Not a session",
