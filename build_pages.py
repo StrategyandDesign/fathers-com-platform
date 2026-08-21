@@ -609,7 +609,7 @@ PAGES['index.html'] = dict(title='Become the father they can count on', desc='Kn
       <div style="padding:20px 22px">
         <div class="row between" style="margin-bottom:8px"><span class="pill">FILM COURSE</span><span class="fine mono">12 sessions</span></div>
         <h3 style="margin-bottom:6px">Coming Home Present</h3>
-<p class="fine" style="color:var(--ash)">Rehab and treatment reconnect, then service return. Film with a facilitator; proof a court or program can check.</p>
+<p class="fine" style="color:var(--ash)">Rehab and treatment reconnect. Film with a facilitator; proof a court or program can check.</p>
         <span class="card-cta">See Coming Home &rarr;</span>
       </div>
     </a>
@@ -1282,7 +1282,7 @@ PAGES['certificates.html'] = dict(title='The Courses and the Certificate of Comp
         <div class="ccm-badges"><span class="pill">Film course</span><span class="ccm-n">12 sessions</span></div>
       </div>
       <h3>Coming Home Present</h3>
-      <p>Rehab and treatment reconnect first: body, kids and partner, deposits, reunion. Same skills for service return. Twelve short sessions. Facilitator support when claimed.</p>
+      <p>Rehab and treatment reconnect first: body, kids and partner, deposits, reunion. Twelve short sessions. Facilitator support when claimed.</p>
       <ol class="sess-visible">
         <li><b>The Body You Bring Home</b> <span>&middot; &ldquo;Your body did its job there. Now teach it that home is not there.&rdquo;</span></li>
         <li><b>Home Is Not There</b> <span>&middot; &ldquo;Same noise, new meaning. Train the difference.&rdquo;</span></li>
@@ -1326,7 +1326,7 @@ PAGES['certificates.html'] = dict(title='The Courses and the Certificate of Comp
     </div>
       </div>
 
-  <p class="small" style="margin-top:22px;max-width:72ch;color:var(--ash)"><b style="color:var(--bone)">Where to start.</b> Coming Home Present is the return spine for fathers reconnecting after rehab or treatment (and the same skills for service return). Steady Under Pressure is the skills add-on when pressure is the issue. Same Team when co-parenting is the work. Fathering Fundamentals is the foundation, and the alumni home base.</p>
+  <p class="small" style="margin-top:22px;max-width:72ch;color:var(--ash)"><b style="color:var(--bone)">Where to start.</b> Coming Home Present is the return spine for fathers reconnecting after rehab or treatment. Steady Under Pressure is the skills add-on when pressure is the issue. Same Team when co-parenting is the work. Fathering Fundamentals is the foundation, and the alumni home base.</p>
   <p class="fine" style="margin-top:14px">Whether a certificate satisfies a court, agency, or program requirement is decided by that body. Confirm with yours before enrolling. Every course and every Certificate of Completion is free to the man. Certified organizations and facilitators carry the standard. <a class="link ash" href="sponsor.html">Sponsorship funds organization certification</a>.</p>
 
   <div class="sess-preview-row">

@@ -25,7 +25,7 @@ Talk about **12 weeks** and a **short film**, not a 12-hour lecture. Certificate
 
 ## Courses on this loop
 1. **Steady Under Pressure** (`slug: anger`)
-2. **Coming Home Present** (`slug: reentry`). Audience: fathers in rehab or treatment preparing to reconnect with children and/or a significant other; service members returning home are the second application of the same skills.
+2. **Coming Home Present** (`slug: reentry`). Audience: fathers in rehab or treatment preparing to reconnect with children and/or a significant other.
 3. **Same Team** (`slug: coparenting`)
 
 Optional practice replay paths for Steady look like `assets/video/steady/s01-practice-replay.mp4`. The player hides the control when the path is missing and tolerates a 404.

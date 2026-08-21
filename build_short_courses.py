@@ -352,7 +352,7 @@ def cert_card_html(course: dict) -> str:
     photo = course["photo"]
     hours = "2.4"
     if slug == "reentry":
-        blurb = "Rehab and treatment reconnect first: body, kids and partner, deposits, reunion. Same skills for service return. Twelve short sessions. Facilitator support when claimed."
+        blurb = "Rehab and treatment reconnect first: body, kids and partner, deposits, reunion. Twelve short sessions. Facilitator support when claimed."
         data_desc = "For fathers preparing to reconnect. Self-paced film with a Certified Facilitator available for questions, checkpoints, and a public serial. Whether a court or program accepts it is their call."
     elif slug == "anger":
         blurb = "Steadiness on film: the pause, the repair, and the habits underneath. Twelve short sessions. Facilitator available for questions."
