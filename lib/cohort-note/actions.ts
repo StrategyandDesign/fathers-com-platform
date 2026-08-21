@@ -55,7 +55,10 @@ export async function publishCohortNote(formData: FormData) {
     },
     { onConflict: "group_id,author_id" }
   );
-  if (error) fail(path, "manager.dashboard.noteSaveFailed");
+  if (error) {
+    console.error("[cohort-note] publish failed", error.code, error.message);
+    fail(path, "manager.dashboard.noteSaveFailed");
+  }
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -119,7 +122,10 @@ export async function clearCohortNote(formData: FormData) {
     .delete()
     .eq("group_id", groupId)
     .eq("author_id", user.id);
-  if (error) fail(path, "manager.dashboard.noteClearFailed");
+  if (error) {
+    console.error("[cohort-note] clear failed", error.code, error.message);
+    fail(path, "manager.dashboard.noteClearFailed");
+  }
 
   revalidateCohort();
   ok(path, "manager.dashboard.noteCleared");

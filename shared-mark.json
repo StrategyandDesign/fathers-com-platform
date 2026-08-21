@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 57,
-  "label": "Shared 1-1.57",
+  "patch": 58,
+  "label": "Shared 1-1.58",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Let multiple leaders and reviewers share one organization desk.",
+  "title": "Lead the Leader dashboard with counts, invite code, and open items.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -407,6 +407,13 @@
       "label": "Shared 1-1.57",
       "at": "2026-08-21",
       "title": "Let multiple leaders and reviewers share one organization desk."
+    },
+    {
+      "patch": 58,
+      "revision": "1.58",
+      "label": "Shared 1-1.58",
+      "at": "2026-08-21",
+      "title": "Lead the Leader dashboard with counts, invite code, and open items."
     }
   ]
 }
