@@ -8,10 +8,11 @@ import { formatSharedLabel, formatSharedRevision, loadSharedMark } from "../lib/
 describe("version stamp", () => {
   it("reads the Shared mark from shared-mark.json", () => {
     const mark = loadSharedMark();
-    assert.equal(mark?.mark, 1);
-    assert.equal(mark?.patch, 1);
-    assert.equal(mark?.tag, "shared/1");
-    assert.equal(mark?.label, "Shared 1-1.01");
+    assert.ok(mark);
+    assert.equal(mark.mark, 1);
+    assert.ok(Number.isInteger(mark.patch) && mark.patch >= 1);
+    assert.equal(mark.tag, "shared/1");
+    assert.equal(mark.label, formatSharedLabel(1, mark.patch));
   });
 
   it("formats Shared 1-1.01 and the next ticks", () => {

@@ -13,7 +13,7 @@ Submit 2 stays frozen on `submit/2`. The next official submit is still 4.
 
 ## Desk revisions
 
-The badge on this checkout is **Shared 1-1.83**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
+The badge on this checkout is **Shared 1-1.84**. It ticks on each push of the Shared 1 desk. This does not create Shared 2. Submit 2 stays frozen.
 
 | Revision | Date (UTC) | What landed |
 |---|---|---|
@@ -100,3 +100,4 @@ The badge on this checkout is **Shared 1-1.83**. It ticks on each push of the Sh
 | **1.81** | undefined | Spread training card pictures across the cover well. |
 | **1.82** | undefined | Add the Family Fortress assessment to Super-admin. |
 | **1.83** | undefined | Add the Steady Presence assessment to Super-admin. |
+| **1.84** | undefined | Let Super-admin release catalog assessments again. |
