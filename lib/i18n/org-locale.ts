@@ -1,10 +1,10 @@
-import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, SHOW_HEBREW, isPublicLocale, type Locale } from "@/lib/i18n/config";
 
 type GroupLocaleFields = { locale?: string | null; code?: string | null };
 
 export function localeFromGroup(group: GroupLocaleFields | null | undefined): Locale | null {
-  if (isLocale(group?.locale)) return group.locale;
-  if (group?.code?.trim().toUpperCase() === "IL") return "he";
+  if (isPublicLocale(group?.locale)) return group.locale;
+  if (SHOW_HEBREW && group?.code?.trim().toUpperCase() === "IL") return "he";
   return null;
 }
 

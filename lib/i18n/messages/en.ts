@@ -359,10 +359,10 @@ export const en = {
   },
   account: {
     title: "Account",
-    fatherLead: "Your certificates, palette, language, notifications, and anonymous sharing.",
+    fatherLead: "Your certificates, palette, notifications, and anonymous sharing.",
     managerLead:
-      "Your displayed name, designation, palette, language, notifications, anonymous sharing, and training requests.",
-    reviewerLead: "Your palette, language, notifications, and anonymous sharing.",
+      "Your displayed name, designation, palette, notifications, anonymous sharing, and training requests.",
+    reviewerLead: "Your palette, notifications, and anonymous sharing.",
     displayNameTitle: "Displayed name",
     displayNameLead:
       "This is the name on your Account. Fathers in your group see the same name.",
@@ -399,7 +399,7 @@ export const en = {
     shareOn: "Sharing",
     shareOff: "Not sharing",
     shareHint: "You can turn this off anytime. Turning it off removes you from the counts.",
-    staffLead: "Your palette, language, and notifications.",
+    staffLead: "Your palette and notifications.",
     palette: "Palette",
     paletteDark: "Dark",
     paletteLight: "Light",

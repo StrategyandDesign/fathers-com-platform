@@ -15,6 +15,7 @@ import { loadAccountState, loadOrganizationName } from "@/lib/account/data";
 import { loadFatherLeader } from "@/lib/cohort-note/data";
 import { signOut } from "@/lib/auth/actions";
 import { ROLE_HELP, type AppRole } from "@/lib/auth/roles";
+import { SHOW_HEBREW } from "@/lib/i18n/config";
 import { getI18n } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
@@ -98,7 +99,7 @@ export async function AccountView({
         </>
       ) : null}
 
-      <LanguageForm savedLocale={account.locale} />
+      {SHOW_HEBREW ? <LanguageForm savedLocale={account.locale} /> : null}
 
       {role !== "admin" ? (
         <AnonymousShareToggle role={role} initial={account.shareAnonymousAdmin} />

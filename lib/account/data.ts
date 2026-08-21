@@ -2,7 +2,7 @@ import { cache } from "react";
 
 import { parseManagerDisplayTitle } from "@/lib/account/display-title";
 import { parseNotificationPreferences } from "@/lib/account/preferences";
-import { isLocale } from "@/lib/i18n/config";
+import { isPublicLocale } from "@/lib/i18n/config";
 import { parseNotificationPrefsRow, scheduleFromPrefs } from "@/lib/notifications/prefs";
 import { createClient } from "@/lib/supabase/server";
 import { AVATARS_BUCKET, signStorageUrl } from "@/lib/storage";
@@ -115,7 +115,7 @@ export async function loadAccountState(userId: string) {
     weekday: reminderRes.data?.weekday,
     remindAt,
   });
-  if (isLocale(profileRes.data?.locale)) {
+  if (isPublicLocale(profileRes.data?.locale)) {
     parsed.locale = profileRes.data.locale;
   }
 

@@ -8,7 +8,7 @@ import {
   resolveRole,
   roleForPath,
 } from "@/lib/auth/roles";
-import { isLocale, LOCALE_COOKIE, type Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, isPublicLocale, LOCALE_COOKIE, type Locale } from "@/lib/i18n/config";
 import { getSupabasePublishableKey, getSupabaseUrl } from "@/lib/supabase/env";
 import { PALETTE_COOKIE, paletteCookieOptions, parsePalette } from "@/lib/theme/palette";
 
@@ -103,8 +103,8 @@ async function applySession(request: NextRequest) {
     role = resolveProfileRole(profile?.role, user);
 
     const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
-    if (!isLocale(cookieLocale)) {
-      let nextLocale: Locale | null = isLocale(profile?.locale) ? profile.locale : null;
+    if (!isPublicLocale(cookieLocale)) {
+      let nextLocale: Locale | null = isPublicLocale(profile?.locale) ? profile.locale : null;
       if (!nextLocale) {
         const { data: staffRow } = await supabase
           .from("organization_staff")
@@ -120,7 +120,7 @@ async function applySession(request: NextRequest) {
             .select("locale")
             .eq("id", localeGroupId)
             .maybeSingle();
-          if (isLocale(staffGroup?.locale)) nextLocale = staffGroup.locale;
+          if (isPublicLocale(staffGroup?.locale)) nextLocale = staffGroup.locale;
         }
         if (!nextLocale) {
           const { data: managed } = await supabase
@@ -130,7 +130,7 @@ async function applySession(request: NextRequest) {
             .order("created_at", { ascending: true })
             .limit(1)
             .maybeSingle();
-          if (isLocale(managed?.locale)) nextLocale = managed.locale;
+          if (isPublicLocale(managed?.locale)) nextLocale = managed.locale;
         }
       }
       if (!nextLocale) {
@@ -148,11 +148,17 @@ async function applySession(request: NextRequest) {
             .select("locale")
             .eq("id", groupId)
             .maybeSingle();
-          if (isLocale(group?.locale)) nextLocale = group.locale;
+          if (isPublicLocale(group?.locale)) nextLocale = group.locale;
         }
       }
       if (nextLocale) {
         supabaseResponse.cookies.set(LOCALE_COOKIE, nextLocale, {
+          path: "/",
+          maxAge: 60 * 60 * 24 * 365,
+          sameSite: "lax",
+        });
+      } else {
+        supabaseResponse.cookies.set(LOCALE_COOKIE, DEFAULT_LOCALE, {
           path: "/",
           maxAge: 60 * 60 * 24 * 365,
           sameSite: "lax",

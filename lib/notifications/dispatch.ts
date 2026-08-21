@@ -9,7 +9,7 @@ import { normalizeDeepLink, sessionFilmHref } from "@/lib/notifications/links";
 import { weeklySessionTarget } from "@/lib/notifications/next-session";
 import { parseNotificationPrefsRow } from "@/lib/notifications/prefs";
 import { sendWebPush, type PushSubscriptionRecord } from "@/lib/notifications/push";
-import { isLocale } from "@/lib/i18n/config";
+import { isPublicLocale } from "@/lib/i18n/config";
 import {
   FREQUENCY_WINDOW_DAYS,
   isInQuietHours,
@@ -108,7 +108,7 @@ export async function dispatchDueReminders(now = new Date()) {
   for (const row of prefsRes.data ?? []) {
     const parsed = parseNotificationPrefsRow(row, reminders.get((row as { user_id: string }).user_id) ?? null);
     const locale = localeByUser.get(parsed.userId);
-    if (isLocale(locale)) parsed.locale = locale;
+    if (isPublicLocale(locale)) parsed.locale = locale;
     if (parsed.userId) prefsByUser.set(parsed.userId, parsed);
   }
   for (const [fatherId, reminder] of reminders) {
@@ -118,7 +118,7 @@ export async function dispatchDueReminders(now = new Date()) {
         { weekday: reminder.weekday, remindAt: reminder.remind_at }
       );
       const locale = localeByUser.get(fatherId);
-      if (isLocale(locale)) parsed.locale = locale;
+      if (isPublicLocale(locale)) parsed.locale = locale;
       prefsByUser.set(fatherId, parsed);
     }
   }
