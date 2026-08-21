@@ -156,6 +156,8 @@ export default async function ManagerKeystonePage({
                     questionCount: PROFILE_QUESTION_COUNT,
                     assignedCount: roster.length,
                     completedCount: completed,
+                    notStartedCount: Math.max(0, roster.length - completed),
+                    inProgressCount: 0,
                   }}
                   t={t}
                 />
@@ -180,7 +182,7 @@ export default async function ManagerKeystonePage({
 
       <AssessmentInstrumentReview model={keystoneInstrumentReview()} />
 
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+      <section id="assign" className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.assignments")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {t("manager.assessments.keystoneRosterLead")}

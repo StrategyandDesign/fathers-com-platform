@@ -176,7 +176,7 @@ export default async function ManagerAssessmentDetailPage({
         )}
       </section>
 
-      <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+      <section id="assign" className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <h2 className="font-heading text-lg font-semibold">{t("manager.assessments.assign")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {t("manager.assessments.assignLead")}

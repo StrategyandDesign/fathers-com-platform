@@ -1,17 +1,15 @@
 import Link from "next/link";
 
-import {
-  AssessmentCatalog,
-  AssessmentCatalogRow,
-} from "@/components/manager/assessment-catalog";
+import { AssessmentCatalog } from "@/components/manager/assessment-catalog";
+import { AssessmentCohortCard } from "@/components/manager/assessment-cohort-card";
 import { Flash } from "@/components/manager/flash";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { KEYSTONE_ASSESSMENT_KEY } from "@/lib/assessments/availability";
 import {
   buildManagerAssessmentCatalog,
-  partitionAssessmentCatalog,
-  type AssessmentCatalogItem,
+  isAssessmentInCohort,
+  summarizeAssessmentCohort,
 } from "@/lib/assessments/catalog";
 import {
   loadAssessmentAvailability,
@@ -25,7 +23,7 @@ import {
   loadFirstPartyCompletedByGroup,
 } from "@/lib/assessments/first-party-data";
 import { requireRole } from "@/lib/auth/session";
-import { getI18n } from "@/lib/i18n/server";
+import { formatShortDate, getI18n } from "@/lib/i18n/server";
 import { loadManagerWorkspace } from "@/lib/manager/data";
 import { loadManagerNotifications } from "@/lib/manager/reviews";
 import { interactiveSurfaceClassName } from "@/lib/ui";
@@ -38,7 +36,7 @@ export default async function ManagerAssessmentsPage({
 }) {
   const params = await searchParams;
   const { user } = await requireRole("manager");
-  const { t } = await getI18n();
+  const { t, locale } = await getI18n();
   const [workspace, custom] = await Promise.all([
     loadManagerWorkspace(user.id),
     loadManagerAssessments(user.id),
@@ -82,17 +80,8 @@ export default async function ManagerAssessmentsPage({
     firstPartyReleases: Object.fromEntries(firstPartyReleases),
     firstPartyCompletedByGroup: firstPartyCompleted,
   });
-  const { available, hidden } = partitionAssessmentCatalog(catalog);
-  const inGroup = [...available, ...hidden];
+  const inGroup = catalog.filter(isAssessmentInCohort);
   const orgName = workspace.groups[0]?.name ?? t("account.orgPhotosFallback");
-  const assignedByCustom = new Map(custom.map((row) => [row.id, row.assignedCount]));
-
-  function remainingFor(item: AssessmentCatalogItem) {
-    if (item.kind !== "custom" || !item.customId) return 0;
-    const total = groupSize[item.groupId] ?? workspace.participants.length;
-    const assigned = assignedByCustom.get(item.customId) ?? 0;
-    return Math.max(0, total - assigned);
-  }
 
   return (
     <div className="space-y-8">
@@ -110,7 +99,7 @@ export default async function ManagerAssessmentsPage({
         </Link>
       </div>
       <Flash error={params.error} notice={params.notice} />
-      <AssessmentCatalog items={catalog} remainingFor={remainingFor} t={t} />
+      <AssessmentCatalog items={catalog} t={t} />
 
       {unread.length > 0 ? (
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
@@ -145,12 +134,45 @@ export default async function ManagerAssessmentsPage({
             {t("manager.assessments.cohortEmptyBody")}
           </EmptyState>
         ) : (
-          <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
-            {inGroup.map((item) => (
-              <li key={item.key} className="px-4 py-5 sm:px-6">
-                <AssessmentCatalogRow item={item} remaining={remainingFor(item)} t={t} />
-              </li>
-            ))}
+          <ul className="space-y-4">
+            {inGroup.map((item) => {
+              const inGroupFathers = workspace.participants.filter(
+                (participant) => !item.groupId || participant.groupId === item.groupId
+              );
+              const stats = summarizeAssessmentCohort({
+                item,
+                groupSize: groupSize[item.groupId] ?? workspace.participants.length,
+                keystone:
+                  item.kind === "keystone"
+                    ? {
+                        notStarted: inGroupFathers.filter(
+                          (participant) => participant.profileStatus === "not_started"
+                        ).length,
+                        inProgress: inGroupFathers.filter(
+                          (participant) => participant.profileStatus === "in_progress"
+                        ).length,
+                        completed: inGroupFathers.filter(
+                          (participant) => participant.profileStatus === "completed"
+                        ).length,
+                      }
+                    : undefined,
+              });
+              const review = reviews.find(
+                (row) =>
+                  row.group_id === item.groupId && row.assessment_key === item.assessmentKey
+              );
+              return (
+                <AssessmentCohortCard
+                  key={item.key}
+                  item={item}
+                  stats={stats}
+                  includedOn={
+                    review?.decided_at ? formatShortDate(review.decided_at, locale) : null
+                  }
+                  t={t}
+                />
+              );
+            })}
           </ul>
         )}
       </section>

@@ -40,6 +40,8 @@ export type AssessmentCatalogItem = {
   questionCount: number;
   assignedCount: number;
   completedCount: number;
+  notStartedCount: number;
+  inProgressCount: number;
   customId?: string;
   title?: string;
   description?: string | null;
@@ -145,6 +147,8 @@ export function buildManagerAssessmentCatalog(input: {
         questionCount: assessment.questionCount,
         assignedCount: assessment.assignedCount,
         completedCount: assessment.completedCount,
+        notStartedCount: assessment.notStartedCount,
+        inProgressCount: assessment.inProgressCount,
         customId: assessment.id,
         title: assessment.title,
         description: assessment.description,
@@ -188,6 +192,11 @@ export function buildManagerAssessmentCatalog(input: {
         questionCount: PROFILE_QUESTION_COUNT,
         assignedCount: input.groupSize[group.id] ?? 0,
         completedCount: input.keystoneCompletedByGroup[group.id] ?? 0,
+        notStartedCount: Math.max(
+          0,
+          (input.groupSize[group.id] ?? 0) - (input.keystoneCompletedByGroup[group.id] ?? 0)
+        ),
+        inProgressCount: 0,
       })
     );
   }
@@ -230,6 +239,12 @@ export function buildManagerAssessmentCatalog(input: {
           questionCount: assessment.questionCount,
           assignedCount: input.groupSize[group.id] ?? 0,
           completedCount: input.firstPartyCompletedByGroup?.[assessment.key]?.[group.id] ?? 0,
+          notStartedCount: Math.max(
+            0,
+            (input.groupSize[group.id] ?? 0) -
+              (input.firstPartyCompletedByGroup?.[assessment.key]?.[group.id] ?? 0)
+          ),
+          inProgressCount: 0,
           title: assessment.title,
           description: assessment.description,
         })
@@ -259,6 +274,8 @@ export function buildManagerAssessmentCatalog(input: {
           questionCount: assessment.questionCount,
           assignedCount: assessment.assignedCount,
           completedCount: assessment.completedCount,
+          notStartedCount: assessment.notStartedCount,
+          inProgressCount: assessment.inProgressCount,
           customId: assessment.id,
           title: assessment.title,
           description: assessment.description,
@@ -276,5 +293,46 @@ export function partitionAssessmentCatalog(items: AssessmentCatalogItem[]) {
     available: items.filter((item) => item.section === "available"),
     hidden: items.filter((item) => item.section === "hidden"),
     declined: items.filter((item) => item.section === "declined"),
+  };
+}
+
+export function isAssessmentInCohort(item: AssessmentCatalogItem) {
+  return item.decision === "ready" || item.decision === "catalog";
+}
+
+export function summarizeAssessmentCohort(input: {
+  item: AssessmentCatalogItem;
+  groupSize: number;
+  keystone?: { notStarted: number; inProgress: number; completed: number };
+}) {
+  const total = input.groupSize;
+  if (input.item.kind === "custom") {
+    const assigned = input.item.assignedCount;
+    return {
+      assigned,
+      total,
+      remaining: Math.max(0, total - assigned),
+      notStarted: input.item.notStartedCount,
+      inProgress: input.item.inProgressCount,
+      completed: input.item.completedCount,
+    };
+  }
+  if (input.item.kind === "keystone" && input.keystone) {
+    return {
+      assigned: total,
+      total,
+      remaining: 0,
+      notStarted: input.keystone.notStarted,
+      inProgress: input.keystone.inProgress,
+      completed: input.keystone.completed,
+    };
+  }
+  return {
+    assigned: total,
+    total,
+    remaining: 0,
+    notStarted: input.item.notStartedCount,
+    inProgress: input.item.inProgressCount,
+    completed: input.item.completedCount,
   };
 }

@@ -2,9 +2,8 @@ import Link from "next/link";
 
 import { AssessmentCatalogDecisionButtons } from "@/components/manager/assessment-catalog-decision-buttons";
 import { CatalogScrollList } from "@/components/manager/catalog-scroll-list";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { assignAssessmentToUnassigned } from "@/lib/assessments/actions";
 import type { AssessmentCatalogItem } from "@/lib/assessments/catalog";
 import type { Translate } from "@/lib/i18n/translate";
 import { cn } from "@/lib/utils";
@@ -22,11 +21,9 @@ export function assessmentQuestionLabel(count: number, t: Translate) {
 export function AssessmentCatalogRow({
   item,
   t,
-  remaining = 0,
 }: {
   item: AssessmentCatalogItem;
   t: Translate;
-  remaining?: number;
 }) {
   const title = assessmentCatalogTitle(item, t);
 
@@ -68,15 +65,6 @@ export function AssessmentCatalogRow({
         <Link href={item.href} className={cn(buttonVariants({ variant: "outline" }), "min-h-11")}>
           {t("manager.assessments.viewAssessment")}
         </Link>
-        {item.kind === "custom" && item.customId && item.status === "available" && remaining > 0 ? (
-          <form action={assignAssessmentToUnassigned}>
-            <input type="hidden" name="assessment_id" value={item.customId} />
-            <input type="hidden" name="group_id" value={item.groupId} />
-            <Button type="submit" className="min-h-11">
-              {t("manager.assessments.assignRemaining", { n: remaining })}
-            </Button>
-          </form>
-        ) : null}
       </div>
     </>
   );
@@ -84,11 +72,9 @@ export function AssessmentCatalogRow({
 
 export function AssessmentCatalog({
   items,
-  remainingFor,
   t,
 }: {
   items: AssessmentCatalogItem[];
-  remainingFor: (item: AssessmentCatalogItem) => number;
   t: Translate;
 }) {
   return (
@@ -105,7 +91,7 @@ export function AssessmentCatalog({
         <CatalogScrollList count={items.length} label={t("manager.assessments.catalogTitle")}>
           {items.map((item) => (
             <li key={item.key} className="px-4 py-5 sm:px-6">
-              <AssessmentCatalogRow item={item} remaining={remainingFor(item)} t={t} />
+              <AssessmentCatalogRow item={item} t={t} />
             </li>
           ))}
         </CatalogScrollList>

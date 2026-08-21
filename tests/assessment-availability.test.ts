@@ -35,6 +35,8 @@ const custom: AssessmentListItem = {
   questionCount: 4,
   assignedCount: 1,
   completedCount: 0,
+  notStartedCount: 1,
+  inProgressCount: 0,
 };
 
 const released: PlatformAssessmentRelease = {

@@ -1,12 +1,12 @@
 {
   "mark": 1,
-  "patch": 98,
-  "label": "Shared 1-1.98",
+  "patch": 99,
+  "label": "Shared 1-1.99",
   "tag": "shared/1",
   "at": "2026-08-19T15:48:57.108Z",
   "internalSha": "2549c76e6a4c530cb34ef92650fa639c2d67d4ac",
   "sharedSha": "11f703e983ce9f4d6ba158f6963f9e34b3c59ca0",
-  "title": "Remove the Waiting on you queue from Assessments.",
+  "title": "Remove Hidden from your cohort from Trainings and Assessments.",
   "url": "https://github.com/StrategyandDesign/fathers-com-clean-pilot/releases/tag/shared/1",
   "revisions": [
     {
@@ -694,6 +694,13 @@
       "label": "Shared 1-1.98",
       "at": "2026-08-21",
       "title": "Remove the Waiting on you queue from Assessments."
+    },
+    {
+      "patch": 99,
+      "revision": "1.99",
+      "label": "Shared 1-1.99",
+      "at": "2026-08-21",
+      "title": "Remove Hidden from your cohort from Trainings and Assessments."
     }
   ]
 }

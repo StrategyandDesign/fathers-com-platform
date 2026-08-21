@@ -7,6 +7,8 @@ import {
   assessmentCatalogDecision,
   buildManagerAssessmentCatalog,
   catalogAssessmentCanReview,
+  isAssessmentInCohort,
+  summarizeAssessmentCohort,
 } from "../lib/assessments/catalog";
 import { KEYSTONE_ASSESSMENT_KEY } from "../lib/assessments/availability";
 import type { PlatformAssessmentRelease } from "../lib/assessments/reviews";
@@ -37,7 +39,6 @@ describe("assessment catalog decisions", () => {
     assert.doesNotMatch(page, /id="pending"/);
     assert.doesNotMatch(page, /manager\.assessments\.hiddenTitle/);
     assert.doesNotMatch(page, /id="hidden"/);
-    assert.doesNotMatch(page, /AssessmentVisibilityForms|AssessmentReviewForms/);
     assert.match(buttons, /manager\.assessments\.included/);
     assert.match(buttons, /manager\.assessments\.declined/);
     assert.match(buttons, /manager\.assessments\.include/);
@@ -169,6 +170,67 @@ describe("assessment catalog decisions", () => {
     assert.ok(aside > 0 && retake > aside);
     assert.match(readRepo("lib/i18n/messages/en.ts"), /Continue the Keystone Assessment/);
     assert.match(readRepo("lib/i18n/messages/en.ts"), /Retake the Keystone Assessment/);
+  });
+
+  it("lists included assessments as training-style cohort cards", () => {
+    const page = readRepo("app/(manager)/manager/assessments/page.tsx");
+    const card = readRepo("components/manager/assessment-cohort-card.tsx");
+
+    assert.match(page, /isAssessmentInCohort/);
+    assert.match(page, /AssessmentCohortCard/);
+    assert.match(page, /space-y-4/);
+    assert.doesNotMatch(page, /AssessmentCatalogRow/);
+    assert.match(card, /manager\.assessments\.viewAssessment/);
+    assert.match(card, /manager\.assessments\.chooseFathers/);
+    assert.match(card, /manager\.assessments\.assignRemaining/);
+    assert.match(card, /manager\.assessments\.removeFromCohort/);
+    assert.match(card, /AssessmentReviewForms/);
+    assert.match(card, /rounded-xl border border-border bg-card p-4 sm:p-6/);
+    assert.match(readRepo("lib/i18n/messages/en.ts"), /In your cohort/);
+  });
+
+  it("puts included catalog assessments in the cohort and pending ones out", () => {
+    assert.equal(
+      isAssessmentInCohort({
+        decision: "ready",
+      } as never),
+      true
+    );
+    assert.equal(
+      isAssessmentInCohort({
+        decision: "catalog",
+      } as never),
+      true
+    );
+    assert.equal(
+      isAssessmentInCohort({
+        decision: "pending",
+      } as never),
+      false
+    );
+    assert.equal(
+      isAssessmentInCohort({
+        decision: "declined",
+      } as never),
+      false
+    );
+  });
+
+  it("counts remaining fathers for a custom assessment the same way trainings do", () => {
+    const stats = summarizeAssessmentCohort({
+      item: {
+        kind: "custom",
+        assignedCount: 1,
+        completedCount: 0,
+        notStartedCount: 1,
+        inProgressCount: 0,
+      } as never,
+      groupSize: 4,
+    });
+    assert.equal(stats.assigned, 1);
+    assert.equal(stats.total, 4);
+    assert.equal(stats.remaining, 3);
+    assert.equal(stats.notStarted, 1);
   });
 
   it("offers an included assessment to fathers without a second Share step", () => {

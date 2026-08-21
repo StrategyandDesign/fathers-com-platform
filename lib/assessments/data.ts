@@ -321,11 +321,15 @@ export async function loadManagerAssessments(managerId: string): Promise<Assessm
     const assigned = (assignmentsRes.data ?? []).filter(
       (row) => row.assessment_id === assessment.id && !isLeaderSelfRow(row.father_id, managerId)
     );
+    const completedCount = assigned.filter((row) => row.status === "completed").length;
+    const inProgressCount = assigned.filter((row) => row.status === "in_progress").length;
     return {
       ...asAssessment(assessment),
       questionCount,
       assignedCount: assigned.length,
-      completedCount: assigned.filter((row) => row.status === "completed").length,
+      completedCount,
+      notStartedCount: Math.max(0, assigned.length - completedCount - inProgressCount),
+      inProgressCount,
     };
   });
 }
