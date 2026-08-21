@@ -15,6 +15,7 @@ export const RATE_LIMITS = {
   "manager.review": { limit: 20, windowMs: 15 * 60 * 1000 },
   "manager.assessment": { limit: 20, windowMs: 15 * 60 * 1000 },
   "admin.release": { limit: 20, windowMs: 15 * 60 * 1000 },
+  "admin.message": { limit: 12, windowMs: 15 * 60 * 1000 },
   "admin.platform_photo": { limit: 12, windowMs: 15 * 60 * 1000 },
   "admin.training_handout": { limit: 12, windowMs: 15 * 60 * 1000 },
   "training.handout_download": { limit: 40, windowMs: 5 * 60 * 1000 },

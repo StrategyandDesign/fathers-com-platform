@@ -189,6 +189,19 @@ export default async function AdminHomePage({
           </div>
         </div>
         <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
+          <h2 className="font-heading text-lg font-semibold">Leader messages</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Send a short note to Leaders, Reviewers, or both. Fathers never
+            see these.
+          </p>
+          <Link
+            href="/admin/messages"
+            className={cn(buttonVariants({ variant: "outline" }), "mt-5 w-full sm:w-auto")}
+          >
+            Open messages
+          </Link>
+        </div>
+        <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="font-heading text-lg font-semibold">Login background</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Sign-in is black until you add a panoramic photo. Everyone sees

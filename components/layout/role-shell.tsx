@@ -23,6 +23,7 @@ export async function RoleShell({
   organizationLogoUrl,
   roleLabel,
   onboardingActive = false,
+  banner,
   children,
 }: {
   role: AppRole;
@@ -32,6 +33,7 @@ export async function RoleShell({
   organizationLogoUrl?: string | null;
   roleLabel?: string | null;
   onboardingActive?: boolean;
+  banner?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const { t } = await getI18n();
@@ -148,6 +150,13 @@ export async function RoleShell({
             : "max-lg:pb-6"
         )}
       >
+        {banner && !funnel ? (
+          <div className="border-b border-primary/30 bg-primary/10 print:hidden">
+            <div className="mx-auto w-full min-w-0 max-w-6xl px-4 py-3 sm:px-5 md:px-6 lg:px-8">
+              {banner}
+            </div>
+          </div>
+        ) : null}
         <div className="mx-auto w-full min-w-0 max-w-6xl px-4 py-5 sm:px-5 md:px-6 md:py-6 lg:px-8 lg:py-8">
           {children}
         </div>

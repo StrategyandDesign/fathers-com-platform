@@ -288,7 +288,9 @@ export function translateFlash(message: string | undefined, t: Translate) {
     message.startsWith("manager.") ||
     message.startsWith("father.") ||
     message.startsWith("reviewer.") ||
-    message.startsWith("help.")
+    message.startsWith("help.") ||
+    message.startsWith("admin.") ||
+    message.startsWith("staff.")
   ) {
     return t(message);
   }

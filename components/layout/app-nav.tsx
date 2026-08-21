@@ -13,6 +13,7 @@ import {
   Image,
   Inbox,
   LayoutDashboard,
+  Megaphone,
   Settings,
   Users,
 } from "lucide-react";
@@ -175,6 +176,12 @@ export const NAV: Record<AppRole, NavItem[]> = {
       labelKey: "nav.inbox",
       icon: Inbox,
       match: (path) => path.startsWith("/admin/support"),
+    },
+    {
+      href: "/admin/messages",
+      labelKey: "nav.messages",
+      icon: Megaphone,
+      match: (path) => path.startsWith("/admin/messages"),
     },
     {
       href: "/admin/appearance",
