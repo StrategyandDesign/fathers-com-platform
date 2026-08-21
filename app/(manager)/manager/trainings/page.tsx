@@ -180,7 +180,7 @@ export default async function ManagerTrainingsPage({
             {t("manager.trainings.cohortEmptyBody")}
           </EmptyState>
         ) : (
-          <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+          <ul className="space-y-4">
             {accepted.map((item) => {
               const status = summarizeAssignmentStatus({
                 training: item.training,
@@ -193,7 +193,10 @@ export default async function ManagerTrainingsPage({
               const total = status.total;
               const remaining = status.remaining;
               return (
-                <li key={`${item.review.group_id}-${item.training.id}`} className="px-4 py-5 sm:px-6">
+                <li
+                  key={`${item.review.group_id}-${item.training.id}`}
+                  className="rounded-xl border border-border bg-card p-4 sm:p-6"
+                >
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <Link
@@ -279,7 +282,7 @@ export default async function ManagerTrainingsPage({
               const remaining = status.remaining;
               const viewHref = `/manager/reviews/${training.id}`;
               return (
-                <li key={training.id} className="px-4 py-5 sm:px-6">
+                <li key={training.id} className="rounded-xl border border-border bg-card p-4 sm:p-6">
                   <div className="min-w-0">
                     <Link href={viewHref} className={cn("block font-medium", interactiveLinkClassName)}>
                       {training.title}

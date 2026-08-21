@@ -219,4 +219,19 @@ describe("hidden assignment surfaces", () => {
     assert.match(page, /assignTrainingToUnassigned/);
     assert.doesNotMatch(page, /manager\.trainings\.allAssigned/);
   });
+
+  it("renders each cohort training as its own card", () => {
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/(manager)/manager/trainings/page.tsx", import.meta.url)),
+      "utf8"
+    );
+    const cohort = page.slice(page.indexOf('id="cohort"'));
+    const list = cohort.slice(
+      cohort.indexOf("<ul"),
+      cohort.indexOf("</ul>") + 5
+    );
+    assert.match(list, /space-y-4/);
+    assert.match(list, /rounded-xl border border-border bg-card p-4 sm:p-6/);
+    assert.doesNotMatch(list, /divide-y/);
+  });
 });
