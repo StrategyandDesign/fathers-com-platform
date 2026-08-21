@@ -144,6 +144,40 @@ describe("assessment availability", () => {
     );
   });
 
+  it("hides a declined Keystone from fathers who have not started", () => {
+    assert.equal(
+      organizationMayOfferAssessment({
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: null,
+        reviewStatus: "declined",
+      }),
+      false
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: null,
+        reviewStatus: "declined",
+      }),
+      false
+    );
+    assert.equal(
+      fatherCanStartAssessment({
+        rows: [],
+        groupIds: ["g1"],
+        homeGroupId: "g1",
+        assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+        release: null,
+        reviewStatus: "declined",
+        hasProgress: true,
+      }),
+      true
+    );
+  });
+
   it("does not restore catalog access after un-release", () => {
     assert.equal(
       organizationMayOfferAssessment({
@@ -191,6 +225,7 @@ describe("assessment catalog", () => {
     assert.equal(items[0]?.completedCount, 3);
     assert.equal(available.some((item) => item.kind === "keystone" && item.groupId === "g1"), true);
     assert.equal(hidden.some((item) => item.kind === "keystone" && item.groupId === "g2"), true);
+    assert.equal(items[0]?.decision, "catalog");
     assert.equal(
       available.filter((item) => item.kind === "custom").length,
       2

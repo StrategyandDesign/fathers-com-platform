@@ -4,7 +4,10 @@ import {
   declineAssessmentRelease,
 } from "@/lib/assessments/review-actions";
 import { shareAssessment } from "@/lib/assessments/visibility-actions";
-import type { AssessmentCatalogItem } from "@/lib/assessments/catalog";
+import {
+  catalogAssessmentCanReview,
+  type AssessmentCatalogItem,
+} from "@/lib/assessments/catalog";
 import type { Translate } from "@/lib/i18n/translate";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +22,7 @@ export function AssessmentCatalogDecisionButtons({
 
   const included = item.decision === "ready" || item.decision === "catalog";
   const declined = item.decision === "declined";
-  const canReview = item.kind !== "custom" && item.reviewStatus !== null;
+  const canReview = catalogAssessmentCanReview(item.kind);
   const canShareCustom = item.kind === "custom" && item.status === "hidden";
 
   return (

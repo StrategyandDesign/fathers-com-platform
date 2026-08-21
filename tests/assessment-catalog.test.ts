@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   assessmentCatalogDecision,
   buildManagerAssessmentCatalog,
+  catalogAssessmentCanReview,
 } from "../lib/assessments/catalog";
 import { KEYSTONE_ASSESSMENT_KEY } from "../lib/assessments/availability";
 import type { PlatformAssessmentRelease } from "../lib/assessments/reviews";
@@ -40,6 +41,22 @@ describe("assessment catalog decisions", () => {
     assert.match(buttons, /disabled:opacity-100/);
     assert.match(buttons, /bg-destructive text-white/);
     assert.match(buttons, /name="quick"/);
+    assert.match(buttons, /catalogAssessmentCanReview/);
+    assert.doesNotMatch(buttons, /reviewStatus !== null/);
+  });
+
+  it("lets a Leader decline Keystone even before a review row exists", () => {
+    assert.equal(catalogAssessmentCanReview("keystone"), true);
+    assert.equal(catalogAssessmentCanReview("platform"), true);
+    assert.equal(catalogAssessmentCanReview("custom"), false);
+    assert.equal(
+      assessmentCatalogDecision({
+        kind: "keystone",
+        section: "available",
+        reviewStatus: null,
+      }),
+      "catalog"
+    );
   });
 
   it("maps review state the same way trainings map Include and Declined", () => {
@@ -99,5 +116,45 @@ describe("assessment catalog decisions", () => {
       ],
     });
     assert.equal(items[0]?.decision, "pending");
+  });
+
+  it("keeps a declined Keystone in the catalog with Include and Declined", () => {
+    const items = buildManagerAssessmentCatalog({
+      groups: [{ id: "g1", name: "Returning Home NWA" }],
+      custom: [],
+      availability: [],
+      keystoneCompletedByGroup: {},
+      groupSize: { g1: 4 },
+      reviews: [
+        {
+          group_id: "g1",
+          assessment_key: KEYSTONE_ASSESSMENT_KEY,
+          status: "declined",
+          decline_reason: null,
+          decided_by: "m1",
+          decided_at: "2026-08-21T12:00:00Z",
+          created_at: "2026-08-21T12:00:00Z",
+        },
+      ],
+    });
+    assert.equal(items[0]?.kind, "keystone");
+    assert.equal(items[0]?.section, "declined");
+    assert.equal(items[0]?.decision, "declined");
+    assert.match(items[0]?.href ?? "", /assessments\/keystone/);
+  });
+
+  it("lets Leaders insert a Keystone review when the catalog has no row yet", () => {
+    const actions = readRepo("lib/assessments/review-actions.ts");
+    const sql = readRepo(
+      "supabase/migrations/20260821043947_manager_assessment_review_insert.sql"
+    );
+    const desk = readRepo("app/(manager)/manager/assessments/keystone/page.tsx");
+
+    assert.match(actions, /isLegacyCatalogAssessment/);
+    assert.match(actions, /\.insert\(/);
+    assert.match(actions, /!current && currentlyReleased && !legacy && status === "accepted"/);
+    assert.match(sql, /organization_assessment_reviews_insert/);
+    assert.match(sql, /grant insert on public.organization_assessment_reviews/);
+    assert.match(desk, /AssessmentCatalogDecisionButtons/);
   });
 });

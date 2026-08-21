@@ -45,6 +45,10 @@ export type AssessmentCatalogItem = {
   description?: string | null;
 };
 
+export function catalogAssessmentCanReview(kind: AssessmentCatalogKind) {
+  return kind !== "custom";
+}
+
 function platformSection(input: {
   assessmentKey: string;
   release?: PlatformAssessmentRelease | null;
@@ -55,6 +59,8 @@ function platformSection(input: {
     input.assessmentKey === KEYSTONE_ASSESSMENT_KEY &&
     isLegacyCatalogAssessment(input.release, input.assessmentKey)
   ) {
+    if (input.reviewStatus === "pending") return "pending";
+    if (input.reviewStatus === "declined") return "declined";
     return input.status === "hidden" ? "hidden" : "available";
   }
   if (!isAssessmentCurrentlyReleased(input.release)) return null;
@@ -64,6 +70,26 @@ function platformSection(input: {
     return input.status === "hidden" ? "hidden" : "available";
   }
   return null;
+}
+
+function catalogDeskHref(input: {
+  kind: AssessmentCatalogKind;
+  assessmentKey: string;
+  groupId: string;
+  section: AssessmentCatalogSection;
+  release?: PlatformAssessmentRelease | null;
+}) {
+  const reviewDesk =
+    (input.section === "pending" || input.section === "declined") &&
+    isAssessmentCurrentlyReleased(input.release);
+  if (input.kind === "keystone") {
+    return reviewDesk
+      ? `/manager/assessment-reviews/keystone?group=${input.groupId}#instrument`
+      : `/manager/assessments/keystone?group=${input.groupId}#instrument`;
+  }
+  return reviewDesk
+    ? `${firstPartyReviewPath(input.assessmentKey)}?group=${input.groupId}#instrument`
+    : `${firstPartyManagerPath(input.assessmentKey)}?group=${input.groupId}#instrument`;
 }
 
 export function assessmentCatalogDecision(input: {
@@ -152,10 +178,13 @@ export function buildManagerAssessmentCatalog(input: {
         reviewStatus: review?.status ?? null,
         groupId: group.id,
         groupName: showGroupName ? group.name : undefined,
-        href:
-          section === "pending" || section === "declined"
-            ? `/manager/assessment-reviews/keystone?group=${group.id}#instrument`
-            : `/manager/assessments/keystone?group=${group.id}#instrument`,
+        href: catalogDeskHref({
+          kind: "keystone",
+          assessmentKey: KEYSTONE_ASSESSMENT_KEY,
+          groupId: group.id,
+          section,
+          release: input.keystoneRelease,
+        }),
         questionCount: PROFILE_QUESTION_COUNT,
         assignedCount: input.groupSize[group.id] ?? 0,
         completedCount: input.keystoneCompletedByGroup[group.id] ?? 0,
@@ -191,10 +220,13 @@ export function buildManagerAssessmentCatalog(input: {
           reviewStatus: review?.status ?? null,
           groupId: group.id,
           groupName: showGroupName ? group.name : undefined,
-          href:
-            section === "pending" || section === "declined"
-              ? `${firstPartyReviewPath(assessment.key)}?group=${group.id}#instrument`
-              : `${firstPartyManagerPath(assessment.key)}?group=${group.id}#instrument`,
+          href: catalogDeskHref({
+            kind: "platform",
+            assessmentKey: assessment.key,
+            groupId: group.id,
+            section,
+            release: input.firstPartyReleases?.[assessment.key] ?? null,
+          }),
           questionCount: assessment.questionCount,
           assignedCount: input.groupSize[group.id] ?? 0,
           completedCount: input.firstPartyCompletedByGroup?.[assessment.key]?.[group.id] ?? 0,

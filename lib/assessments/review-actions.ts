@@ -10,6 +10,7 @@ import {
   ASSESSMENT_REVERSE_ACCEPT_CONFIRM,
   isAssessmentCurrentlyReleased,
   isAssessmentReviewStatus,
+  isLegacyCatalogAssessment,
 } from "@/lib/assessments/reviews";
 import { requireRole } from "@/lib/auth/session";
 import { recordOrganizationActivity } from "@/lib/org-staff/activity";
@@ -84,30 +85,43 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
   if (currentError) {
     fail(path, "flash.assessmentReviewLoadFailed");
   }
-  if (!current || !isAssessmentReviewStatus(current.status)) {
+  const release = await loadPlatformAssessmentRelease(assessmentKey);
+  const currentlyReleased = isAssessmentCurrentlyReleased(release);
+  const legacy = isLegacyCatalogAssessment(release, assessmentKey);
+
+  if (current && !isAssessmentReviewStatus(current.status)) {
+    fail("/manager/assessments", "flash.assessmentReviewNotWaiting");
+  }
+  if (!current && currentlyReleased && !legacy && status === "accepted") {
     fail("/manager/assessments", "flash.assessmentReviewNotWaiting");
   }
 
   if (status === "accepted") {
-    if (current.status === "declined" && !quick && confirm !== ASSESSMENT_REVERSE_ACCEPT_CONFIRM) {
+    if (current?.status === "declined" && !quick && confirm !== ASSESSMENT_REVERSE_ACCEPT_CONFIRM) {
       fail(path, "flash.assessmentReviewTypeAccept");
     }
-    const release = await loadPlatformAssessmentRelease(assessmentKey);
-    if (!isAssessmentCurrentlyReleased(release)) {
+    if (!currentlyReleased && !legacy) {
       fail(path, "flash.assessmentNoLongerReleased");
     }
   }
 
-  const { error } = await supabase
-    .from("organization_assessment_reviews")
-    .update({
-      status,
-      decline_reason: status === "declined" ? reason || null : null,
-      decided_by: user.id,
-      decided_at: new Date().toISOString(),
-    })
-    .eq("group_id", groupId)
-    .eq("assessment_key", assessmentKey);
+  const decision = {
+    status,
+    decline_reason: status === "declined" ? reason || null : null,
+    decided_by: user.id,
+    decided_at: new Date().toISOString(),
+  };
+  const { error } = current
+    ? await supabase
+        .from("organization_assessment_reviews")
+        .update(decision)
+        .eq("group_id", groupId)
+        .eq("assessment_key", assessmentKey)
+    : await supabase.from("organization_assessment_reviews").insert({
+        group_id: groupId,
+        assessment_key: assessmentKey,
+        ...decision,
+      });
 
   if (error) {
     fail(path, "flash.assessmentReviewSaveFailed");
@@ -141,7 +155,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
   if (status === "accepted") {
     ok(
       path,
-      current.status === "declined"
+      current?.status === "declined"
         ? "flash.assessmentAcceptedAgain"
         : "flash.assessmentAccepted"
     );
@@ -149,7 +163,7 @@ async function decideReview(formData: FormData, status: "accepted" | "declined")
 
   ok(
     path,
-    current.status === "accepted"
+    current?.status === "accepted"
       ? "flash.assessmentDeclinedAfterAccept"
       : "flash.assessmentDeclined"
   );

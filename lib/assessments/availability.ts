@@ -102,6 +102,9 @@ export function fatherCanStartAssessment(input: {
       );
       return row?.status === "available";
     }
+    if (input.reviewStatus === "declined" || input.reviewStatus === "pending") {
+      return false;
+    }
   }
 
   return isAssessmentAvailable(input.rows, groupId, input.assessmentKey);

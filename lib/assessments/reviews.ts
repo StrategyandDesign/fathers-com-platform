@@ -79,7 +79,9 @@ export function organizationMayOfferAssessment(input: {
     return input.reviewStatus === "accepted";
   }
   if (input.assessmentKey !== KEYSTONE_ASSESSMENT_KEY) return true;
-  if (isLegacyCatalogAssessment(input.release, input.assessmentKey)) return true;
+  if (isLegacyCatalogAssessment(input.release, input.assessmentKey)) {
+    return input.reviewStatus !== "declined" && input.reviewStatus !== "pending";
+  }
   if (!isAssessmentCurrentlyReleased(input.release)) return false;
   return input.reviewStatus === "accepted";
 }
